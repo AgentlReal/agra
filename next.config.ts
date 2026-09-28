@@ -1,7 +1,14 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
+const nextConfig = {
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: "/",
+          destination: "/hello.html",
+        },
+      ],
+    }
+  },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
