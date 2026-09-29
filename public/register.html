@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Akun - AGRA Platform TKA</title>
+  <meta name="description" content="Pendaftaran Akun Baru Siswa Platform Tes Kemampuan Akademik AGRA">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/login.css">
+</head>
+<body>
+  <!-- Ambient Floating Glow -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <!-- Top Navigation Bar -->
+  <header class="top-nav">
+    <a href="login.html" class="brand-badge" id="brandLogo">
+      <div class="brand-logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+          <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>AGRA</h1>
+        <p>Platform TKA & Kurikulum</p>
+      </div>
+    </a>
+
+    <div class="nav-actions">
+      <a href="login.html" class="status-chip" style="text-decoration: none; cursor: pointer;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" x2="3" y1="12" y2="12"/>
+        </svg>
+        <span>Sudah Punya Akun? Masuk</span>
+      </a>
+      <button class="theme-toggle-btn" id="themeToggleBtn" title="Ganti Tema (Dark / Light)">
+        <span id="themeIcon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+          </svg>
+        </span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-wrapper">
+    <div class="auth-container">
+      <!-- Left Column: Showcase & Brand Hero -->
+      <section class="auth-hero">
+        <div class="hero-header">
+          <div class="hero-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/>
+            </svg>
+            Registrasi Akun Siswa
+          </div>
+          <h2 class="hero-title">Mulai Asesmen <br><span class="highlight">Standar Masa Depan</span></h2>
+          <p class="hero-desc">Daftarkan akun untuk mengakses bank soal, latihan adaptif level kognitif, dan simulasi TKA berkala.</p>
+        </div>
+
+        <!-- 3D Banner Image -->
+        <div class="hero-visual">
+          <img src="./assets/agra_login_banner.jpg" alt="AGRA Learning Platform Illustration">
+          <div class="hero-visual-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Better Auth & Sesi Aman Terverifikasi
+          </div>
+        </div>
+
+        <!-- Highlights / Features -->
+        <div class="hero-features">
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Registrasi langsung tervalidasi dengan endpoint Better Auth</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Pengecekan ketersediaan username secara realtime</span>
+          </div>
+          <div class="feature-item">
+            <span class="feature-check">✓</span>
+            <span>Pilihan kelas & avatar preset setelah registrasi selesai</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Registration Form -->
+      <section class="auth-form-panel">
+        <!-- Success State View (Initially Hidden) -->
+        <div class="registration-success-card" id="successCard">
+          <div class="success-icon-large">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <h2 style="font-size: 1.5rem; margin-bottom: 8px;">Pendaftaran Berhasil!</h2>
+          <p style="color: var(--text-secondary); font-size: 0.88rem;">Akun Anda telah siap digunakan pada platform AGRA.</p>
+
+          <div class="success-details">
+            <div><strong style="color: var(--text-primary);">Nama:</strong> <span id="registeredName">-</span></div>
+            <div><strong style="color: var(--text-primary);">Username:</strong> <span id="registeredUsername" style="color: var(--primary);">-</span></div>
+            <div><strong style="color: var(--text-primary);">Email:</strong> <span id="registeredEmail">-</span></div>
+            <div><strong style="color: var(--text-primary);">Peran:</strong> <span style="color: var(--success); font-weight: 700;">SISWA</span></div>
+          </div>
+
+          <a href="login.html" class="btn-submit" style="text-decoration: none;">
+            <span>Lanjut ke Halaman Login</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+
+        <!-- Registration Form -->
+        <div id="formSection">
+          <div class="form-header" style="display: flex; align-items: flex-start; justify-content: space-between;">
+            <div>
+              <h2>Buat Akun Baru</h2>
+              <p>Lengkapi formulir berikut untuk mendaftar sebagai Siswa.</p>
+            </div>
+            <button type="button" class="demo-chip" id="quickFillBtn" title="Isi dengan data contoh" style="margin-top: 4px;">
+              ✨ Isi Otomatis
+            </button>
+          </div>
+
+          <!-- Alert Notification Box -->
+          <div class="alert-box" id="alertBox">
+            <div id="alertIcon"></div>
+            <div id="alertMessage"></div>
+          </div>
+
+          <form id="registerForm" autocomplete="on" novalidate>
+            <!-- Form Row: Nama Lengkap & Username -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="nameInput" class="form-label">Nama Lengkap</label>
+                <div class="input-container">
+                  <span class="input-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                    </svg>
+                  </span>
+                  <input 
+                    type="text" 
+                    id="nameInput" 
+                    class="form-input" 
+                    placeholder="e.g. Ahmad Dahlan" 
+                    required 
+                    autocomplete="name"
+                  >
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="usernameInput" class="form-label">Username</label>
+                <div class="input-container">
+                  <span class="input-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"/>
+                    </svg>
+                  </span>
+                  <input 
+                    type="text" 
+                    id="usernameInput" 
+                    class="form-input" 
+                    placeholder="e.g. ahmad_siswa" 
+                    required 
+                    autocomplete="username"
+                    style="padding-right: 85px;"
+                  >
+                  <span class="username-status-badge" id="usernameBadge">Mengecek...</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Email Input -->
+            <div class="form-group">
+              <label for="emailInput" class="form-label">Email Siswa</label>
+              <div class="input-container">
+                <span class="input-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L1 7"/>
+                  </svg>
+                </span>
+                <input 
+                  type="email" 
+                  id="emailInput" 
+                  class="form-input" 
+                  placeholder="e.g. siswa@sekolah.sch.id" 
+                  required 
+                  autocomplete="email"
+                >
+              </div>
+            </div>
+
+            <!-- Form Row: Kata Sandi & Konfirmasi -->
+            <div class="form-row">
+              <div class="form-group">
+                <label for="passwordInput" class="form-label">Kata Sandi</label>
+                <div class="input-container has-action">
+                  <span class="input-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                  </span>
+                  <input 
+                    type="password" 
+                    id="passwordInput" 
+                    class="form-input" 
+                    placeholder="Min. 8 karakter" 
+                    required 
+                    autocomplete="new-password"
+                  >
+                  <button type="button" class="input-action-btn" id="togglePassBtn" title="Lihat Sandi">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="confirmPasswordInput" class="form-label">Konfirmasi Sandi</label>
+                <div class="input-container has-action">
+                  <span class="input-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                  </span>
+                  <input 
+                    type="password" 
+                    id="confirmPasswordInput" 
+                    class="form-input" 
+                    placeholder="Ulangi kata sandi" 
+                    required 
+                    autocomplete="new-password"
+                  >
+                  <button type="button" class="input-action-btn" id="toggleConfirmPassBtn" title="Lihat Sandi">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Password Strength Meter -->
+            <div class="password-meter">
+              <div class="meter-bars">
+                <div class="meter-bar" id="meterBar1"></div>
+                <div class="meter-bar" id="meterBar2"></div>
+                <div class="meter-bar" id="meterBar3"></div>
+              </div>
+              <div class="meter-text">
+                <span id="meterScoreText">Gunakan minimal 8 karakter dengan kombinasi angka & simbol</span>
+              </div>
+            </div>
+
+            <!-- Terms Checkbox -->
+            <div class="terms-row" style="margin-top: 18px;">
+              <label class="remember-checkbox">
+                <input type="checkbox" id="termsCheckbox" required>
+                <span>Saya menyetujui <a href="#">Ketentuan Layanan</a> & <a href="#">Kebijakan Privasi</a> platform AGRA.</span>
+              </label>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-submit" id="submitBtn">
+              <span class="spinner" id="btnSpinner"></span>
+              <span class="btn-text" id="submitText">Daftar Akun Baru</span>
+            </button>
+          </form>
+
+          <div class="form-footer">
+            <p>Sudah memiliki akun? <a href="login.html">Masuk di sini</a></p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Developer API Inspector Section -->
+  <section class="dev-inspector-section">
+    <button type="button" class="inspector-toggle-btn" id="inspectorToggle">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+      </svg>
+      <span>Developer API Inspector (Better Auth Registration)</span>
+      <span class="inspector-arrow">▼ Tampilkan</span>
+    </button>
+
+    <div class="inspector-panel" id="inspectorPanel">
+      <div class="inspector-header">
+        <div class="inspector-title">
+          <span class="api-method-badge" id="inspectorMethod">POST</span>
+          <span id="inspectorEndpoint">/api/auth/sign-up/email</span>
+        </div>
+        <div style="font-weight: 700;" id="inspectorStatus">Ready</div>
+      </div>
+      <div class="inspector-content">
+        <div class="log-box">
+          <h5>Request Body (JSON)</h5>
+          <pre id="inspectorRequest">{
+  "info": "Ketik data pendaftaran atau klik 'Isi Otomatis' untuk melihat request"
+}</pre>
+        </div>
+        <div class="log-box">
+          <h5>Response Data (JSON)</h5>
+          <pre id="inspectorResponse">// Menunggu interaksi registrasi...</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Registration Script -->
+  <script src="./js/register.js"></script>
+</body>
+</html>
