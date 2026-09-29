@@ -1,4 +1,4 @@
-## 🛠️ Daftar Perintah (Available Scripts)
+## Daftar Perintah (Available Scripts)
 
 Semua perintah di bawah ini dapat dijalankan menggunakan `npm run <command>` di root direktori project:
 
@@ -15,7 +15,7 @@ Semua perintah di bawah ini dapat dijalankan menggunakan `npm run <command>` di 
 
 ---
 
-## 📖 Panduan Penggunaan Command
+## Panduan Penggunaan Command
 
 ### 1. Development & Build
 - **Menjalankan App di Lokal:**
@@ -74,7 +74,7 @@ Digunakan oleh tim Frontend untuk menguji integrasi endpoint dan respon API tanp
 
 ---
 
-## ⚙️ Konfigurasi Environment (`.env`)
+## Konfigurasi Environment (`.env`)
 
 Duplikasi file `.env.example` menjadi `.env` lalu sesuaikan isinya:
 
@@ -86,6 +86,7 @@ DB_USER=root
 DB_PASSWORD=your_password
 DB_NAME=your_db_name
 
-# Better Auth Secret Key
+# Better Auth Configuration
 BETTER_AUTH_SECRET=your_generated_secret_key
+BETTER_AUTH_URL=http://localhost:3000
 ```
