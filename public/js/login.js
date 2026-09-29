@@ -10,6 +10,9 @@
 (function () {
   'use strict';
 
+  // Mock API Server (Prism OpenAPI Server)
+  const MOCK_API_BASE = 'http://127.0.0.1:4010';
+
   // --- State & Elements ---
   const state = {
     loginType: 'username', // 'username' | 'email'
@@ -33,12 +36,6 @@
   const alertBox = document.getElementById('alertBox');
   const alertMessage = document.getElementById('alertMessage');
   const alertIcon = document.getElementById('alertIcon');
-  const activeSessionCard = document.getElementById('activeSessionCard');
-  const sessionUserName = document.getElementById('sessionUserName');
-  const sessionUserEmail = document.getElementById('sessionUserEmail');
-  const sessionUserRole = document.getElementById('sessionUserRole');
-  const sessionUserAvatar = document.getElementById('sessionUserAvatar');
-  const btnSignout = document.getElementById('btnSignout');
   const serverStatusChip = document.getElementById('serverStatusChip');
   const statusDot = document.getElementById('statusDot');
   const statusText = document.getElementById('statusText');
@@ -79,12 +76,10 @@
     setupTheme();
     setupTabs();
     setupPasswordToggle();
-    setupDemoChips();
     setupForm();
     setupInspector();
     setupModal();
-    restoreRememberedUser();
-    checkBackendSession();
+    checkServerConnectivity();
   }
 
   // --- Theme Management ---
@@ -143,42 +138,6 @@
     });
   }
 
-  // --- Quick Demo Chips ---
-  function setupDemoChips() {
-    document.querySelectorAll('.demo-chip').forEach((chip) => {
-      chip.addEventListener('click', () => {
-        const userType = chip.dataset.type;
-        const ident = chip.dataset.identifier;
-        const pass = chip.dataset.password;
-
-        if (userType === 'email') {
-          setLoginType('email');
-        } else {
-          setLoginType('username');
-        }
-
-        identifierInput.value = ident;
-        passwordInput.value = pass;
-
-        showToast(`Kredensial demo diisi: ${ident}`, 'info');
-        clearAlert();
-      });
-    });
-  }
-
-  // --- Remember Me ---
-  function restoreRememberedUser() {
-    const remembered = localStorage.getItem('agra_remember_user');
-    const rememberedType = localStorage.getItem('agra_remember_type');
-    if (remembered) {
-      if (rememberedType === 'email') {
-        setLoginType('email');
-      }
-      identifierInput.value = remembered;
-      rememberCheckbox.checked = true;
-    }
-  }
-
   // --- Form Handling ---
   function setupForm() {
     form.addEventListener('submit', async (e) => {
@@ -209,10 +168,6 @@
 
       await performLogin(identifier, password);
     });
-
-    btnSignout.addEventListener('click', async () => {
-      await performSignOut();
-    });
   }
 
   // --- Authentication Execution ---
@@ -221,7 +176,8 @@
     clearAlert();
 
     const isUsername = state.loginType === 'username';
-    const endpoint = isUsername ? '/api/auth/sign-in/username' : '/api/auth/sign-in/email';
+    const path = isUsername ? '/api/auth/sign-in/username' : '/api/auth/sign-in/email';
+    const endpoint = `${MOCK_API_BASE}${path}`;
     const payload = isUsername
       ? { username: identifier, password: password }
       : { email: identifier, password: password };
@@ -240,7 +196,6 @@
           'Accept': 'application/json',
         },
         body: JSON.stringify(payload),
-        credentials: 'include',
       });
 
       const responseText = await response.text();
@@ -254,135 +209,56 @@
       updateInspectorResponse(response.status, responseData);
 
       if (response.ok) {
-        // Successful login via real Better Auth backend
-        updateServerStatus(true, 'Live API Terhubung');
-        const user = responseData.user || responseData.data?.user || { name: identifier, role: 'SISWA' };
-        onLoginSuccess(user, false);
+        // Successful login via Prism Mock API
+        updateServerStatus(true, 'Mock API (4010) Terhubung');
+        const user = responseData.user || responseData.data?.user || { name: identifier, username: identifier, role: 'SISWA' };
+        onLoginSuccess(user);
       } else {
-        // Backend returned an error response
-        updateServerStatus(true, 'Live API Terhubung');
+        // Mock server returned an error response
+        updateServerStatus(true, 'Mock API (4010) Terhubung');
         const errorMsg = responseData.message || responseData.error?.message || 'Login gagal. Cek kembali kredensial Anda.';
         showAlert(errorMsg, 'error');
         showToast(errorMsg, 'error');
       }
     } catch (networkErr) {
-      // Backend server is unreachable (offline or running in static mock demo)
-      console.warn('Backend unreachable, switching to Dummy Demo Mode:', networkErr);
-      updateServerStatus(false, 'Mode Simulasi (Offline)');
-      handleMockLogin(identifier, password, endpoint, payload);
+      console.error('Koneksi ke Mock API gagal:', networkErr);
+      updateServerStatus(false, 'Mock API (4010) Offline');
+      const errorMsg = 'Gagal terhubung ke Mock API (http://127.0.0.1:4010). Pastikan server mock aktif dengan "npm run dev:mock".';
+      showAlert(errorMsg, 'error');
+      showToast('Koneksi Mock API gagal', 'error');
+      updateInspectorResponse(0, {
+        error: 'Network Error',
+        message: 'Gagal terhubung ke Mock API Prism di port 4010. Periksa apakah `npm run dev:mock` sedang berjalan di terminal.',
+        details: String(networkErr),
+      });
     } finally {
       setLoading(false);
     }
   }
 
-  // Standalone Mock Fallback
-  function handleMockLogin(identifier, password, endpoint, payload) {
-    let mockUser = null;
-
-    if (identifier.includes('kurikulum') || identifier === 'kurikulum@sekolah.sch.id') {
-      mockUser = {
-        name: 'Drs. Supriyanto, M.Pd',
-        username: 'guru_kurikulum',
-        email: 'kurikulum@sekolah.sch.id',
-        role: 'TIM_KURIKULUM',
-      };
-    } else {
-      mockUser = {
-        name: 'Ahmad Dahlan',
-        username: identifier.includes('@') ? 'ahmad_siswa' : identifier,
-        email: identifier.includes('@') ? identifier : `${identifier}@sekolah.sch.id`,
-        role: 'SISWA',
-      };
-    }
-
-    const mockResponse = {
-      success: true,
-      message: 'Berhasil login (Demo Standalone Mode)',
-      session: {
-        id: 'sess_' + Math.random().toString(36).substring(2, 9),
-        token: 'mock_jwt_token_' + Date.now(),
-        createdAt: new Date().toISOString(),
-      },
-      user: mockUser,
-    };
-
-    updateInspectorResponse(200, mockResponse);
-    onLoginSuccess(mockUser, true);
-  }
-
-  function onLoginSuccess(user, isMock) {
+  function onLoginSuccess(user) {
     state.sessionUser = user;
-    const modeLabel = isMock ? ' (Demo Mode)' : '';
-    showAlert(`Selamat datang kembali, ${user.name || user.username || 'Pengguna'}! Login berhasil${modeLabel}.`, 'success');
-    showToast(`Login berhasil sebagai ${user.name || user.username}`, 'success');
-
-    // Display active session UI
-    renderSessionCard(user);
+    const displayName = user.name || user.username || 'Pengguna';
+    showAlert(`Selamat datang kembali, ${displayName}! Login berhasil via Mock API.`, 'success');
+    showToast(`Login berhasil sebagai ${displayName}`, 'success');
   }
 
-  // --- Session Check & Logout ---
-  async function checkBackendSession() {
+  // --- Check Server Connectivity ---
+  async function checkServerConnectivity() {
     try {
-      const res = await fetch('/api/auth/get-session', {
+      const res = await fetch(`${MOCK_API_BASE}/api/auth/get-session`, {
         method: 'GET',
         headers: { Accept: 'application/json' },
-        credentials: 'include',
       });
 
       if (res.ok) {
-        const data = await res.json();
-        updateServerStatus(true, 'Live API Terhubung');
-        const user = data.user || data.data?.user;
-        if (user) {
-          state.sessionUser = user;
-          renderSessionCard(user);
-        }
+        updateServerStatus(true, 'Mock API (4010) Terhubung');
       } else {
-        updateServerStatus(true, 'Live API Terhubung');
+        updateServerStatus(true, 'Mock API (4010) Terhubung');
       }
     } catch (err) {
-      updateServerStatus(false, 'Mode Simulasi (Stand-alone)');
+      updateServerStatus(false, 'Mock API (4010) Offline');
     }
-  }
-
-  async function performSignOut() {
-    btnSignout.disabled = true;
-    btnSignout.textContent = 'Memproses logout...';
-
-    updateInspector({
-      method: 'POST',
-      endpoint: '/api/auth/sign-out',
-      requestBody: {},
-    });
-
-    try {
-      const res = await fetch('/api/auth/sign-out', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-      });
-      const data = await res.json().catch(() => ({}));
-      updateInspectorResponse(res.status, data);
-    } catch (e) {
-      updateInspectorResponse(200, { message: 'Signed out (Demo Mode)' });
-    }
-
-    state.sessionUser = null;
-    activeSessionCard.style.display = 'none';
-    form.style.display = 'block';
-    showAlert('Anda telah berhasil logout.', 'warning');
-    showToast('Berhasil logout', 'info');
-    btnSignout.disabled = false;
-    btnSignout.textContent = 'Keluar dari Sesi Ini (Sign Out)';
-  }
-
-  function renderSessionCard(user) {
-    sessionUserName.textContent = user.name || user.username || 'Pengguna AGRA';
-    sessionUserEmail.textContent = user.email || user.username || '-';
-    sessionUserRole.textContent = user.role || 'SISWA';
-    sessionUserAvatar.textContent = (user.name || user.username || 'U').charAt(0).toUpperCase();
-
-    activeSessionCard.style.display = 'block';
   }
 
   // --- UI Helpers ---
