@@ -85,7 +85,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
       {/* Left Column: Brand Showcase Hero */}
-      <div className="relative flex flex-col justify-between overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 p-8 lg:w-1/2 lg:p-16 border-b lg:border-b-0 lg:border-r border-slate-800">
+      <div data-theme="dark" className="relative flex flex-col justify-between overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 p-8 lg:w-1/2 lg:p-16 border-b lg:border-b-0 lg:border-r border-slate-800 text-white">
         <div className="relative z-10">
           <Link href="/" className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-600 via-blue-600 to-cyan-500 shadow-xl shadow-indigo-500/20">

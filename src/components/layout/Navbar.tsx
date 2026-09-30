@@ -86,7 +86,7 @@ export const Navbar: React.FC = () => {
           {/* XP Badge */}
           <div 
             title="Total Poin XP Formatif Belajar Anda"
-            className="hidden sm:flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-400 border border-amber-500/20 shadow-sm"
+            className="hidden sm:flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-500 border border-amber-500/20 shadow-xs"
           >
             <Sparkles className="h-3.5 w-3.5" />
             <span>{user?.totalXp || 450} XP</span>
@@ -95,7 +95,7 @@ export const Navbar: React.FC = () => {
           {/* Streak Badge */}
           <div 
             title="Runtutan Hari Aktif Belajar (Streak)"
-            className="hidden sm:flex items-center gap-1.5 rounded-full bg-orange-500/10 px-3 py-1 text-xs font-semibold text-orange-400 border border-orange-500/20 shadow-sm"
+            className="hidden sm:flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-500 border border-amber-500/20 shadow-xs"
           >
             <Flame className="h-3.5 w-3.5" />
             <span>{user?.currentStreak || 5} Hari</span>
@@ -104,10 +104,10 @@ export const Navbar: React.FC = () => {
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors shadow-xs"
             title="Ganti Tema (Dark / Light)"
           >
-            {isLight ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4 text-amber-400" />}
+            {isLight ? <Moon className="h-4 w-4 text-indigo-600" /> : <Sun className="h-4 w-4 text-amber-400" />}
           </button>
 
           {/* Role Switcher Pill / User Dropdown */}
