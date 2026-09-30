@@ -10,7 +10,8 @@
     "migrate": "tsx scripts/migrate.ts",
     "db:reset": "tsx scripts/reset-db.ts",
     "mock": "prism mock openapi/API.yaml",
-    "dev:mock": "concurrently \"npm run dev\" \"npm run mock\""
+    "dev:mock": "concurrently \"npm run dev\" \"npm run mock\"",
+    "test": "tsx tests/api.test.ts"
   },
   "dependencies": {
     "better-auth": "^1.7.6",
