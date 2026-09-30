@@ -113,21 +113,52 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (questionType === 'PG_KOMPLEKS' && complexKeys.length < 2) {
+      setErrorMsg('Pilihan Ganda Kompleks harus memiliki minimal 2 kunci jawaban yang benar.');
+      return;
+    }
+
     setSubmitting(true);
     setErrorMsg('');
 
+    const question_format = questionType === 'PG_KOMPLEKS' ? 'COMPLEX_CHOICE' : 'SINGLE_CHOICE';
+
+    const formattedOptions = options.map((opt) => ({
+      option_label: opt.key,
+      option_text: opt.text,
+      is_correct:
+        questionType === 'PG_KOMPLEKS'
+          ? complexKeys.includes(opt.key)
+          : singleKey === opt.key,
+    }));
+
     const payload = {
+      bank_type: bankType,
+      subject_id: Number(subjectId),
+      cognitive_level_id: Number(cognitiveLevel),
+      question_format,
+      question_text: questionText,
+      options: formattedOptions,
+      explanation: {
+        explanation_text: explanation?.trim() || 'Pembahasan soal terlampir pada kunci jawaban.',
+      },
+      stimulus: stimulus?.trim()
+        ? {
+            title: `Wacana - ${questionText.slice(0, 30)}`,
+            stimulus_text: stimulus,
+          }
+        : null,
+      // Backward-compatible properties
       bankType,
       subjectId: Number(subjectId),
       materialName,
       submaterialName,
       cognitiveLevel,
       questionType,
-      stimulus,
+      questionFormat: question_format,
       questionText,
-      options,
       correctAnswer: questionType === 'PG_TUNGGAL' ? singleKey : complexKeys,
-      explanation,
+      explanationText: explanation,
     };
 
     try {

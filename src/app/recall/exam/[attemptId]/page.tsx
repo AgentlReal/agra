@@ -12,7 +12,9 @@ import {
   CheckCircle2, 
   AlertTriangle, 
   X, 
-  Check 
+  Check,
+  CheckSquare,
+  CircleDot
 } from 'lucide-react';
 
 interface QuestionItem {
@@ -22,7 +24,8 @@ interface QuestionItem {
   stimulus?: string;
   questionText: string;
   options: { id?: number; key: string; text: string }[];
-  currentAnswer?: string | null;
+  questionFormat: 'SINGLE_CHOICE' | 'COMPLEX_CHOICE';
+  currentAnswer?: string[] | null;
   isDoubtful?: boolean;
 }
 
@@ -32,7 +35,7 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
 
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [answers, setAnswers] = useState<Record<number, string[]>>({});
   const [doubtfuls, setDoubtfuls] = useState<Record<number, boolean>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -61,12 +64,22 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
               text: opt.option_text || opt.optionText || opt.text,
             }));
 
-            let currentAnswer: string | null = null;
+            const rawFormat = q.question_type || q.question_format || q.questionFormat || 'SINGLE_CHOICE';
+            const questionFormat: 'SINGLE_CHOICE' | 'COMPLEX_CHOICE' =
+              rawFormat === 'COMPLEX_CHOICE' || rawFormat === 'PG_KOMPLEKS' ? 'COMPLEX_CHOICE' : 'SINGLE_CHOICE';
+
+            let currentAnswer: string[] = [];
             if (Array.isArray(q.selected_option_ids) && q.selected_option_ids.length > 0) {
-              const matched = mappedOptions.find((o: any) => q.selected_option_ids.includes(o.id));
-              if (matched) currentAnswer = matched.key;
+              const matchedKeys = mappedOptions
+                .filter((o: any) => q.selected_option_ids.includes(o.id))
+                .map((o: any) => o.key);
+              if (matchedKeys.length > 0) currentAnswer = matchedKeys;
             } else if (q.studentAnswer) {
-              currentAnswer = q.studentAnswer;
+              currentAnswer = Array.isArray(q.studentAnswer)
+                ? q.studentAnswer
+                : typeof q.studentAnswer === 'string' && q.studentAnswer.includes(',')
+                ? q.studentAnswer.split(',').map((s: string) => s.trim())
+                : [q.studentAnswer];
             }
 
             return {
@@ -76,16 +89,17 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
               stimulus: stimulusText,
               questionText: q.question_text || q.questionText || '',
               options: mappedOptions,
+              questionFormat,
               currentAnswer,
               isDoubtful: Boolean(q.is_doubtful ?? q.isDoubtful ?? q.is_flagged ?? q.isFlagged),
             };
           });
 
           setQuestions(qs);
-          const initAns: Record<number, string> = {};
+          const initAns: Record<number, string[]> = {};
           const initDbt: Record<number, boolean> = {};
           qs.forEach((q, idx) => {
-            if (q.currentAnswer) initAns[idx] = q.currentAnswer;
+            if (q.currentAnswer && q.currentAnswer.length > 0) initAns[idx] = q.currentAnswer;
             if (q.isDoubtful) initDbt[idx] = true;
           });
           setAnswers(initAns);
@@ -103,11 +117,26 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
   const currentQ = questions[currentIndex];
 
   const handleSelectOption = async (optionKey: string) => {
-    const newAnswers = { ...answers, [currentIndex]: optionKey };
+    if (!currentQ) return;
+
+    let nextAnswerKeys: string[] = [];
+    if (currentQ.questionFormat === 'COMPLEX_CHOICE') {
+      const cur = answers[currentIndex] || [];
+      if (cur.includes(optionKey)) {
+        nextAnswerKeys = cur.filter((k) => k !== optionKey);
+      } else {
+        nextAnswerKeys = [...cur, optionKey].sort();
+      }
+    } else {
+      nextAnswerKeys = [optionKey];
+    }
+
+    const newAnswers = { ...answers, [currentIndex]: nextAnswerKeys };
     setAnswers(newAnswers);
 
-    const selectedOpt = currentQ?.options?.find((o) => o.key === optionKey);
-    const selectedOptionIds = selectedOpt?.id ? [selectedOpt.id] : [];
+    const selectedOptionIds = currentQ.options
+      .filter((o) => nextAnswerKeys.includes(o.key) && o.id)
+      .map((o) => o.id as number);
 
     // Trigger autosave to backend
     setSaving(true);
@@ -116,7 +145,7 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
         selectedOptionIds,
         isFlagged: doubtfuls[currentIndex] || false,
         currentQuestionOrder: currentQ.questionNumber,
-        answer: optionKey,
+        answer: nextAnswerKeys.join(', '),
       });
     } catch {
       // offline/silent autosave fallback
@@ -126,19 +155,22 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
   };
 
   const handleToggleDoubtful = async () => {
+    if (!currentQ) return;
     const nextDoubtful = !doubtfuls[currentIndex];
     const newDoubtfuls = { ...doubtfuls, [currentIndex]: nextDoubtful };
     setDoubtfuls(newDoubtfuls);
 
-    const selectedOpt = currentQ?.options?.find((o) => o.key === answers[currentIndex]);
-    const selectedOptionIds = selectedOpt?.id ? [selectedOpt.id] : [];
+    const curKeys = answers[currentIndex] || [];
+    const selectedOptionIds = currentQ.options
+      .filter((o) => curKeys.includes(o.key) && o.id)
+      .map((o) => o.id as number);
 
     try {
       await api.recall.saveAnswer(attemptId, currentQ.id, {
         selectedOptionIds,
         isFlagged: nextDoubtful,
         currentQuestionOrder: currentQ.questionNumber,
-        answer: answers[currentIndex] || '',
+        answer: curKeys.join(', '),
       });
     } catch {
       // silent
@@ -155,7 +187,7 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
     }
   };
 
-  const answeredCount = Object.keys(answers).length;
+  const answeredCount = Object.values(answers).filter((arr) => arr && arr.length > 0).length;
   const doubtfulCount = Object.values(doubtfuls).filter(Boolean).length;
   const unansweredCount = questions.length - answeredCount;
 
@@ -243,14 +275,26 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
       <main className="flex-1 mx-auto max-w-4xl w-full p-4 sm:p-6 lg:p-8 flex flex-col justify-between">
         <div className="space-y-6">
           {/* Question Meta Bar */}
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-xs font-bold text-white">
                 {currentQ.questionNumber}
               </span>
               <span className="text-xs font-semibold text-slate-400">
                 dari {questions.length} Butir Soal
               </span>
+              <span className="text-slate-600 hidden sm:inline">•</span>
+              {currentQ.questionFormat === 'COMPLEX_CHOICE' ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-purple-400">
+                  <CheckSquare className="h-3 w-3" />
+                  Pilihan Ganda Kompleks (Pilih &ge; 1)
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-indigo-400">
+                  <CircleDot className="h-3 w-3" />
+                  Pilihan Ganda (1 Jawaban)
+                </span>
+              )}
             </div>
 
             <button
@@ -285,25 +329,32 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
             {/* Options List */}
             <div className="mt-6 space-y-3">
               {currentQ.options.map((opt) => {
-                const isSelected = answers[currentIndex] === opt.key;
+                const isSelected = (answers[currentIndex] || []).includes(opt.key);
+                const isComplex = currentQ.questionFormat === 'COMPLEX_CHOICE';
                 return (
                   <button
                     key={opt.key}
                     onClick={() => handleSelectOption(opt.key)}
                     className={`w-full flex items-start gap-3.5 p-4 rounded-xl border text-left transition-all ${
                       isSelected
-                        ? 'border-indigo-500 bg-indigo-600/20 text-white ring-2 ring-indigo-500/30'
+                        ? isComplex
+                          ? 'border-purple-500 bg-purple-600/20 text-white ring-2 ring-purple-500/30'
+                          : 'border-indigo-500 bg-indigo-600/20 text-white ring-2 ring-indigo-500/30'
                         : 'border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-700 hover:bg-slate-900'
                     }`}
                   >
                     <div
-                      className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold transition-colors ${
+                      className={`flex h-7 w-7 shrink-0 items-center justify-center text-xs font-bold transition-colors ${
+                        isComplex ? 'rounded-md' : 'rounded-lg'
+                      } ${
                         isSelected
-                          ? 'bg-indigo-600 text-white shadow-md'
+                          ? isComplex
+                            ? 'bg-purple-600 text-white shadow-md'
+                            : 'bg-indigo-600 text-white shadow-md'
                           : 'bg-slate-800 text-slate-400 border border-slate-700'
                       }`}
                     >
-                      {opt.key}
+                      {isSelected && isComplex ? <Check className="h-4 w-4" /> : opt.key}
                     </div>
                     <span className="text-xs sm:text-sm pt-0.5 leading-relaxed">{opt.text}</span>
                   </button>
@@ -381,7 +432,7 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
             {/* Grid of 30 Buttons */}
             <div className="grid grid-cols-6 sm:grid-cols-10 gap-2 max-h-64 overflow-y-auto p-1">
               {questions.map((q, idx) => {
-                const isAnswered = answers[idx] !== undefined;
+                const isAnswered = (answers[idx] || []).length > 0;
                 const isDoubt = doubtfuls[idx];
                 const isCurrent = currentIndex === idx;
 

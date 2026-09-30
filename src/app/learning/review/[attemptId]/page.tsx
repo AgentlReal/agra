@@ -10,7 +10,9 @@ import {
   CheckCircle2, 
   XCircle, 
   ArrowLeft, 
-  BookOpen 
+  BookOpen,
+  CheckSquare,
+  CircleDot
 } from 'lucide-react';
 
 interface ReviewItem {
@@ -18,7 +20,8 @@ interface ReviewItem {
   questionNumber: number;
   stimulus?: string;
   questionText: string;
-  options: { key: string; text: string }[];
+  options: { id?: number; key: string; text: string; isCorrect: boolean }[];
+  questionFormat: 'SINGLE_CHOICE' | 'COMPLEX_CHOICE';
   studentAnswer: string;
   correctAnswer: string;
   isCorrect: boolean;
@@ -51,6 +54,10 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
               isCorrect: Boolean(opt.is_correct ?? opt.isCorrect),
             }));
 
+            const rawFormat = q.question_type || q.question_format || q.questionFormat || 'SINGLE_CHOICE';
+            const questionFormat: 'SINGLE_CHOICE' | 'COMPLEX_CHOICE' =
+              rawFormat === 'COMPLEX_CHOICE' || rawFormat === 'PG_KOMPLEKS' ? 'COMPLEX_CHOICE' : 'SINGLE_CHOICE';
+
             let studentAnswer = '-';
             if (Array.isArray(q.selected_option_ids) && q.selected_option_ids.length > 0) {
               const selectedKeys = mappedOptions
@@ -75,6 +82,7 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
               stimulus: stimulusText,
               questionText: q.question_text || q.questionText || '',
               options: mappedOptions,
+              questionFormat,
               studentAnswer,
               correctAnswer,
               isCorrect: Boolean(q.is_correct ?? q.isCorrect),
@@ -138,10 +146,22 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
                   q.isCorrect ? 'border-emerald-500/20 bg-slate-900/60' : 'border-rose-500/20 bg-slate-900/60'
                 }`}
               >
-                <div className="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 text-xs font-bold text-white">
-                    {q.questionNumber}
-                  </span>
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-3 mb-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 text-xs font-bold text-white">
+                      {q.questionNumber}
+                    </span>
+                    {q.questionFormat === 'COMPLEX_CHOICE' ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-purple-400">
+                        <CheckSquare className="h-3 w-3" /> Pilihan Ganda Kompleks
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-indigo-400">
+                        <CircleDot className="h-3 w-3" /> Pilihan Ganda
+                      </span>
+                    )}
+                  </div>
+
                   {q.isCorrect ? (
                     <span className="flex items-center gap-1 text-xs font-semibold text-emerald-400 bg-emerald-500/10 rounded-full px-2.5 py-0.5 border border-emerald-500/20">
                       <CheckCircle2 className="h-3.5 w-3.5" /> Jawaban Tepat
@@ -163,13 +183,22 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
 
                 <div className="space-y-2 mb-4">
                   {q.options.map((opt) => {
-                    const isCorrectOpt = opt.key === q.correctAnswer;
-                    const isStudentOpt = opt.key === q.studentAnswer;
+                    const studentKeys = q.studentAnswer && q.studentAnswer !== '-' 
+                      ? q.studentAnswer.split(',').map((s: string) => s.trim()) 
+                      : [];
+                    const correctKeys = q.correctAnswer && q.correctAnswer !== '-' 
+                      ? q.correctAnswer.split(',').map((s: string) => s.trim()) 
+                      : [];
+
+                    const isStudentOpt = studentKeys.includes(opt.key);
+                    const isCorrectOpt = opt.isCorrect || correctKeys.includes(opt.key);
 
                     let optClass = 'border-slate-800 bg-slate-950/40 text-slate-300';
-                    if (isCorrectOpt) {
-                      optClass = 'border-emerald-500/50 bg-emerald-500/10 text-emerald-200 font-semibold';
-                    } else if (isStudentOpt && !q.isCorrect) {
+                    if (isCorrectOpt && isStudentOpt) {
+                      optClass = 'border-emerald-500/60 bg-emerald-500/15 text-emerald-200 font-semibold ring-1 ring-emerald-500/30';
+                    } else if (isCorrectOpt) {
+                      optClass = 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300 font-medium';
+                    } else if (isStudentOpt) {
                       optClass = 'border-rose-500/50 bg-rose-500/10 text-rose-200 line-through';
                     }
 
@@ -182,7 +211,12 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
                           {opt.key}
                         </span>
                         <span className="flex-1">{opt.text}</span>
-                        {isCorrectOpt && (
+                        {isCorrectOpt && isStudentOpt && (
+                          <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
+                            (Kunci Benar • Jawaban Anda)
+                          </span>
+                        )}
+                        {isCorrectOpt && !isStudentOpt && (
                           <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
                             (Kunci Benar)
                           </span>
