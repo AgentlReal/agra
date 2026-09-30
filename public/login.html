@@ -69,7 +69,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3">
               <polyline points="20 6 9 17 4 12"/>
             </svg>
-            Better Auth & Single Device Security
+            Simulasi Sesi Cookie HttpOnly
           </div>
         </div>
 
@@ -120,6 +120,7 @@
         </div>
 
         <!-- Login Form -->
+        <p class="mock-credentials">Akun demo: <strong>user</strong> / <strong>Belajar1!</strong> atau <strong>tim_kurikulum</strong> / <strong>Belajar1!</strong>. Email: user@example.com atau tim@example.com.</p>
         <form id="loginForm" autocomplete="on" novalidate>
           <!-- Identifier Input -->
           <div class="form-group">
@@ -183,6 +184,11 @@
           </button>
         </form>
 
+        <div class="session-panel" id="sessionPanel" hidden>
+          <p id="sessionMessage"></p>
+          <button type="button" class="btn-submit" id="logoutButton">Keluar</button>
+        </div>
+
         <div class="form-footer">
           <p>Belum memiliki akun? <a href="register.html">Daftar Akun Baru</a></p>
         </div>
@@ -196,7 +202,7 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
       </svg>
-      <span>Developer API Inspector (Better Auth)</span>
+      <span>Developer API Inspector (Mock Auth)</span>
       <span class="inspector-arrow">▼ Tampilkan</span>
     </button>
 
@@ -204,7 +210,7 @@
       <div class="inspector-header">
         <div class="inspector-title">
           <span class="api-method-badge" id="inspectorMethod">POST</span>
-          <span id="inspectorEndpoint">/api/auth/sign-in/username</span>
+          <span id="inspectorEndpoint">/api/mock/auth/sign-in/username</span>
         </div>
         <div style="font-weight: 700;" id="inspectorStatus">Ready</div>
       </div>

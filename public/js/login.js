@@ -1,17 +1,16 @@
 /**
  * AGRA Platform - Dummy & Live Login Controller
  * Supports:
- * - Direct integration with Better Auth (/api/auth/sign-in/*)
- * - Standalone Mock/Demo mode with instant test credentials
- * - Active session detection & logout
+ * - Stateful mock login with an HttpOnly cookie on the same origin
+ * - Active session detection and logout
  * - Live Developer Request/Response Inspector
  */
 
 (function () {
   'use strict';
 
-  // Mock API Server (Prism OpenAPI Server)
-  const MOCK_API_BASE = 'http://127.0.0.1:4010';
+  // The mock auth routes share the page origin so the browser stores and sends the cookie.
+  const MOCK_AUTH_BASE = '/api/mock/auth';
 
   // --- State & Elements ---
   const state = {
@@ -31,6 +30,9 @@
   const passwordInput = document.getElementById('passwordInput');
   const togglePasswordBtn = document.getElementById('togglePasswordBtn');
   const rememberCheckbox = document.getElementById('rememberMe');
+  const sessionPanel = document.getElementById('sessionPanel');
+  const sessionMessage = document.getElementById('sessionMessage');
+  const logoutButton = document.getElementById('logoutButton');
   const submitBtn = document.getElementById('submitBtn');
   const submitText = document.getElementById('submitText');
   const alertBox = document.getElementById('alertBox');
@@ -77,6 +79,7 @@
     setupTabs();
     setupPasswordToggle();
     setupForm();
+    logoutButton.addEventListener('click', performLogout);
     setupInspector();
     setupModal();
     checkServerConnectivity();
@@ -176,11 +179,11 @@
     clearAlert();
 
     const isUsername = state.loginType === 'username';
-    const path = isUsername ? '/api/auth/sign-in/username' : '/api/auth/sign-in/email';
-    const endpoint = `${MOCK_API_BASE}${path}`;
+    const path = isUsername ? '/sign-in/username' : '/sign-in/email';
+    const endpoint = `${MOCK_AUTH_BASE}${path}`;
     const payload = isUsername
-      ? { username: identifier, password: password }
-      : { email: identifier, password: password };
+      ? { username: identifier, password: password, rememberMe: rememberCheckbox.checked }
+      : { email: identifier, password: password, rememberMe: rememberCheckbox.checked };
 
     updateInspector({
       method: 'POST',
@@ -191,6 +194,7 @@
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
+        credentials: 'same-origin',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -202,33 +206,40 @@
       let responseData = {};
       try {
         responseData = JSON.parse(responseText);
-      } catch (err) {
+      } catch {
         responseData = { raw: responseText };
       }
 
-      updateInspectorResponse(response.status, responseData);
-
       if (response.ok) {
-        // Successful login via Prism Mock API
-        updateServerStatus(true, 'Mock API (4010) Terhubung');
-        const user = responseData.user || responseData.data?.user || { name: identifier, username: identifier, role: 'SISWA' };
-        onLoginSuccess(user);
+        // HttpOnly cookies cannot be read by JavaScript; get-session proves the browser returned it.
+        const sessionResponse = await fetch(`${MOCK_AUTH_BASE}/get-session`, {
+          credentials: 'same-origin',
+          cache: 'no-store',
+        });
+        const sessionData = sessionResponse.ok ? await sessionResponse.json() : null;
+        updateInspectorResponse(response.status, { ...responseData, cookieSessionVerified: Boolean(sessionData?.user) });
+        if (!sessionData?.user) {
+          showAlert('Login diterima, tetapi sesi cookie tidak terbaca. Coba muat ulang halaman.', 'error');
+          return;
+        }
+        updateServerStatus(true, 'Mock Auth Terhubung');
+        onLoginSuccess(sessionData.user);
       } else {
-        // Mock server returned an error response
-        updateServerStatus(true, 'Mock API (4010) Terhubung');
+        updateInspectorResponse(response.status, responseData);
+        updateServerStatus(true, 'Mock Auth Terhubung');
         const errorMsg = responseData.message || responseData.error?.message || 'Login gagal. Cek kembali kredensial Anda.';
         showAlert(errorMsg, 'error');
         showToast(errorMsg, 'error');
       }
     } catch (networkErr) {
-      console.error('Koneksi ke Mock API gagal:', networkErr);
-      updateServerStatus(false, 'Mock API (4010) Offline');
-      const errorMsg = 'Gagal terhubung ke Mock API (http://127.0.0.1:4010). Pastikan server mock aktif dengan "npm run dev:mock".';
+      console.error('Koneksi ke Mock Auth gagal:', networkErr);
+      updateServerStatus(false, 'Mock Auth Offline');
+      const errorMsg = 'Gagal terhubung ke Mock Auth. Jalankan npm run dev atau npm run dev:mock.';
       showAlert(errorMsg, 'error');
-      showToast('Koneksi Mock API gagal', 'error');
+      showToast('Koneksi Mock Auth gagal', 'error');
       updateInspectorResponse(0, {
         error: 'Network Error',
-        message: 'Gagal terhubung ke Mock API Prism di port 4010. Periksa apakah `npm run dev:mock` sedang berjalan di terminal.',
+        message: 'Endpoint auth mock pada server Next.js tidak dapat diakses.',
         details: String(networkErr),
       });
     } finally {
@@ -239,25 +250,48 @@
   function onLoginSuccess(user) {
     state.sessionUser = user;
     const displayName = user.name || user.username || 'Pengguna';
-    showAlert(`Selamat datang kembali, ${displayName}! Login berhasil via Mock API.`, 'success');
+    form.hidden = true;
+    sessionPanel.hidden = false;
+    sessionMessage.textContent = `Masuk sebagai ${displayName} (${user.role}). Sesi tersimpan dalam cookie HttpOnly.`;
+    showAlert(`Selamat datang kembali, ${displayName}! Sesi mock aktif.`, 'success');
     showToast(`Login berhasil sebagai ${displayName}`, 'success');
   }
 
-  // --- Check Server Connectivity ---
+  async function performLogout() {
+    logoutButton.disabled = true;
+    try {
+      const response = await fetch(`${MOCK_AUTH_BASE}/sign-out`, {
+        method: 'POST',
+        credentials: 'same-origin',
+      });
+      if (!response.ok) throw new Error('Logout gagal');
+      state.sessionUser = null;
+      sessionPanel.hidden = true;
+      form.hidden = false;
+      passwordInput.value = '';
+      showAlert('Anda telah keluar dari sesi mock.', 'success');
+    } catch {
+      showAlert('Logout gagal. Coba lagi.', 'error');
+    } finally {
+      logoutButton.disabled = false;
+    }
+  }
+
+  // --- Check active cookie session ---
   async function checkServerConnectivity() {
     try {
-      const res = await fetch(`${MOCK_API_BASE}/api/auth/get-session`, {
+      const res = await fetch(`${MOCK_AUTH_BASE}/get-session`, {
         method: 'GET',
+        credentials: 'same-origin',
+        cache: 'no-store',
         headers: { Accept: 'application/json' },
       });
-
-      if (res.ok) {
-        updateServerStatus(true, 'Mock API (4010) Terhubung');
-      } else {
-        updateServerStatus(true, 'Mock API (4010) Terhubung');
-      }
-    } catch (err) {
-      updateServerStatus(false, 'Mock API (4010) Offline');
+      if (!res.ok) throw new Error('Mock auth unavailable');
+      updateServerStatus(true, 'Mock Auth Terhubung');
+      const session = await res.json();
+      if (session?.user) onLoginSuccess(session.user);
+    } catch {
+      updateServerStatus(false, 'Mock Auth Offline');
     }
   }
 
@@ -292,10 +326,10 @@
     statusText.textContent = label;
     if (isLive) {
       statusDot.classList.remove('offline');
-      serverStatusChip.title = 'Terhubung dengan Next.js /api/auth/ Better Auth';
+      serverStatusChip.title = 'Terhubung dengan Next.js Mock Auth';
     } else {
       statusDot.classList.add('offline');
-      serverStatusChip.title = 'Backend offline. Berjalan dalam mock preview mode.';
+      serverStatusChip.title = 'Endpoint Mock Auth tidak tersedia.';
     }
   }
 

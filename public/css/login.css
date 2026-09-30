@@ -641,6 +641,22 @@ body {
 }
 
 /* Submit Button */
+.mock-credentials,
+.session-panel p {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.mock-credentials {
+  margin-bottom: 18px;
+}
+
+.session-panel:not([hidden]) {
+  display: grid;
+  gap: 18px;
+}
+
 .btn-submit {
   width: 100%;
   padding: 13px 20px;

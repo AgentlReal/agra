@@ -142,7 +142,7 @@
     clearAlert();
 
     const endpoint = `${MOCK_API_BASE}/api/auth/sign-up/email`;
-    const payload = { username, email, password };
+    const payload = { username, email, password, name: "" };
 
     updateInspector({
       method: 'POST',
@@ -164,7 +164,7 @@
       let responseData = {};
       try {
         responseData = JSON.parse(responseText);
-      } catch (err) {
+      } catch {
         responseData = { raw: responseText };
       }
 
@@ -172,7 +172,7 @@
 
       if (response.ok) {
         // Data hasil respon Mock API
-        const user = responseData.user || { username, email, role: 'SISWA' };
+        const user = responseData.user || { username, email, name: "", role: 'SISWA' };
         onSignUpSuccess(user);
       } else {
         const errorMsg = responseData.message || responseData.error?.message || 'Pendaftaran ditolak oleh server.';
