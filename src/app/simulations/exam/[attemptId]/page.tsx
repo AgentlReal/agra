@@ -43,6 +43,8 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
   const [timeLeft, setTimeLeft] = useState<number>(4500);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [errorMsg, setErrorMsg] = useState('');
+
   useEffect(() => {
     api.simulation
       .getAttempt(attemptId)
@@ -50,20 +52,19 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
         if (res?.remainingTimeSeconds) {
           setTimeLeft(res.remainingTimeSeconds);
         }
-        if (res?.questions && Array.isArray(res.questions) && res.questions.length > 0) {
-          const qs: QuestionItem[] = res.questions.map((q: any, i: number) => ({
-            id: q.id || i + 1,
-            questionNumber: i + 1,
-            stimulus: q.stimulus || '',
+        const rawQs = res?.questions || res?.data?.questions;
+        if (Array.isArray(rawQs) && rawQs.length > 0) {
+          const qs: QuestionItem[] = rawQs.map((q: any, i: number) => ({
+            id: q.id ?? i + 1,
+            questionNumber: q.questionNumber ?? i + 1,
+            stimulus: q.stimulusText || q.stimulus || '',
             questionText: q.questionText || `Soal simulasi butir nomor ${i + 1}`,
-            options: q.options || [
-              { key: 'A', text: 'Opsi jawaban A' },
-              { key: 'B', text: 'Opsi jawaban B' },
-              { key: 'C', text: 'Opsi jawaban C' },
-              { key: 'D', text: 'Opsi jawaban D' },
-            ],
+            options: (q.options || []).map((opt: any) => ({
+              key: opt.optionKey || opt.key || opt.option_label,
+              text: opt.optionText || opt.text || opt.option_text,
+            })),
             currentAnswer: q.studentAnswer || null,
-            isDoubtful: q.isDoubtful || false,
+            isDoubtful: Boolean(q.isDoubtful),
           }));
           setQuestions(qs);
           const initAns: Record<number, string> = {};
@@ -75,36 +76,14 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
           setAnswers(initAns);
           setDoubtfuls(initDbt);
         } else {
-          generateMock30Simulation();
+          setErrorMsg('Tidak ada butir soal yang ditemukan pada sesi simulasi ini.');
         }
       })
-      .catch(() => {
-        generateMock30Simulation();
+      .catch((err: any) => {
+        setErrorMsg(err.message || 'Gagal memuat butir soal simulasi dari server.');
       })
       .finally(() => setLoading(false));
   }, [attemptId]);
-
-  const generateMock30Simulation = () => {
-    const list: QuestionItem[] = [];
-    for (let i = 1; i <= 30; i++) {
-      list.push({
-        id: `sim_q_${i}`,
-        questionNumber: i,
-        stimulus:
-          i % 3 === 0
-            ? 'Cermatilah data tabel atau narasi kontekstual berikut untuk menjawab butir soal.'
-            : '',
-        questionText: `Soal Simulasi TKA Capstone Butir ${i}: Berdasarkan standar kompetensi Kemendikdasmen, strategi solusi atau simpulan yang paling tepat adalah...`,
-        options: [
-          { key: 'A', text: `Alternatif jawaban A butir ${i}` },
-          { key: 'B', text: `Alternatif jawaban B butir ${i}` },
-          { key: 'C', text: `Alternatif jawaban C butir ${i}` },
-          { key: 'D', text: `Alternatif jawaban D butir ${i}` },
-        ],
-      });
-    }
-    setQuestions(list);
-  };
 
   // Countdown Timer Effect
   useEffect(() => {
@@ -198,6 +177,28 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-500 border-t-transparent" />
           <p className="text-xs font-semibold text-slate-400">Menyiapkan Ruang Ujian CBT Simulasi...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (errorMsg || questions.length === 0) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-slate-950 p-6 text-center">
+        <div className="max-w-md space-y-4 rounded-3xl border border-rose-500/30 bg-slate-900/80 p-8 shadow-2xl">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-500/20 text-rose-400 mx-auto">
+            <AlertTriangle className="h-6 w-6" />
+          </div>
+          <h2 className="text-lg font-bold text-white">Kendala Sesi Simulasi</h2>
+          <p className="text-xs text-slate-300 leading-relaxed">
+            {errorMsg || 'Tidak ada butir soal yang tersedia pada simulasi ini.'}
+          </p>
+          <button
+            onClick={() => router.push('/dashboard')}
+            className="w-full rounded-xl bg-purple-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-purple-500 transition-colors"
+          >
+            Kembali ke Dasbor
+          </button>
         </div>
       </div>
     );

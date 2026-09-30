@@ -21,68 +21,49 @@ export default function AdminPaketSimulasiPage() {
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | number | null>(null);
 
+  const [errorMsg, setErrorMsg] = useState('');
+
   useEffect(() => {
     fetchPackages();
   }, []);
 
   const fetchPackages = async () => {
+    setLoading(true);
+    setErrorMsg('');
     try {
       const res = await api.admin.getSimulationPackages();
-      if (Array.isArray(res) && res.length > 0) setPackages(res);
-      else setPackages(defaultPackages);
-    } catch {
-      setPackages(defaultPackages);
+      const list = res?.items || (Array.isArray(res) ? res : res?.data || []);
+      const mapped = list.map((pkg: any) => ({
+        id: pkg.id,
+        title: pkg.title || `Paket Simulasi #${pkg.id}`,
+        subjectName: pkg.subjectName || (pkg.subjectId === 1 ? 'Matematika SMP' : 'Bahasa Indonesia SMP'),
+        totalQuestions: pkg.totalQuestions || 30,
+        status: pkg.status || 'DRAFT',
+        participantsCount: pkg.participantsCount ?? pkg.totalParticipants ?? 0,
+        averageScore: pkg.averageScore ?? 0,
+        createdAt: pkg.createdAt || pkg.created_at || '-',
+      }));
+      setPackages(mapped);
+    } catch (err: any) {
+      console.error('Failed to load simulation packages:', err);
+      setErrorMsg(err.message || 'Gagal memuat paket simulasi dari server.');
+      setPackages([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const defaultPackages = [
-    {
-      id: 'pkg_1',
-      title: 'Paket Utama 01 - Matematika SMP Fase D',
-      subjectName: 'Matematika SMP',
-      totalQuestions: 30,
-      status: 'PUBLISHED',
-      participantsCount: 142,
-      averageScore: 78.4,
-      createdAt: '20 Sep 2026',
-    },
-    {
-      id: 'pkg_2',
-      title: 'Paket Utama 01 - Bahasa Indonesia SMP Fase D',
-      subjectName: 'Bahasa Indonesia SMP',
-      totalQuestions: 30,
-      status: 'PUBLISHED',
-      participantsCount: 189,
-      averageScore: 82.1,
-      createdAt: '22 Sep 2026',
-    },
-    {
-      id: 'pkg_3',
-      title: 'Paket Cadangan 02 - Matematika SMP',
-      subjectName: 'Matematika SMP',
-      totalQuestions: 30,
-      status: 'DRAFT',
-      participantsCount: 0,
-      averageScore: 0,
-      createdAt: '28 Sep 2026',
-    },
-  ];
-
   const handleToggleStatus = async (pkgId: string | number, currentStatus: string) => {
     setUpdatingId(pkgId);
-    const newStatus = currentStatus === 'PUBLISHED' ? 'ARCHIVED' : 'PUBLISHED';
+    const newStatus = currentStatus === 'ACTIVE' || currentStatus === 'PUBLISHED' ? 'ARCHIVED' : 'ACTIVE';
 
     try {
       await api.admin.updateSimulationPackageStatus(pkgId, newStatus);
       setPackages((prev) =>
         prev.map((p) => (p.id === pkgId ? { ...p, status: newStatus } : p))
       );
-    } catch {
-      setPackages((prev) =>
-        prev.map((p) => (p.id === pkgId ? { ...p, status: newStatus } : p))
-      );
+    } catch (err: any) {
+      alert(err.message || 'Gagal mengubah status paket simulasi.');
     } finally {
       setUpdatingId(null);
     }

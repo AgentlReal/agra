@@ -30,46 +30,39 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
   const [questions, setQuestions] = useState<ReviewItem[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [errorMsg, setErrorMsg] = useState('');
+
   useEffect(() => {
     api.learning
       .getReview(attemptId)
       .then((res: any) => {
-        if (res?.questions && Array.isArray(res.questions) && res.questions.length > 0) {
-          setQuestions(res.questions);
+        const rawQs = res?.questions || res?.data?.questions;
+        if (Array.isArray(rawQs) && rawQs.length > 0) {
+          const qs: ReviewItem[] = rawQs.map((q: any, i: number) => ({
+            id: q.id ?? i + 1,
+            questionNumber: q.questionNumber ?? i + 1,
+            stimulus: q.stimulusText || q.stimulus || '',
+            questionText: q.questionText || '',
+            options: (q.options || []).map((opt: any) => ({
+              key: opt.optionKey || opt.key || opt.option_label,
+              text: opt.optionText || opt.text || opt.option_text,
+            })),
+            studentAnswer: Array.isArray(q.studentAnswer) ? q.studentAnswer.join(', ') : (q.studentAnswer || '-'),
+            correctAnswer: Array.isArray(q.correctAnswer) ? q.correctAnswer.join(', ') : (q.correctAnswer || '-'),
+            isCorrect: Boolean(q.isCorrect),
+            explanation: q.explanationText || q.explanation || 'Pembahasan belum tersedia untuk butir soal ini.',
+          }));
+          setQuestions(qs);
         } else {
-          generateMock10Reviews();
+          setErrorMsg('Tidak ada data review untuk sesi latihan ini.');
         }
       })
-      .catch(() => {
-        generateMock10Reviews();
+      .catch((err: any) => {
+        console.error('Failed to load learning review:', err);
+        setErrorMsg(err.message || 'Gagal memuat review latihan dari server.');
       })
       .finally(() => setLoading(false));
   }, [attemptId]);
-
-  const generateMock10Reviews = () => {
-    const list: ReviewItem[] = [];
-    for (let i = 1; i <= 10; i++) {
-      const isCorrect = i !== 5; // question 5 wrong as demo
-      list.push({
-        id: `rev_${i}`,
-        questionNumber: i,
-        stimulus: i % 3 === 0 ? 'Stimulus teks atau gambar pemantik konteks permasalahan.' : '',
-        questionText: `Soal Latihan Butir ${i}: Penyelesaian terstruktur dari persamaan atau konsep berikut adalah...`,
-        options: [
-          { key: 'A', text: 'Opsi alternatif A' },
-          { key: 'B', text: 'Opsi alternatif B' },
-          { key: 'C', text: 'Opsi alternatif C' },
-          { key: 'D', text: 'Opsi alternatif D' },
-        ],
-        studentAnswer: isCorrect ? 'B' : 'A',
-        correctAnswer: 'B',
-        isCorrect,
-        explanation:
-          'Pembahasan Nalar: Identifikasi variabel utama terlebih dahulu, kemudian lakukan manipulasi aljabar dengan menerapkan prinsip kesetaraan nilai pada kedua ruas.',
-      });
-    }
-    setQuestions(list);
-  };
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-950">
@@ -96,6 +89,16 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
         {loading ? (
           <div className="flex h-64 items-center justify-center">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
+          </div>
+        ) : errorMsg || questions.length === 0 ? (
+          <div className="rounded-3xl border border-rose-500/30 bg-slate-900/80 p-8 text-center space-y-4">
+            <p className="text-sm font-semibold text-rose-400">{errorMsg || 'Tidak ada butir pembahasan yang dapat ditampilkan.'}</p>
+            <Link
+              href="/curriculum"
+              className="inline-block rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-indigo-500 transition-colors"
+            >
+              Kembali ke Kurikulum
+            </Link>
           </div>
         ) : (
           <div className="space-y-6">

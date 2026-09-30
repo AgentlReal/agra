@@ -20,34 +20,27 @@ export default function RecallResultPage({ params }: { params: Promise<{ attempt
   const { attemptId } = use(params);
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
     api.recall
       .getResult(attemptId)
       .then((res: any) => {
-        setResult(res);
+        const data = res?.data || res;
+        setResult(data);
       })
-      .catch(() => {
-        // Fallback demo result
-        setResult({
-          totalScore: 86.7,
-          isPassed: true,
-          totalCorrect: 26,
-          totalQuestions: 30,
-          earnedXp: 100,
-          mathScore: 86.7,
-          indonesianScore: 86.7,
-          message: 'Selamat! Anda dinyatakan LULUS gerbang diagnostik Recall Kemampuanmu.',
-        });
+      .catch((err: any) => {
+        console.error('Failed to load recall result:', err);
+        setErrorMsg(err.message || 'Gagal memuat hasil asesmen Recall dari server.');
       })
       .finally(() => setLoading(false));
   }, [attemptId]);
 
-  const isPassed = result?.isPassed ?? true;
-  const score = result?.totalScore ?? 86.7;
-  const totalCorrect = result?.totalCorrect ?? 26;
+  const isPassed = Boolean(result?.isPassed);
+  const score = result?.score ?? result?.totalScore ?? 0;
+  const totalCorrect = result?.totalCorrect ?? Math.round((score / 100) * 30);
   const totalQuestions = result?.totalQuestions ?? 30;
-  const earnedXp = result?.earnedXp ?? 100;
+  const earnedXp = result?.earnedXp ?? 0;
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-950">
@@ -57,6 +50,16 @@ export default function RecallResultPage({ params }: { params: Promise<{ attempt
         {loading ? (
           <div className="flex h-64 items-center justify-center">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
+          </div>
+        ) : errorMsg || !result ? (
+          <div className="rounded-3xl border border-rose-500/30 bg-slate-900/80 p-8 text-center space-y-4">
+            <p className="text-sm font-semibold text-rose-400">{errorMsg || 'Data hasil tidak ditemukan.'}</p>
+            <Link
+              href="/recall"
+              className="inline-block rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-indigo-500 transition-colors"
+            >
+              Kembali ke Halaman Recall
+            </Link>
           </div>
         ) : (
           <div className="space-y-6">

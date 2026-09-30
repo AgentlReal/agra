@@ -31,46 +31,39 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
   const [filter, setFilter] = useState<'all' | 'correct' | 'wrong'>('all');
   const [loading, setLoading] = useState(true);
 
+  const [errorMsg, setErrorMsg] = useState('');
+
   useEffect(() => {
     api.simulation
       .getReview(attemptId)
       .then((res: any) => {
-        if (res?.questions && Array.isArray(res.questions) && res.questions.length > 0) {
-          setQuestions(res.questions);
+        const rawQs = res?.questions || res?.data?.questions;
+        if (Array.isArray(rawQs) && rawQs.length > 0) {
+          const qs: ReviewItem[] = rawQs.map((q: any, i: number) => ({
+            id: q.id ?? i + 1,
+            questionNumber: q.questionNumber ?? i + 1,
+            stimulus: q.stimulusText || q.stimulus || '',
+            questionText: q.questionText || '',
+            options: (q.options || []).map((opt: any) => ({
+              key: opt.optionKey || opt.key || opt.option_label,
+              text: opt.optionText || opt.text || opt.option_text,
+            })),
+            studentAnswer: Array.isArray(q.studentAnswer) ? q.studentAnswer.join(', ') : (q.studentAnswer || '-'),
+            correctAnswer: Array.isArray(q.correctAnswer) ? q.correctAnswer.join(', ') : (q.correctAnswer || '-'),
+            isCorrect: Boolean(q.isCorrect),
+            explanation: q.explanationText || q.explanation || 'Pembahasan belum tersedia untuk butir soal ini.',
+          }));
+          setQuestions(qs);
         } else {
-          generateMock30Reviews();
+          setErrorMsg('Tidak ada butir pembahasan yang ditemukan untuk simulasi ini.');
         }
       })
-      .catch(() => {
-        generateMock30Reviews();
+      .catch((err: any) => {
+        console.error('Failed to load simulation review:', err);
+        setErrorMsg(err.message || 'Gagal memuat pembahasan simulasi dari server.');
       })
       .finally(() => setLoading(false));
   }, [attemptId]);
-
-  const generateMock30Reviews = () => {
-    const list: ReviewItem[] = [];
-    for (let i = 1; i <= 30; i++) {
-      const isCorrect = i % 6 !== 0; // ~83% correct
-      list.push({
-        id: `sim_rev_${i}`,
-        questionNumber: i,
-        stimulus: i % 3 === 0 ? 'Kutipan teks wacana literasi atau penyajian data pemantik.' : '',
-        questionText: `Soal Simulasi Nomor ${i}: Berdasarkan informasi yang disajikan, pilihan tindakan atau evaluasi yang paling logis adalah...`,
-        options: [
-          { key: 'A', text: 'Opsi jawaban A' },
-          { key: 'B', text: 'Opsi jawaban B' },
-          { key: 'C', text: 'Opsi jawaban C' },
-          { key: 'D', text: 'Opsi jawaban D' },
-        ],
-        studentAnswer: isCorrect ? 'B' : 'A',
-        correctAnswer: 'B',
-        isCorrect,
-        explanation:
-          'Pembahasan Nalar Standar Kemendikdasmen: Analisis komparatif pada butir ini menguji penalaran evaluatif (HOTS). Jawaban B secara tepat merefleksikan hubungan kausalitas dan bukti tekstual.',
-      });
-    }
-    setQuestions(list);
-  };
 
   const filtered = questions.filter((q) => {
     if (filter === 'correct') return q.isCorrect;
@@ -139,6 +132,16 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
         {loading ? (
           <div className="flex h-64 items-center justify-center">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-500 border-t-transparent" />
+          </div>
+        ) : errorMsg || questions.length === 0 ? (
+          <div className="rounded-3xl border border-rose-500/30 bg-slate-900/80 p-8 text-center space-y-4">
+            <p className="text-sm font-semibold text-rose-400">{errorMsg || 'Tidak ada butir pembahasan yang dapat ditampilkan.'}</p>
+            <Link
+              href="/dashboard"
+              className="inline-block rounded-xl bg-purple-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-purple-500 transition-colors"
+            >
+              Kembali ke Dasbor
+            </Link>
           </div>
         ) : (
           <div className="space-y-6">

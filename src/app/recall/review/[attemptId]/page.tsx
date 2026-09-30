@@ -33,51 +33,40 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
   const [filter, setFilter] = useState<'all' | 'correct' | 'wrong'>('all');
   const [loading, setLoading] = useState(true);
 
+  const [errorMsg, setErrorMsg] = useState('');
+
   useEffect(() => {
     api.recall
       .getReview(attemptId)
       .then((res: any) => {
-        if (res?.questions && Array.isArray(res.questions) && res.questions.length > 0) {
-          setQuestions(res.questions);
+        const rawQs = res?.questions || res?.data?.questions;
+        if (Array.isArray(rawQs) && rawQs.length > 0) {
+          const qs: ReviewQuestion[] = rawQs.map((q: any, i: number) => ({
+            id: q.id ?? i + 1,
+            questionNumber: q.questionNumber ?? i + 1,
+            subjectName: q.subjectName || (i < 15 ? 'Matematika SD' : 'Bahasa Indonesia SD'),
+            stimulus: q.stimulusText || q.stimulus || '',
+            questionText: q.questionText || '',
+            options: (q.options || []).map((opt: any) => ({
+              key: opt.optionKey || opt.key || opt.option_label,
+              text: opt.optionText || opt.text || opt.option_text,
+            })),
+            studentAnswer: Array.isArray(q.studentAnswer) ? q.studentAnswer.join(', ') : (q.studentAnswer || '-'),
+            correctAnswer: Array.isArray(q.correctAnswer) ? q.correctAnswer.join(', ') : (q.correctAnswer || '-'),
+            isCorrect: Boolean(q.isCorrect),
+            explanation: q.explanationText || q.explanation || 'Pembahasan belum tersedia untuk butir soal ini.',
+          }));
+          setQuestions(qs);
         } else {
-          generateMockReviews();
+          setErrorMsg('Tidak ada data review pembahasan untuk sesi ini.');
         }
       })
-      .catch(() => {
-        generateMockReviews();
+      .catch((err: any) => {
+        console.error('Failed to load review:', err);
+        setErrorMsg(err.message || 'Gagal memuat pembahasan review dari server.');
       })
       .finally(() => setLoading(false));
   }, [attemptId]);
-
-  const generateMockReviews = () => {
-    const list: ReviewQuestion[] = [];
-    for (let i = 1; i <= 30; i++) {
-      const isCorrect = i % 4 !== 0; // ~75% correct
-      const isMath = i <= 15;
-      list.push({
-        id: `rev_${i}`,
-        questionNumber: i,
-        subjectName: isMath ? 'Matematika SD' : 'Bahasa Indonesia SD',
-        stimulus: i % 3 === 0 ? 'Stimulus teks kontekstual prasyarat jenjang SD.' : '',
-        questionText: isMath
-          ? `Soal nomor ${i}: Pada operasi hitung campuran bilangan bulat atau konsep geometri dasar, langkah penyelesaian paling efektif adalah...`
-          : `Soal nomor ${i}: Berdasarkan paragraf eksposisi di atas, makna tersurat atau tersirat yang terkandung di dalamnya adalah...`,
-        options: [
-          { key: 'A', text: 'Opsi jawaban A' },
-          { key: 'B', text: 'Opsi jawaban B' },
-          { key: 'C', text: 'Opsi jawaban C' },
-          { key: 'D', text: 'Opsi jawaban D' },
-        ],
-        studentAnswer: isCorrect ? 'B' : 'A',
-        correctAnswer: 'B',
-        isCorrect,
-        explanation: isMath
-          ? 'Pembahasan nalar: Dahulukan operasi dalam tanda kurung, kemudian perkalian/pembagian dari kiri ke kanan sebelum penjumlahan.'
-          : 'Pembahasan nalar: Kalimat utama paragraf terletak di awal kalimat (deduktif), sehingga ide pokok secara langsung merujuk pada gagasan pertama.',
-      });
-    }
-    setQuestions(list);
-  };
 
   const filtered = questions.filter((q) => {
     if (filter === 'correct') return q.isCorrect;
@@ -93,6 +82,16 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
         {loading ? (
           <div className="flex h-64 items-center justify-center">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
+          </div>
+        ) : errorMsg || questions.length === 0 ? (
+          <div className="rounded-3xl border border-rose-500/30 bg-slate-900/80 p-8 text-center space-y-4">
+            <p className="text-sm font-semibold text-rose-400">{errorMsg || 'Tidak ada butir soal pembahasan yang dapat dimuat.'}</p>
+            <Link
+              href="/recall"
+              className="inline-block rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-indigo-500 transition-colors"
+            >
+              Kembali ke Halaman Recall
+            </Link>
           </div>
         ) : (
           <div className="space-y-6">

@@ -49,50 +49,53 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
     api.admin
       .getQuestion(questionId)
       .then((res: any) => {
-        if (res) populateData(res);
-        else generateMockEditData();
+        const data = res?.data || res;
+        if (data) {
+          populateData(data);
+        } else {
+          setErrorMsg('Data soal tidak ditemukan di server.');
+        }
       })
-      .catch(() => generateMockEditData())
+      .catch((err: any) => {
+        console.error('Failed to load question:', err);
+        setErrorMsg(err.message || 'Gagal memuat data soal dari server.');
+      })
       .finally(() => setLoading(false));
   }, [questionId]);
 
   const populateData = (q: any) => {
-    setBankType(q.bankType || 'LATIHAN');
-    setSubjectId(String(q.subjectId || 1));
-    setMaterialName(q.materialName || 'Aljabar');
-    setSubmaterialName(q.submaterialName || 'PLSV');
-    setCognitiveLevel(q.cognitiveLevel || 'L1');
-    setQuestionType(q.questionType || (Array.isArray(q.correctAnswer) ? 'PG_KOMPLEKS' : 'PG_TUNGGAL'));
-    setStimulus(q.stimulus || '');
-    setQuestionText(q.questionText || '');
-    if (q.options && Array.isArray(q.options)) setOptions(q.options);
-    if (Array.isArray(q.correctAnswer)) {
-      setComplexKeys(q.correctAnswer);
-    } else if (q.correctAnswer) {
-      setSingleKey(q.correctAnswer);
+    setBankType(q.bankType || q.bank_type || 'LEVEL_EXERCISE');
+    setSubjectId(String(q.subjectId || q.subject_id || 1));
+    setMaterialName(q.materialName || q.material_name || '');
+    setSubmaterialName(q.submaterialName || q.sub_material_name || '');
+    setCognitiveLevel(String(q.cognitiveLevelId || q.cognitive_level_id || '1'));
+    setQuestionType(
+      (q.questionFormat || q.question_format) === 'COMPLEX_CHOICE' ? 'PG_KOMPLEKS' : 'PG_TUNGGAL'
+    );
+    setStimulus(q.stimulusText || q.stimulus || '');
+    setQuestionText(q.questionText || q.question_text || '');
+    if (q.options && Array.isArray(q.options)) {
+      setOptions(
+        q.options.map((opt: any) => ({
+          key: opt.optionLabel || opt.option_label || opt.key,
+          text: opt.optionText || opt.option_text || opt.text,
+        }))
+      );
+      const correctList = q.options
+        .filter((opt: any) => opt.isCorrect || opt.is_correct)
+        .map((opt: any) => opt.optionLabel || opt.option_label || opt.key);
+      if (correctList.length > 1) {
+        setComplexKeys(correctList);
+      } else if (correctList.length === 1) {
+        setSingleKey(correctList[0]);
+      }
     }
-    setExplanation(q.explanation || '');
-  };
-
-  const generateMockEditData = () => {
-    populateData({
-      bankType: 'LATIHAN',
-      subjectId: 1,
-      materialName: 'Aljabar & Persamaan Linier',
-      submaterialName: 'PLSV',
-      cognitiveLevel: 'L2',
-      questionType: 'PG_TUNGGAL',
-      stimulus: 'Perhatikan persamaan linear berikut: 4(x - 2) + 3 = 2x + 7.',
-      questionText: 'Nilai dari (2x + 1) yang memenuhi persamaan di atas adalah...',
-      options: [
-        { key: 'A', text: '11' },
-        { key: 'B', text: '13' },
-        { key: 'C', text: '15' },
-        { key: 'D', text: '17' },
-      ],
-      correctAnswer: 'B',
-      explanation: 'Uraikan tanda kurung: 4x - 8 + 3 = 2x + 7 => 4x - 5 = 2x + 7 => 2x = 12 => x = 6. Maka 2x + 1 = 2(6) + 1 = 13.',
-    });
+    setExplanation(
+      q.explanation?.explanationText ||
+        q.explanationText ||
+        q.explanation_text ||
+        (typeof q.explanation === 'string' ? q.explanation : '')
+    );
   };
 
   const handleOptionChange = (key: string, text: string) => {

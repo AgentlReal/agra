@@ -15,12 +15,13 @@ import {
   Menu, 
   X,
   Sun,
-  Moon
+  Moon,
+  ArrowRight
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
-  const { user, role, switchRole, logout } = useAuth();
+  const { user, role, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [isLight, setIsLight] = useState(false);
@@ -142,35 +143,18 @@ export const Navbar: React.FC = () => {
                   <p className="text-xs text-indigo-400 font-mono">@{user?.username}</p>
                 </div>
 
-                <div className="py-1">
-                  <div className="px-3 py-1.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-                    Beralih Peran (Demo)
+                {role === 'TIM_KURIKULUM' && (
+                  <div className="py-1">
+                    <Link
+                      href="/admin/bank-soal"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-purple-300 bg-purple-950/40 hover:bg-purple-900/50 border border-purple-800/40 transition-colors"
+                    >
+                      <span>Panel Admin Tim Kurikulum</span>
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
                   </div>
-                  <button
-                    onClick={() => {
-                      switchRole('SISWA');
-                      setUserDropdownOpen(false);
-                    }}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                      role === 'SISWA' ? 'bg-indigo-600/20 text-indigo-300' : 'text-slate-300 hover:bg-slate-800'
-                    }`}
-                  >
-                    <span>Portal Siswa (Budi)</span>
-                    {role === 'SISWA' && <span className="h-1.5 w-1.5 rounded-full bg-indigo-400" />}
-                  </button>
-                  <button
-                    onClick={() => {
-                      switchRole('TIM_KURIKULUM');
-                      setUserDropdownOpen(false);
-                    }}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                      role === 'TIM_KURIKULUM' ? 'bg-indigo-600/20 text-indigo-300' : 'text-slate-300 hover:bg-slate-800'
-                    }`}
-                  >
-                    <span>Tim Kurikulum (Admin)</span>
-                    {role === 'TIM_KURIKULUM' && <span className="h-1.5 w-1.5 rounded-full bg-indigo-400" />}
-                  </button>
-                </div>
+                )}
 
                 <div className="border-t border-slate-800 pt-1 mt-1">
                   <Link

@@ -50,51 +50,21 @@ export default function ProfilePage() {
     api.profile
       .getAvatars()
       .then((res: any) => {
-        if (Array.isArray(res) && res.length > 0) setAvatars(res);
-        else setAvatars(defaultAvatars);
+        const list = Array.isArray(res) ? res : res.data || [];
+        setAvatars(list);
       })
-      .catch(() => setAvatars(defaultAvatars));
+      .catch((err) => console.error('Failed to load avatars:', err));
 
     // Fetch XP transactions
     api.profile
       .getXpTransactions()
       .then((res: any) => {
-        if (Array.isArray(res)) setXpTransactions(res);
-        else setXpTransactions(defaultXpList);
+        const list = res?.items || (Array.isArray(res) ? res : res.data?.items || []);
+        setXpTransactions(list);
       })
-      .catch(() => setXpTransactions(defaultXpList))
+      .catch((err) => console.error('Failed to load XP transactions:', err))
       .finally(() => setLoadingXp(false));
   }, [user]);
-
-  const defaultAvatars = [
-    { id: 1, name: 'Kancil Cerdik' },
-    { id: 2, name: 'Garuda Muda' },
-    { id: 3, name: 'Bintang Terang' },
-    { id: 4, name: 'Komodo Tangguh' },
-    { id: 5, name: 'Elang Pengembara' },
-    { id: 6, name: 'Harimau Tangkas' },
-  ];
-
-  const defaultXpList = [
-    {
-      id: 'tx_1',
-      description: 'Lulus Sesi Recall Kemampuanmu',
-      amount: 100,
-      createdAt: '30 Sep 2026, 10:15',
-    },
-    {
-      id: 'tx_2',
-      description: 'Ketuntasan Level 1: Bilangan Bulat',
-      amount: 30,
-      createdAt: '30 Sep 2026, 11:30',
-    },
-    {
-      id: 'tx_3',
-      description: 'Bonus Runtutan Belajar (Streak 5 Hari)',
-      amount: 20,
-      createdAt: '30 Sep 2026, 12:00',
-    },
-  ];
 
   const handleUpdateName = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,10 +78,8 @@ export default function ProfilePage() {
       updateUser({ name: name.trim() });
       setNameSuccess(true);
       setTimeout(() => setNameSuccess(false), 3000);
-    } catch {
-      updateUser({ name: name.trim() });
-      setNameSuccess(true);
-      setTimeout(() => setNameSuccess(false), 3000);
+    } catch (err: any) {
+      alert(err.message || 'Gagal memperbarui nama profil.');
     } finally {
       setSavingName(false);
     }
@@ -360,6 +328,10 @@ export default function ProfilePage() {
 
           {loadingXp ? (
             <p className="text-xs text-slate-400">Memuat riwayat...</p>
+          ) : xpTransactions.length === 0 ? (
+            <div className="py-8 text-center text-xs text-slate-500">
+              Belum ada riwayat perolehan XP. Selesaikan latihan atau asesmen untuk mengumpulkan XP.
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
@@ -371,10 +343,10 @@ export default function ProfilePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
-                  {xpTransactions.map((tx: any) => (
-                    <tr key={tx.id} className="hover:bg-slate-800/20">
-                      <td className="py-3 font-medium text-white">{tx.description}</td>
-                      <td className="py-3 text-slate-400">{tx.createdAt}</td>
+                  {xpTransactions.map((tx: any, idx: number) => (
+                    <tr key={tx.id || idx} className="hover:bg-slate-800/20">
+                      <td className="py-3 font-medium text-white">{tx.sourceLabel || tx.description || 'Aktivitas Belajar'}</td>
+                      <td className="py-3 text-slate-400">{tx.recordedAt || tx.createdAt || '-'}</td>
                       <td className="py-3 text-right font-bold text-amber-400">
                         +{tx.amount} XP
                       </td>

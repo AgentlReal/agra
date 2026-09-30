@@ -34,22 +34,23 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
   const [submitModalOpen, setSubmitModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  const [errorMsg, setErrorMsg] = useState('');
+
   useEffect(() => {
     api.learning
       .getAttempt(attemptId)
       .then((res: any) => {
-        if (res?.questions && Array.isArray(res.questions) && res.questions.length > 0) {
-          const qs: QuestionItem[] = res.questions.map((q: any, i: number) => ({
-            id: q.id || i + 1,
-            questionNumber: i + 1,
-            stimulus: q.stimulus || '',
+        const rawQs = res?.questions || res?.data?.questions;
+        if (Array.isArray(rawQs) && rawQs.length > 0) {
+          const qs: QuestionItem[] = rawQs.map((q: any, i: number) => ({
+            id: q.id ?? i + 1,
+            questionNumber: q.questionNumber ?? i + 1,
+            stimulus: q.stimulusText || q.stimulus || '',
             questionText: q.questionText || `Pertanyaan latihan butir nomor ${i + 1}`,
-            options: q.options || [
-              { key: 'A', text: 'Opsi jawaban A' },
-              { key: 'B', text: 'Opsi jawaban B' },
-              { key: 'C', text: 'Opsi jawaban C' },
-              { key: 'D', text: 'Opsi jawaban D' },
-            ],
+            options: (q.options || []).map((opt: any) => ({
+              key: opt.optionKey || opt.key || opt.option_label,
+              text: opt.optionText || opt.text || opt.option_text,
+            })),
             currentAnswer: q.studentAnswer || null,
           }));
           setQuestions(qs);
@@ -59,33 +60,14 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
           });
           setAnswers(initAns);
         } else {
-          generateMock10Questions();
+          setErrorMsg('Tidak ada butir soal yang ditemukan pada sesi latihan ini.');
         }
       })
-      .catch(() => {
-        generateMock10Questions();
+      .catch((err: any) => {
+        setErrorMsg(err.message || 'Gagal memuat sesi latihan level dari server.');
       })
       .finally(() => setLoading(false));
   }, [attemptId]);
-
-  const generateMock10Questions = () => {
-    const list: QuestionItem[] = [];
-    for (let i = 1; i <= 10; i++) {
-      list.push({
-        id: `lrn_q_${i}`,
-        questionNumber: i,
-        stimulus: i % 2 === 0 ? 'Perhatikan ilustrasi atau stimulus kontekstual di bawah ini.' : '',
-        questionText: `Soal Latihan Level Kognitif Butir ${i}: Berdasarkan konsep operasi hitung dan aturan aljabar, hasil yang paling tepat adalah...`,
-        options: [
-          { key: 'A', text: `Pilihan A untuk butir nomor ${i}` },
-          { key: 'B', text: `Pilihan B untuk butir nomor ${i}` },
-          { key: 'C', text: `Pilihan C untuk butir nomor ${i}` },
-          { key: 'D', text: `Pilihan D untuk butir nomor ${i}` },
-        ],
-      });
-    }
-    setQuestions(list);
-  };
 
   const currentQ = questions[currentIndex];
 
@@ -110,8 +92,10 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
     try {
       await api.learning.submit(attemptId);
       router.push(`/learning/result/${attemptId}`);
-    } catch {
-      router.push(`/learning/result/${attemptId}`);
+    } catch (err: any) {
+      alert(err.message || 'Gagal mengumpulkan jawaban latihan.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -123,7 +107,29 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
       <div className="flex h-screen items-center justify-center bg-slate-950">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
-          <p className="text-xs font-semibold text-slate-400">Menyiapkan 10 Butir Soal Latihan...</p>
+          <p className="text-xs font-semibold text-slate-400">Menyiapkan Lembar Latihan...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (errorMsg || questions.length === 0) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-slate-950 p-6 text-center">
+        <div className="max-w-md space-y-4 rounded-3xl border border-rose-500/30 bg-slate-900/80 p-8 shadow-2xl">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-500/20 text-rose-400 mx-auto">
+            <AlertTriangle className="h-6 w-6" />
+          </div>
+          <h2 className="text-lg font-bold text-white">Kendala Sesi Latihan</h2>
+          <p className="text-xs text-slate-300 leading-relaxed">
+            {errorMsg || 'Tidak ada butir soal yang tersedia pada level latihan ini.'}
+          </p>
+          <button
+            onClick={() => router.push('/curriculum')}
+            className="w-full rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-indigo-500 transition-colors"
+          >
+            Kembali ke Kurikulum
+          </button>
         </div>
       </div>
     );

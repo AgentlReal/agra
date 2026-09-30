@@ -14,7 +14,9 @@ import {
   Lock, 
   CheckCircle2, 
   ArrowLeft,
-  Sparkles 
+  Sparkles,
+  AlertCircle,
+  RefreshCw 
 } from 'lucide-react';
 
 export default function SimulationEligibilityPage({ params }: { params: Promise<{ subjectId: string }> }) {
@@ -26,30 +28,25 @@ export default function SimulationEligibilityPage({ params }: { params: Promise<
   const [starting, setStarting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  useEffect(() => {
+  const loadEligibility = () => {
+    setLoading(true);
+    setErrorMsg('');
+
     api.simulation
       .getEligibility(subjectId)
       .then((res: any) => {
-        setEligibility(res);
+        const data = res?.data || res;
+        setEligibility(data);
       })
-      .catch(() => {
-        // Fallback demo: subject 2 (Bahasa Indonesia) is eligible, subject 1 (Matematika) has 2 remaining
-        const isEligible = subjectId === '2';
-        setEligibility({
-          subjectId,
-          subjectName: subjectId === '2' ? 'Bahasa Indonesia SMP' : 'Matematika SMP',
-          isEligible,
-          completedSubmaterials: isEligible ? 12 : 8,
-          totalSubmaterials: 12,
-          remainingSubmaterials: isEligible
-            ? []
-            : [
-                { id: 9, title: 'Bangun Datar Segiempat & Lingkaran' },
-                { id: 10, title: 'Bangun Ruang Sisi Datar & Lengkung' },
-              ],
-        });
+      .catch((err: any) => {
+        console.error('Failed to load simulation eligibility:', err);
+        setErrorMsg(err.message || 'Gagal memuat status eligibilitas simulasi dari server.');
       })
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadEligibility();
   }, [subjectId]);
 
   const handleStartSimulation = async () => {
@@ -58,19 +55,19 @@ export default function SimulationEligibilityPage({ params }: { params: Promise<
 
     try {
       const res = await api.simulation.startAttempt(subjectId);
-      const attemptId = res?.attemptId || res?.id || `att_sim_${subjectId}_${Date.now()}`;
+      const attemptId = res?.attemptId || res?.id || res?.data?.attemptId;
+      if (!attemptId) {
+        throw new Error('Gagal memulai sesi simulasi.');
+      }
       router.push(`/simulations/exam/${attemptId}`);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Mengalihkan ke ruang simulasi...');
-      setTimeout(() => {
-        router.push(`/simulations/exam/demo_sim_${subjectId}`);
-      }, 1000);
-    } finally {
+      setErrorMsg(err.message || 'Gagal memulai simulasi. Pastikan paket simulasi aktif tersedia di server.');
       setStarting(false);
     }
   };
 
-  const isEligible = eligibility?.isEligible ?? true;
+  const isEligible = Boolean(eligibility?.isEligible);
+  const subjectName = eligibility?.subjectName || (subjectId === '2' ? 'Bahasa Indonesia SMP' : 'Matematika SMP');
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-950">
@@ -84,137 +81,121 @@ export default function SimulationEligibilityPage({ params }: { params: Promise<
           <ArrowLeft className="h-4 w-4" /> Kembali ke Dasbor
         </Link>
 
+        {errorMsg && (
+          <div className="flex items-center justify-between rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-400">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 shrink-0" />
+              <span>{errorMsg}</span>
+            </div>
+            <button
+              onClick={loadEligibility}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-rose-500/20 px-3 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-500/30 transition-colors"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              <span>Coba Lagi</span>
+            </button>
+          </div>
+        )}
+
         {loading ? (
           <div className="flex h-64 items-center justify-center">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
           </div>
         ) : (
-          <div className="space-y-6">
+          <>
             {/* Header Hero */}
-            <div className="rounded-3xl border border-purple-900/50 bg-gradient-to-r from-purple-950 via-slate-900 to-slate-950 p-6 sm:p-10 backdrop-blur-md shadow-2xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-3.5 py-1 text-xs font-semibold text-purple-300 mb-3">
-                <ShieldCheck className="h-4 w-4 text-purple-400" />
-                Asesmen Puncak (Capstone Assessment)
+            <div className="rounded-3xl border border-purple-900/50 bg-gradient-to-r from-purple-950/60 via-slate-900 to-slate-950 p-8 sm:p-10 backdrop-blur-md shadow-2xl">
+              <div className="max-w-2xl">
+                <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-3.5 py-1 text-xs font-semibold text-purple-300 mb-3">
+                  <ShieldCheck className="h-4 w-4 text-purple-400" />
+                  Ujian Capstone Berstandar Asesmen Nasional
+                </div>
+                <h1 className="text-3xl font-extrabold text-white">
+                  Simulasi TKA {subjectName}
+                </h1>
+                <p className="mt-2 text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  Uji kesiapan akhir Anda dalam simulasi 30 butir soal komprehensif berstandar TKA Fase D dengan batas waktu 75 menit.
+                </p>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-extrabold text-white">
-                Simulasi TKA: {eligibility?.subjectName || 'Mata Pelajaran'}
-              </h1>
-              <p className="mt-2 text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-                Ujian simulasi komprehensif 30 butir soal standar Kemendikdasmen dengan sistem hitung mundur 75 menit (4.500 detik) untuk mengukur kesiapan puncak Anda.
-              </p>
+
+              {/* Eligibility Status Banner */}
+              <div className="mt-8">
+                {isEligible ? (
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5">
+                    <div className="flex items-center gap-3">
+                      <CheckCircle2 className="h-8 w-8 text-emerald-400 shrink-0" />
+                      <div>
+                        <h4 className="text-sm font-bold text-white">Memenuhi Syarat Simulasi 🎉</h4>
+                        <p className="text-xs text-emerald-300">
+                          Anda telah menuntaskan seluruh submateri kurikulum {subjectName}.
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleStartSimulation}
+                      disabled={starting}
+                      className="flex items-center justify-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-500 px-5 py-3 text-xs font-bold text-white shadow-lg shadow-purple-600/30 disabled:opacity-50 transition-all shrink-0"
+                    >
+                      {starting ? (
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      ) : (
+                        <>
+                          <span>Mulai Simulasi (75 Menit)</span>
+                          <ArrowRight className="h-4 w-4" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5">
+                    <div className="flex items-start gap-3">
+                      <Lock className="h-6 w-6 text-amber-400 shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="text-sm font-bold text-white">Belum Memenuhi Syarat Akses Simulasi</h4>
+                        <p className="text-xs text-amber-300/90 mt-1">
+                          {eligibility?.reason || 'Untuk membuka simulasi, Anda harus menuntaskan seluruh 3 level kognitif pada setiap submateri terlebih dahulu.'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {errorMsg && (
-              <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-400">
-                {errorMsg}
+            {/* Assessment Specifications */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-600/20 text-purple-400 mb-4 font-bold text-sm">
+                  30
+                </div>
+                <h3 className="text-sm font-bold text-white">30 Soal Capstone</h3>
+                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
+                  Kombinasi komprehensif tingkat C1 hingga C6 mencakup seluruh materi Fase D.
+                </p>
               </div>
-            )}
 
-            {/* Eligibility Status Section */}
-            {isEligible ? (
-              <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-6 space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400">
-                    <CheckCircle2 className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-base font-bold text-white">
-                      Status: Memenuhi Syarat Kelayakan Ujian! 🎉
-                    </h3>
-                    <p className="text-xs text-emerald-200">
-                      Seluruh materi prasyarat telah Anda kuasai dengan predikat tuntas (*Mastery Achieved*).
-                    </p>
-                  </div>
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600/20 text-indigo-400 mb-4">
+                  <Clock className="h-5 w-5" />
                 </div>
-
-                {/* Exam Rules Breakdown */}
-                <div className="rounded-xl border border-slate-800 bg-slate-950/80 p-5 space-y-3 text-xs text-slate-300">
-                  <h4 className="font-bold text-white text-sm">Tata Tertib & Aturan Simulasi TKA:</h4>
-                  <ul className="space-y-2 list-disc list-inside text-slate-400">
-                    <li>
-                      <strong className="text-slate-200">Durasi 75 Menit (4.500 detik)</strong>: Timer hitung mundur berjalan otomatis sejak ujian dimulai.
-                    </li>
-                    <li>
-                      <strong className="text-slate-200">30 Butir Soal Terstandar</strong>: Soal dipilih otomatis oleh sistem berbasis paket aktif (*LRU Selection*).
-                    </li>
-                    <li>
-                      <strong className="text-slate-200">Fitur Ragu-ragu</strong>: Anda dapat menandai butir soal untuk ditinjau kembali sebelum waktu habis.
-                    </li>
-                    <li>
-                      <strong className="text-slate-200">Auto-Submit Otomatis</strong>: Jika waktu habis, jawaban tersimpan Anda otomatis dikumpulkan oleh sistem.
-                    </li>
-                  </ul>
-                </div>
-
-                {/* Action Start */}
-                <div className="flex justify-end">
-                  <button
-                    onClick={handleStartSimulation}
-                    disabled={starting}
-                    className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-purple-600/30 hover:opacity-95 disabled:opacity-50 transition-all cursor-pointer"
-                  >
-                    {starting ? (
-                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                    ) : (
-                      <>
-                        <span>Mulai Simulasi Ujian Sekarang (75 Menit)</span>
-                        <ArrowRight className="h-4 w-4" />
-                      </>
-                    )}
-                  </button>
-                </div>
+                <h3 className="text-sm font-bold text-white">Batas Waktu 75 Menit</h3>
+                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
+                  Dilengkapi hitung mundur otomatis dan penyerahan lembar jawaban otomatis saat waktu habis.
+                </p>
               </div>
-            ) : (
-              <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-6 space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400">
-                    <Lock className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-base font-bold text-white">
-                      Modul Simulasi TKA Masih Terkunci
-                    </h3>
-                    <p className="text-xs text-amber-200">
-                      Anda wajib menuntaskan seluruh submateri pada mata pelajaran ini sebelum mengikuti ujian puncak.
-                    </p>
-                  </div>
-                </div>
 
-                {/* Remaining Prerequisites */}
-                <div className="rounded-xl border border-slate-800 bg-slate-950/80 p-5 space-y-3">
-                  <h4 className="text-xs font-semibold text-slate-300">
-                    Submateri yang Masih Perlu Dituntaskan:
-                  </h4>
-                  <div className="space-y-2">
-                    {(eligibility?.remainingSubmaterials || []).map((sub: any) => (
-                      <div
-                        key={sub.id}
-                        className="flex items-center justify-between p-3 rounded-lg border border-slate-800 bg-slate-900 text-xs"
-                      >
-                        <span className="text-slate-300">{sub.title}</span>
-                        <Link
-                          href={`/submaterials/${sub.id}`}
-                          className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold"
-                        >
-                          Kerjakan Sekarang →
-                        </Link>
-                      </div>
-                    ))}
-                  </div>
+              <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600/20 text-emerald-400 mb-4 font-bold text-sm">
+                  +150
                 </div>
-
-                <div className="flex justify-end">
-                  <Link
-                    href={`/curriculum/${subjectId}`}
-                    className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-xs font-semibold text-white hover:bg-indigo-500"
-                  >
-                    <span>Buka Kurikulum Mata Pelajaran</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </div>
+                <h3 className="text-sm font-bold text-white">Reward +150 XP</h3>
+                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
+                  Kumpulkan XP berlimpah dan tingkatkan lencana capaian akademik profil Anda.
+                </p>
               </div>
-            )}
-          </div>
+            </div>
+          </>
         )}
       </main>
 

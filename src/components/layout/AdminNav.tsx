@@ -8,7 +8,7 @@ import { Database, Layers, UserCheck, ArrowLeftRight, LogOut, ShieldAlert } from
 
 export const AdminNav: React.FC = () => {
   const pathname = usePathname();
-  const { user, switchRole, logout } = useAuth();
+  const { user, logout } = useAuth();
 
   const links = [
     { label: 'Bank Soal', href: '/admin/bank-soal', icon: Database },
@@ -60,14 +60,14 @@ export const AdminNav: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => switchRole('SISWA')}
+          <Link
+            href="/dashboard"
             className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-            title="Beralih ke Tampilan Siswa"
+            title="Ke Portal Siswa"
           >
             <ArrowLeftRight className="h-3.5 w-3.5 text-indigo-400" />
             <span>Lihat Mode Siswa</span>
-          </button>
+          </Link>
 
           <div className="flex items-center gap-2 pl-2 border-l border-slate-800">
             <div className="text-right hidden sm:block">

@@ -37,22 +37,21 @@ export default function AdminBankSoalPage() {
     fetchQuestions();
   }, [bankType, subjectFilter, levelFilter, statusFilter]);
 
+  const [errorMsg, setErrorMsg] = useState('');
+
   const fetchStock = async () => {
     try {
       const res = await api.admin.getQuestionBanksStock();
-      setStockData(res);
-    } catch {
-      // Fallback stock monitoring
-      setStockData({
-        recall: { current: 60, target: 60, percentage: 100 },
-        latihan: { current: 180, target: 240, percentage: 75 },
-        simulasi: { current: 120, target: 120, percentage: 100 },
-      });
+      const data = res?.data || res;
+      setStockData(data);
+    } catch (err: any) {
+      console.error('Failed to load stock data:', err);
     }
   };
 
   const fetchQuestions = async () => {
     setLoading(true);
+    setErrorMsg('');
     try {
       const params: any = { bank: bankType };
       if (subjectFilter !== 'ALL') params.subject = subjectFilter;
@@ -60,52 +59,26 @@ export default function AdminBankSoalPage() {
       if (statusFilter !== 'ALL') params.status = statusFilter;
 
       const res = await api.admin.getQuestions(params);
-      if (Array.isArray(res)) setQuestions(res);
-      else if (res?.data && Array.isArray(res.data)) setQuestions(res.data);
-      else setQuestions(getMockQuestions(bankType));
-    } catch {
-      setQuestions(getMockQuestions(bankType));
+      const list = res?.items || (Array.isArray(res) ? res : res?.data || []);
+      const mapped = list.map((q: any) => ({
+        id: q.id,
+        bankType: q.bankType || q.bank_type || bankType,
+        subjectName: q.subjectName || (q.subject_id === 1 ? 'Matematika SMP' : 'Bahasa Indonesia SMP'),
+        materialName: q.materialName || q.material_name || '-',
+        cognitiveLevel: q.cognitiveLevel || (q.cognitive_level_id ? `Level ${q.cognitive_level_id}` : 'C1'),
+        type: q.questionFormat || q.question_format || q.type || 'SINGLE_CHOICE',
+        questionText: q.questionText || q.question_text || '',
+        isActive: Boolean(q.isActive ?? q.is_active ?? true),
+        updatedAt: q.updatedAt || q.created_at || '-',
+      }));
+      setQuestions(mapped);
+    } catch (err: any) {
+      console.error('Failed to load questions:', err);
+      setErrorMsg(err.message || 'Gagal memuat daftar soal dari server.');
+      setQuestions([]);
     } finally {
       setLoading(false);
     }
-  };
-
-  const getMockQuestions = (bank: string) => {
-    return [
-      {
-        id: 'q_101',
-        bankType: bank,
-        subjectName: 'Matematika SMP',
-        materialName: 'Bilangan Bulat',
-        cognitiveLevel: 'L1',
-        type: 'PG_TUNGGAL',
-        questionText: 'Operasi hitung campuran bilangan bulat: (-12) x 5 + 45 : (-9) = ...',
-        isActive: true,
-        updatedAt: '28 Sep 2026',
-      },
-      {
-        id: 'q_102',
-        bankType: bank,
-        subjectName: 'Matematika SMP',
-        materialName: 'Aljabar & PLSV',
-        cognitiveLevel: 'L2',
-        type: 'PG_KOMPLEKS',
-        questionText: 'Manakah dari pernyataan berikut yang merupakan penyelesaian dari 3x - 5 < 10 untuk x anggota bilangan bulat positif?',
-        isActive: true,
-        updatedAt: '27 Sep 2026',
-      },
-      {
-        id: 'q_103',
-        bankType: bank,
-        subjectName: 'Bahasa Indonesia SMP',
-        materialName: 'Teks Observasi',
-        cognitiveLevel: 'L3',
-        type: 'PG_TUNGGAL',
-        questionText: 'Analisis kutipan wacana laporan hasil observasi: Asumsi mendasar penulis terhadap keanekaragaman hayati adalah...',
-        isActive: false,
-        updatedAt: '25 Sep 2026',
-      },
-    ];
   };
 
   const handleToggleStatus = async (qId: string | number, currentActive: boolean) => {

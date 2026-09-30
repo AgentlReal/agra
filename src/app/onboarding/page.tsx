@@ -22,30 +22,18 @@ export default function OnboardingPage() {
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
-    // Fetch preset avatars from mock API
     api.profile
       .getAvatars()
       .then((res: any) => {
-        if (Array.isArray(res) && res.length > 0) {
-          setAvatars(res);
-          setSelectedAvatarId(res[0].id || 1);
-        } else {
-          // Fallback presets
-          setAvatars([
-            { id: 1, name: 'Kancil Cerdik' },
-            { id: 2, name: 'Garuda Muda' },
-            { id: 3, name: 'Bintang Terang' },
-            { id: 4, name: 'Komodo Tangguh' },
-          ]);
+        const list = Array.isArray(res) ? res : res.data || [];
+        if (Array.isArray(list) && list.length > 0) {
+          setAvatars(list);
+          setSelectedAvatarId(list[0].id);
         }
       })
-      .catch(() => {
-        setAvatars([
-          { id: 1, name: 'Kancil Cerdik' },
-          { id: 2, name: 'Garuda Muda' },
-          { id: 3, name: 'Bintang Terang' },
-          { id: 4, name: 'Komodo Tangguh' },
-        ]);
+      .catch((err) => {
+        console.error('Failed to load avatars:', err);
+        setErrorMsg('Gagal memuat daftar avatar dari server.');
       });
   }, []);
 

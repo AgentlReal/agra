@@ -1,12 +1,12 @@
-// API Client connected to Mock API (default http://localhost:4010)
+// API Client connected directly to Next.js App Router Backend API (/api/...)
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4010';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
 interface RequestOptions extends RequestInit {
   token?: string;
 }
 
-class ApiError extends Error {
+export class ApiError extends Error {
   code?: string;
   status: number;
   details?: any;
@@ -21,7 +21,7 @@ class ApiError extends Error {
 }
 
 async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-  const url = `${BASE_URL}${endpoint}`;
+  const url = BASE_URL ? `${BASE_URL}${endpoint}` : endpoint;
   const token = typeof window !== 'undefined' ? localStorage.getItem('agra_token') : null;
 
   const headers: Record<string, string> = {
@@ -37,7 +37,7 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
     const res = await fetch(url, {
       ...options,
       headers,
-      credentials: 'omit', // use Bearer token header or omit credentials for mock compatibility
+      credentials: 'include', // Automatically transmit Better Auth session cookies
     });
 
     if (!res.ok) {
@@ -48,7 +48,7 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
         // non-json response
       }
       throw new ApiError(
-        errData?.error?.message || errData?.message || `Request failed with status ${res.status}`,
+        errData?.error?.message || errData?.message || `Permintaan gagal dengan status ${res.status}`,
         res.status,
         errData?.error?.code || 'UNKNOWN_ERROR',
         errData?.error?.details
@@ -66,7 +66,7 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
     }
     // Network or other error
     throw new ApiError(
-      err.message || 'Tidak dapat terhubung ke server API mock di localhost:4010',
+      err.message || 'Tidak dapat terhubung ke server API',
       500,
       'NETWORK_ERROR'
     );
@@ -177,10 +177,12 @@ export const api = {
       request<any>(`/api/v1/submaterials/${submaterialId}/progress`),
   },
 
+  // Learning
   learning: {
-    startAttempt: (levelId: string | number) =>
+    startAttempt: (levelId: string | number, subMaterialId?: string | number) =>
       request<any>(`/api/v1/learning/levels/${levelId}/attempts`, {
         method: 'POST',
+        body: JSON.stringify({ sub_material_id: Number(subMaterialId || 1) }),
       }),
     getAttempt: (attemptId: string | number) =>
       request<any>(`/api/v1/learning/attempts/${attemptId}`),
@@ -264,10 +266,12 @@ export const api = {
         body: JSON.stringify({ isActive }),
       }),
     uploadImage: (formData: FormData) => {
+      const url = BASE_URL ? `${BASE_URL}/api/v1/admin/question-images` : '/api/v1/admin/question-images';
       const token = typeof window !== 'undefined' ? localStorage.getItem('agra_token') : null;
-      return fetch(`${BASE_URL}/api/v1/admin/question-images`, {
+      return fetch(url, {
         method: 'POST',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
+        credentials: 'include',
         body: formData,
       }).then((r) => r.json());
     },

@@ -40,26 +40,27 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
   const [submitModalOpen, setSubmitModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  const [errorMsg, setErrorMsg] = useState('');
+
   // Initialize questions
   useEffect(() => {
     api.recall
       .getAttempt(attemptId)
       .then((res: any) => {
-        if (res?.questions && Array.isArray(res.questions) && res.questions.length > 0) {
-          const qs: QuestionItem[] = res.questions.map((q: any, i: number) => ({
-            id: q.id || i + 1,
-            questionNumber: i + 1,
-            subjectName: i < 15 ? 'Matematika SD' : 'Bahasa Indonesia SD',
-            stimulus: q.stimulus || q.context || '',
-            questionText: q.questionText || q.prompt || `Soal butir nomor ${i + 1}`,
-            options: q.options || [
-              { key: 'A', text: 'Pilihan jawaban A' },
-              { key: 'B', text: 'Pilihan jawaban B' },
-              { key: 'C', text: 'Pilihan jawaban C' },
-              { key: 'D', text: 'Pilihan jawaban D' },
-            ],
+        const rawQs = res?.questions || res?.data?.questions;
+        if (Array.isArray(rawQs) && rawQs.length > 0) {
+          const qs: QuestionItem[] = rawQs.map((q: any, i: number) => ({
+            id: q.id ?? i + 1,
+            questionNumber: q.questionNumber ?? i + 1,
+            subjectName: q.subjectName || (i < 15 ? 'Matematika SD' : 'Bahasa Indonesia SD'),
+            stimulus: q.stimulusText || q.stimulus || '',
+            questionText: q.questionText || '',
+            options: (q.options || []).map((opt: any) => ({
+              key: opt.optionKey || opt.key || opt.option_label,
+              text: opt.optionText || opt.text || opt.option_text,
+            })),
             currentAnswer: q.studentAnswer || null,
-            isDoubtful: q.isDoubtful || false,
+            isDoubtful: Boolean(q.isDoubtful),
           }));
 
           setQuestions(qs);
@@ -72,41 +73,14 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
           setAnswers(initAns);
           setDoubtfuls(initDbt);
         } else {
-          // Generate 30 structured mock questions for student testing
-          generateMockQuestions();
+          setErrorMsg('Tidak ada butir soal yang ditemukan pada sesi Recall ini.');
         }
       })
-      .catch(() => {
-        generateMockQuestions();
+      .catch((err: any) => {
+        setErrorMsg(err.message || 'Gagal memuat butir soal Recall dari server.');
       })
       .finally(() => setLoading(false));
   }, [attemptId]);
-
-  const generateMockQuestions = () => {
-    const mockList: QuestionItem[] = [];
-    for (let i = 1; i <= 30; i++) {
-      const isMath = i <= 15;
-      mockList.push({
-        id: `rec_q_${i}`,
-        questionNumber: i,
-        subjectName: isMath ? 'Matematika SD' : 'Bahasa Indonesia SD',
-        stimulus:
-          i % 3 === 0
-            ? 'Bacalah stimulus berikut dengan cermat untuk menjawab pertanyaan di bawah ini.'
-            : '',
-        questionText: isMath
-          ? `Operasi hitung atau penalaran matematis nomor ${i}: Hasil dari perhitungan pecahan atau bangun datar berikut adalah...`
-          : `Cermatilah kutipan paragraf nomor ${i}. Ide pokok atau simpulan yang paling tepat dari teks tersebut adalah...`,
-        options: [
-          { key: 'A', text: `Alternatif jawaban A untuk soal nomor ${i}` },
-          { key: 'B', text: `Alternatif jawaban B untuk soal nomor ${i}` },
-          { key: 'C', text: `Alternatif jawaban C untuk soal nomor ${i}` },
-          { key: 'D', text: `Alternatif jawaban D untuk soal nomor ${i}` },
-        ],
-      });
-    }
-    setQuestions(mockList);
-  };
 
   const currentQ = questions[currentIndex];
 
@@ -163,6 +137,28 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
           <p className="text-xs font-semibold text-slate-400">Menyiapkan Lembar Asesmen Recall...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (errorMsg || questions.length === 0) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-slate-950 p-6 text-center">
+        <div className="max-w-md space-y-4 rounded-3xl border border-rose-500/30 bg-slate-900/80 p-8 shadow-2xl">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-500/20 text-rose-400 mx-auto">
+            <AlertTriangle className="h-6 w-6" />
+          </div>
+          <h2 className="text-lg font-bold text-white">Kendala Sesi Asesmen</h2>
+          <p className="text-xs text-slate-300 leading-relaxed">
+            {errorMsg || 'Tidak ada butir soal yang tersedia pada sesi ini.'}
+          </p>
+          <button
+            onClick={() => router.push('/recall')}
+            className="w-full rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-indigo-500 transition-colors"
+          >
+            Kembali ke Halaman Recall
+          </button>
         </div>
       </div>
     );

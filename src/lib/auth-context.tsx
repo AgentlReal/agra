@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from './api-client';
 
@@ -16,6 +16,7 @@ export interface User {
   grade?: number;
   totalXp?: number;
   currentStreak?: number;
+  needsOnboarding?: boolean;
 }
 
 interface AuthContextType {
@@ -24,67 +25,94 @@ interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (token: string, user: User) => void;
+  login: (token?: string, user?: User) => void;
   logout: () => Promise<void>;
-  switchRole: (role: UserRole) => void;
+  refreshUser: () => Promise<void>;
   updateUser: (updates: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Default demo user fallback for smooth demo experience
-const defaultSiswa: User = {
-  id: 'usr_siswa_01',
-  name: 'Budi Santoso',
-  username: 'user',
-  email: 'user@example.com',
-  role: 'SISWA',
-  avatarUrl: '/assets/avatars/avatar-1.png',
-  grade: 8,
-  totalXp: 450,
-  currentStreak: 5,
-};
-
-const defaultKurikulum: User = {
-  id: 'usr_admin_01',
-  name: 'Dra. Sri Wahyuni, M.Pd.',
-  username: 'tim_kurikulum',
-  email: 'tim@example.com',
-  role: 'TIM_KURIKULUM',
-  avatarUrl: '/assets/avatars/avatar-admin.png',
-};
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(defaultSiswa);
-  const [token, setToken] = useState<string | null>('mock_jwt_token_siswa');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    // Synchronize session from localStorage asynchronously
-    queueMicrotask(() => {
-      try {
-        const savedToken = localStorage.getItem('agra_token');
-        const savedUser = localStorage.getItem('agra_user');
+  const fetchSessionAndProfile = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const sessionRes = await api.auth.getSession().catch(() => null);
 
-        if (savedToken && savedUser) {
-          setToken(savedToken);
-          setUser(JSON.parse(savedUser));
-        } else {
-          localStorage.setItem('agra_token', 'mock_jwt_token_siswa');
-          localStorage.setItem('agra_user', JSON.stringify(defaultSiswa));
-        }
-      } catch {
-        // ignore storage errors
+      if (!sessionRes || !sessionRes.user) {
+        setUser(null);
+        setToken(null);
+        return;
       }
-    });
+
+      const authUser = sessionRes.user;
+      const role: UserRole = authUser.role === 'TIM_KURIKULUM' ? 'TIM_KURIKULUM' : 'SISWA';
+
+      const initialUser: User = {
+        id: authUser.id,
+        name: authUser.name || authUser.username || '',
+        username: authUser.username || authUser.email.split('@')[0],
+        email: authUser.email,
+        role,
+      };
+
+      if (role === 'SISWA') {
+        try {
+          const profileRes = await api.profile.get();
+          const profileData = profileRes.data || profileRes;
+          initialUser.name = profileData.name || initialUser.name;
+          initialUser.avatarUrl = profileData.avatar?.imageUrl || profileData.avatarUrl;
+          initialUser.grade = profileData.grade;
+          initialUser.totalXp = profileData.totalXp ?? profileData.total_xp ?? 0;
+          initialUser.currentStreak = profileData.currentStreak ?? profileData.current_streak ?? 0;
+        } catch (profileErr: any) {
+          if (profileErr.code === 'PROFILE_INCOMPLETE' || profileErr.status === 409) {
+            initialUser.needsOnboarding = true;
+          }
+        }
+      } else {
+        try {
+          const adminRes = await api.admin.getProfile();
+          const adminData = adminRes.data || adminRes;
+          initialUser.name = adminData.name || initialUser.name;
+          initialUser.avatarUrl = adminData.avatarUrl || '/assets/avatars/avatar-admin.png';
+        } catch {
+          // ignore admin profile err
+        }
+      }
+
+      setUser(initialUser);
+      if (sessionRes.session?.token) {
+        setToken(sessionRes.session.token);
+      }
+    } catch (err) {
+      console.error('Failed to load session:', err);
+      setUser(null);
+      setToken(null);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  const login = (newToken: string, newUser: User) => {
-    setToken(newToken);
-    setUser(newUser);
-    localStorage.setItem('agra_token', newToken);
-    localStorage.setItem('agra_user', JSON.stringify(newUser));
+  useEffect(() => {
+    fetchSessionAndProfile();
+  }, [fetchSessionAndProfile]);
+
+  const login = (newToken?: string, newUser?: User) => {
+    if (newToken) {
+      setToken(newToken);
+      localStorage.setItem('agra_token', newToken);
+    }
+    if (newUser) {
+      setUser(newUser);
+    } else {
+      fetchSessionAndProfile();
+    }
   };
 
   const logout = async () => {
@@ -99,22 +127,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const switchRole = (newRole: UserRole) => {
-    const targetUser = newRole === 'SISWA' ? defaultSiswa : defaultKurikulum;
-    const targetToken = `mock_jwt_token_${newRole.toLowerCase()}`;
-    login(targetToken, targetUser);
-    if (newRole === 'TIM_KURIKULUM') {
-      router.push('/admin/bank-soal');
-    } else {
-      router.push('/dashboard');
-    }
+  const refreshUser = async () => {
+    await fetchSessionAndProfile();
   };
 
   const updateUser = (updates: Partial<User>) => {
-    if (!user) return;
-    const updated = { ...user, ...updates };
-    setUser(updated);
-    localStorage.setItem('agra_user', JSON.stringify(updated));
+    setUser((prev) => (prev ? { ...prev, ...updates } : null));
   };
 
   const role = user?.role || 'SISWA';
@@ -129,7 +147,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         login,
         logout,
-        switchRole,
+        refreshUser,
         updateUser,
       }}
     >

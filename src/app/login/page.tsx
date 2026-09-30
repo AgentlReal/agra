@@ -46,41 +46,40 @@ export default function LoginPage() {
         res = await api.auth.signInUsername(identifier, password);
       }
 
-      const token = res.token || 'mock_session_token_' + Date.now();
-      const user = res.user || {
-        id: 'usr_' + Date.now(),
-        name: identifier === 'tim_kurikulum' ? 'Dra. Sri Wahyuni, M.Pd.' : 'Budi Santoso',
-        username: identifier,
-        email: isEmail ? identifier : `${identifier}@example.com`,
-        role: identifier === 'tim_kurikulum' ? 'TIM_KURIKULUM' : 'SISWA',
-        grade: 8,
-        totalXp: 450,
-        currentStreak: 5,
-      };
+      const token = res?.session?.token || res?.token;
+      const authUser = res?.user;
 
-      login(token, user);
+      if (!authUser) {
+        throw new Error('Gagal mendapatkan sesi pengguna.');
+      }
 
-      if (user.role === 'TIM_KURIKULUM') {
+      login(token, {
+        id: authUser.id,
+        name: authUser.name || authUser.username || '',
+        username: authUser.username || authUser.email?.split('@')[0] || '',
+        email: authUser.email,
+        role: authUser.role === 'TIM_KURIKULUM' ? 'TIM_KURIKULUM' : 'SISWA',
+      });
+
+      if (authUser.role === 'TIM_KURIKULUM') {
         router.push('/admin/bank-soal');
       } else {
-        router.push('/dashboard');
+        try {
+          await api.profile.get();
+          router.push('/dashboard');
+        } catch (profErr: any) {
+          if (profErr.code === 'PROFILE_INCOMPLETE' || profErr.status === 409) {
+            router.push('/onboarding');
+          } else {
+            router.push('/dashboard');
+          }
+        }
       }
     } catch (err: any) {
       setErrorMsg(err.message || 'Gagal masuk. Periksa kembali kredensial Anda.');
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleQuickLogin = (demoUser: 'siswa' | 'kurikulum') => {
-    if (demoUser === 'siswa') {
-      setIdentifier('user');
-      setPassword('Belajar1!');
-    } else {
-      setIdentifier('tim_kurikulum');
-      setPassword('Belajar1!');
-    }
-    setErrorMsg('');
   };
 
   return (
@@ -106,7 +105,7 @@ export default function LoginPage() {
           <div className="mt-16 max-w-lg">
             <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-300">
               <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
-              Platform Asesmen Ramah Siswa Kemendikdasmen
+              Platform Asesmen Ramah Siswa Fase D
             </div>
             <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
               Kuasai Potensi Akademik SMP Tanpa Rasa Cemas.
@@ -144,37 +143,13 @@ export default function LoginPage() {
         </div>
 
         <div className="relative z-10 mt-12 text-xs text-slate-500">
-          Terhubung ke Mock API Server di <span className="font-mono text-indigo-400">localhost:4010</span>
+          Sistem Terhubung ke Backend API AGRA
         </div>
       </div>
 
       {/* Right Column: Login Form */}
       <div className="flex flex-1 flex-col justify-center px-6 py-12 sm:px-12 lg:px-20 bg-slate-950">
         <div className="mx-auto w-full max-w-md">
-          {/* Quick Demo Selector */}
-          <div className="mb-6 rounded-2xl border border-indigo-900/40 bg-indigo-950/20 p-4">
-            <p className="text-xs font-semibold text-indigo-300 mb-2 flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
-              Pintas Akun Demo (Uji Cepat):
-            </p>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => handleQuickLogin('siswa')}
-                className="flex-1 rounded-lg border border-indigo-700/40 bg-indigo-600/20 px-3 py-2 text-xs font-medium text-indigo-200 hover:bg-indigo-600/30 transition-colors text-center"
-              >
-                Siswa: <span className="font-mono font-bold">user</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickLogin('kurikulum')}
-                className="flex-1 rounded-lg border border-purple-700/40 bg-purple-600/20 px-3 py-2 text-xs font-medium text-purple-200 hover:bg-purple-600/30 transition-colors text-center"
-              >
-                Admin: <span className="font-mono font-bold">tim_kurikulum</span>
-              </button>
-            </div>
-          </div>
-
           <div>
             <h2 className="text-2xl font-bold tracking-tight text-white">
               Selamat datang kembali!

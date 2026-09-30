@@ -44,10 +44,8 @@ export default function AdminProfilePage() {
       updateUser({ name: name.trim() });
       setNameSuccess(true);
       setTimeout(() => setNameSuccess(false), 3000);
-    } catch {
-      updateUser({ name: name.trim() });
-      setNameSuccess(true);
-      setTimeout(() => setNameSuccess(false), 3000);
+    } catch (err: any) {
+      alert(err.message || 'Gagal memperbarui profil admin.');
     } finally {
       setSavingName(false);
     }

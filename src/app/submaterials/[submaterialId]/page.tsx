@@ -16,11 +16,11 @@ import {
   Brain, 
   Target, 
   Zap, 
-  AlertCircle 
+  AlertCircle,
+  RefreshCw
 } from 'lucide-react';
 
-interface CognitiveLevel {
-  id: number;
+interface CognitiveLevelItem {
   levelNumber: number;
   name: string;
   category: string;
@@ -29,98 +29,100 @@ interface CognitiveLevel {
   isPassed: boolean;
   highestScore: number | null;
   xpReward: number;
-  iconName: string;
+  icon: any;
 }
+
+const LEVEL_CONFIGS = [
+  {
+    levelNumber: 1,
+    name: 'Level 1: Pemahaman & Pengetahuan (C1-C2)',
+    category: 'Recall & Faktual',
+    description: 'Mengenali konsep dasar, istilah matematis/literasi, dan prosedur operasi langsung.',
+    xpReward: 30,
+    icon: Brain,
+  },
+  {
+    levelNumber: 2,
+    name: 'Level 2: Aplikasi & Prosedural (C3-C4)',
+    category: 'Penerapan Konsep',
+    description: 'Menerapkan prosedur multi-langkah dan pemecahan masalah kontekstual sehari-hari.',
+    xpReward: 50,
+    icon: Target,
+  },
+  {
+    levelNumber: 3,
+    name: 'Level 3: Penalaran & Analisis (C5-C6)',
+    category: 'HOTS & Problem Solving',
+    description: 'Menganalisis skenario baru, mengevaluasi validitas strategi, dan penarikan simpulan.',
+    xpReward: 80,
+    icon: Zap,
+  },
+];
 
 export default function SubmaterialDetailPage({ params }: { params: Promise<{ submaterialId: string }> }) {
   const router = useRouter();
   const { submaterialId } = use(params);
 
   const [submaterial, setSubmaterial] = useState<any>(null);
-  const [levels, setLevels] = useState<CognitiveLevel[]>([]);
+  const [levels, setLevels] = useState<CognitiveLevelItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [startingLevel, setStartingLevel] = useState<number | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
 
-  useEffect(() => {
+  const loadProgress = () => {
+    setLoading(true);
+    setErrorMsg('');
+
     api.curriculum
       .getSubmaterialProgress(submaterialId)
       .then((res: any) => {
-        setSubmaterial(res?.submaterial || res);
-        if (res?.levels && Array.isArray(res.levels) && res.levels.length > 0) {
-          setLevels(res.levels);
-        } else {
-          setupFallbackLevels();
-        }
-      })
-      .catch(() => {
+        const data = res?.data || res;
         setSubmaterial({
           id: submaterialId,
-          title: 'Operasi Bilangan Bulat & Pecahan',
-          subjectName: 'Matematika SMP',
-          subjectId: 1,
-          description:
-            'Menguasai konsep esensial sifat operasi bilangan, pecahan campuran, dan penerapan kontekstual.',
+          title: `Submateri #${submaterialId}`,
+          isMastered: Boolean(data?.isMastered),
+          progressState: data?.progressState || 'IN_PROGRESS',
         });
-        setupFallbackLevels();
+
+        const apiLevels = data?.levels || [];
+        const mappedLevels: CognitiveLevelItem[] = LEVEL_CONFIGS.map((cfg) => {
+          const found = apiLevels.find((l: any) => Number(l.level) === cfg.levelNumber);
+          const isUnlocked = found ? found.status !== 'LOCKED' : cfg.levelNumber === 1;
+          const isPassed = found ? found.status === 'COMPLETED' : false;
+          return {
+            ...cfg,
+            isUnlocked,
+            isPassed,
+            highestScore: found?.score ?? null,
+          };
+        });
+
+        setLevels(mappedLevels);
+      })
+      .catch((err: any) => {
+        console.error('Failed to load submaterial progress:', err);
+        setErrorMsg(err.message || 'Gagal memuat status level latihan dari server.');
       })
       .finally(() => setLoading(false));
-  }, [submaterialId]);
-
-  const setupFallbackLevels = () => {
-    setLevels([
-      {
-        id: 1,
-        levelNumber: 1,
-        name: 'Level 1: Pemahaman & Pengetahuan',
-        category: 'Recall & Faktual',
-        description: 'Mengenali konsep dasar, istilah matematis, dan operasi hitung langsung.',
-        isUnlocked: true,
-        isPassed: true,
-        highestScore: 90,
-        xpReward: 30,
-        iconName: 'brain',
-      },
-      {
-        id: 2,
-        levelNumber: 2,
-        name: 'Level 2: Aplikasi & Prosedural',
-        category: 'Penerapan Konsep',
-        description: 'Menerapkan prosedur multi-langkah dan pemecahan masalah sederhana sehari-hari.',
-        isUnlocked: true,
-        isPassed: false,
-        highestScore: 60,
-        xpReward: 50,
-        iconName: 'target',
-      },
-      {
-        id: 3,
-        levelNumber: 3,
-        name: 'Level 3: Penalaran & Analisis',
-        category: 'HOTS & Problem Solving',
-        description: 'Menganalisis skenario baru, mengevaluasi validitas strategi, dan penarikan simpulan.',
-        isUnlocked: false,
-        isPassed: false,
-        highestScore: null,
-        xpReward: 80,
-        iconName: 'zap',
-      },
-    ]);
   };
 
-  const handleStartLevel = async (levelId: number) => {
-    setStartingLevel(levelId);
+  useEffect(() => {
+    loadProgress();
+  }, [submaterialId]);
+
+  const handleStartLevel = async (levelNumber: number) => {
+    setStartingLevel(levelNumber);
     setErrorMsg('');
 
     try {
-      const res = await api.learning.startAttempt(levelId);
-      const attemptId = res?.attemptId || res?.id || `att_lvl_${levelId}_${Date.now()}`;
+      const res = await api.learning.startAttempt(levelNumber, submaterialId);
+      const attemptId = res?.attemptId || res?.id || res?.sessionId || res?.session?.id;
+      if (!attemptId) {
+        throw new Error('Sesi latihan tidak dapat dibuat.');
+      }
       router.push(`/learning/exam/${attemptId}`);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Gagal memulai sesi latihan level. Mengalihkan ke mode demo...');
-      setTimeout(() => {
-        router.push(`/learning/exam/demo_lvl_${levelId}`);
-      }, 1000);
+      setErrorMsg(err.message || 'Gagal memulai sesi latihan level. Pastikan bank soal tersedia di server.');
     } finally {
       setStartingLevel(null);
     }
@@ -130,13 +132,29 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
     <div className="flex min-h-screen flex-col bg-slate-950">
       <Navbar />
 
-      <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full space-y-8">
+      <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full space-y-6">
         <Link
-          href={`/curriculum/${submaterial?.subjectId || 1}`}
+          href="/curriculum"
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white"
         >
-          <ArrowLeft className="h-4 w-4" /> Kembali ke Struktur Kurikulum
+          <ArrowLeft className="h-4 w-4" /> Kembali ke Kurikulum
         </Link>
+
+        {errorMsg && (
+          <div className="flex items-center justify-between rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-400">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 shrink-0" />
+              <span>{errorMsg}</span>
+            </div>
+            <button
+              onClick={loadProgress}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-rose-500/20 px-3 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-500/30 transition-colors"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              <span>Coba Lagi</span>
+            </button>
+          </div>
+        )}
 
         {loading ? (
           <div className="flex h-64 items-center justify-center">
@@ -144,138 +162,115 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
           </div>
         ) : (
           <>
-            {/* Submaterial Info Header */}
+            {/* Header Card */}
             <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 sm:p-8 backdrop-blur-md">
-              <span className="text-xs font-semibold text-indigo-400">
-                {submaterial?.subjectName || 'Matematika SMP'}
-              </span>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-                {submaterial?.title}
-              </h1>
-              <p className="mt-2 text-xs sm:text-sm text-slate-300 leading-relaxed max-w-3xl">
-                {submaterial?.description}
-              </p>
-
-              <div className="mt-4 inline-flex items-center gap-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20 px-3.5 py-1.5 text-xs text-indigo-300">
-                <Sparkles className="h-3.5 w-3.5" />
-                <span>
-                  Setiap level kognitif memuat 10 butir soal *untimed* (ambang kelulusan 80%).
-                </span>
+              <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-400 mb-2">
+                <Layers className="h-3.5 w-3.5" />
+                Pohon Level Kognitif Asesmen
               </div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+                {submaterial?.title || 'Submateri Pembelajaran'}
+              </h1>
+              <p className="mt-2 text-xs sm:text-sm text-slate-300">
+                Selesaikan 3 level kognitif secara bertahap dengan ambang kelulusan 80% (Mastery Learning) untuk menuntaskan submateri ini.
+              </p>
             </div>
 
-            {errorMsg && (
-              <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-400 flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                <span>{errorMsg}</span>
-              </div>
-            )}
-
-            {/* 3 Cognitive Level Cards */}
+            {/* Levels List */}
             <div className="space-y-4">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <Layers className="h-5 w-5 text-indigo-400" />
-                <span>3 Tingkatan Level Kognitif</span>
-              </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {levels.map((lvl) => {
-                  const isLocked = !lvl.isUnlocked;
-                  const isPassed = lvl.isPassed;
-
-                  let cardBorder = 'border-slate-800 bg-slate-900/80';
-                  let iconBg = 'bg-slate-800 text-slate-400';
-
-                  if (isLocked) {
-                    cardBorder = 'border-slate-800/60 bg-slate-950/40 opacity-70';
-                  } else if (isPassed) {
-                    cardBorder = 'border-emerald-500/30 bg-gradient-to-b from-slate-900 to-emerald-950/20';
-                    iconBg = 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
-                  } else {
-                    cardBorder = 'border-indigo-500/40 bg-slate-900/90 shadow-xl shadow-indigo-950/20';
-                    iconBg = 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30';
-                  }
-
-                  return (
-                    <div
-                      key={lvl.id}
-                      className={`rounded-2xl border p-6 flex flex-col justify-between backdrop-blur-md transition-all ${cardBorder}`}
-                    >
-                      <div>
-                        {/* Top meta */}
-                        <div className="flex items-center justify-between mb-4">
-                          <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconBg}`}>
-                            {lvl.levelNumber === 1 && <Brain className="h-6 w-6" />}
-                            {lvl.levelNumber === 2 && <Target className="h-6 w-6" />}
-                            {lvl.levelNumber === 3 && <Zap className="h-6 w-6" />}
-                          </div>
-
-                          {isLocked ? (
-                            <span className="flex items-center gap-1 text-[11px] font-semibold text-slate-400 bg-slate-800/60 rounded-full px-2.5 py-0.5 border border-slate-700">
-                              <Lock className="h-3 w-3" /> Terkunci
-                            </span>
-                          ) : isPassed ? (
-                            <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 rounded-full px-2.5 py-0.5 border border-emerald-500/20">
-                              <CheckCircle2 className="h-3.5 w-3.5" /> Tuntas ({lvl.highestScore}%)
-                            </span>
+              {levels.map((lvl) => {
+                const IconComponent = lvl.icon;
+                return (
+                  <div
+                    key={lvl.levelNumber}
+                    className={`rounded-2xl border p-6 transition-all ${
+                      lvl.isUnlocked
+                        ? 'border-slate-800 bg-slate-900/80 hover:border-slate-700'
+                        : 'border-slate-900 bg-slate-950/40 opacity-60'
+                    }`}
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="flex items-start gap-4">
+                        <div
+                          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${
+                            lvl.isPassed
+                              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                              : lvl.isUnlocked
+                              ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30'
+                              : 'bg-slate-800 text-slate-500'
+                          }`}
+                        >
+                          {lvl.isPassed ? (
+                            <CheckCircle2 className="h-6 w-6" />
+                          ) : lvl.isUnlocked ? (
+                            <IconComponent className="h-6 w-6" />
                           ) : (
-                            <span className="text-[11px] font-semibold text-indigo-400 bg-indigo-500/10 rounded-full px-2.5 py-0.5 border border-indigo-500/20">
-                              Terbuka
-                            </span>
+                            <Lock className="h-6 w-6" />
                           )}
                         </div>
 
-                        <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                          {lvl.category}
-                        </span>
-                        <h3 className="text-base font-bold text-white mt-0.5">{lvl.name}</h3>
-                        <p className="mt-2 text-xs text-slate-300 leading-relaxed">
-                          {lvl.description}
-                        </p>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-base font-bold text-white">{lvl.name}</h3>
+                            <span className="rounded-md bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-slate-400">
+                              {lvl.category}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-400 mt-1 max-w-xl">
+                            {lvl.description}
+                          </p>
 
-                        <div className="mt-4 flex items-center justify-between text-xs pt-3 border-t border-slate-800/80">
-                          <span className="text-slate-400">Beban Soal</span>
-                          <span className="font-semibold text-slate-200">10 Butir</span>
-                        </div>
-                        <div className="mt-1 flex items-center justify-between text-xs">
-                          <span className="text-slate-400">Reward Belajar</span>
-                          <span className="font-bold text-amber-400 flex items-center gap-1">
-                            <Sparkles className="h-3 w-3" /> +{lvl.xpReward} XP
-                          </span>
+                          <div className="mt-3 flex items-center gap-4 text-xs">
+                            <span className="text-indigo-400 font-semibold flex items-center gap-1">
+                              <Sparkles className="h-3.5 w-3.5" /> +{lvl.xpReward} XP
+                            </span>
+                            {lvl.highestScore !== null && (
+                              <span className="text-slate-400">
+                                Skor Tertinggi:{' '}
+                                <strong
+                                  className={
+                                    lvl.highestScore >= 80 ? 'text-emerald-400' : 'text-amber-400'
+                                  }
+                                >
+                                  {lvl.highestScore}%
+                                </strong>
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
 
-                      <div className="mt-6 pt-4 border-t border-slate-800/80">
-                        {isLocked ? (
-                          <div className="text-center py-2 text-xs text-slate-500 font-medium">
-                            Kuasai Level {lvl.levelNumber - 1} terlebih dahulu
-                          </div>
-                        ) : (
+                      <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
+                        {lvl.isUnlocked ? (
                           <button
-                            type="button"
-                            onClick={() => handleStartLevel(lvl.id)}
-                            disabled={startingLevel === lvl.id}
-                            className={`w-full flex items-center justify-center gap-2 rounded-xl py-2.5 px-4 text-xs font-semibold transition-all cursor-pointer ${
-                              isPassed
-                                ? 'border border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700'
-                                : 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg shadow-indigo-600/20 hover:opacity-95'
+                            onClick={() => handleStartLevel(lvl.levelNumber)}
+                            disabled={startingLevel === lvl.levelNumber}
+                            className={`flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-xs font-semibold text-white shadow-lg transition-all ${
+                              lvl.isPassed
+                                ? 'bg-slate-800 hover:bg-slate-700 text-slate-200'
+                                : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/30'
                             }`}
                           >
-                            {startingLevel === lvl.id ? (
+                            {startingLevel === lvl.levelNumber ? (
                               <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                             ) : (
                               <>
-                                <span>{isPassed ? 'Ulangi Latihan Penguatan' : 'Mulai Latihan Level'}</span>
+                                <span>{lvl.isPassed ? 'Ulangi Latihan' : 'Mulai Latihan'}</span>
                                 <ArrowRight className="h-3.5 w-3.5" />
                               </>
                             )}
                           </button>
+                        ) : (
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+                            <Lock className="h-3.5 w-3.5" />
+                            <span>Terkunci</span>
+                          </div>
                         )}
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                );
+              })}
             </div>
           </>
         )}

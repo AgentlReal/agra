@@ -19,32 +19,27 @@ export default function LearningResultPage({ params }: { params: Promise<{ attem
   const { attemptId } = use(params);
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
     api.learning
       .getResult(attemptId)
       .then((res: any) => {
-        setResult(res);
+        const data = res?.data || res;
+        setResult(data);
       })
-      .catch(() => {
-        setResult({
-          score: 90,
-          isPassed: true,
-          correctAnswers: 9,
-          totalQuestions: 10,
-          earnedXp: 50,
-          masteryStatus: 'MASTERY_ACHIEVED',
-          message: 'Selamat! Anda telah menguasai level kognitif ini dengan predikat TUNTAS.',
-        });
+      .catch((err: any) => {
+        console.error('Failed to load learning result:', err);
+        setErrorMsg(err.message || 'Gagal memuat hasil latihan dari server.');
       })
       .finally(() => setLoading(false));
   }, [attemptId]);
 
-  const score = result?.score ?? 90;
-  const isPassed = result?.isPassed ?? score >= 80;
-  const correct = result?.correctAnswers ?? 9;
+  const score = result?.score ?? 0;
+  const isPassed = Boolean(result?.isPassed);
+  const correct = result?.correctAnswers ?? 0;
   const total = result?.totalQuestions ?? 10;
-  const xp = result?.earnedXp ?? 50;
+  const xp = result?.earnedXp ?? 0;
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-950">
@@ -54,6 +49,16 @@ export default function LearningResultPage({ params }: { params: Promise<{ attem
         {loading ? (
           <div className="flex h-64 items-center justify-center">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
+          </div>
+        ) : errorMsg || !result ? (
+          <div className="rounded-3xl border border-rose-500/30 bg-slate-900/80 p-8 text-center space-y-4">
+            <p className="text-sm font-semibold text-rose-400">{errorMsg || 'Data hasil latihan tidak ditemukan.'}</p>
+            <Link
+              href="/curriculum"
+              className="inline-block rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-indigo-500 transition-colors"
+            >
+              Kembali ke Kurikulum
+            </Link>
           </div>
         ) : (
           <div className="space-y-6">

@@ -5,44 +5,32 @@ import Link from 'next/link';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { api } from '@/lib/api-client';
-import { BookOpen, GraduationCap, ChevronRight, Layers, ArrowRight } from 'lucide-react';
+import { BookOpen, GraduationCap, ChevronRight, Layers, ArrowRight, AlertCircle, RefreshCw } from 'lucide-react';
 
 export default function CurriculumIndexPage() {
   const [subjects, setSubjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState('');
 
-  useEffect(() => {
+  const fetchSubjects = () => {
+    setLoading(true);
+    setErrorMsg('');
     api.curriculum
       .getSubjects()
       .then((res: any) => {
-        if (Array.isArray(res) && res.length > 0) {
-          setSubjects(res);
-        } else {
-          setSubjects(fallbackSubjects);
-        }
+        const list = Array.isArray(res) ? res : res.data || [];
+        setSubjects(list);
       })
-      .catch(() => setSubjects(fallbackSubjects))
+      .catch((err) => {
+        console.error('Failed to load subjects:', err);
+        setErrorMsg(err.message || 'Gagal memuat mata pelajaran dari server.');
+      })
       .finally(() => setLoading(false));
-  }, []);
+  };
 
-  const fallbackSubjects = [
-    {
-      id: 1,
-      name: 'Matematika SMP',
-      code: 'MAT',
-      description: 'Domain Bilangan, Aljabar, Geometri & Pengukuran, serta Analisis Data & Peluang.',
-      totalMaterials: 4,
-      totalSubmaterials: 12,
-    },
-    {
-      id: 2,
-      name: 'Bahasa Indonesia SMP',
-      code: 'BIN',
-      description: 'Literasi Membaca: Teks Informasi, Teks Fiksi, Pemahaman Inferensial, dan Evaluasi.',
-      totalMaterials: 4,
-      totalSubmaterials: 12,
-    },
-  ];
+  useEffect(() => {
+    fetchSubjects();
+  }, []);
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-950">
@@ -60,9 +48,33 @@ export default function CurriculumIndexPage() {
           </p>
         </div>
 
+        {errorMsg && (
+          <div className="flex items-center justify-between rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-400">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 shrink-0" />
+              <span>{errorMsg}</span>
+            </div>
+            <button
+              onClick={fetchSubjects}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-rose-500/20 px-3 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-500/30 transition-colors"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              <span>Coba Lagi</span>
+            </button>
+          </div>
+        )}
+
         {loading ? (
           <div className="flex h-64 items-center justify-center">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
+          </div>
+        ) : subjects.length === 0 && !errorMsg ? (
+          <div className="rounded-3xl border border-slate-800 bg-slate-900/60 p-12 text-center">
+            <BookOpen className="h-12 w-12 text-slate-500 mx-auto mb-3" />
+            <h3 className="text-lg font-bold text-white">Belum Ada Mata Pelajaran</h3>
+            <p className="text-xs text-slate-400 mt-1">
+              Data mata pelajaran kurikulum belum tersedia di server.
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -77,7 +89,7 @@ export default function CurriculumIndexPage() {
                       {sub.code || 'TKA'}
                     </span>
                     <span className="rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-300">
-                      {sub.totalMaterials || 4} Materi Pokok
+                      {sub.totalMaterials ?? sub.total_materials ?? 0} Materi Pokok
                     </span>
                   </div>
 

@@ -23,47 +23,32 @@ export default function PackageDetailPage({ params }: { params: Promise<{ packag
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  const [errorMsg, setErrorMsg] = useState('');
+
   useEffect(() => {
     Promise.all([
-      api.admin.getSimulationPackage(packageId).catch(() => null),
+      api.admin.getSimulationPackage(packageId),
       api.admin.getSimulationPackageStats(packageId).catch(() => null),
     ])
       .then(([pkgRes, statsRes]) => {
-        if (pkgRes) setPkg(pkgRes);
-        else generateMockPackage();
+        const pkgData = pkgRes?.data || pkgRes;
+        if (pkgData) {
+          setPkg(pkgData);
+        } else {
+          setErrorMsg('Paket simulasi tidak ditemukan.');
+        }
 
-        if (statsRes) setStats(statsRes);
-        else generateMockStats();
+        const statsData = statsRes?.data || statsRes;
+        if (statsData) {
+          setStats(statsData);
+        }
+      })
+      .catch((err: any) => {
+        console.error('Failed to load package detail:', err);
+        setErrorMsg(err.message || 'Gagal memuat detail paket simulasi dari server.');
       })
       .finally(() => setLoading(false));
   }, [packageId]);
-
-  const generateMockPackage = () => {
-    setPkg({
-      id: packageId,
-      title: 'Paket Utama 01 - Matematika SMP Fase D',
-      subjectName: 'Matematika SMP',
-      status: 'PUBLISHED',
-      totalQuestions: 30,
-      createdAt: '20 Sep 2026',
-      blueprint: [
-        { material: 'Bilangan Bulat & Pecahan', count: 6, level: 'L1 & L2' },
-        { material: 'Bentuk Aljabar & PLSV', count: 10, level: 'L1, L2, L3' },
-        { material: 'Geometri & Pengukuran', count: 8, level: 'L2 & L3' },
-        { material: 'Statistika & Peluang', count: 6, level: 'L1 & L2' },
-      ],
-    });
-  };
-
-  const generateMockStats = () => {
-    setStats({
-      totalParticipants: 142,
-      averageScore: 78.4,
-      highestScore: 96.7,
-      lowestScore: 53.3,
-      passRate: 74.6,
-    });
-  };
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-950">
