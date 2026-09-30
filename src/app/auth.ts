@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { username } from "better-auth/plugins"
+import { createAuthMiddleware } from "better-auth/api";
 import { createPool } from "mysql2/promise";
 
 export const auth = betterAuth({
@@ -22,6 +23,31 @@ export const auth = betterAuth({
             displayUsername: false,
         }),
     ],
+    hooks: {
+        before: createAuthMiddleware(async (ctx) => {
+            if (ctx.path === "/sign-up/email") {
+                if (ctx.body && typeof ctx.body === "object") {
+                    if (!("name" in ctx.body) || !ctx.body.name) {
+                        ctx.body.name = "";
+                    }
+                }
+            }
+        }),
+    },
+    databaseHooks: {
+        user: {
+            create: {
+                before: async (user) => {
+                    return {
+                        data: {
+                            ...user,
+                            name: user.name ?? "",
+                        },
+                    };
+                },
+            },
+        },
+    },
     database: createPool({
         host: process.env.DB_HOST || "localhost",
         port: Number(process.env.DB_PORT) || 3306,

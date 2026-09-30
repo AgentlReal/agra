@@ -69,7 +69,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3">
               <polyline points="20 6 9 17 4 12"/>
             </svg>
-            Better Auth & Single Device Security
+            Simulasi Sesi Cookie HttpOnly
           </div>
         </div>
 
@@ -92,21 +92,6 @@
 
       <!-- Right Column: Login Form & Credentials -->
       <section class="auth-form-panel">
-        <!-- Active Session Banner (visible when user is authenticated) -->
-        <div class="active-session-card" id="activeSessionCard">
-          <div class="session-user-info">
-            <div class="user-badge">
-              <div class="user-avatar" id="sessionUserAvatar">U</div>
-              <div class="user-meta">
-                <h4 id="sessionUserName">Nama Pengguna</h4>
-                <p id="sessionUserEmail">email@sekolah.sch.id</p>
-              </div>
-            </div>
-            <span class="session-role-tag" id="sessionUserRole">SISWA</span>
-          </div>
-          <button type="button" class="btn-signout" id="btnSignout">Keluar dari Sesi Ini (Sign Out)</button>
-        </div>
-
         <div class="form-header">
           <h2>Masuk ke Akun</h2>
           <p>Gunakan kredensial terdaftar untuk mengakses platform pembelajaran.</p>
@@ -128,25 +113,6 @@
           </button>
         </div>
 
-        <!-- Quick Demo Credentials Box -->
-        <div class="demo-accounts">
-          <div class="demo-title">
-            <span>Kredensial Demo Cepat</span>
-            <span style="font-weight: 500; text-transform: none;">(Klik untuk mengisi)</span>
-          </div>
-          <div class="demo-chips">
-            <button type="button" class="demo-chip" data-type="username" data-identifier="ahmad_siswa" data-password="Password123!">
-              🎓 Ahmad (Siswa)
-            </button>
-            <button type="button" class="demo-chip" data-type="email" data-identifier="siswa@sekolah.sch.id" data-password="Password123!">
-              ✉️ Email Siswa
-            </button>
-            <button type="button" class="demo-chip" data-type="username" data-identifier="guru_kurikulum" data-password="Password123!">
-              🏛️ Tim Kurikulum
-            </button>
-          </div>
-        </div>
-
         <!-- Alert Notification Box -->
         <div class="alert-box" id="alertBox">
           <div id="alertIcon"></div>
@@ -154,6 +120,7 @@
         </div>
 
         <!-- Login Form -->
+        <p class="mock-credentials">Akun demo: <strong>user</strong> / <strong>Belajar1!</strong> atau <strong>tim_kurikulum</strong> / <strong>Belajar1!</strong>. Email: user@example.com atau tim@example.com.</p>
         <form id="loginForm" autocomplete="on" novalidate>
           <!-- Identifier Input -->
           <div class="form-group">
@@ -217,6 +184,11 @@
           </button>
         </form>
 
+        <div class="session-panel" id="sessionPanel" hidden>
+          <p id="sessionMessage"></p>
+          <button type="button" class="btn-submit" id="logoutButton">Keluar</button>
+        </div>
+
         <div class="form-footer">
           <p>Belum memiliki akun? <a href="register.html">Daftar Akun Baru</a></p>
         </div>
@@ -230,7 +202,7 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
       </svg>
-      <span>Developer API Inspector (Better Auth)</span>
+      <span>Developer API Inspector (Mock Auth)</span>
       <span class="inspector-arrow">▼ Tampilkan</span>
     </button>
 
@@ -238,7 +210,7 @@
       <div class="inspector-header">
         <div class="inspector-title">
           <span class="api-method-badge" id="inspectorMethod">POST</span>
-          <span id="inspectorEndpoint">/api/auth/sign-in/username</span>
+          <span id="inspectorEndpoint">/api/mock/auth/sign-in/username</span>
         </div>
         <div style="font-weight: 700;" id="inspectorStatus">Ready</div>
       </div>

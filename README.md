@@ -72,6 +72,14 @@ Digunakan oleh tim Frontend untuk menguji integrasi endpoint dan respon API tanp
   - **Spesifikasi Kontrak:** [`openapi/API.yaml`](./openapi/API.yaml)
   - Endpoint otomatis memvalidasi request dan mengembalikan respons mock sesuai spesifikasi OpenAPI 3.0.
 
+### Login mock dengan cookie
+
+Buka `http://localhost:3000/login.html` setelah menjalankan `npm run dev` atau `npm run dev:mock`. Gunakan `user` / `Belajar1!` (email `user@example.com`) atau `tim_kurikulum` / `Belajar1!` (email `tim@example.com`).
+
+Halaman login memakai endpoint `/api/mock/auth/sign-in/username` atau `/api/mock/auth/sign-in/email` pada origin Next.js yang sama. Respons menyetel cookie `agra_mock_session` dengan `HttpOnly`, `SameSite=Lax`, dan `Secure` saat HTTPS. Opsi **Ingat saya** memberi cookie `Max-Age` tujuh hari; tanpa opsi itu browser memakai session cookie. Halaman lalu memanggil `/api/mock/auth/get-session` untuk memastikan cookie dikirim kembali. Tombol **Keluar** memanggil `/api/mock/auth/sign-out` dan menghapus cookie.
+
+Mock auth hanya aktif dalam mode development dan tidak memakai database. Cookie mock terpisah dari `better-auth.session_token`, sehingga tidak memberi akses ke endpoint aplikasi yang memerlukan sesi Better Auth asli. Prism di port 4010 tetap digunakan untuk respons API lain, tetapi tidak menyimpan sesi login.
+
 ---
 
 ## Konfigurasi Environment (`.env`)

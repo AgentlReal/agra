@@ -11,7 +11,6 @@
 
   // --- Elements ---
   const form = document.getElementById('registerForm');
-  const nameInput = document.getElementById('nameInput');
   const usernameInput = document.getElementById('usernameInput');
   const emailInput = document.getElementById('emailInput');
   const passwordInput = document.getElementById('passwordInput');
@@ -22,16 +21,10 @@
   const alertBox = document.getElementById('alertBox');
   const alertMessage = document.getElementById('alertMessage');
   const alertIcon = document.getElementById('alertIcon');
-  const usernameBadge = document.getElementById('usernameBadge');
-  const meterBar1 = document.getElementById('meterBar1');
-  const meterBar2 = document.getElementById('meterBar2');
-  const meterBar3 = document.getElementById('meterBar3');
-  const meterScoreText = document.getElementById('meterScoreText');
   const quickFillBtn = document.getElementById('quickFillBtn');
   const togglePassBtn = document.getElementById('togglePassBtn');
   const toggleConfirmPassBtn = document.getElementById('toggleConfirmPassBtn');
   const successCard = document.getElementById('successCard');
-  const registeredName = document.getElementById('registeredName');
   const registeredUsername = document.getElementById('registeredUsername');
   const registeredEmail = document.getElementById('registeredEmail');
   const themeToggleBtn = document.getElementById('themeToggleBtn');
@@ -56,15 +49,13 @@
     moon: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>`,
   };
 
-  let usernameDebounceTimer = null;
-  let isUsernameAvailable = null;
+  // Mock API Server (Prism OpenAPI Server)
+  const MOCK_API_BASE = 'http://127.0.0.1:4010';
 
   // --- Initial Setup ---
   function init() {
     setupTheme();
     setupPasswordVisibility();
-    setupPasswordMeter();
-    setupUsernameChecker();
     setupQuickFill();
     setupForm();
     setupInspector();
@@ -100,131 +91,16 @@
     });
   }
 
-  // --- Password Strength Meter ---
-  function setupPasswordMeter() {
-    passwordInput.addEventListener('input', () => {
-      const val = passwordInput.value;
-      const score = calculateStrength(val);
-
-      // Reset bars
-      meterBar1.className = 'meter-bar';
-      meterBar2.className = 'meter-bar';
-      meterBar3.className = 'meter-bar';
-
-      if (!val) {
-        meterScoreText.textContent = 'Gunakan minimal 8 karakter dengan kombinasi angka & simbol';
-        return;
-      }
-
-      if (score === 1) {
-        meterBar1.classList.add('weak');
-        meterScoreText.textContent = 'Kekuatan: Lemah';
-        meterScoreText.style.color = '#f43f5e';
-      } else if (score === 2) {
-        meterBar1.classList.add('medium');
-        meterBar2.classList.add('medium');
-        meterScoreText.textContent = 'Kekuatan: Cukup Baik';
-        meterScoreText.style.color = '#f59e0b';
-      } else if (score >= 3) {
-        meterBar1.classList.add('strong');
-        meterBar2.classList.add('strong');
-        meterBar3.classList.add('strong');
-        meterScoreText.textContent = 'Kekuatan: Sangat Kuat';
-        meterScoreText.style.color = '#10b981';
-      }
-    });
-  }
-
-  function calculateStrength(pwd) {
-    if (!pwd || pwd.length < 6) return 1;
-    let score = 0;
-    if (pwd.length >= 8) score++;
-    if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score++;
-    if (/[0-9]/.test(pwd)) score++;
-    if (/[^A-Za-z0-9]/.test(pwd)) score++;
-    return score >= 3 ? 3 : score >= 2 ? 2 : 1;
-  }
-
-  // --- Username Availability Checker ---
-  function setupUsernameChecker() {
-    usernameInput.addEventListener('input', () => {
-      clearTimeout(usernameDebounceTimer);
-      const username = usernameInput.value.trim();
-
-      if (!username || username.length < 3) {
-        usernameBadge.style.display = 'none';
-        isUsernameAvailable = null;
-        return;
-      }
-
-      usernameBadge.className = 'username-status-badge checking';
-      usernameBadge.textContent = 'Mengecek...';
-      usernameBadge.style.display = 'flex';
-
-      usernameDebounceTimer = setTimeout(async () => {
-        await checkUsername(username);
-      }, 450);
-    });
-  }
-
-  async function checkUsername(username) {
-    updateInspector({
-      method: 'POST',
-      endpoint: '/api/auth/is-username-available',
-      requestBody: { username },
-    });
-
-    try {
-      const res = await fetch('/api/auth/is-username-available', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username }),
-      });
-
-      const data = await res.json().catch(() => ({}));
-      updateInspectorResponse(res.status, data);
-
-      if (res.ok && data.available !== false) {
-        setUsernameStatus(true, '✓ Tersedia');
-      } else {
-        setUsernameStatus(false, '✗ Terpakai');
-      }
-    } catch (err) {
-      // Offline mock fallback
-      const takenUsernames = ['ahmad_siswa', 'admin', 'guru_kurikulum', 'kurikulum'];
-      const available = !takenUsernames.includes(username.toLowerCase());
-      updateInspectorResponse(200, { available, mock: true });
-      if (available) {
-        setUsernameStatus(true, '✓ Tersedia');
-      } else {
-        setUsernameStatus(false, '✗ Terpakai');
-      }
-    }
-  }
-
-  function setUsernameStatus(available, text) {
-    isUsernameAvailable = available;
-    usernameBadge.className = 'username-status-badge ' + (available ? 'available' : 'unavailable');
-    usernameBadge.textContent = text;
-    usernameBadge.style.display = 'flex';
-  }
-
-  // --- Quick Fill Dummy Demo ---
+  // --- Quick Fill Data Contoh Sesuai API.yaml ---
   function setupQuickFill() {
     quickFillBtn.addEventListener('click', () => {
-      const randomSuffix = Math.floor(Math.random() * 899 + 100);
-      nameInput.value = 'Rian Hidayat';
-      usernameInput.value = `rian_siswa${randomSuffix}`;
-      emailInput.value = `rian${randomSuffix}@sekolah.sch.id`;
-      passwordInput.value = 'Password123!';
-      confirmPasswordInput.value = 'Password123!';
+      usernameInput.value = 'user';
+      emailInput.value = 'user@example.com';
+      passwordInput.value = 'Belajar1!';
+      confirmPasswordInput.value = 'Belajar1!';
       termsCheckbox.checked = true;
 
-      // Trigger events
-      passwordInput.dispatchEvent(new Event('input'));
-      usernameInput.dispatchEvent(new Event('input'));
-
-      showToast('Kredensial percobaan otomatis diisi!', 'info');
+      showToast('Kredensial contoh OpenAPI otomatis diisi!', 'info');
       clearAlert();
     });
   }
@@ -234,32 +110,13 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const name = nameInput.value.trim();
       const username = usernameInput.value.trim();
       const email = emailInput.value.trim();
       const password = passwordInput.value;
       const confirmPassword = confirmPasswordInput.value;
 
-      if (!name || !username || !email || !password) {
+      if (!username || !email || !password) {
         showAlert('Harap lengkapi semua kolom pendaftaran.', 'error');
-        return;
-      }
-
-      if (username.length < 3) {
-        showAlert('Username minimal harus 3 karakter.', 'error');
-        usernameInput.focus();
-        return;
-      }
-
-      if (isUsernameAvailable === false) {
-        showAlert('Username sudah terpakai. Pilih username lain.', 'error');
-        usernameInput.focus();
-        return;
-      }
-
-      if (password.length < 8) {
-        showAlert('Kata sandi minimal 8 karakter.', 'error');
-        passwordInput.focus();
         return;
       }
 
@@ -274,16 +131,18 @@
         return;
       }
 
-      await performSignUp({ name, username, email, password });
+      await performSignUp({ username, email, password });
     });
   }
 
-  async function performSignUp({ name, username, email, password }) {
+
+
+  async function performSignUp({ username, email, password }) {
     setLoading(true);
     clearAlert();
 
-    const endpoint = '/api/auth/sign-up/email';
-    const payload = { name, username, email, password };
+    const endpoint = `${MOCK_API_BASE}/api/auth/sign-up/email`;
+    const payload = { username, email, password, name: "" };
 
     updateInspector({
       method: 'POST',
@@ -299,49 +158,49 @@
           'Accept': 'application/json',
         },
         body: JSON.stringify(payload),
-        credentials: 'include',
       });
 
       const responseText = await response.text();
       let responseData = {};
       try {
         responseData = JSON.parse(responseText);
-      } catch (err) {
+      } catch {
         responseData = { raw: responseText };
       }
 
       updateInspectorResponse(response.status, responseData);
 
       if (response.ok) {
-        onSignUpSuccess({ name, username, email });
+        // Data hasil respon Mock API
+        const user = responseData.user || { username, email, name: "", role: 'SISWA' };
+        onSignUpSuccess(user);
       } else {
-        const errorMsg = responseData.message || responseData.error?.message || 'Pendaftaran gagal. Silakan coba lagi.';
+        const errorMsg = responseData.message || responseData.error?.message || 'Pendaftaran ditolak oleh server.';
         showAlert(errorMsg, 'error');
         showToast(errorMsg, 'error');
       }
     } catch (networkErr) {
-      // Backend offline fallback mode
-      console.warn('Backend offline, running in mock preview mode:', networkErr);
-      const mockResponse = {
-        success: true,
-        message: 'Registrasi berhasil (Demo Mode)',
-        user: { name, username, email, role: 'SISWA' },
-      };
-      updateInspectorResponse(201, mockResponse);
-      onSignUpSuccess({ name, username, email });
+      console.error('Koneksi ke Mock API gagal:', networkErr);
+      const errorMsg = 'Gagal terhubung ke Mock API (http://127.0.0.1:4010). Pastikan server mock aktif dengan "npm run dev:mock".';
+      showAlert(errorMsg, 'error');
+      showToast('Koneksi Mock API gagal', 'error');
+      updateInspectorResponse(0, {
+        error: 'Network Error',
+        message: 'Gagal terhubung ke Mock API Prism di port 4010. Periksa apakah `npm run dev:mock` sedang berjalan.',
+        details: String(networkErr),
+      });
     } finally {
       setLoading(false);
     }
   }
 
-  function onSignUpSuccess({ name, username, email }) {
+  function onSignUpSuccess(user) {
     form.style.display = 'none';
-    registeredName.textContent = name;
-    registeredUsername.textContent = '@' + username;
-    registeredEmail.textContent = email;
+    registeredUsername.textContent = '@' + (user.username || usernameInput.value);
+    registeredEmail.textContent = user.email || emailInput.value;
     successCard.style.display = 'block';
 
-    showToast(`Akun ${username} berhasil didaftarkan!`, 'success');
+    showToast(`Akun @${user.username || usernameInput.value} berhasil didaftarkan via Mock API!`, 'success');
   }
 
   // --- UI Helpers ---

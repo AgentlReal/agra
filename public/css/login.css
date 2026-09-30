@@ -507,60 +507,6 @@ body {
   background: rgba(255, 255, 255, 0.05);
 }
 
-/* Quick Demo Credential Bar */
-.demo-accounts {
-  background: var(--badge-bg);
-  border: 1px solid var(--badge-border);
-  border-radius: var(--radius-md);
-  padding: 10px 14px;
-  margin-bottom: 22px;
-}
-
-.demo-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-}
-
-.demo-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.demo-chip {
-  background: rgba(99, 102, 241, 0.1);
-  border: 1px dashed rgba(99, 102, 241, 0.4);
-  color: #a5b4fc;
-  padding: 5px 10px;
-  border-radius: var(--radius-sm);
-  font-size: 0.73rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-[data-theme="light"] .demo-chip {
-  background: rgba(99, 102, 241, 0.08);
-  color: #4f46e5;
-}
-
-.demo-chip:hover {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: #fff;
-  transform: translateY(-1px);
-}
-
 /* Form Groups & Inputs */
 .form-group {
   margin-bottom: 18px;
@@ -695,6 +641,22 @@ body {
 }
 
 /* Submit Button */
+.mock-credentials,
+.session-panel p {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.mock-credentials {
+  margin-bottom: 18px;
+}
+
+.session-panel:not([hidden]) {
+  display: grid;
+  gap: 18px;
+}
+
 .btn-submit {
   width: 100%;
   padding: 13px 20px;
@@ -803,82 +765,6 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* Active Session Card (If User is Already Logged In) */
-.active-session-card {
-  display: none;
-  background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  margin-bottom: 20px;
-  animation: fadeIn 0.3s ease;
-}
-
-.session-user-info {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.user-badge {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.user-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--primary-gradient);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.85rem;
-}
-
-.user-meta h4 {
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.user-meta p {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-}
-
-.session-role-tag {
-  background: rgba(16, 185, 129, 0.2);
-  color: #10b981;
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.btn-signout {
-  width: 100%;
-  padding: 8px 12px;
-  background: rgba(244, 63, 94, 0.15);
-  border: 1px solid rgba(244, 63, 94, 0.3);
-  color: #fb7185;
-  font-family: inherit;
-  font-size: 0.8rem;
-  font-weight: 600;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-signout:hover {
-  background: #f43f5e;
-  color: #fff;
 }
 
 /* Footer of Form */
@@ -1133,84 +1019,6 @@ body {
     grid-template-columns: 1fr;
     gap: 0;
   }
-}
-
-.username-status-badge {
-  position: absolute;
-  right: 12px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  display: none;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border-radius: var(--radius-sm);
-  pointer-events: none;
-  transition: all 0.2s ease;
-}
-
-.username-status-badge.available {
-  display: flex;
-  background: var(--success-bg);
-  color: var(--success);
-  border: 1px solid var(--success-border);
-}
-
-.username-status-badge.unavailable {
-  display: flex;
-  background: var(--error-bg);
-  color: var(--error);
-  border: 1px solid var(--error-border);
-}
-
-.username-status-badge.checking {
-  display: flex;
-  background: var(--warning-bg);
-  color: var(--warning);
-  border: 1px solid var(--warning-border);
-}
-
-/* Password strength meter */
-.password-meter {
-  margin-top: 8px;
-}
-
-.meter-bars {
-  display: flex;
-  gap: 5px;
-  height: 4px;
-  margin-bottom: 5px;
-}
-
-.meter-bar {
-  flex: 1;
-  height: 100%;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.1);
-  transition: background 0.3s ease;
-}
-
-[data-theme="light"] .meter-bar {
-  background: rgba(0, 0, 0, 0.1);
-}
-
-.meter-bar.weak {
-  background: #f43f5e;
-}
-
-.meter-bar.medium {
-  background: #f59e0b;
-}
-
-.meter-bar.strong {
-  background: #10b981;
-}
-
-.meter-text {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  display: flex;
-  justify-content: space-between;
 }
 
 /* Terms & Agreement Checkbox */

@@ -1,0 +1,319 @@
+erDiagram
+    %% =============================================================================
+    %% ERD V6.0: PLATFORM PEMBELAJARAN & DRILL-AND-PRACTICE ADAPTIF TKA SMP (FASE D)
+    %% Skala Basis Data: Nasional (Mastery Learning, Safe-to-Fail, High Scale MySQL)
+    %% Versi: 6.0 (Eliminasi Modul CTT, Pembersihan Difficulty Generik & Taksonomi Kognitif Murni)
+    %% Tanggal Efektif: 29 September 2026
+    %% =============================================================================
+
+    %% =============================================================================
+    %% 1. DOMAIN: AUTENTIKASI PENGGUNA (BETTER AUTH BACKEND INTEGRATION) & PROFIL
+    %% =============================================================================
+    users ||--o{ accounts : "memiliki_kredensial_akun"
+    users ||--o{ sessions : "memiliki_sesi_aktif"
+    users ||--o| user_profiles : "memiliki_profil_siswa"
+    users ||--o{ learning_sessions : "mengerjakan_sesi"
+    users ||--o{ student_sub_material_progress : "mencatat_progres"
+    users ||--o{ xp_transactions : "menerima_transaksi_xp"
+    preset_avatars ||--o{ user_profiles : "digunakan_sebagai_avatar"
+    milestone_tiers ||--o{ user_profiles : "tingkat_pencapaian_saat_ini"
+    milestone_tiers ||--o{ xp_transactions : "pencapaian_tier"
+
+    users {
+        varchar id PK "Identifier unik akun pengguna (String CUID/UUID dari Auth Library)"
+        string username UK "Username unik permanen sistem (3-16 karakter, lowercase/angka/_)"
+        string name "Nama tampilan/panggilan pengguna di antarmuka (3-30 karakter, editable)"
+        varchar email UK "Email unik terdaftar untuk autentikasi"
+        boolean emailVerified "Status verifikasi email akun"
+        text image "URL aset foto/avatar akun atau inisial"
+        string role "Peran otorisasi: SISWA atau TIM_KURIKULUM (default: SISWA)"
+        timestamp createdAt "Waktu pembuatan akun"
+        timestamp updatedAt "Waktu pembaruan akun"
+    }
+
+    accounts {
+        varchar id PK "Identifier unik baris akun autentikasi"
+        text accountId "Identifier unik dari provider autentikasi"
+        text providerId "ID provider: credential, google, dll"
+        varchar userId FK "Relasi ke users.id"
+        text accessToken "Token akses sesi OAuth jika ada"
+        text refreshToken "Token penyegaran OAuth jika ada"
+        text idToken "Token identitas OAuth jika ada"
+        timestamp accessTokenExpiresAt "Waktu kedaluwarsa access token"
+        timestamp refreshTokenExpiresAt "Waktu kedaluwarsa refresh token"
+        text scope "Cakupan izin autentikasi provider"
+        text password "Hash kata sandi pengguna (Argon2id/Bcrypt)"
+        timestamp createdAt "Waktu pembuatan baris akun"
+        timestamp updatedAt "Waktu pembaruan kredensial"
+    }
+
+    sessions {
+        varchar id PK "Identifier sesi login aktif"
+        timestamp expiresAt "Waktu kedaluwarsa sesi autentikasi"
+        varchar token UK "Token sesi unik (Bearer / Cookie)"
+        timestamp createdAt "Waktu sesi login dibuat"
+        timestamp updatedAt "Waktu pembaruan sesi"
+        text ipAddress "Alamat IP klien saat login"
+        text userAgent "Identitas peramban dan perangkat klien"
+        varchar userId FK "Relasi ke users.id"
+    }
+
+    verifications {
+        varchar id PK "Identifier token verifikasi"
+        varchar identifier "Email atau nomor identitas target verifikasi"
+        text value "Token atau kode OTP verifikasi (F15 Reset Password)"
+        timestamp expiresAt "Waktu kedaluwarsa token verifikasi"
+        timestamp createdAt "Waktu pembuatan token verifikasi"
+        timestamp updatedAt "Waktu pembaruan token verifikasi"
+    }
+
+    preset_avatars {
+        int id PK "Identifier preset avatar"
+        string name "Nama karakter avatar (misal: Ksatria Buku, Penjelajah Galaksi)"
+        string image_url "URL aset visual kartun ramah anak (12 Preset Resmi)"
+        boolean is_active "Status ketersediaan avatar di galeri preset"
+    }
+
+    user_profiles {
+        bigint id PK "Identifier profil siswa"
+        varchar user_id FK,UK "Relasi 1-to-1 unik ke users.id (String PK, khusus role SISWA)"
+        int preset_avatar_id FK "Relasi ke 12 galeri avatar aman (tanpa upload mandiri)"
+        int current_milestone_tier_id FK "Relasi ke 5 milestone tier saat ini"
+        int grade "Kelas Fase D: 7, 8, atau 9"
+        bigint total_xp "Total akumulasi poin XP siswa (murni capaian formatif)"
+        boolean is_recall_passed "Status kelulusan asesmen pembuka Recall Kemampuanmu"
+        timestamp created_at "Waktu pembuatan profil siswa"
+        timestamp updated_at "Waktu pembaruan profil"
+    }
+
+    %% =============================================================================
+    %% 2. DOMAIN: STRUKTUR KURIKULUM & TAKSONOMI ASESMEN (FASE D)
+    %% =============================================================================
+    subjects ||--o{ materials : "memiliki_materi"
+    subjects ||--o{ stimuli : "memiliki_wacana"
+    subjects ||--o{ question_banks : "memiliki_bank_soal"
+    subjects ||--o{ simulations : "menyediakan_simulasi"
+    subjects ||--o{ learning_sessions : "memayungi_sesi"
+    materials ||--o{ materials : "prasyarat_materi"
+    materials ||--o{ sub_materials : "memiliki_sub_materi"
+    sub_materials ||--o{ sub_materials : "prasyarat_sub_materi"
+    sub_materials ||--o{ question_banks : "memiliki_soal"
+    sub_materials ||--o{ learning_sessions : "dilatih_dalam"
+    sub_materials ||--o{ student_sub_material_progress : "dilacak_ketuntasannya"
+    sub_materials ||--o{ xp_transactions : "memberikan_xp_mastery"
+    cognitive_levels ||--o{ question_banks : "tingkat_kognitif_soal"
+    cognitive_levels ||--o{ learning_sessions : "target_level_sesi"
+
+    subjects {
+        int id PK "Identifier mata pelajaran"
+        string code UK "Kode mata pelajaran: MAT atau BIN"
+        string name "Nama mata pelajaran: Matematika / Bahasa Indonesia"
+        text description "Deskripsi cakupan asesmen kurikulum"
+        boolean is_active "Status aktif kurikulum"
+    }
+
+    materials {
+        int id PK "Identifier materi pokok atau bab"
+        int subject_id FK "Relasi ke mata pelajaran"
+        int prerequisite_material_id FK "Materi prasyarat untuk unlock sekuensial"
+        string title "Judul bab: Bilangan, Aljabar, Geometri, Data, Teks Informasi, Teks Sastra"
+        int order_index "Urutan pembelajaran materi"
+        boolean is_active "Status aktif materi"
+    }
+
+    sub_materials {
+        int id PK "Identifier submateri atau topik (16 Submateri Fase D)"
+        int material_id FK "Relasi ke materi pokok induk"
+        int prerequisite_sub_material_id FK "Submateri prasyarat untuk unlock sekuensial mutlak"
+        string code UK "Kode submateri resmi: M-01 s.d. M-10, B-01 s.d. B-06"
+        string title "Judul topik submateri"
+        int order_index "Urutan belajar dalam materi pokok"
+        decimal passing_threshold "Ambang batas ketuntasan submateri: 90.00"
+        int xp_reward "Bonus puncak XP saat Mastered (+250 XP)"
+        boolean is_active "Status ketersediaan submateri"
+    }
+
+    cognitive_levels {
+        int id PK "Identifier level kognitif"
+        int level_number UK "Level 1: Pemahaman, Level 2: Pengaplikasian, Level 3: Penalaran"
+        string name "Nama tingkatan berpikir kognitif TKA: Pemahaman, Pengaplikasian, Penalaran"
+        int target_questions "Jumlah butir soal standar per sesi: 10 butir"
+        int passing_score "Ambang batas minimal benar: 9 dari 10 butir (90%)"
+        int xp_reward "Nominal reward XP kelulusan level: 50, 75, atau 100 XP"
+        text description "Definisi operasional tingkat berpikir kognitif"
+    }
+
+    %% =============================================================================
+    %% 3. DOMAIN: BANK SOAL & WACANA BERSAMA (STIMULI)
+    %% =============================================================================
+    stimuli ||--o{ question_banks : "menjadi_induk_wacana"
+    question_banks ||--|{ question_options : "memiliki_pilihan_opsi"
+    question_banks ||--|| question_explanations : "memiliki_pembahasan"
+    question_banks ||--o{ session_questions : "disajikan_dalam"
+    question_banks ||--o{ simulation_questions : "disusun_dalam"
+
+    stimuli {
+        bigint id PK "Identifier teks wacana atau stimulus bersama"
+        int subject_id FK "Relasi ke mata pelajaran"
+        string title "Judul wacana stimulus bacaan atau konteks wacana"
+        text stimulus_text "Teks lengkap wacana bacaan atau narasi informasi"
+        string stimulus_image_url "Tautan aset gambar/diagram pendukung wacana jika ada"
+        timestamp created_at "Waktu penambahan stimulus wacana"
+    }
+
+    question_banks {
+        bigint id PK "Identifier butir soal"
+        int subject_id FK "Relasi ke mata pelajaran"
+        int sub_material_id FK "Relasi ke submateri (NULL jika soal Bank Recall fondasi SD)"
+        int cognitive_level_id FK "Relasi ke level kognitif (1: Pemahaman, 2: Aplikasi, 3: Penalaran; NULL jika Bank Recall)"
+        bigint stimulus_id FK "Relasi ke wacana bersama jika ada (Prioritas 3: Soal Berurutan)"
+        string bank_type "Pemisahan 3 Bank Terisolasi: RECALL, LEVEL_EXERCISE, SIMULATION"
+        string question_format "Format soal: SINGLE_CHOICE (4 opsi A-D) atau COMPLEX_CHOICE (MCMA)"
+        text question_text "Teks pertanyaan atau formula matematika LaTeX"
+        string stimulus_image_url "Tautan aset stimulus visual individual jika ada"
+        boolean is_active "Status keaktifan butir soal (sakelar CMS kurikulum)"
+        timestamp created_at "Waktu pembuatan butir soal"
+    }
+
+    question_options {
+        bigint id PK "Identifier pilihan opsi jawaban"
+        bigint question_id FK "Relasi ke butir soal induk"
+        string option_label "Label posisi asli: A, B, C, atau D (maksimal tepat 4 opsi)"
+        text option_text "Konten teks atau formula pilihan jawaban"
+        boolean is_correct "Indikator kunci jawaban benar"
+    }
+
+    question_explanations {
+        bigint id PK "Identifier pembahasan pasca-sesi"
+        bigint question_id FK,UK "Relasi 1-to-1 unik ke butir soal"
+        text explanation_text "Pembahasan logis komprehensif pasca-sesi (F04, NFR02)"
+        text reasoning_guide "Panduan alur nalar untuk safe-to-fail feedback"
+        string reference_url "Tautan pustaka kurikulum resmi Kemendikdasmen"
+    }
+
+    %% =============================================================================
+    %% 4. DOMAIN: CAPSTONE SIMULASI UJIAN TKA (75 MENIT KETAT)
+    %% =============================================================================
+    simulations ||--|{ simulation_questions : "memuat_paket_soal"
+    simulations ||--o{ learning_sessions : "dieksekusi_sebagai"
+    simulations ||--o{ xp_transactions : "memberikan_xp_simulasi"
+
+    simulations {
+        int id PK "Identifier paket simulasi TKA"
+        int subject_id FK "Relasi ke mata pelajaran (terbuka independen per mapel)"
+        string title "Nama paket simulasi (misal: Simulasi CBT Paket A)"
+        string package_code "Kode paket variasi: SET_A, SET_B (UCS-11)"
+        int duration_minutes "Alokasi durasi ujian: baku 75 menit (DOC-07)"
+        int total_questions "Jumlah butir soal simulasi: baku 30 butir"
+        decimal passing_score "Ambang batas skor kelulusan simulasi: 90.00 (27 benar)"
+        int xp_reward "Reward bonus XP kelulusan prima simulasi: +500 XP (DOC-06)"
+        string status "Status rakitan kurikulum: DRAFT, ACTIVE, ARCHIVED"
+        boolean is_active "Status ketersediaan paket bagi siswa"
+        timestamp created_at "Waktu rilis simulasi oleh Tim Kurikulum"
+    }
+
+    simulation_questions {
+        bigint id PK "Identifier butir dalam paket simulasi"
+        int simulation_id FK "Relasi ke paket simulasi induk"
+        bigint question_id FK "Relasi ke butir soal di Bank Simulasi"
+        int question_order "Urutan nomor soal acuan dalam paket simulasi"
+    }
+
+    %% =============================================================================
+    %% 5. DOMAIN: SESI PEMBELAJARAN, LOG JAWABAN & EVALUASI ADAPTIF
+    %% =============================================================================
+    learning_sessions ||--|{ session_questions : "menghasilkan_lembar_soal"
+    learning_sessions ||--o{ xp_transactions : "memberikan_xp_level"
+    session_questions ||--o| student_answers : "dijawab_oleh_siswa"
+    student_answers ||--o{ student_answer_options : "memilih_opsi"
+    question_options ||--o{ student_answer_options : "dipilih_dalam_jawaban"
+
+    learning_sessions {
+        bigint id PK "Identifier unik sesi pengerjaan"
+        varchar user_id FK "Relasi ke users.id siswa pengerja (String PK)"
+        int subject_id FK "Relasi ke mata pelajaran (NULL khusus sesi terpadu Recall, wajib ada untuk Latihan & Simulasi)"
+        string session_type "Tipe sesi: RECALL, LEVEL_EXERCISE, SIMULATION"
+        int sub_material_id FK "Relasi ke submateri (NULL jika recall atau simulasi)"
+        int cognitive_level_id FK "Relasi ke level kognitif aktif (hanya terisi untuk LEVEL_EXERCISE, NULL untuk RECALL dan SIMULATION)"
+        int simulation_id FK "Relasi ke paket simulasi (jika sesi simulasi)"
+        int attempt_number "Nomor percobaan untuk melacak frekuensi remedial"
+        boolean is_remedial "Penanda apakah sesi ini merupakan sesi remedial teracak"
+        string status "Status sesi: IN_PROGRESS, PAUSED, COMPLETED, ABANDONED"
+        string submission_type "Tipe penyelesaian: MANUAL (klik selesai) atau TIMEOUT (waktu 75m habis, null jika in progress)"
+        int total_questions "Jumlah butir soal dalam sesi (10 level / 30 recall / 30 simulasi)"
+        int correct_answers "Jumlah butir soal yang dijawab benar"
+        decimal score "Skor persentase akhir sesi evaluasi"
+        boolean is_passed "Status pemenuhan syarat kelulusan sesi (>=90%)"
+        int remaining_time_seconds "Sisa waktu hitung mundur server-side untuk simulasi 75m (null jika untimed)"
+        int current_question_order "Nomor urut soal aktif untuk ketahanan sesi reconnect"
+        timestamp start_time "Waktu mulai sesi pengerjaan"
+        timestamp resumed_at "Waktu sesi dilanjutkan kembali pasca-reconnect"
+        timestamp end_time "Waktu penyelesaian sesi pengerjaan"
+    }
+
+    session_questions {
+        bigint id PK "Identifier lembar soal dalam sesi"
+        bigint session_id FK "Relasi ke sesi pengerjaan induk"
+        bigint question_id FK "Relasi ke butir soal master (memiliki subject_id sendiri)"
+        int question_order "Nomor urut soal teracak pada sesi terkait (Unseen/LRU)"
+    }
+
+    student_answers {
+        bigint id PK "Identifier log pengerjaan butir soal"
+        bigint session_question_id FK,UK "Relasi 1-to-1 unik ke lembar butir soal sesi"
+        boolean is_correct "Kebenaran jawaban (Evaluasi biner All-or-Nothing)"
+        boolean is_flagged "Penanda ragu-ragu butir soal di antarmuka CBT"
+        boolean is_skipped "Penanda apakah soal dilewati sementara"
+        int time_spent_seconds "Durasi waktu pengerjaan pada butir soal"
+        timestamp answered_at "Waktu pengiriman jawaban siswa"
+    }
+
+    student_answer_options {
+        bigint id PK "Identifier opsi yang dipilih siswa"
+        bigint student_answer_id FK "Relasi ke log jawaban butir soal"
+        bigint selected_option_id FK "Relasi ke opsi jawaban (mendukung MCMA multi-opsi)"
+    }
+
+    %% =============================================================================
+    %% 6. DOMAIN: PROGRES KETUNTASAN & GAMIFIKASI NON-KOMPETITIF
+    %% =============================================================================
+    milestone_tiers {
+        int id PK "Identifier milestone tier"
+        int tier_number UK "Tingkatan tier resmi: 1 s.d. 5"
+        string title "Gelar prestasi siswa: Perintis, Penjelajah, Pejuang, Pakar, Jawara"
+        int min_xp "Batas bawah akumulasi XP: 0, 500, 1500, 3000, 5000"
+        int max_xp "Batas atas akumulasi XP: 499, 1499, 2999, 4999, null"
+        string badge_icon_url "URL aset visual medali milestone tier"
+        text philosophical_meaning "Makna filosofis capaian belajar (DOC-06)"
+    }
+
+    student_sub_material_progress {
+        bigint id PK "Identifier rekam progres submateri"
+        varchar user_id FK "Relasi ke users.id akun siswa (String PK)"
+        int sub_material_id FK "Relasi ke submateri terkait (16 submateri)"
+        string level_1_status "Status Level 1: LOCKED, AVAILABLE, COMPLETED, NEEDS_REMEDIAL"
+        string level_2_status "Status Level 2: LOCKED, AVAILABLE, COMPLETED, NEEDS_REMEDIAL"
+        string level_3_status "Status Level 3: LOCKED, AVAILABLE, COMPLETED, NEEDS_REMEDIAL"
+        int level_1_score "Skor terbaik benar Level 1 (syarat minimal 9 dari 10)"
+        int level_2_score "Skor terbaik benar Level 2 (syarat minimal 9 dari 10)"
+        int level_3_score "Skor terbaik benar Level 3 (syarat minimal 9 dari 10)"
+        decimal total_cumulative_score "Akumulasi skor submateri (syarat minimal 27 dari 30)"
+        boolean is_mastered "Dual-Condition Mastery: 3 Level Lulus DAN Total Benar >= 27"
+        boolean is_xp_awarded "Anti-Farming: Flag bonus +250 XP hanya diberikan 1x seumur hidup"
+        string progress_state "Status tampilan dasbor: LOCKED, IN_PROGRESS, MASTERED"
+        timestamp mastered_at "Waktu resmi pemenuhan Dual-Condition Mastery"
+        timestamp updated_at "Waktu pembaruan progres submateri"
+    }
+
+    xp_transactions {
+        bigint id PK "Identifier mutasi transaksi XP"
+        varchar user_id FK "Relasi ke users.id akun siswa penerima XP (String PK)"
+        int sub_material_id FK "Relasi langsung jika reward ketuntasan (+250 XP)"
+        int simulation_id FK "Relasi langsung jika reward simulasi (+500 XP)"
+        bigint session_id FK "Relasi langsung jika reward level (+50, +75, +100 XP)"
+        int milestone_tier_id FK "Relasi ke milestone tier yang dicapai jika ada"
+        string transaction_type "Tipe transaksi: LEVEL_COMPLETION, SUB_MATERIAL_MASTERY, SIMULATION_COMPLETION"
+        int xp_amount "Nominal mutasi penambahan XP baku: 50, 75, 100, 250, atau 500"
+        string description "Keterangan mutasi poin (Single Source of Truth)"
+        timestamp created_at "Waktu pencatatan mutasi transaksi"
+    }

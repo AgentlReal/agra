@@ -1,14 +1,16 @@
 /**
  * AGRA Platform - Dummy & Live Login Controller
  * Supports:
- * - Direct integration with Better Auth (/api/auth/sign-in/*)
- * - Standalone Mock/Demo mode with instant test credentials
- * - Active session detection & logout
+ * - Stateful mock login with an HttpOnly cookie on the same origin
+ * - Active session detection and logout
  * - Live Developer Request/Response Inspector
  */
 
 (function () {
   'use strict';
+
+  // The mock auth routes share the page origin so the browser stores and sends the cookie.
+  const MOCK_AUTH_BASE = '/api/mock/auth';
 
   // --- State & Elements ---
   const state = {
@@ -28,17 +30,14 @@
   const passwordInput = document.getElementById('passwordInput');
   const togglePasswordBtn = document.getElementById('togglePasswordBtn');
   const rememberCheckbox = document.getElementById('rememberMe');
+  const sessionPanel = document.getElementById('sessionPanel');
+  const sessionMessage = document.getElementById('sessionMessage');
+  const logoutButton = document.getElementById('logoutButton');
   const submitBtn = document.getElementById('submitBtn');
   const submitText = document.getElementById('submitText');
   const alertBox = document.getElementById('alertBox');
   const alertMessage = document.getElementById('alertMessage');
   const alertIcon = document.getElementById('alertIcon');
-  const activeSessionCard = document.getElementById('activeSessionCard');
-  const sessionUserName = document.getElementById('sessionUserName');
-  const sessionUserEmail = document.getElementById('sessionUserEmail');
-  const sessionUserRole = document.getElementById('sessionUserRole');
-  const sessionUserAvatar = document.getElementById('sessionUserAvatar');
-  const btnSignout = document.getElementById('btnSignout');
   const serverStatusChip = document.getElementById('serverStatusChip');
   const statusDot = document.getElementById('statusDot');
   const statusText = document.getElementById('statusText');
@@ -79,12 +78,11 @@
     setupTheme();
     setupTabs();
     setupPasswordToggle();
-    setupDemoChips();
     setupForm();
+    logoutButton.addEventListener('click', performLogout);
     setupInspector();
     setupModal();
-    restoreRememberedUser();
-    checkBackendSession();
+    checkServerConnectivity();
   }
 
   // --- Theme Management ---
@@ -143,42 +141,6 @@
     });
   }
 
-  // --- Quick Demo Chips ---
-  function setupDemoChips() {
-    document.querySelectorAll('.demo-chip').forEach((chip) => {
-      chip.addEventListener('click', () => {
-        const userType = chip.dataset.type;
-        const ident = chip.dataset.identifier;
-        const pass = chip.dataset.password;
-
-        if (userType === 'email') {
-          setLoginType('email');
-        } else {
-          setLoginType('username');
-        }
-
-        identifierInput.value = ident;
-        passwordInput.value = pass;
-
-        showToast(`Kredensial demo diisi: ${ident}`, 'info');
-        clearAlert();
-      });
-    });
-  }
-
-  // --- Remember Me ---
-  function restoreRememberedUser() {
-    const remembered = localStorage.getItem('agra_remember_user');
-    const rememberedType = localStorage.getItem('agra_remember_type');
-    if (remembered) {
-      if (rememberedType === 'email') {
-        setLoginType('email');
-      }
-      identifierInput.value = remembered;
-      rememberCheckbox.checked = true;
-    }
-  }
-
   // --- Form Handling ---
   function setupForm() {
     form.addEventListener('submit', async (e) => {
@@ -209,10 +171,6 @@
 
       await performLogin(identifier, password);
     });
-
-    btnSignout.addEventListener('click', async () => {
-      await performSignOut();
-    });
   }
 
   // --- Authentication Execution ---
@@ -221,10 +179,11 @@
     clearAlert();
 
     const isUsername = state.loginType === 'username';
-    const endpoint = isUsername ? '/api/auth/sign-in/username' : '/api/auth/sign-in/email';
+    const path = isUsername ? '/sign-in/username' : '/sign-in/email';
+    const endpoint = `${MOCK_AUTH_BASE}${path}`;
     const payload = isUsername
-      ? { username: identifier, password: password }
-      : { email: identifier, password: password };
+      ? { username: identifier, password: password, rememberMe: rememberCheckbox.checked }
+      : { email: identifier, password: password, rememberMe: rememberCheckbox.checked };
 
     updateInspector({
       method: 'POST',
@@ -235,154 +194,105 @@
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
+        credentials: 'same-origin',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
         body: JSON.stringify(payload),
-        credentials: 'include',
       });
 
       const responseText = await response.text();
       let responseData = {};
       try {
         responseData = JSON.parse(responseText);
-      } catch (err) {
+      } catch {
         responseData = { raw: responseText };
       }
 
-      updateInspectorResponse(response.status, responseData);
-
       if (response.ok) {
-        // Successful login via real Better Auth backend
-        updateServerStatus(true, 'Live API Terhubung');
-        const user = responseData.user || responseData.data?.user || { name: identifier, role: 'SISWA' };
-        onLoginSuccess(user, false);
+        // HttpOnly cookies cannot be read by JavaScript; get-session proves the browser returned it.
+        const sessionResponse = await fetch(`${MOCK_AUTH_BASE}/get-session`, {
+          credentials: 'same-origin',
+          cache: 'no-store',
+        });
+        const sessionData = sessionResponse.ok ? await sessionResponse.json() : null;
+        updateInspectorResponse(response.status, { ...responseData, cookieSessionVerified: Boolean(sessionData?.user) });
+        if (!sessionData?.user) {
+          showAlert('Login diterima, tetapi sesi cookie tidak terbaca. Coba muat ulang halaman.', 'error');
+          return;
+        }
+        updateServerStatus(true, 'Mock Auth Terhubung');
+        onLoginSuccess(sessionData.user);
       } else {
-        // Backend returned an error response
-        updateServerStatus(true, 'Live API Terhubung');
+        updateInspectorResponse(response.status, responseData);
+        updateServerStatus(true, 'Mock Auth Terhubung');
         const errorMsg = responseData.message || responseData.error?.message || 'Login gagal. Cek kembali kredensial Anda.';
         showAlert(errorMsg, 'error');
         showToast(errorMsg, 'error');
       }
     } catch (networkErr) {
-      // Backend server is unreachable (offline or running in static mock demo)
-      console.warn('Backend unreachable, switching to Dummy Demo Mode:', networkErr);
-      updateServerStatus(false, 'Mode Simulasi (Offline)');
-      handleMockLogin(identifier, password, endpoint, payload);
+      console.error('Koneksi ke Mock Auth gagal:', networkErr);
+      updateServerStatus(false, 'Mock Auth Offline');
+      const errorMsg = 'Gagal terhubung ke Mock Auth. Jalankan npm run dev atau npm run dev:mock.';
+      showAlert(errorMsg, 'error');
+      showToast('Koneksi Mock Auth gagal', 'error');
+      updateInspectorResponse(0, {
+        error: 'Network Error',
+        message: 'Endpoint auth mock pada server Next.js tidak dapat diakses.',
+        details: String(networkErr),
+      });
     } finally {
       setLoading(false);
     }
   }
 
-  // Standalone Mock Fallback
-  function handleMockLogin(identifier, password, endpoint, payload) {
-    let mockUser = null;
-
-    if (identifier.includes('kurikulum') || identifier === 'kurikulum@sekolah.sch.id') {
-      mockUser = {
-        name: 'Drs. Supriyanto, M.Pd',
-        username: 'guru_kurikulum',
-        email: 'kurikulum@sekolah.sch.id',
-        role: 'TIM_KURIKULUM',
-      };
-    } else {
-      mockUser = {
-        name: 'Ahmad Dahlan',
-        username: identifier.includes('@') ? 'ahmad_siswa' : identifier,
-        email: identifier.includes('@') ? identifier : `${identifier}@sekolah.sch.id`,
-        role: 'SISWA',
-      };
-    }
-
-    const mockResponse = {
-      success: true,
-      message: 'Berhasil login (Demo Standalone Mode)',
-      session: {
-        id: 'sess_' + Math.random().toString(36).substring(2, 9),
-        token: 'mock_jwt_token_' + Date.now(),
-        createdAt: new Date().toISOString(),
-      },
-      user: mockUser,
-    };
-
-    updateInspectorResponse(200, mockResponse);
-    onLoginSuccess(mockUser, true);
-  }
-
-  function onLoginSuccess(user, isMock) {
+  function onLoginSuccess(user) {
     state.sessionUser = user;
-    const modeLabel = isMock ? ' (Demo Mode)' : '';
-    showAlert(`Selamat datang kembali, ${user.name || user.username || 'Pengguna'}! Login berhasil${modeLabel}.`, 'success');
-    showToast(`Login berhasil sebagai ${user.name || user.username}`, 'success');
-
-    // Display active session UI
-    renderSessionCard(user);
+    const displayName = user.name || user.username || 'Pengguna';
+    form.hidden = true;
+    sessionPanel.hidden = false;
+    sessionMessage.textContent = `Masuk sebagai ${displayName} (${user.role}). Sesi tersimpan dalam cookie HttpOnly.`;
+    showAlert(`Selamat datang kembali, ${displayName}! Sesi mock aktif.`, 'success');
+    showToast(`Login berhasil sebagai ${displayName}`, 'success');
   }
 
-  // --- Session Check & Logout ---
-  async function checkBackendSession() {
+  async function performLogout() {
+    logoutButton.disabled = true;
     try {
-      const res = await fetch('/api/auth/get-session', {
-        method: 'GET',
-        headers: { Accept: 'application/json' },
-        credentials: 'include',
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        updateServerStatus(true, 'Live API Terhubung');
-        const user = data.user || data.data?.user;
-        if (user) {
-          state.sessionUser = user;
-          renderSessionCard(user);
-        }
-      } else {
-        updateServerStatus(true, 'Live API Terhubung');
-      }
-    } catch (err) {
-      updateServerStatus(false, 'Mode Simulasi (Stand-alone)');
-    }
-  }
-
-  async function performSignOut() {
-    btnSignout.disabled = true;
-    btnSignout.textContent = 'Memproses logout...';
-
-    updateInspector({
-      method: 'POST',
-      endpoint: '/api/auth/sign-out',
-      requestBody: {},
-    });
-
-    try {
-      const res = await fetch('/api/auth/sign-out', {
+      const response = await fetch(`${MOCK_AUTH_BASE}/sign-out`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        credentials: 'same-origin',
       });
-      const data = await res.json().catch(() => ({}));
-      updateInspectorResponse(res.status, data);
-    } catch (e) {
-      updateInspectorResponse(200, { message: 'Signed out (Demo Mode)' });
+      if (!response.ok) throw new Error('Logout gagal');
+      state.sessionUser = null;
+      sessionPanel.hidden = true;
+      form.hidden = false;
+      passwordInput.value = '';
+      showAlert('Anda telah keluar dari sesi mock.', 'success');
+    } catch {
+      showAlert('Logout gagal. Coba lagi.', 'error');
+    } finally {
+      logoutButton.disabled = false;
     }
-
-    state.sessionUser = null;
-    activeSessionCard.style.display = 'none';
-    form.style.display = 'block';
-    showAlert('Anda telah berhasil logout.', 'warning');
-    showToast('Berhasil logout', 'info');
-    btnSignout.disabled = false;
-    btnSignout.textContent = 'Keluar dari Sesi Ini (Sign Out)';
   }
 
-  function renderSessionCard(user) {
-    sessionUserName.textContent = user.name || user.username || 'Pengguna AGRA';
-    sessionUserEmail.textContent = user.email || user.username || '-';
-    sessionUserRole.textContent = user.role || 'SISWA';
-    sessionUserAvatar.textContent = (user.name || user.username || 'U').charAt(0).toUpperCase();
-
-    activeSessionCard.style.display = 'block';
+  // --- Check active cookie session ---
+  async function checkServerConnectivity() {
+    try {
+      const res = await fetch(`${MOCK_AUTH_BASE}/get-session`, {
+        method: 'GET',
+        credentials: 'same-origin',
+        cache: 'no-store',
+        headers: { Accept: 'application/json' },
+      });
+      if (!res.ok) throw new Error('Mock auth unavailable');
+      updateServerStatus(true, 'Mock Auth Terhubung');
+      const session = await res.json();
+      if (session?.user) onLoginSuccess(session.user);
+    } catch {
+      updateServerStatus(false, 'Mock Auth Offline');
+    }
   }
 
   // --- UI Helpers ---
@@ -416,10 +326,10 @@
     statusText.textContent = label;
     if (isLive) {
       statusDot.classList.remove('offline');
-      serverStatusChip.title = 'Terhubung dengan Next.js /api/auth/ Better Auth';
+      serverStatusChip.title = 'Terhubung dengan Next.js Mock Auth';
     } else {
       statusDot.classList.add('offline');
-      serverStatusChip.title = 'Backend offline. Berjalan dalam mock preview mode.';
+      serverStatusChip.title = 'Endpoint Mock Auth tidak tersedia.';
     }
   }
 
