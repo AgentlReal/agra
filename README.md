@@ -8,7 +8,7 @@ Semua perintah di bawah ini dapat dijalankan menggunakan `npm run <command>` di 
 | `npm run build` | Melakukan compile dan build aplikasi Next.js untuk production. |
 | `npm run start` | Menjalankan aplikasi hasil build production. |
 | `npm run lint` | Menjalankan ESLint untuk mengecek kualitas dan error pada kode. |
-| `npm run migrate` | Mengeksekusi file-file migrasi `.sql` dari folder `migrations/` ke database MySQL. |
+| `npm run migrate` | Mengeksekusi migrasi schema Better Auth dan seluruh file migrasi `.sql` dari folder `migrations/` ke database MySQL. |
 | `npm run db:reset` | Menghapus (*DROP*) seluruh tabel di database untuk memulai migrasi dari awal. |
 | `npm run mock` | Menjalankan Prism Mock API Server berbasis kontrak OpenAPI `openapi/API.yaml` (`http://127.0.0.1:4010`). |
 | `npm run dev:mock` | Menjalankan Next.js dev server dan Prism Mock server secara bersamaan. |
@@ -42,7 +42,7 @@ Semua perintah di bawah ini dapat dijalankan menggunakan `npm run <command>` di 
 Pastikan konfigurasi database di file `.env` sudah diisi sesuai dengan credential server MySQL Anda.
 
 - **Menjalankan Migrasi Database:**
-  Mengeksekusi semua file `.sql` di folder `migrations/` secara berurutan:
+  Mengeksekusi sinkronisasi schema Better Auth (tabel autentikasi & plugin) serta seluruh file migrasi `.sql` di folder `migrations/` secara berurutan:
   ```bash
   npm run migrate
   ```
