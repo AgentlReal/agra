@@ -1,25 +1,63 @@
+import "dotenv/config";
 import fs from "fs";
 import path from "path";
 import mysql from "mysql2/promise";
-import dotenv from "dotenv";
+import { auth } from "../src/app/auth";
+import { getMigrations } from "better-auth/db/migration";
 
-dotenv.config({ path: ".env" });
-dotenv.config();
+interface ClosableDatabase {
+    end?: () => Promise<void>;
+}
 
-async function runMigrations() {
+async function runBetterAuthMigrations() {
+    console.log("=== [1/2] Memeriksa Migrasi Better Auth ===");
+    try {
+        const m = await getMigrations(auth.options);
+
+        const hasTableChanges = m.toBeCreated.length > 0 || m.toBeAdded.length > 0;
+        const hasIndexChanges = m.toBeAddedIndexes.length > 0;
+
+        if (!hasTableChanges && !hasIndexChanges) {
+            console.log("✓ Schema Better Auth sudah up-to-date (tidak ada perubahan).");
+            return;
+        }
+
+        if (m.toBeCreated.length > 0) {
+            console.log(
+                `Tabel Better Auth yang akan dibuat (${m.toBeCreated.length}):`,
+                m.toBeCreated.map((t) => t.table).join(", ")
+            );
+        }
+        if (m.toBeAdded.length > 0) {
+            console.log(
+                `Kolom yang akan ditambahkan (${m.toBeAdded.length}):`,
+                m.toBeAdded.map((t) => t.table).join(", ")
+            );
+        }
+        if (m.toBeAddedIndexes.length > 0) {
+            console.log(
+                `Index yang akan ditambahkan (${m.toBeAddedIndexes.length}):`,
+                m.toBeAddedIndexes.map((i) => i.name).join(", ")
+            );
+        }
+
+        await m.runMigrations();
+        console.log("✓ Berhasil mengeksekusi migrasi schema Better Auth.");
+    } catch (error) {
+        console.error("Terjadi kesalahan saat migrasi Better Auth:", error);
+        throw error;
+    } finally {
+        const db = auth.options.database as ClosableDatabase | undefined;
+        if (db && typeof db.end === "function") {
+            await db.end();
+        }
+    }
+}
+
+async function runCustomSqlMigrations() {
+    console.log("\n=== [2/2] Memeriksa Migrasi SQL (migrations/) ===");
     let connection;
     try {
-        connection = await mysql.createConnection({
-            host: process.env.DB_HOST,
-            port: Number(process.env.DB_PORT),
-            user: process.env.DB_USER,
-            password: process.env.DB_PASSWORD,
-            database: process.env.DB_NAME,
-            multipleStatements: true,
-        });
-
-        console.log("Memulai proses database migration...");
-
         const migrationsDir = path.join(process.cwd(), "migrations");
 
         if (!fs.existsSync(migrationsDir)) {
@@ -37,6 +75,15 @@ async function runMigrations() {
             return;
         }
 
+        connection = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            port: Number(process.env.DB_PORT),
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+            multipleStatements: true,
+        });
+
         let count = 0;
         for (const file of files) {
             const filePath = path.join(migrationsDir, file);
@@ -53,10 +100,10 @@ async function runMigrations() {
             count++;
         }
 
-        console.log(`Berhasil mengeksekusi ${count} file migrasi.`);
+        console.log(`✓ Berhasil mengeksekusi ${count} file migrasi SQL.`);
     } catch (error) {
-        console.error("Terjadi kesalahan saat migrasi:", error);
-        process.exit(1);
+        console.error("Terjadi kesalahan saat migrasi SQL:", error);
+        throw error;
     } finally {
         if (connection) {
             await connection.end();
@@ -64,5 +111,15 @@ async function runMigrations() {
     }
 }
 
-runMigrations();
+async function runAllMigrations() {
+    try {
+        console.log("Memulai proses database migration...\n");
+        await runBetterAuthMigrations();
+        await runCustomSqlMigrations();
+        console.log("\nSemua proses migrasi selesai.");
+    } catch {
+        process.exit(1);
+    }
+}
 
+runAllMigrations();
