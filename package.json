@@ -11,10 +11,7 @@
     "db:reset": "tsx scripts/reset-db.ts",
     "mock": "prism mock openapi/API.yaml",
     "dev:mock": "concurrently \"npm run dev\" \"npm run mock\"",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:unit": "vitest run src/modules",
-    "test:api": "vitest run src/app/api"
+    "test": "tsx tests/api.test.ts"
   },
   "dependencies": {
     "better-auth": "^1.7.6",
