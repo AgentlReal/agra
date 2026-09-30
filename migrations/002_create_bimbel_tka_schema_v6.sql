@@ -9,88 +9,11 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- =============================================================================
--- 1. DOMAIN: AUTENTIKASI PENGGUNA (BETTER AUTH INTEGRATION) & AKUN
+-- 1. DOMAIN: PROFIL SISWA & PRESET AVATAR
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
--- Tabel 1: users (Akun Pengguna Inti & Otorisasi Sistem)
--- -----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `users` (
-    `id` VARCHAR(36) NOT NULL COMMENT 'Identifier unik akun pengguna (CUID / UUID Better Auth)',
-    `username` VARCHAR(16) NOT NULL COMMENT 'Username permanen sistem (3-16 karakter, lowercase, angka, _)',
-    `name` VARCHAR(100) NOT NULL COMMENT 'Nama tampilan/panggilan pengguna di antarmuka (3-30 karakter, editable)',
-    `email` VARCHAR(255) NOT NULL COMMENT 'Email unik terdaftar untuk autentikasi dan notifikasi',
-    `emailVerified` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Status verifikasi email akun',
-    `image` TEXT NULL COMMENT 'URL aset foto profil, avatar inisial, atau flat icon',
-    `role` ENUM('SISWA', 'TIM_KURIKULUM') NOT NULL DEFAULT 'SISWA' COMMENT 'Peran otorisasi: SISWA atau TIM_KURIKULUM',
-    `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Waktu pembuatan akun',
-    `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Waktu pembaruan akun',
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_users_username` (`username`),
-    UNIQUE KEY `uk_users_email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Tabel pengguna inti terpadu Better Auth';
-
--- -----------------------------------------------------------------------------
--- Tabel 2: accounts (Kredensial dan Identitas Provider Autentikasi)
--- -----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `accounts` (
-    `id` VARCHAR(36) NOT NULL COMMENT 'Identifier unik baris akun autentikasi',
-    `accountId` TEXT NOT NULL COMMENT 'Identifier unik dari provider autentikasi',
-    `providerId` VARCHAR(50) NOT NULL COMMENT 'ID provider: credential, google, dll',
-    `userId` VARCHAR(36) NOT NULL COMMENT 'Relasi ke users.id',
-    `accessToken` TEXT NULL COMMENT 'Token akses sesi OAuth jika ada',
-    `refreshToken` TEXT NULL COMMENT 'Token penyegaran OAuth jika ada',
-    `idToken` TEXT NULL COMMENT 'Token identitas OAuth jika ada',
-    `accessTokenExpiresAt` TIMESTAMP NULL COMMENT 'Waktu kedaluwarsa access token',
-    `refreshTokenExpiresAt` TIMESTAMP NULL COMMENT 'Waktu kedaluwarsa refresh token',
-    `scope` TEXT NULL COMMENT 'Cakupan izin autentikasi provider',
-    `password` TEXT NULL COMMENT 'Hash kata sandi pengguna (Argon2id/Bcrypt)',
-    `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Waktu pembuatan baris akun',
-    `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Waktu pembaruan kredensial',
-    PRIMARY KEY (`id`),
-    KEY `idx_accounts_user_id` (`userId`),
-    CONSTRAINT `fk_accounts_user` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Kredensial autentikasi multi-provider Better Auth';
-
--- -----------------------------------------------------------------------------
--- Tabel 3: sessions (Token Sesi Login Aktif)
--- -----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `sessions` (
-    `id` VARCHAR(36) NOT NULL COMMENT 'Identifier sesi login aktif',
-    `expiresAt` TIMESTAMP NOT NULL COMMENT 'Waktu kedaluwarsa sesi autentikasi',
-    `token` VARCHAR(255) NOT NULL COMMENT 'Token sesi unik (Bearer Token / Session Cookie)',
-    `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Waktu sesi login dibuat',
-    `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Waktu pembaruan sesi',
-    `ipAddress` VARCHAR(45) NULL COMMENT 'Alamat IP klien saat login',
-    `userAgent` TEXT NULL COMMENT 'Identitas peramban dan perangkat klien',
-    `userId` VARCHAR(36) NOT NULL COMMENT 'Relasi ke users.id',
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_sessions_token` (`token`),
-    KEY `idx_sessions_user_id` (`userId`),
-    CONSTRAINT `fk_sessions_user` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Manajemen sesi login aktif Better Auth';
-
--- -----------------------------------------------------------------------------
--- Tabel 4: verifications (Token Verifikasi dan Kode OTP)
--- -----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `verifications` (
-    `id` VARCHAR(36) NOT NULL COMMENT 'Identifier token verifikasi',
-    `identifier` VARCHAR(255) NOT NULL COMMENT 'Email atau nomor identitas target verifikasi',
-    `value` TEXT NOT NULL COMMENT 'Token atau kode OTP verifikasi (Reset Password / Verifikasi Email)',
-    `expiresAt` TIMESTAMP NOT NULL COMMENT 'Waktu kedaluwarsa token verifikasi',
-    `createdAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Waktu pembuatan token verifikasi',
-    `updatedAt` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Waktu pembaruan token verifikasi',
-    PRIMARY KEY (`id`),
-    KEY `idx_verifications_identifier` (`identifier`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Token dan OTP verifikasi Better Auth';
-
-
--- =============================================================================
--- 2. DOMAIN: PROFIL SISWA & PRESET AVATAR
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- Tabel 5: preset_avatars (12 Galeri Avatar Kartun Ramah Anak)
+-- Tabel 1: preset_avatars (12 Galeri Avatar Kartun Ramah Anak)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `preset_avatars` (
     `id` INT AUTO_INCREMENT NOT NULL COMMENT 'Identifier preset avatar',
@@ -101,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `preset_avatars` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='12 Preset avatar kurasi aman COPPA dan UU PDP';
 
 -- -----------------------------------------------------------------------------
--- Tabel 6: milestone_tiers (5 Tingkatan Capaian Prestasi Formatif)
+-- Tabel 2: milestone_tiers (5 Tingkatan Capaian Prestasi Formatif)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `milestone_tiers` (
     `id` INT AUTO_INCREMENT NOT NULL COMMENT 'Identifier milestone tier',
@@ -116,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `milestone_tiers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Master 5 tingkatan milestone tier non-kompetitif';
 
 -- -----------------------------------------------------------------------------
--- Tabel 7: user_profiles (Profil Pedagogis Siswa)
+-- Tabel 3: user_profiles (Profil Pedagogis Siswa)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `user_profiles` (
     `id` BIGINT AUTO_INCREMENT NOT NULL COMMENT 'Identifier unik profil siswa',
@@ -140,11 +63,11 @@ CREATE TABLE IF NOT EXISTS `user_profiles` (
 
 
 -- =============================================================================
--- 3. DOMAIN: STRUKTUR KURIKULUM & TAKSONOMI ASESMEN (FASE D)
+-- 2. DOMAIN: STRUKTUR KURIKULUM & TAKSONOMI ASESMEN (FASE D)
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
--- Tabel 8: subjects (Mata Pelajaran: Matematika & Bahasa Indonesia)
+-- Tabel 4: subjects (Mata Pelajaran: Matematika & Bahasa Indonesia)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `subjects` (
     `id` INT AUTO_INCREMENT NOT NULL COMMENT 'Identifier mata pelajaran',
@@ -157,7 +80,7 @@ CREATE TABLE IF NOT EXISTS `subjects` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Master mata pelajaran asesmen TKA Fase D';
 
 -- -----------------------------------------------------------------------------
--- Tabel 9: materials (Materi Pokok / Bab Pembelajaran)
+-- Tabel 5: materials (Materi Pokok / Bab Pembelajaran)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `materials` (
     `id` INT AUTO_INCREMENT NOT NULL COMMENT 'Identifier materi pokok atau bab',
@@ -174,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `materials` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Materi pokok pembelajaran Fase D';
 
 -- -----------------------------------------------------------------------------
--- Tabel 10: sub_materials (16 Submateri / Topik Pembelajaran Fase D)
+-- Tabel 6: sub_materials (16 Submateri / Topik Pembelajaran Fase D)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `sub_materials` (
     `id` INT AUTO_INCREMENT NOT NULL COMMENT 'Identifier submateri atau topik (16 Submateri Fase D)',
@@ -195,7 +118,7 @@ CREATE TABLE IF NOT EXISTS `sub_materials` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='16 Topik submateri Fase D dengan ambang kelulusan 90%';
 
 -- -----------------------------------------------------------------------------
--- Tabel 11: cognitive_levels (Master 3 Tingkatan Berpikir Kognitif TKA)
+-- Tabel 7: cognitive_levels (Master 3 Tingkatan Berpikir Kognitif TKA)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `cognitive_levels` (
     `id` INT AUTO_INCREMENT NOT NULL COMMENT 'Identifier level kognitif',
@@ -211,11 +134,11 @@ CREATE TABLE IF NOT EXISTS `cognitive_levels` (
 
 
 -- =============================================================================
--- 4. DOMAIN: BANK SOAL & WACANA BERSAMA (STIMULI)
+-- 3. DOMAIN: BANK SOAL & WACANA BERSAMA (STIMULI)
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
--- Tabel 12: stimuli (Teks Wacana / Bacaan Bersama untuk Soal Berangkai)
+-- Tabel 8: stimuli (Teks Wacana / Bacaan Bersama untuk Soal Berangkai)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `stimuli` (
     `id` BIGINT AUTO_INCREMENT NOT NULL COMMENT 'Identifier teks wacana atau stimulus bersama',
@@ -230,7 +153,7 @@ CREATE TABLE IF NOT EXISTS `stimuli` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Wacana bacaan bersama untuk soal berangkai literasi';
 
 -- -----------------------------------------------------------------------------
--- Tabel 13: question_banks (Master Butir Soal 3 Kategori Terisolasi)
+-- Tabel 9: question_banks (Master Butir Soal 3 Kategori Terisolasi)
 -- Catatan V6.0: Bersih dari metrik CTT empiris (pure read-heavy static content).
 -- sub_material_id & cognitive_level_id bernilai NULL khusus butir Bank Recall.
 -- -----------------------------------------------------------------------------
@@ -259,7 +182,7 @@ CREATE TABLE IF NOT EXISTS `question_banks` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Master bank soal 3 kategori terisolasi (V6.0 Tanpa CTT)';
 
 -- -----------------------------------------------------------------------------
--- Tabel 14: question_options (Pilihan Opsi Jawaban Butir Soal)
+-- Tabel 10: question_options (Pilihan Opsi Jawaban Butir Soal)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `question_options` (
     `id` BIGINT AUTO_INCREMENT NOT NULL COMMENT 'Identifier pilihan opsi jawaban',
@@ -273,7 +196,7 @@ CREATE TABLE IF NOT EXISTS `question_options` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Opsi jawaban A-D dengan indikator kunci benar';
 
 -- -----------------------------------------------------------------------------
--- Tabel 15: question_explanations (Pembahasan Logis Pasca-Sesi 1-to-1)
+-- Tabel 11: question_explanations (Pembahasan Logis Pasca-Sesi 1-to-1)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `question_explanations` (
     `id` BIGINT AUTO_INCREMENT NOT NULL COMMENT 'Identifier pembahasan pasca-sesi',
@@ -288,11 +211,11 @@ CREATE TABLE IF NOT EXISTS `question_explanations` (
 
 
 -- =============================================================================
--- 5. DOMAIN: CAPSTONE SIMULASI UJIAN TKA (75 MENIT KETAT)
+-- 4. DOMAIN: CAPSTONE SIMULASI UJIAN TKA (75 MENIT KETAT)
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
--- Tabel 16: simulations (Paket Ujian Simulasi CBT 75 Menit Baku)
+-- Tabel 12: simulations (Paket Ujian Simulasi CBT 75 Menit Baku)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `simulations` (
     `id` INT AUTO_INCREMENT NOT NULL COMMENT 'Identifier paket simulasi TKA',
@@ -312,7 +235,7 @@ CREATE TABLE IF NOT EXISTS `simulations` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Paket simulasi CBT 75 menit (30 butir soal seimbang)';
 
 -- -----------------------------------------------------------------------------
--- Tabel 17: simulation_questions (Pemetaan Butir Soal ke Paket Simulasi)
+-- Tabel 13: simulation_questions (Pemetaan Butir Soal ke Paket Simulasi)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `simulation_questions` (
     `id` BIGINT AUTO_INCREMENT NOT NULL COMMENT 'Identifier butir dalam paket simulasi',
@@ -329,11 +252,11 @@ CREATE TABLE IF NOT EXISTS `simulation_questions` (
 
 
 -- =============================================================================
--- 6. DOMAIN: SESI PEMBELAJARAN, LOG JAWABAN & EVALUASI ADAPTIF
+-- 5. DOMAIN: SESI PEMBELAJARAN, LOG JAWABAN & EVALUASI ADAPTIF
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
--- Tabel 18: learning_sessions (Rekam Jejak Sesi Pengerjaan Siswa)
+-- Tabel 14: learning_sessions (Rekam Jejak Sesi Pengerjaan Siswa)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `learning_sessions` (
     `id` BIGINT AUTO_INCREMENT NOT NULL COMMENT 'Identifier unik sesi pengerjaan',
@@ -371,7 +294,7 @@ CREATE TABLE IF NOT EXISTS `learning_sessions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Rekam jejak pengerjaan sesi latihan, remedial, recall, dan simulasi';
 
 -- -----------------------------------------------------------------------------
--- Tabel 19: session_questions (Lembar Butir Soal Teracak dalam Sesi)
+-- Tabel 15: session_questions (Lembar Butir Soal Teracak dalam Sesi)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `session_questions` (
     `id` BIGINT AUTO_INCREMENT NOT NULL COMMENT 'Identifier lembar soal dalam sesi',
@@ -387,7 +310,7 @@ CREATE TABLE IF NOT EXISTS `session_questions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Daftar urutan butir soal individual per sesi pengerjaan';
 
 -- -----------------------------------------------------------------------------
--- Tabel 20: student_answers (Log Jawaban Siswa per Butir Soal)
+-- Tabel 16: student_answers (Log Jawaban Siswa per Butir Soal)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `student_answers` (
     `id` BIGINT AUTO_INCREMENT NOT NULL COMMENT 'Identifier log pengerjaan butir soal',
@@ -403,7 +326,7 @@ CREATE TABLE IF NOT EXISTS `student_answers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Log audit jawaban dan evaluasi ketepatan per soal';
 
 -- -----------------------------------------------------------------------------
--- Tabel 21: student_answer_options (Pilihan Opsi Siswa - Single / Multi Choice PGK)
+-- Tabel 17: student_answer_options (Pilihan Opsi Siswa - Single / Multi Choice PGK)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `student_answer_options` (
     `id` BIGINT AUTO_INCREMENT NOT NULL COMMENT 'Identifier opsi yang dipilih siswa',
@@ -419,11 +342,11 @@ CREATE TABLE IF NOT EXISTS `student_answer_options` (
 
 
 -- =============================================================================
--- 7. DOMAIN: PROGRES KETUNTASAN & GAMIFIKASI NON-KOMPETITIF
+-- 6. DOMAIN: PROGRES KETUNTASAN & GAMIFIKASI NON-KOMPETITIF
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
--- Tabel 22: student_sub_material_progress (Dual-Condition Mastery Tracking)
+-- Tabel 18: student_sub_material_progress (Dual-Condition Mastery Tracking)
 -- Kriteria Tuntas: Lulus 3 Level Kognitif DAN Total Akumulasi Benar >= 27/30 (90%)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `student_sub_material_progress` (
@@ -451,7 +374,7 @@ CREATE TABLE IF NOT EXISTS `student_sub_material_progress` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Agregat penguasaan submateri dengan Dual-Condition Mastery';
 
 -- -----------------------------------------------------------------------------
--- Tabel 23: xp_transactions (Buku Besar Mutasi XP Formatif & Anti-Farming)
+-- Tabel 19: xp_transactions (Buku Besar Mutasi XP Formatif & Anti-Farming)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `xp_transactions` (
     `id` BIGINT AUTO_INCREMENT NOT NULL COMMENT 'Identifier mutasi transaksi XP',
@@ -481,5 +404,5 @@ CREATE TABLE IF NOT EXISTS `xp_transactions` (
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- =============================================================================
--- SELESAI: Skema basis data 23 tabel relasional berhasil dibentuk.
+-- SELESAI: Skema basis data 19 tabel relasional berhasil dibentuk.
 -- =============================================================================
