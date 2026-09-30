@@ -36,11 +36,11 @@ export default function SimulationResultPage({ params }: { params: Promise<{ att
       .finally(() => setLoading(false));
   }, [attemptId]);
 
-  const score = result?.totalScore ?? result?.score ?? 0;
-  const isPassed = Boolean(result?.isPassed);
-  const correct = result?.correctAnswers ?? 0;
-  const total = result?.totalQuestions ?? 30;
-  const earnedXp = result?.earnedXp ?? 0;
+  const score = result?.score ?? result?.totalScore ?? 0;
+  const isPassed = Boolean(result?.isPassed ?? result?.is_passed);
+  const correct = result?.correctAnswers ?? result?.correct_answers ?? 0;
+  const total = result?.totalQuestions ?? result?.total_questions ?? 30;
+  const earnedXp = result?.earnedXp ?? result?.xpEarned ?? result?.xp_earned ?? 0;
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-950">

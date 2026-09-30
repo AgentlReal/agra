@@ -21,7 +21,7 @@ interface QuestionItem {
   subjectName: string;
   stimulus?: string;
   questionText: string;
-  options: { key: string; text: string }[];
+  options: { id?: number; key: string; text: string }[];
   currentAnswer?: string | null;
   isDoubtful?: boolean;
 }
@@ -49,19 +49,37 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
       .then((res: any) => {
         const rawQs = res?.questions || res?.data?.questions;
         if (Array.isArray(rawQs) && rawQs.length > 0) {
-          const qs: QuestionItem[] = rawQs.map((q: any, i: number) => ({
-            id: q.id ?? i + 1,
-            questionNumber: q.questionNumber ?? i + 1,
-            subjectName: q.subjectName || (i < 15 ? 'Matematika SD' : 'Bahasa Indonesia SD'),
-            stimulus: q.stimulusText || q.stimulus || '',
-            questionText: q.questionText || '',
-            options: (q.options || []).map((opt: any) => ({
-              key: opt.optionKey || opt.key || opt.option_label,
-              text: opt.optionText || opt.text || opt.option_text,
-            })),
-            currentAnswer: q.studentAnswer || null,
-            isDoubtful: Boolean(q.isDoubtful),
-          }));
+          const qs: QuestionItem[] = rawQs.map((q: any, i: number) => {
+            const stimulusText =
+              typeof q.stimulus === 'string'
+                ? q.stimulus
+                : (q.stimulus?.content_text || q.stimulusText || '');
+
+            const mappedOptions = (q.options || []).map((opt: any) => ({
+              id: opt.id ?? opt.option_id,
+              key: opt.option_label || opt.optionKey || opt.key,
+              text: opt.option_text || opt.optionText || opt.text,
+            }));
+
+            let currentAnswer: string | null = null;
+            if (Array.isArray(q.selected_option_ids) && q.selected_option_ids.length > 0) {
+              const matched = mappedOptions.find((o: any) => q.selected_option_ids.includes(o.id));
+              if (matched) currentAnswer = matched.key;
+            } else if (q.studentAnswer) {
+              currentAnswer = q.studentAnswer;
+            }
+
+            return {
+              id: q.session_question_id ?? q.id ?? i + 1,
+              questionNumber: q.question_order ?? q.questionNumber ?? i + 1,
+              subjectName: q.subjectName || (i < 15 ? 'Matematika SD' : 'Bahasa Indonesia SD'),
+              stimulus: stimulusText,
+              questionText: q.question_text || q.questionText || '',
+              options: mappedOptions,
+              currentAnswer,
+              isDoubtful: Boolean(q.is_doubtful ?? q.isDoubtful ?? q.is_flagged ?? q.isFlagged),
+            };
+          });
 
           setQuestions(qs);
           const initAns: Record<number, string> = {};
@@ -88,12 +106,17 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
     const newAnswers = { ...answers, [currentIndex]: optionKey };
     setAnswers(newAnswers);
 
+    const selectedOpt = currentQ?.options?.find((o) => o.key === optionKey);
+    const selectedOptionIds = selectedOpt?.id ? [selectedOpt.id] : [];
+
     // Trigger autosave to backend
     setSaving(true);
     try {
       await api.recall.saveAnswer(attemptId, currentQ.id, {
+        selectedOptionIds,
+        isFlagged: doubtfuls[currentIndex] || false,
+        currentQuestionOrder: currentQ.questionNumber,
         answer: optionKey,
-        isDoubtful: doubtfuls[currentIndex] || false,
       });
     } catch {
       // offline/silent autosave fallback
@@ -107,10 +130,15 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
     const newDoubtfuls = { ...doubtfuls, [currentIndex]: nextDoubtful };
     setDoubtfuls(newDoubtfuls);
 
+    const selectedOpt = currentQ?.options?.find((o) => o.key === answers[currentIndex]);
+    const selectedOptionIds = selectedOpt?.id ? [selectedOpt.id] : [];
+
     try {
       await api.recall.saveAnswer(attemptId, currentQ.id, {
+        selectedOptionIds,
+        isFlagged: nextDoubtful,
+        currentQuestionOrder: currentQ.questionNumber,
         answer: answers[currentIndex] || '',
-        isDoubtful: nextDoubtful,
       });
     } catch {
       // silent

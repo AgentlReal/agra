@@ -39,23 +39,52 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
     api.recall
       .getReview(attemptId)
       .then((res: any) => {
-        const rawQs = res?.questions || res?.data?.questions;
+        const rawQs = res?.reviews || res?.questions || res?.data?.reviews || res?.data?.questions;
         if (Array.isArray(rawQs) && rawQs.length > 0) {
-          const qs: ReviewQuestion[] = rawQs.map((q: any, i: number) => ({
-            id: q.id ?? i + 1,
-            questionNumber: q.questionNumber ?? i + 1,
-            subjectName: q.subjectName || (i < 15 ? 'Matematika SD' : 'Bahasa Indonesia SD'),
-            stimulus: q.stimulusText || q.stimulus || '',
-            questionText: q.questionText || '',
-            options: (q.options || []).map((opt: any) => ({
-              key: opt.optionKey || opt.key || opt.option_label,
-              text: opt.optionText || opt.text || opt.option_text,
-            })),
-            studentAnswer: Array.isArray(q.studentAnswer) ? q.studentAnswer.join(', ') : (q.studentAnswer || '-'),
-            correctAnswer: Array.isArray(q.correctAnswer) ? q.correctAnswer.join(', ') : (q.correctAnswer || '-'),
-            isCorrect: Boolean(q.isCorrect),
-            explanation: q.explanationText || q.explanation || 'Pembahasan belum tersedia untuk butir soal ini.',
-          }));
+          const qs: ReviewQuestion[] = rawQs.map((q: any, i: number) => {
+            const stimulusText =
+              typeof q.stimulus === 'string'
+                ? q.stimulus
+                : (q.stimulus?.content_text || q.stimulusText || '');
+
+            const mappedOptions = (q.options || []).map((opt: any) => ({
+              id: opt.id ?? opt.option_id,
+              key: opt.option_label || opt.optionKey || opt.key,
+              text: opt.option_text || opt.optionText || opt.text,
+              isCorrect: Boolean(opt.is_correct ?? opt.isCorrect),
+            }));
+
+            let studentAnswer = '-';
+            if (Array.isArray(q.selected_option_ids) && q.selected_option_ids.length > 0) {
+              const selectedKeys = mappedOptions
+                .filter((o: any) => q.selected_option_ids.includes(o.id))
+                .map((o: any) => o.key);
+              if (selectedKeys.length > 0) studentAnswer = selectedKeys.join(', ');
+            } else if (q.studentAnswer) {
+              studentAnswer = Array.isArray(q.studentAnswer) ? q.studentAnswer.join(', ') : q.studentAnswer;
+            }
+
+            let correctAnswer = '-';
+            const correctKeys = mappedOptions.filter((o: any) => o.isCorrect).map((o: any) => o.key);
+            if (correctKeys.length > 0) {
+              correctAnswer = correctKeys.join(', ');
+            } else if (q.correctAnswer) {
+              correctAnswer = Array.isArray(q.correctAnswer) ? q.correctAnswer.join(', ') : q.correctAnswer;
+            }
+
+            return {
+              id: q.session_question_id ?? q.id ?? i + 1,
+              questionNumber: q.question_order ?? q.questionNumber ?? i + 1,
+              subjectName: q.subjectName || (i < 15 ? 'Matematika SD' : 'Bahasa Indonesia SD'),
+              stimulus: stimulusText,
+              questionText: q.question_text || q.questionText || '',
+              options: mappedOptions,
+              studentAnswer,
+              correctAnswer,
+              isCorrect: Boolean(q.is_correct ?? q.isCorrect),
+              explanation: q.explanation_text || q.explanation || q.reasoning_guide || 'Pembahasan belum tersedia untuk butir soal ini.',
+            };
+          });
           setQuestions(qs);
         } else {
           setErrorMsg('Tidak ada data review pembahasan untuk sesi ini.');

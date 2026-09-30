@@ -152,7 +152,15 @@ export const api = {
     saveAnswer: (
       attemptId: string | number,
       questionId: string | number,
-      data: { answer: string | string[]; isDoubtful?: boolean }
+      data: {
+        selectedOptionIds?: number[];
+        selected_option_ids?: number[];
+        isFlagged?: boolean;
+        isDoubtful?: boolean;
+        is_doubtful?: boolean;
+        currentQuestionOrder?: number;
+        answer?: string | string[];
+      }
     ) =>
       request<any>(`/api/v1/recall/attempts/${attemptId}/answers/${questionId}`, {
         method: 'PUT',
@@ -189,7 +197,14 @@ export const api = {
     saveAnswer: (
       attemptId: string | number,
       sessionQuestionId: string | number,
-      data: { answer: string | string[] }
+      data: {
+        selectedOptionIds?: number[];
+        selected_option_ids?: number[];
+        isSkipped?: boolean;
+        currentQuestionOrder?: number;
+        timeSpentSeconds?: number;
+        answer?: string | string[];
+      }
     ) =>
       request<any>(`/api/v1/learning/attempts/${attemptId}/answers/${sessionQuestionId}`, {
         method: 'PUT',
@@ -218,7 +233,16 @@ export const api = {
     saveAnswer: (
       attemptId: string | number,
       sessionQuestionId: string | number,
-      data: { answer: string | string[]; isDoubtful?: boolean }
+      data: {
+        selectedOptionIds?: number[];
+        selected_option_ids?: number[];
+        isDoubtful?: boolean;
+        is_doubtful?: boolean;
+        isFlagged?: boolean;
+        currentQuestionOrder?: number;
+        timeSpentSeconds?: number;
+        answer?: string | string[];
+      }
     ) =>
       request<any>(`/api/v1/simulation-attempts/${attemptId}/answers/${sessionQuestionId}`, {
         method: 'PUT',

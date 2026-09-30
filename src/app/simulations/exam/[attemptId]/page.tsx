@@ -20,7 +20,7 @@ interface QuestionItem {
   questionNumber: number;
   stimulus?: string;
   questionText: string;
-  options: { key: string; text: string }[];
+  options: { id?: number; key: string; text: string }[];
   currentAnswer?: string | null;
   isDoubtful?: boolean;
 }
@@ -49,23 +49,53 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
     api.simulation
       .getAttempt(attemptId)
       .then((res: any) => {
-        if (res?.remainingTimeSeconds) {
+        if (res?.timing?.remaining_seconds) {
+          setTimeLeft(res.timing.remaining_seconds);
+        } else if (res?.remainingTimeSeconds) {
           setTimeLeft(res.remainingTimeSeconds);
         }
         const rawQs = res?.questions || res?.data?.questions;
         if (Array.isArray(rawQs) && rawQs.length > 0) {
-          const qs: QuestionItem[] = rawQs.map((q: any, i: number) => ({
-            id: q.id ?? i + 1,
-            questionNumber: q.questionNumber ?? i + 1,
-            stimulus: q.stimulusText || q.stimulus || '',
-            questionText: q.questionText || `Soal simulasi butir nomor ${i + 1}`,
-            options: (q.options || []).map((opt: any) => ({
-              key: opt.optionKey || opt.key || opt.option_label,
-              text: opt.optionText || opt.text || opt.option_text,
-            })),
-            currentAnswer: q.studentAnswer || null,
-            isDoubtful: Boolean(q.isDoubtful),
-          }));
+          const qs: QuestionItem[] = rawQs.map((q: any, i: number) => {
+            const stimulusText =
+              typeof q.stimulus === 'string'
+                ? q.stimulus
+                : (q.stimulus?.content_text || q.stimulusText || '');
+
+            const mappedOptions = (q.options || []).map((opt: any) => ({
+              id: opt.id ?? opt.option_id,
+              key: opt.option_label || opt.optionKey || opt.key,
+              text: opt.option_text || opt.optionText || opt.text,
+            }));
+
+            const savedIds = q.saved_answer?.selected_option_ids || q.selected_option_ids;
+            let currentAnswer: string | null = null;
+            if (Array.isArray(savedIds) && savedIds.length > 0) {
+              const matched = mappedOptions.find((o: any) => savedIds.includes(o.id));
+              if (matched) currentAnswer = matched.key;
+            } else if (q.studentAnswer) {
+              currentAnswer = q.studentAnswer;
+            }
+
+            const isDoubtful = Boolean(
+              q.saved_answer?.is_doubtful ??
+              q.is_doubtful ??
+              q.isDoubtful ??
+              q.is_flagged ??
+              q.isFlagged
+            );
+
+            return {
+              id: q.session_question_id ?? q.id ?? i + 1,
+              questionNumber: q.question_order ?? q.questionNumber ?? i + 1,
+              stimulus: stimulusText,
+              questionText: q.question_text || q.questionText || '',
+              options: mappedOptions,
+              currentAnswer,
+              isDoubtful,
+            };
+          });
+
           setQuestions(qs);
           const initAns: Record<number, string> = {};
           const initDbt: Record<number, boolean> = {};
@@ -121,11 +151,16 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
     const newAnswers = { ...answers, [currentIndex]: optionKey };
     setAnswers(newAnswers);
 
+    const selectedOpt = currentQ?.options?.find((o) => o.key === optionKey);
+    const selectedOptionIds = selectedOpt?.id ? [selectedOpt.id] : [];
+
     setSaving(true);
     try {
       await api.simulation.saveAnswer(attemptId, currentQ.id, {
+        selectedOptionIds,
+        is_doubtful: doubtfuls[currentIndex] || false,
+        currentQuestionOrder: currentQ.questionNumber,
         answer: optionKey,
-        isDoubtful: doubtfuls[currentIndex] || false,
       });
     } catch {
       // silent
@@ -138,10 +173,15 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
     const nextDoubtful = !doubtfuls[currentIndex];
     setDoubtfuls({ ...doubtfuls, [currentIndex]: nextDoubtful });
 
+    const selectedOpt = currentQ?.options?.find((o) => o.key === answers[currentIndex]);
+    const selectedOptionIds = selectedOpt?.id ? [selectedOpt.id] : [];
+
     try {
       await api.simulation.saveAnswer(attemptId, currentQ.id, {
+        selectedOptionIds,
+        is_doubtful: nextDoubtful,
+        currentQuestionOrder: currentQ.questionNumber,
         answer: answers[currentIndex] || '',
-        isDoubtful: nextDoubtful,
       });
     } catch {
       // silent

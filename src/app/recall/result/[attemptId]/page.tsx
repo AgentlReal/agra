@@ -36,11 +36,11 @@ export default function RecallResultPage({ params }: { params: Promise<{ attempt
       .finally(() => setLoading(false));
   }, [attemptId]);
 
-  const isPassed = Boolean(result?.isPassed);
-  const score = result?.score ?? result?.totalScore ?? 0;
-  const totalCorrect = result?.totalCorrect ?? Math.round((score / 100) * 30);
-  const totalQuestions = result?.totalQuestions ?? 30;
-  const earnedXp = result?.earnedXp ?? 0;
+  const isPassed = Boolean(result?.isPassed ?? result?.is_passed);
+  const totalQuestions = result?.totalQuestions ?? result?.total_questions ?? 30;
+  const totalCorrect = result?.totalCorrect ?? result?.total_correct ?? (result?.score ? Math.round((result.score / 100) * totalQuestions) : 0);
+  const score = result?.score ?? (totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0);
+  const earnedXp = result?.earnedXp ?? result?.xpEarned ?? result?.xp_earned ?? 0;
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-950">

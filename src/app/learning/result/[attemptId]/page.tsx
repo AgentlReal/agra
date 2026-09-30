@@ -36,10 +36,10 @@ export default function LearningResultPage({ params }: { params: Promise<{ attem
   }, [attemptId]);
 
   const score = result?.score ?? 0;
-  const isPassed = Boolean(result?.isPassed);
-  const correct = result?.correctAnswers ?? 0;
-  const total = result?.totalQuestions ?? 10;
-  const xp = result?.earnedXp ?? 0;
+  const isPassed = Boolean(result?.isPassed ?? result?.is_passed);
+  const correct = result?.correctAnswers ?? result?.correct_answers ?? 0;
+  const total = result?.totalQuestions ?? result?.total_questions ?? 10;
+  const xp = result?.earnedXp ?? result?.xpEarned ?? result?.xp_earned ?? 0;
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-950">

@@ -18,7 +18,7 @@ interface QuestionItem {
   questionNumber: number;
   stimulus?: string;
   questionText: string;
-  options: { key: string; text: string }[];
+  options: { id?: number; key: string; text: string }[];
   currentAnswer?: string | null;
 }
 
@@ -42,17 +42,36 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
       .then((res: any) => {
         const rawQs = res?.questions || res?.data?.questions;
         if (Array.isArray(rawQs) && rawQs.length > 0) {
-          const qs: QuestionItem[] = rawQs.map((q: any, i: number) => ({
-            id: q.id ?? i + 1,
-            questionNumber: q.questionNumber ?? i + 1,
-            stimulus: q.stimulusText || q.stimulus || '',
-            questionText: q.questionText || `Pertanyaan latihan butir nomor ${i + 1}`,
-            options: (q.options || []).map((opt: any) => ({
-              key: opt.optionKey || opt.key || opt.option_label,
-              text: opt.optionText || opt.text || opt.option_text,
-            })),
-            currentAnswer: q.studentAnswer || null,
-          }));
+          const qs: QuestionItem[] = rawQs.map((q: any, i: number) => {
+            const stimulusText =
+              typeof q.stimulus === 'string'
+                ? q.stimulus
+                : (q.stimulus?.content_text || q.stimulusText || '');
+
+            const mappedOptions = (q.options || []).map((opt: any) => ({
+              id: opt.id ?? opt.option_id,
+              key: opt.option_label || opt.optionKey || opt.key,
+              text: opt.option_text || opt.optionText || opt.text,
+            }));
+
+            let currentAnswer: string | null = null;
+            if (Array.isArray(q.selected_option_ids) && q.selected_option_ids.length > 0) {
+              const matched = mappedOptions.find((o: any) => q.selected_option_ids.includes(o.id));
+              if (matched) currentAnswer = matched.key;
+            } else if (q.studentAnswer) {
+              currentAnswer = q.studentAnswer;
+            }
+
+            return {
+              id: q.session_question_id ?? q.id ?? i + 1,
+              questionNumber: q.question_order ?? q.questionNumber ?? i + 1,
+              stimulus: stimulusText,
+              questionText: q.question_text || q.questionText || '',
+              options: mappedOptions,
+              currentAnswer,
+            };
+          });
+
           setQuestions(qs);
           const initAns: Record<number, string> = {};
           qs.forEach((q, idx) => {
@@ -75,9 +94,14 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
     const newAns = { ...answers, [currentIndex]: optionKey };
     setAnswers(newAns);
 
+    const selectedOpt = currentQ?.options?.find((o) => o.key === optionKey);
+    const selectedOptionIds = selectedOpt?.id ? [selectedOpt.id] : [];
+
     setSaving(true);
     try {
       await api.learning.saveAnswer(attemptId, currentQ.id, {
+        selectedOptionIds,
+        currentQuestionOrder: currentQ.questionNumber,
         answer: optionKey,
       });
     } catch {
