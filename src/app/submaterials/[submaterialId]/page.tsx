@@ -1,0 +1,282 @@
+'use client';
+
+import React, { useState, useEffect, use } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Navbar } from '@/components/layout/Navbar';
+import { Footer } from '@/components/layout/Footer';
+import { api } from '@/lib/api-client';
+import { 
+  ArrowLeft, 
+  Layers, 
+  CheckCircle2, 
+  Lock, 
+  ArrowRight, 
+  Sparkles, 
+  Brain, 
+  Target, 
+  Zap, 
+  AlertCircle,
+  RefreshCw
+} from 'lucide-react';
+
+interface CognitiveLevelItem {
+  levelNumber: number;
+  name: string;
+  category: string;
+  description: string;
+  isUnlocked: boolean;
+  isPassed: boolean;
+  highestScore: number | null;
+  xpReward: number;
+  icon: any;
+}
+
+const LEVEL_CONFIGS = [
+  {
+    levelNumber: 1,
+    name: 'Level 1: Pemahaman & Pengetahuan (C1-C2)',
+    category: 'Recall & Faktual',
+    description: 'Mengenali konsep dasar, istilah matematis/literasi, dan prosedur operasi langsung.',
+    xpReward: 30,
+    icon: Brain,
+  },
+  {
+    levelNumber: 2,
+    name: 'Level 2: Aplikasi & Prosedural (C3-C4)',
+    category: 'Penerapan Konsep',
+    description: 'Menerapkan prosedur multi-langkah dan pemecahan masalah kontekstual sehari-hari.',
+    xpReward: 50,
+    icon: Target,
+  },
+  {
+    levelNumber: 3,
+    name: 'Level 3: Penalaran & Analisis (C5-C6)',
+    category: 'HOTS & Problem Solving',
+    description: 'Menganalisis skenario baru, mengevaluasi validitas strategi, dan penarikan simpulan.',
+    xpReward: 80,
+    icon: Zap,
+  },
+];
+
+export default function SubmaterialDetailPage({ params }: { params: Promise<{ submaterialId: string }> }) {
+  const router = useRouter();
+  const { submaterialId } = use(params);
+
+  const [submaterial, setSubmaterial] = useState<any>(null);
+  const [levels, setLevels] = useState<CognitiveLevelItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [startingLevel, setStartingLevel] = useState<number | null>(null);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const loadProgress = () => {
+    setLoading(true);
+    setErrorMsg('');
+
+    api.curriculum
+      .getSubmaterialProgress(submaterialId)
+      .then((res: any) => {
+        const data = res?.data || res;
+        setSubmaterial({
+          id: submaterialId,
+          title: `Submateri #${submaterialId}`,
+          isMastered: Boolean(data?.isMastered),
+          progressState: data?.progressState || 'IN_PROGRESS',
+        });
+
+        const apiLevels = data?.levels || [];
+        const mappedLevels: CognitiveLevelItem[] = LEVEL_CONFIGS.map((cfg) => {
+          const found = apiLevels.find((l: any) => Number(l.level) === cfg.levelNumber);
+          const isUnlocked = found ? found.status !== 'LOCKED' : cfg.levelNumber === 1;
+          const isPassed = found ? found.status === 'COMPLETED' : false;
+          return {
+            ...cfg,
+            isUnlocked,
+            isPassed,
+            highestScore: found?.score ?? null,
+          };
+        });
+
+        setLevels(mappedLevels);
+      })
+      .catch((err: any) => {
+        console.error('Failed to load submaterial progress:', err);
+        setErrorMsg(err.message || 'Gagal memuat status level latihan dari server.');
+      })
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadProgress();
+  }, [submaterialId]);
+
+  const handleStartLevel = async (levelNumber: number) => {
+    setStartingLevel(levelNumber);
+    setErrorMsg('');
+
+    try {
+      const res = await api.learning.startAttempt(levelNumber, submaterialId);
+      const attemptId = res?.attemptId || res?.id || res?.sessionId || res?.session?.id;
+      if (!attemptId) {
+        throw new Error('Sesi latihan tidak dapat dibuat.');
+      }
+      router.push(`/learning/exam/${attemptId}`);
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Gagal memulai sesi latihan level. Pastikan bank soal tersedia di server.');
+    } finally {
+      setStartingLevel(null);
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen flex-col bg-slate-950">
+      <Navbar />
+
+      <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full space-y-6">
+        <Link
+          href="/curriculum"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white"
+        >
+          <ArrowLeft className="h-4 w-4" /> Kembali ke Kurikulum
+        </Link>
+
+        {errorMsg && (
+          <div className="flex items-center justify-between rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-400">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 shrink-0" />
+              <span>{errorMsg}</span>
+            </div>
+            <button
+              onClick={loadProgress}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-rose-500/20 px-3 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-500/30 transition-colors"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              <span>Coba Lagi</span>
+            </button>
+          </div>
+        )}
+
+        {loading ? (
+          <div className="flex h-64 items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
+          </div>
+        ) : (
+          <>
+            {/* Header Card */}
+            <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 sm:p-8 backdrop-blur-md">
+              <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-400 mb-2">
+                <Layers className="h-3.5 w-3.5" />
+                Pohon Level Kognitif Asesmen
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+                {submaterial?.title || 'Submateri Pembelajaran'}
+              </h1>
+              <p className="mt-2 text-xs sm:text-sm text-slate-300">
+                Selesaikan 3 level kognitif secara bertahap dengan ambang kelulusan 80% (Mastery Learning) untuk menuntaskan submateri ini.
+              </p>
+            </div>
+
+            {/* Levels List */}
+            <div className="space-y-4">
+              {levels.map((lvl) => {
+                const IconComponent = lvl.icon;
+                return (
+                  <div
+                    key={lvl.levelNumber}
+                    className={`rounded-2xl border p-6 transition-all ${
+                      lvl.isUnlocked
+                        ? 'border-slate-800 bg-slate-900/80 hover:border-slate-700'
+                        : 'border-slate-900 bg-slate-950/40 opacity-60'
+                    }`}
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="flex items-start gap-4">
+                        <div
+                          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${
+                            lvl.isPassed
+                              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                              : lvl.isUnlocked
+                              ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30'
+                              : 'bg-slate-800 text-slate-500'
+                          }`}
+                        >
+                          {lvl.isPassed ? (
+                            <CheckCircle2 className="h-6 w-6" />
+                          ) : lvl.isUnlocked ? (
+                            <IconComponent className="h-6 w-6" />
+                          ) : (
+                            <Lock className="h-6 w-6" />
+                          )}
+                        </div>
+
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-base font-bold text-white">{lvl.name}</h3>
+                            <span className="rounded-md bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-slate-400">
+                              {lvl.category}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-400 mt-1 max-w-xl">
+                            {lvl.description}
+                          </p>
+
+                          <div className="mt-3 flex items-center gap-4 text-xs">
+                            <span className="text-indigo-400 font-semibold flex items-center gap-1">
+                              <Sparkles className="h-3.5 w-3.5" /> +{lvl.xpReward} XP
+                            </span>
+                            {lvl.highestScore !== null && (
+                              <span className="text-slate-400">
+                                Skor Tertinggi:{' '}
+                                <strong
+                                  className={
+                                    lvl.highestScore >= 80 ? 'text-emerald-400' : 'text-amber-400'
+                                  }
+                                >
+                                  {lvl.highestScore}%
+                                </strong>
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
+                        {lvl.isUnlocked ? (
+                          <button
+                            onClick={() => handleStartLevel(lvl.levelNumber)}
+                            disabled={startingLevel === lvl.levelNumber}
+                            className={`flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-xs font-semibold text-white shadow-lg transition-all ${
+                              lvl.isPassed
+                                ? 'bg-slate-800 hover:bg-slate-700 text-slate-200'
+                                : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/30'
+                            }`}
+                          >
+                            {startingLevel === lvl.levelNumber ? (
+                              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                            ) : (
+                              <>
+                                <span>{lvl.isPassed ? 'Ulangi Latihan' : 'Mulai Latihan'}</span>
+                                <ArrowRight className="h-3.5 w-3.5" />
+                              </>
+                            )}
+                          </button>
+                        ) : (
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+                            <Lock className="h-3.5 w-3.5" />
+                            <span>Terkunci</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
