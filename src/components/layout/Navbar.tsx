@@ -18,23 +18,14 @@ import {
   Moon,
   ArrowRight
 } from 'lucide-react';
+import { useTheme } from '@/lib/theme-context';
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
   const { user, role, logout } = useAuth();
+  const { isLight, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const [isLight, setIsLight] = useState(false);
-
-  const toggleTheme = () => {
-    const next = !isLight;
-    setIsLight(next);
-    if (next) {
-      document.documentElement.setAttribute('data-theme', 'light');
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-    }
-  };
 
   // Nav items for student
   const navLinks = [
@@ -210,6 +201,18 @@ export const Navbar: React.FC = () => {
               </Link>
             );
           })}
+          <div className="pt-2 border-t border-slate-800">
+            <button
+              onClick={toggleTheme}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-900 transition-colors"
+            >
+              <span className="flex items-center gap-3">
+                {isLight ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4 text-amber-400" />}
+                <span>Tema: {isLight ? 'Terang (Light)' : 'Gelap (Dark)'}</span>
+              </span>
+              <span className="text-[11px] text-slate-500">Ubah</span>
+            </button>
+          </div>
         </div>
       )}
     </header>

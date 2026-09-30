@@ -4,11 +4,13 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
-import { Database, Layers, UserCheck, ArrowLeftRight, LogOut, ShieldAlert } from 'lucide-react';
+import { Database, Layers, UserCheck, ArrowLeftRight, LogOut, ShieldAlert, Sun, Moon } from 'lucide-react';
+import { useTheme } from '@/lib/theme-context';
 
 export const AdminNav: React.FC = () => {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { isLight, toggleTheme } = useTheme();
 
   const links = [
     { label: 'Bank Soal', href: '/admin/bank-soal', icon: Database },
@@ -60,6 +62,15 @@ export const AdminNav: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+            title="Ganti Tema (Dark / Light)"
+          >
+            {isLight ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4 text-amber-400" />}
+          </button>
+
           <Link
             href="/dashboard"
             className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
