@@ -12,7 +12,9 @@ import {
   Check, 
   AlertCircle, 
   ShieldCheck, 
-  Edit3 
+  Edit3,
+  Trash2,
+  Image as ImageIcon
 } from 'lucide-react';
 
 export default function EditQuestionPage({ params }: { params: Promise<{ questionId: string }> }) {
@@ -27,6 +29,8 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
   const [questionType, setQuestionType] = useState<'PG_TUNGGAL' | 'PG_KOMPLEKS'>('PG_TUNGGAL');
 
   const [stimulus, setStimulus] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [questionText, setQuestionText] = useState('');
 
   const [options, setOptions] = useState([
@@ -72,7 +76,18 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
     setQuestionType(
       (q.questionFormat || q.question_format) === 'COMPLEX_CHOICE' ? 'PG_KOMPLEKS' : 'PG_TUNGGAL'
     );
-    setStimulus(q.stimulusText || q.stimulus || '');
+    setStimulus(
+      typeof q.stimulus === 'string'
+        ? q.stimulus
+        : (q.stimulus?.stimulus_text || q.stimulusText || '')
+    );
+    setImageUrl(
+      q.stimulus_image_url ||
+      q.stimulusImageUrl ||
+      (typeof q.stimulus === 'object' && (q.stimulus?.stimulus_image_url || q.stimulus?.image_url)) ||
+      q.imageUrl ||
+      ''
+    );
     setQuestionText(q.questionText || q.question_text || '');
     if (q.options && Array.isArray(q.options)) {
       setOptions(
@@ -96,6 +111,23 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
         q.explanation_text ||
         (typeof q.explanation === 'string' ? q.explanation : '')
     );
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      const res = await api.admin.uploadImage(formData);
+      setImageUrl(res?.url || res?.imageUrl || URL.createObjectURL(file));
+    } catch {
+      setImageUrl(URL.createObjectURL(file));
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const handleOptionChange = (key: string, text: string) => {
@@ -146,8 +178,10 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
         ? {
             title: `Wacana - ${questionText.slice(0, 30)}`,
             stimulus_text: stimulus,
+            stimulus_image_url: imageUrl || null,
           }
         : null,
+      stimulus_image_url: imageUrl || null,
       // Backward-compatible properties
       bankType,
       subjectId: Number(subjectId),
@@ -159,6 +193,7 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
       questionText,
       correctAnswer: questionType === 'PG_TUNGGAL' ? singleKey : complexKeys,
       explanationText: explanation,
+      imageUrl: imageUrl || null,
     };
 
     try {
@@ -275,6 +310,55 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
                   required
                   className="mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2 text-xs text-white"
                 />
+              </div>
+
+              {/* Image upload & URL */}
+              <div className="space-y-2">
+                <label className="block text-xs font-semibold text-slate-300">
+                  Gambar Stimulus / Pendukung Soal (Opsional)
+                </label>
+                
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                  <label className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800 px-3.5 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 cursor-pointer transition-colors shrink-0">
+                    <Upload className="h-4 w-4 text-purple-400" />
+                    <span>{uploadingImage ? 'Mengunggah...' : 'Unggah Berkas'}</span>
+                    <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                  </label>
+
+                  <div className="relative flex-1">
+                    <input
+                      type="url"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      placeholder="Atau masukkan tautan URL gambar (https://...)"
+                      className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2 pl-9 text-xs text-white placeholder-slate-500 focus:border-purple-500 focus:outline-none"
+                    />
+                    <ImageIcon className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
+                  </div>
+                </div>
+
+                {imageUrl && (
+                  <div className="mt-2.5 flex items-start gap-4 rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+                    <img
+                      src={imageUrl}
+                      alt="Pratinjau stimulus"
+                      className="h-24 w-auto max-w-[200px] object-contain rounded-lg border border-slate-700 bg-slate-900"
+                    />
+                    <div className="flex-1 space-y-2">
+                      <span className="text-xs text-emerald-400 flex items-center gap-1 font-medium">
+                        <Check className="h-3.5 w-3.5" /> Gambar aktif terpasang
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setImageUrl('')}
+                        className="flex items-center gap-1 text-xs text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        <span>Hapus Gambar</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

@@ -17,7 +17,8 @@ import {
   Edit3, 
   Trash2,
   Sparkles,
-  AlertCircle
+  AlertCircle,
+  Image as ImageIcon
 } from 'lucide-react';
 
 export default function AdminBankSoalPage() {
@@ -68,6 +69,7 @@ export default function AdminBankSoalPage() {
         cognitiveLevel: q.cognitiveLevel || (q.cognitive_level_id ? `Level ${q.cognitive_level_id}` : 'C1'),
         type: q.questionFormat || q.question_format || q.type || 'SINGLE_CHOICE',
         questionText: q.questionText || q.question_text || '',
+        imageUrl: q.stimulus_image_url || q.stimulusImageUrl || q.imageUrl || q.stimulus?.stimulus_image_url || null,
         isActive: Boolean(q.isActive ?? q.is_active ?? true),
         updatedAt: q.updatedAt || q.created_at || '-',
       }));
@@ -275,10 +277,19 @@ export default function AdminBankSoalPage() {
                   {filteredQuestions.map((q) => (
                     <tr key={q.id} className="hover:bg-slate-800/30 transition-colors">
                       <td className="py-3.5 px-4 max-w-md">
-                        <p className="font-semibold text-white line-clamp-2">{q.questionText}</p>
-                        <p className="text-[11px] text-purple-300 mt-1">
-                          Materi: {q.materialName}
-                        </p>
+                        <div className="flex items-start gap-2">
+                          {q.imageUrl && (
+                            <span className="shrink-0 mt-0.5 inline-flex items-center gap-1 rounded bg-purple-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-purple-300 border border-purple-500/30" title="Memuat Gambar Stimulus">
+                              <ImageIcon className="h-3 w-3" />
+                            </span>
+                          )}
+                          <div>
+                            <p className="font-semibold text-white line-clamp-2">{q.questionText}</p>
+                            <p className="text-[11px] text-purple-300 mt-1">
+                              Materi: {q.materialName}
+                            </p>
+                          </div>
+                        </div>
                       </td>
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         <p className="font-medium text-slate-200">{q.subjectName}</p>

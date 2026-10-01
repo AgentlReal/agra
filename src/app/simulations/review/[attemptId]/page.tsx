@@ -12,13 +12,16 @@ import {
   ArrowLeft, 
   BookOpen,
   CheckSquare,
-  CircleDot
+  CircleDot,
+  ZoomIn,
+  X
 } from 'lucide-react';
 
 interface ReviewItem {
   id: string | number;
   questionNumber: number;
   stimulus?: string;
+  stimulusImageUrl?: string | null;
   questionText: string;
   options: { id?: number; key: string; text: string; isCorrect: boolean }[];
   questionFormat: 'SINGLE_CHOICE' | 'COMPLEX_CHOICE';
@@ -32,6 +35,7 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
   const { attemptId } = use(params);
   const [questions, setQuestions] = useState<ReviewItem[]>([]);
   const [filter, setFilter] = useState<'all' | 'correct' | 'wrong'>('all');
+  const [zoomImageUrl, setZoomImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [errorMsg, setErrorMsg] = useState('');
@@ -47,6 +51,13 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
               typeof q.stimulus === 'string'
                 ? q.stimulus
                 : (q.stimulus?.content_text || q.stimulusText || '');
+
+            const stimulusImageUrl =
+              q.stimulus_image_url ||
+              q.stimulusImageUrl ||
+              (typeof q.stimulus === 'object' && (q.stimulus?.stimulus_image_url || q.stimulus?.image_url)) ||
+              q.imageUrl ||
+              null;
 
             const mappedOptions = (q.options || []).map((opt: any) => ({
               id: opt.id ?? opt.option_id,
@@ -86,6 +97,7 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
               id: q.session_question_id ?? q.id ?? i + 1,
               questionNumber: q.question_order ?? q.questionNumber ?? i + 1,
               stimulus: stimulusText,
+              stimulusImageUrl,
               questionText: q.question_text || q.questionText || '',
               options: mappedOptions,
               questionFormat,
@@ -221,9 +233,28 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
                   )}
                 </div>
 
-                {q.stimulus && (
-                  <div className="mb-4 rounded-xl border border-slate-800 bg-slate-950/60 p-3 text-xs text-slate-300">
-                    {q.stimulus}
+                {(q.stimulus || q.stimulusImageUrl) && (
+                  <div className="mb-4 rounded-xl border border-slate-800 bg-slate-950/60 p-3 text-xs text-slate-300 space-y-2.5">
+                    {q.stimulus && <div>{q.stimulus}</div>}
+
+                    {q.stimulusImageUrl && (
+                      <div className="relative group overflow-hidden rounded-lg border border-slate-800 bg-slate-900/60 p-2 text-center">
+                        <img
+                          src={q.stimulusImageUrl}
+                          alt="Stimulus visual simulasi"
+                          className="max-h-60 sm:max-h-72 w-auto mx-auto object-contain rounded cursor-zoom-in hover:opacity-95 transition-opacity"
+                          onClick={() => setZoomImageUrl(q.stimulusImageUrl || null)}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setZoomImageUrl(q.stimulusImageUrl || null)}
+                          className="absolute bottom-2.5 right-2.5 flex items-center gap-1 rounded bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold text-slate-300 backdrop-blur-sm border border-slate-700 hover:text-white transition-colors"
+                        >
+                          <ZoomIn className="h-3 w-3" />
+                          <span>Perbesar</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -290,6 +321,32 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
           </div>
         )}
       </main>
+
+      {/* Lightbox Zoom Modal */}
+      {zoomImageUrl && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-150"
+          onClick={() => setZoomImageUrl(null)}
+        >
+          <div
+            className="relative max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 p-2 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setZoomImageUrl(null)}
+              className="absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-slate-900/90 text-white hover:bg-slate-800 border border-slate-700 transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <img
+              src={zoomImageUrl}
+              alt="Stimulus visual diperbesar"
+              className="max-h-[85vh] w-auto max-w-full object-contain rounded-xl mx-auto"
+            />
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
