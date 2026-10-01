@@ -12,7 +12,6 @@ export interface ProfileJoinRow extends RowDataPacket {
     name: string;
     username: string;
     email: string;
-    grade: number;
     total_xp: number;
     is_recall_passed: number;
     avatar_id: number | null;
@@ -30,7 +29,7 @@ export class ProfileRepository {
     async findProfileByUserId(userId: string): Promise<ProfileJoinRow | null> {
         const rows = await query<ProfileJoinRow[]>(
             `SELECT 
-                up.user_id, u.name, u.username, u.email, up.grade, up.total_xp, up.is_recall_passed,
+                up.user_id, u.name, u.username, u.email, up.total_xp, up.is_recall_passed,
                 pa.id AS avatar_id, pa.name AS avatar_name, pa.image_url AS avatar_image_url,
                 mt.id AS tier_id, mt.tier_number, mt.title AS tier_title, mt.badge_icon_url AS tier_badge_url,
                 mt.min_xp AS tier_min_xp, mt.max_xp AS tier_max_xp
@@ -52,11 +51,11 @@ export class ProfileRepository {
         return rows[0] || null;
     }
 
-    async createProfile(userId: string, grade: number, avatarId: number): Promise<void> {
+    async createProfile(userId: string, avatarId: number = 1): Promise<void> {
         await execute(
-            `INSERT INTO user_profiles (user_id, grade, preset_avatar_id, current_milestone_tier_id, total_xp, is_recall_passed)
-             VALUES (?, ?, ?, 1, 0, FALSE)`,
-            [userId, grade, avatarId]
+            `INSERT INTO user_profiles (user_id, preset_avatar_id, current_milestone_tier_id, total_xp, is_recall_passed)
+             VALUES (?, ?, 1, 0, FALSE)`,
+            [userId, avatarId]
         );
     }
 

@@ -57,7 +57,12 @@ export default function RecallIntroPage() {
     setErrorMsg('');
     try {
       const res = await api.recall.startAttempt();
-      const attemptId = res?.attemptId || res?.id || res?.data?.attemptId;
+      const attemptId =
+        res?.attempt_id ||
+        res?.attemptId ||
+        res?.id ||
+        res?.data?.attempt_id ||
+        res?.data?.attemptId;
       if (!attemptId) {
         throw new Error('Gagal memulai sesi Recall.');
       }

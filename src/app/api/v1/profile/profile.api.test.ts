@@ -31,7 +31,6 @@ describe("Profile & Dashboard API Endpoints", () => {
                 email: "siswa@example.com",
                 username: "siswa_uji",
                 name: "Siswa Penguji",
-                grade: 7,
                 avatar: { id: 1, name: "Ksatria Buku", imageUrl: "/avatar1.svg" },
                 totalXp: 100,
                 milestone: {
@@ -56,16 +55,15 @@ describe("Profile & Dashboard API Endpoints", () => {
 
             expect(status).toBe(200);
             expect(body.data.id).toBe("student-uuid-1");
-            expect(body.data.grade).toBe(7);
         });
     });
 
     describe("POST /api/v1/profile/complete", () => {
-        it("harus mengembalikan 400 Bad Request jika grade tidak valid (misal grade 12)", async () => {
+        it("harus mengembalikan 400 Bad Request jika presetAvatarId tidak valid (misal negatif)", async () => {
             setMockSessionUser(defaultMockStudent);
             const req = createTestRequest("/api/v1/profile/complete", {
                 method: "POST",
-                body: { grade: 12, presetAvatarId: 1 },
+                body: { presetAvatarId: -1 },
             });
 
             const res = await completeProfile(req);
@@ -81,7 +79,6 @@ describe("Profile & Dashboard API Endpoints", () => {
                 email: "siswa@example.com",
                 username: "siswa_uji",
                 name: "Siswa Penguji",
-                grade: 8,
                 avatar: { id: 2, name: "Penjelajah", imageUrl: "/avatar2.svg" },
                 totalXp: 0,
                 milestone: {
@@ -103,14 +100,14 @@ describe("Profile & Dashboard API Endpoints", () => {
 
             const req = createTestRequest("/api/v1/profile/complete", {
                 method: "POST",
-                body: { grade: 8, presetAvatarId: 2 },
+                body: { presetAvatarId: 2 },
             });
 
             const res = await completeProfile(req);
             const { status, body } = await parseApiResponse(res);
 
             expect(status).toBe(201);
-            expect(body.data.grade).toBe(8);
+            expect(body.data.id).toBe("student-uuid-1");
         });
     });
 

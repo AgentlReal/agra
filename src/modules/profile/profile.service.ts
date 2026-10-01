@@ -13,12 +13,13 @@ export class ProfileService {
     constructor(private readonly repo = new ProfileRepository()) {}
 
     async getProfile(userId: string): Promise<StudentProfileDto> {
-        const row = await this.repo.findProfileByUserId(userId);
+        let row = await this.repo.findProfileByUserId(userId);
         if (!row) {
-            throw new ConflictError(
-                "Lengkapi profil siswa dengan memilih kelas terlebih dahulu.",
-                "PROFILE_INCOMPLETE"
-            );
+            await this.repo.createProfile(userId, 1);
+            row = await this.repo.findProfileByUserId(userId);
+        }
+        if (!row) {
+            throw new BadRequestError("Profil siswa tidak ditemukan.");
         }
 
         const currentXp = Number(row.total_xp);
@@ -58,37 +59,36 @@ export class ProfileService {
                 xpRemaining,
                 progressPercent,
             },
-            grade: row.grade as 7 | 8 | 9,
         };
     }
 
     async completeProfile(userId: string, dto: CompleteProfileDto): Promise<StudentProfileDto> {
         const existing = await this.repo.findRawProfile(userId);
         if (existing) {
-            throw new ConflictError("Profil siswa sudah pernah dilengkapi", "PROFILE_ALREADY_EXISTS");
+            const avatarId = dto.presetAvatarId || dto.avatarId;
+            if (avatarId) {
+                const avatar = await this.repo.getAvatarById(avatarId);
+                if (avatar && avatar.is_active) {
+                    await this.repo.updateAvatar(userId, avatarId);
+                }
+            }
+            return this.getProfile(userId);
         }
 
-        if (![7, 8, 9].includes(dto.grade)) {
-            throw new BadRequestError("Kelas harus 7, 8, atau 9 SMP", "INVALID_GRADE");
-        }
-
-        const avatarId = dto.presetAvatarId || 1;
+        const avatarId = dto.presetAvatarId || dto.avatarId || 1;
         const avatar = await this.repo.getAvatarById(avatarId);
         if (!avatar || !avatar.is_active) {
             throw new BadRequestError("Avatar preset yang dipilih tidak valid atau tidak aktif");
         }
 
-        await this.repo.createProfile(userId, dto.grade, avatarId);
+        await this.repo.createProfile(userId, avatarId);
         return this.getProfile(userId);
     }
 
     async updateProfileName(userId: string, dto: UpdateProfileNameDto): Promise<StudentProfileDto> {
-        const profile = await this.repo.findRawProfile(userId);
+        let profile = await this.repo.findRawProfile(userId);
         if (!profile) {
-            throw new ConflictError(
-                "Lengkapi profil siswa dengan memilih kelas terlebih dahulu.",
-                "PROFILE_INCOMPLETE"
-            );
+            await this.repo.createProfile(userId, 1);
         }
 
         await this.repo.updateProfileName(userId, dto.name);
@@ -118,12 +118,9 @@ export class ProfileService {
             throw new BadRequestError("Avatar tidak ditemukan atau tidak aktif");
         }
 
-        const profile = await this.repo.findRawProfile(userId);
+        let profile = await this.repo.findRawProfile(userId);
         if (!profile) {
-            throw new ConflictError(
-                "Lengkapi profil siswa dengan memilih kelas terlebih dahulu.",
-                "PROFILE_INCOMPLETE"
-            );
+            await this.repo.createProfile(userId, 1);
         }
 
         await this.repo.updateAvatar(userId, avatarId);
