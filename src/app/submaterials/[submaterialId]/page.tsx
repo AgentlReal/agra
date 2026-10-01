@@ -117,11 +117,14 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
     try {
       const res = await api.learning.startAttempt(levelNumber, submaterialId);
       const attemptId =
+        res?.id ||
+        res?.session_id ||
         res?.attempt_id ||
         res?.attemptId ||
-        res?.id ||
         res?.sessionId ||
         res?.session?.id ||
+        res?.data?.id ||
+        res?.data?.session_id ||
         res?.data?.attempt_id ||
         res?.data?.attemptId;
       if (!attemptId) {
@@ -129,7 +132,10 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
       }
       router.push(`/learning/exam/${attemptId}`);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Gagal memulai sesi latihan level. Pastikan bank soal tersedia di server.');
+      setErrorMsg(
+        err.message ||
+          'Gagal memulai sesi latihan level. Pastikan Anda telah lulus Recall Kemampuanmu dan level prasyarat telah tuntas.'
+      );
     } finally {
       setStartingLevel(null);
     }

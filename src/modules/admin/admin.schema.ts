@@ -149,6 +149,122 @@ export const questionIdParamSchema = z.object({
 
 export type QuestionIdParamInput = z.infer<typeof questionIdParamSchema>;
 
+export const updateQuestionSchema = z
+    .object({
+        subject_id: positiveInteger("subject_id").optional(),
+        subjectId: positiveInteger("subjectId").optional(),
+        sub_material_id: positiveInteger("sub_material_id").nullable().optional(),
+        subMaterialId: positiveInteger("subMaterialId").nullable().optional(),
+        cognitive_level_id: positiveInteger("cognitive_level_id").nullable().optional(),
+        cognitiveLevelId: positiveInteger("cognitiveLevelId").nullable().optional(),
+        stimulus_id: positiveInteger("stimulus_id").nullable().optional(),
+        stimulusId: positiveInteger("stimulusId").nullable().optional(),
+        bank_type: z.enum(["RECALL", "LEVEL_EXERCISE", "SIMULATION"]).optional(),
+        bankType: z.enum(["RECALL", "LEVEL_EXERCISE", "SIMULATION"]).optional(),
+        question_format: z.enum(["SINGLE_CHOICE", "COMPLEX_CHOICE"]).optional(),
+        questionFormat: z.enum(["SINGLE_CHOICE", "COMPLEX_CHOICE"]).optional(),
+        question_text: z.string().trim().min(1).optional(),
+        questionText: z.string().trim().min(1).optional(),
+        stimulus_image_url: z.string().nullable().optional(),
+        stimulusImageUrl: z.string().nullable().optional(),
+        imageUrl: z.string().nullable().optional(),
+        options: z
+            .array(
+                z.object({
+                    option_label: z.enum(["A", "B", "C", "D"]).optional(),
+                    optionLabel: z.enum(["A", "B", "C", "D"]).optional(),
+                    option_text: z.string().trim().min(1).optional(),
+                    optionText: z.string().trim().min(1).optional(),
+                    is_correct: booleanField("is_correct").optional(),
+                    isCorrect: booleanField("isCorrect").optional(),
+                })
+            )
+            .optional(),
+        explanation: z
+            .object({
+                explanation_text: z.string().trim().optional(),
+                explanationText: z.string().trim().optional(),
+                reasoning_guide: z.string().nullable().optional(),
+                reasoningGuide: z.string().nullable().optional(),
+                reference_url: z.string().nullable().optional(),
+                referenceUrl: z.string().nullable().optional(),
+            })
+            .optional(),
+        explanationText: z.string().trim().optional(),
+        stimulus: z
+            .object({
+                title: z.string().trim().min(1).max(100).optional(),
+                stimulus_text: z.string().trim().optional(),
+                stimulusText: z.string().trim().optional(),
+                stimulus_image_url: z.string().nullable().optional(),
+                stimulusImageUrl: z.string().nullable().optional(),
+            })
+            .nullable()
+            .optional(),
+    })
+    .transform((data) => {
+        const subject_id = data.subject_id ?? data.subjectId;
+        const sub_material_id = data.sub_material_id !== undefined ? data.sub_material_id : data.subMaterialId;
+        const cognitive_level_id = data.cognitive_level_id !== undefined ? data.cognitive_level_id : data.cognitiveLevelId;
+        const stimulus_id = data.stimulus_id !== undefined ? data.stimulus_id : data.stimulusId;
+        const bank_type = data.bank_type ?? data.bankType;
+        const question_format = data.question_format ?? data.questionFormat;
+        const question_text = data.question_text ?? data.questionText;
+        const stimulus_image_url = data.stimulus_image_url ?? data.stimulusImageUrl ?? data.imageUrl;
+
+        const options = data.options
+            ? data.options.map((o) => ({
+                  option_label: (o.option_label ?? o.optionLabel ?? "A") as "A" | "B" | "C" | "D",
+                  option_text: o.option_text ?? o.optionText ?? "",
+                  is_correct: o.is_correct ?? o.isCorrect ?? false,
+              }))
+            : undefined;
+
+        let explanation = undefined;
+        if (data.explanation) {
+            const explanation_text = data.explanation.explanation_text ?? data.explanation.explanationText;
+            if (explanation_text) {
+                explanation = {
+                    explanation_text,
+                    reasoning_guide: data.explanation.reasoning_guide ?? data.explanation.reasoningGuide ?? null,
+                    reference_url: data.explanation.reference_url ?? data.explanation.referenceUrl ?? null,
+                };
+            }
+        } else if (data.explanationText) {
+            explanation = {
+                explanation_text: data.explanationText,
+                reasoning_guide: null,
+                reference_url: null,
+            };
+        }
+
+        const stimulus = data.stimulus
+            ? {
+                  title: data.stimulus.title || "Wacana Soal",
+                  stimulus_text: data.stimulus.stimulus_text ?? data.stimulus.stimulusText ?? "",
+                  stimulus_image_url: data.stimulus.stimulus_image_url ?? data.stimulus.stimulusImageUrl ?? null,
+              }
+            : data.stimulus === null
+            ? null
+            : undefined;
+
+        return {
+            subject_id,
+            sub_material_id,
+            cognitive_level_id,
+            stimulus_id,
+            bank_type,
+            question_format,
+            question_text,
+            stimulus_image_url,
+            options,
+            explanation,
+            stimulus,
+        };
+    });
+
+export type UpdateQuestionInput = z.infer<typeof updateQuestionSchema>;
+
 export const toggleQuestionStatusSchema = z
     .object({
         is_active: booleanField("is_active").optional(),
@@ -165,8 +281,12 @@ export const createSimulationPackageSchema = z
         subject_id: positiveInteger("subject_id").optional(),
         subjectId: positiveInteger("subjectId").optional(),
         title: requiredString("Judul paket", 3, 150),
-        package_code: requiredString("Kode paket", 2, 50).optional(),
-        packageCode: requiredString("Kode paket", 2, 50).optional(),
+        package_code: z.string().trim().optional(),
+        packageCode: z.string().trim().optional(),
+        description: z.string().optional(),
+        status: z.enum(["DRAFT", "ACTIVE", "ARCHIVED", "PUBLISHED"]).optional(),
+        total_questions: z.coerce.number().optional(),
+        totalQuestions: z.coerce.number().optional(),
         questions: z
             .array(
                 z.object({
@@ -183,8 +303,11 @@ export const createSimulationPackageSchema = z
         const subject_id = data.subject_id ?? data.subjectId;
         if (!subject_id) throw new Error("subject_id wajib diisi dan berupa angka positif");
 
-        const package_code = data.package_code ?? data.packageCode;
-        if (!package_code) throw new Error("package_code wajib diisi");
+        let package_code = data.package_code ?? data.packageCode;
+        if (!package_code) {
+            const prefix = subject_id === 1 ? "MAT-SIM" : subject_id === 2 ? "BIN-SIM" : "SIM";
+            package_code = `${prefix}-${Date.now().toString().slice(-4)}`;
+        }
 
         let questions: Array<{ question_id: number; question_order: number }> = [];
         if (data.questions && data.questions.length > 0) {
@@ -199,15 +322,126 @@ export const createSimulationPackageSchema = z
             }));
         }
 
+        let mappedStatus: "DRAFT" | "ACTIVE" | "ARCHIVED" = "DRAFT";
+        if (data.status === "ACTIVE" || data.status === "PUBLISHED") {
+            mappedStatus = "ACTIVE";
+        } else if (data.status === "ARCHIVED") {
+            mappedStatus = "ARCHIVED";
+        }
+
         return {
             subject_id,
             title: data.title,
             package_code,
             questions,
+            status: mappedStatus,
         };
     });
 
 export type CreateSimulationPackageInput = z.infer<typeof createSimulationPackageSchema>;
+
+export const updateSimulationPackageSchema = z
+    .object({
+        subject_id: positiveInteger("subject_id").optional(),
+        subjectId: positiveInteger("subjectId").optional(),
+        title: z.string().trim().min(3).max(150).optional(),
+        name: z.string().trim().min(3).max(150).optional(),
+        package_code: z.string().trim().optional(),
+        packageCode: z.string().trim().optional(),
+        status: z.enum(["DRAFT", "ACTIVE", "ARCHIVED", "PUBLISHED"]).optional(),
+        is_active: booleanField("is_active").optional(),
+        isActive: booleanField("isActive").optional(),
+        isPublished: booleanField("isPublished").optional(),
+        questions: z
+            .array(
+                z.object({
+                    question_id: positiveInteger("question_id").optional(),
+                    questionId: positiveInteger("questionId").optional(),
+                    question_order: z.coerce.number().int().min(1).max(30).optional(),
+                    questionOrder: z.coerce.number().int().min(1).max(30).optional(),
+                })
+            )
+            .optional(),
+        questionIds: z.array(positiveInteger("Question ID")).optional(),
+    })
+    .transform((data) => {
+        const title = data.title ?? data.name;
+        const subject_id = data.subject_id ?? data.subjectId;
+        const package_code = data.package_code ?? data.packageCode;
+
+        let status: "DRAFT" | "ACTIVE" | "ARCHIVED" | undefined;
+        if (data.status === "PUBLISHED" || data.isPublished === true) {
+            status = "ACTIVE";
+        } else if (data.status) {
+            status = data.status as "DRAFT" | "ACTIVE" | "ARCHIVED";
+        } else if (data.isPublished === false) {
+            status = "ARCHIVED";
+        }
+
+        let is_active = data.is_active ?? data.isActive;
+        if (data.isPublished !== undefined) {
+            is_active = data.isPublished;
+        }
+
+        let questions: Array<{ question_id: number; question_order: number }> | undefined;
+        if (data.questions && data.questions.length > 0) {
+            questions = data.questions.map((q, idx) => ({
+                question_id: q.question_id ?? q.questionId ?? 0,
+                question_order: q.question_order ?? q.questionOrder ?? idx + 1,
+            }));
+        } else if (data.questionIds && data.questionIds.length > 0) {
+            questions = data.questionIds.map((id, idx) => ({
+                question_id: id,
+                question_order: idx + 1,
+            }));
+        }
+
+        return {
+            subject_id,
+            title,
+            package_code,
+            status,
+            is_active,
+            questions,
+        };
+    });
+
+export type UpdateSimulationPackageInput = z.infer<typeof updateSimulationPackageSchema>;
+
+export const updateSimulationPackageStatusSchema = z
+    .object({
+        status: z.enum(["DRAFT", "ACTIVE", "ARCHIVED", "PUBLISHED"]).optional(),
+        is_active: booleanField("is_active").optional(),
+        isActive: booleanField("isActive").optional(),
+        isPublished: booleanField("isPublished").optional(),
+    })
+    .transform((data) => {
+        let status: "DRAFT" | "ACTIVE" | "ARCHIVED" | undefined;
+        let is_active = data.is_active ?? data.isActive;
+
+        if (data.isPublished !== undefined) {
+            is_active = data.isPublished;
+            status = data.isPublished ? "ACTIVE" : "ARCHIVED";
+        }
+
+        if (data.status === "PUBLISHED") {
+            status = "ACTIVE";
+            if (is_active === undefined) is_active = true;
+        } else if (data.status) {
+            status = data.status;
+            if (is_active === undefined) {
+                if (status === "ACTIVE") is_active = true;
+                if (status === "ARCHIVED") is_active = false;
+            }
+        }
+
+        return {
+            status,
+            is_active,
+        };
+    });
+
+export type UpdateSimulationPackageStatusInput = z.infer<typeof updateSimulationPackageStatusSchema>;
 
 export const packageIdParamSchema = z.object({
     packageId: positiveInteger("packageId"),
@@ -218,3 +452,4 @@ export type PackageIdParamInput = z.infer<typeof packageIdParamSchema>;
 export const paginationQuerySchema = paginationSchema;
 
 export type PaginationQueryInput = z.infer<typeof paginationQuerySchema>;
+

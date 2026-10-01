@@ -299,15 +299,20 @@ export const api = {
         method: 'PATCH',
         body: JSON.stringify({ isActive }),
       }),
-    uploadImage: (formData: FormData) => {
+    uploadImage: async (formData: FormData) => {
       const url = BASE_URL ? `${BASE_URL}/api/v1/admin/question-images` : '/api/v1/admin/question-images';
       const token = typeof window !== 'undefined' ? localStorage.getItem('agra_token') : null;
-      return fetch(url, {
+      const res = await fetch(url, {
         method: 'POST',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
         credentials: 'include',
         body: formData,
-      }).then((r) => r.json());
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.message || data?.error?.message || 'Gagal mengunggah berkas gambar.');
+      }
+      return data;
     },
     getSimulationPackages: (params?: Record<string, string | number>) => {
       const qs = params ? '?' + new URLSearchParams(params as any).toString() : '';

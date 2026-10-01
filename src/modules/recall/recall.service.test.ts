@@ -157,14 +157,22 @@ describe("RecallService Unit Tests", () => {
     });
 
     describe("submitAttempt", () => {
-        it("harus melempar error 422 INCOMPLETE_RECALL_ANSWERS jika belum 30 butir soal dijawab", async () => {
+        it("harus berhasil submit meskipun ada butir yang belum dijawab (< 30) dan mengevaluasinya sebagai salah", async () => {
             mockRepo.getSessionById!.mockResolvedValue({ id: 101, status: "IN_PROGRESS" });
-            mockRepo.countAnsweredQuestions!.mockResolvedValue(28); // Kurang 2 soal
-
-            await expect(service.submitAttempt(101, "user-1")).rejects.toMatchObject({
-                statusCode: 422,
-                code: "INCOMPLETE_RECALL_ANSWERS",
+            mockRepo.evaluateAndCompleteSession!.mockResolvedValue({
+                correctAnswers: 20,
+                isPassed: false,
+                mathCorrect: 10,
+                mathTotal: 15,
+                bahasaCorrect: 10,
+                bahasaTotal: 15,
             });
+
+            const res = await service.submitAttempt(101, "user-1");
+
+            expect(mockRepo.evaluateAndCompleteSession).toHaveBeenCalledWith(101, "user-1");
+            expect(res.totalCorrect).toBe(20);
+            expect(res.isPassed).toBe(false);
         });
 
         it("harus berhasil mengevaluasi sesi dan mengembalikan kelulusan", async () => {
