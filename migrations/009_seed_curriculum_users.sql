@@ -75,7 +75,7 @@ ON DUPLICATE KEY UPDATE
 
 -- -----------------------------------------------------------------------------
 -- 2. PEMBENIHAN KREDENSIAL AUTENTIKASI (TABEL: account)
--- Standar Keamanan: Argon2id (RFC 9106 / Better Auth Default)
+-- Standar Keamanan: Scrypt (Better Auth Default: <salt_hex>:<key_hex>)
 -- Password Default Seed: KurikulumTKA2026!
 -- Provider ID: 'credential'
 -- -----------------------------------------------------------------------------
@@ -91,28 +91,28 @@ INSERT INTO `account` (
 ) VALUES
 (
     'a0000000-0000-4000-a000-000000000001',
-    'kurikulum@bimbel-tka.sch.id',
+    'c0000000-0000-4000-a000-000000000001',
     'credential',
     'c0000000-0000-4000-a000-000000000001',
-    '$argon2id$v=19$m=19456,t=2,p=1$2aVR9T4c8ZDtoRkXt7o0KQ$f4dRrT/vmsVMIC3SJLEYbPHRkEFnjmZpDb7GIj3MFbI',
+    'db0e52bce46fbd716f0b435ae8bfe156:aa809cf205ad702b1655120530f67af03247e0fa0283ec835fe8aa14ac2aef13542dfe317d9650eebda10ae99358e11d8f08eddcf06c22dda8ab3a771ae5c2d7',
     NOW(),
     NOW()
 ),
 (
     'a0000000-0000-4000-a000-000000000002',
-    'kurikulum.mat@bimbel-tka.sch.id',
+    'c0000000-0000-4000-a000-000000000002',
     'credential',
     'c0000000-0000-4000-a000-000000000002',
-    '$argon2id$v=19$m=19456,t=2,p=1$JYDFufYJH6Hk8WhfrOeuvA$ft2ye7zhj8AhgRwA1ueqjl7E/Pt8ZefEVRR52vzNjDs',
+    'c1c3d740431abc3274ccadcab3fa913f:acaa3914e8020d1e00961fc67e4bd10b7c15cd003e50e79b99d4cdf61e300ef6a22c69aea78892a15310430d4c00cfe5539fe674ba388b0980b16d2448d74620',
     NOW(),
     NOW()
 ),
 (
     'a0000000-0000-4000-a000-000000000003',
-    'kurikulum.bin@bimbel-tka.sch.id',
+    'c0000000-0000-4000-a000-000000000003',
     'credential',
     'c0000000-0000-4000-a000-000000000003',
-    '$argon2id$v=19$m=19456,t=2,p=1$2EGJqFr7nA9hcAgpJrOkzA$J1UvEdrIuVs4z3JGqvblVB/QDsC8ys3kEAZ9rO3j8Mo',
+    'b83993c053f163135ea4c8de8b2ed888:2691b3692adea74767ceb61ae8416fef1a20b9edb565b8b707438a6dacc3965a5aa2a1971925bd84d8893737960b84d70d35ddeb8aa386c28d0427eb93aef3b7',
     NOW(),
     NOW()
 )
