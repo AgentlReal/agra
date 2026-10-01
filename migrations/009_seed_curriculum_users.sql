@@ -74,13 +74,13 @@ ON DUPLICATE KEY UPDATE
     `updatedAt` = NOW();
 
 -- -----------------------------------------------------------------------------
--- 2. PEMBENIHAN KREDENSIAL AUTENTIKASI (TABEL: accounts)
+-- 2. PEMBENIHAN KREDENSIAL AUTENTIKASI (TABEL: account)
 -- Standar Keamanan: Argon2id (RFC 9106 / Better Auth Default)
 -- Password Default Seed: KurikulumTKA2026!
 -- Provider ID: 'credential'
 -- -----------------------------------------------------------------------------
 
-INSERT INTO `accounts` (
+INSERT INTO `account` (
     `id`,
     `accountId`,
     `providerId`,
@@ -125,7 +125,7 @@ ON DUPLICATE KEY UPDATE
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- =============================================================================
--- SELESAI: 3 Akun Tim Kurikulum (users & accounts) berhasil dibenihkan.
+-- SELESAI: 3 Akun Tim Kurikulum (users & account) berhasil dibenihkan.
 -- Akun 1: kurikulum_pusat (Koordinator Kurikulum TKA)
 -- Akun 2: kurikulum_mat (Tim Kurikulum Matematika)
 -- Akun 3: kurikulum_bin (Tim Kurikulum Bhs Indonesia)
