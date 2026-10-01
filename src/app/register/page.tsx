@@ -12,7 +12,9 @@ import {
   Check, 
   AlertCircle, 
   ArrowRight,
-  ShieldCheck 
+  ShieldCheck,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 export default function RegisterPage() {
@@ -22,6 +24,8 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
@@ -161,14 +165,22 @@ export default function RegisterPage() {
               <label className="block text-xs font-semibold text-slate-300">Kata Sandi</label>
               <div className="relative mt-1">
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="w-full rounded-xl border border-slate-800 bg-slate-950/80 px-4 py-2.5 pl-10 text-sm text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none"
+                  className="w-full rounded-xl border border-slate-800 bg-slate-950/80 px-4 py-2.5 pl-10 pr-10 text-sm text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none"
                 />
                 <Lock className="absolute left-3.5 top-3 h-4 w-4 text-slate-500" />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-3 text-slate-500 hover:text-slate-300 transition-colors focus:outline-none"
+                  aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
 
               {/* Password Requirements Checklist */}
@@ -196,16 +208,24 @@ export default function RegisterPage() {
               <label className="block text-xs font-semibold text-slate-300">Konfirmasi Kata Sandi</label>
               <div className="relative mt-1">
                 <input
-                  type="password"
+                  type={showConfirmPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className={`w-full rounded-xl border bg-slate-950/80 px-4 py-2.5 pl-10 text-sm text-white placeholder-slate-500 focus:outline-none ${
+                  className={`w-full rounded-xl border bg-slate-950/80 px-4 py-2.5 pl-10 pr-10 text-sm text-white placeholder-slate-500 focus:outline-none ${
                     confirmPassword && !passwordsMatch ? 'border-rose-500' : 'border-slate-800 focus:border-indigo-500'
                   }`}
                 />
                 <Lock className="absolute left-3.5 top-3 h-4 w-4 text-slate-500" />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3.5 top-3 text-slate-500 hover:text-slate-300 transition-colors focus:outline-none"
+                  aria-label={showConfirmPassword ? 'Sembunyikan konfirmasi kata sandi' : 'Tampilkan konfirmasi kata sandi'}
+                >
+                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
             </div>
 
