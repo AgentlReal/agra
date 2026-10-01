@@ -24,13 +24,13 @@ describe("ProfileService Unit Tests", () => {
     });
 
     describe("getProfile", () => {
-        it("harus melempar ConflictError PROFILE_INCOMPLETE jika profil belum ada", async () => {
+        it("harus otomatis mencoba membuat profil default jika profil belum ada dan melempar BadRequestError jika tetap null", async () => {
             mockRepo.findProfileByUserId!.mockResolvedValue(null);
 
             await expect(service.getProfile("user-123")).rejects.toMatchObject({
-                code: "PROFILE_INCOMPLETE",
-                statusCode: 409,
+                statusCode: 400,
             });
+            expect(mockRepo.createProfile).toHaveBeenCalledWith("user-123", 1);
         });
 
         it("harus berhasil mengembalikan profil lengkap dan kalkulasi progres milestone dengan benar", async () => {
@@ -39,7 +39,6 @@ describe("ProfileService Unit Tests", () => {
                 email: "siswa@example.com",
                 username: "siswa_rajin",
                 name: "Budi Santoso",
-                grade: 8,
                 preset_avatar_id: 1,
                 total_xp: 350,
                 is_recall_passed: 1,
@@ -57,7 +56,6 @@ describe("ProfileService Unit Tests", () => {
             const result = await service.getProfile("user-123");
 
             expect(result.id).toBe("user-123");
-            expect(result.grade).toBe(8);
             expect(result.totalXp).toBe(350);
             expect(result.milestone.title).toBe("Penjelajah Ilmu");
             expect(result.milestoneProgress.currentXp).toBe(350);
@@ -72,7 +70,6 @@ describe("ProfileService Unit Tests", () => {
                 email: "top@example.com",
                 username: "top_tier",
                 name: "Siswa Legenda",
-                grade: 9,
                 preset_avatar_id: 1,
                 total_xp: 5000,
                 is_recall_passed: 1,
@@ -96,20 +93,18 @@ describe("ProfileService Unit Tests", () => {
     });
 
     describe("completeProfile", () => {
-        it("harus melempar ConflictError jika profil sudah pernah dibuat", async () => {
+        it("harus memperbarui avatar jika profil sudah ada", async () => {
             mockRepo.findRawProfile!.mockResolvedValue({ user_id: "user-123" } as any);
+            mockRepo.getAvatarById!.mockResolvedValue({ id: 2, is_active: 1 });
+            mockRepo.updateAvatar!.mockResolvedValue(undefined);
+            const getProfileSpy = vi.spyOn(service, "getProfile").mockResolvedValueOnce({
+                id: "user-123",
+            } as any);
 
-            await expect(
-                service.completeProfile("user-123", { grade: 7, presetAvatarId: 1 })
-            ).rejects.toThrow(ConflictError);
-        });
-
-        it("harus melempar BadRequestError jika kelas di luar jenjang 7, 8, atau 9 SMP", async () => {
-            mockRepo.findRawProfile!.mockResolvedValue(null);
-
-            await expect(
-                service.completeProfile("user-123", { grade: 10 as any, presetAvatarId: 1 })
-            ).rejects.toThrow(BadRequestError);
+            const res = await service.completeProfile("user-123", { presetAvatarId: 2 });
+            expect(mockRepo.updateAvatar).toHaveBeenCalledWith("user-123", 2);
+            expect(getProfileSpy).toHaveBeenCalledWith("user-123");
+            expect(res.id).toBe("user-123");
         });
 
         it("harus melempar BadRequestError jika avatar yang dipilih tidak valid atau tidak aktif", async () => {
@@ -117,7 +112,7 @@ describe("ProfileService Unit Tests", () => {
             mockRepo.getAvatarById!.mockResolvedValue(null);
 
             await expect(
-                service.completeProfile("user-123", { grade: 7, presetAvatarId: 999 })
+                service.completeProfile("user-123", { presetAvatarId: 999 })
             ).rejects.toThrow(BadRequestError);
         });
 
@@ -128,24 +123,28 @@ describe("ProfileService Unit Tests", () => {
 
             const getProfileSpy = vi.spyOn(service, "getProfile").mockResolvedValueOnce({
                 id: "user-123",
-                grade: 8,
             } as any);
 
-            const res = await service.completeProfile("user-123", { grade: 8, presetAvatarId: 2 });
+            const res = await service.completeProfile("user-123", { presetAvatarId: 2 });
 
-            expect(mockRepo.createProfile).toHaveBeenCalledWith("user-123", 8, 2);
+            expect(mockRepo.createProfile).toHaveBeenCalledWith("user-123", 2);
             expect(getProfileSpy).toHaveBeenCalledWith("user-123");
             expect(res.id).toBe("user-123");
         });
     });
 
     describe("updateProfileName", () => {
-        it("harus melempar ConflictError PROFILE_INCOMPLETE jika profil belum ada", async () => {
+        it("harus otomatis membuat profil jika profil belum ada saat perbarui nama", async () => {
             mockRepo.findRawProfile!.mockResolvedValue(null);
+            mockRepo.updateProfileName!.mockResolvedValue(undefined);
+            vi.spyOn(service, "getProfile").mockResolvedValueOnce({
+                id: "user-123",
+                name: "Nama Baru",
+            } as any);
 
-            await expect(
-                service.updateProfileName("user-123", { name: "Nama Baru" })
-            ).rejects.toMatchObject({ code: "PROFILE_INCOMPLETE" });
+            const res = await service.updateProfileName("user-123", { name: "Nama Baru" });
+            expect(mockRepo.createProfile).toHaveBeenCalledWith("user-123", 1);
+            expect(res.name).toBe("Nama Baru");
         });
 
         it("harus berhasil memperbarui nama profil", async () => {
