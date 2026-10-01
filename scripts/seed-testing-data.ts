@@ -56,11 +56,10 @@ async function seedTestingPreconditions() {
     // 2. User Profile Precondition (Fase D Grade 7, is_recall_passed = 1, XP = 1500)
     console.log("2. Menyiapkan User Profile Siswa (is_recall_passed = TRUE)...");
     await conn.query(`
-      INSERT INTO user_profiles (user_id, grade, preset_avatar_id, current_milestone_tier_id, total_xp, is_recall_passed)
-      VALUES (?, 7, 1, 3, 1500, TRUE)
+      INSERT INTO user_profiles (user_id, preset_avatar_id, current_milestone_tier_id, total_xp, is_recall_passed)
+      VALUES (?, 1, 3, 1500, TRUE)
       ON DUPLICATE KEY UPDATE 
         is_recall_passed = TRUE, 
-        grade = 7, 
         total_xp = 1500, 
         preset_avatar_id = 1,
         current_milestone_tier_id = 3
@@ -192,17 +191,21 @@ async function seedTestingPreconditions() {
         title = 'Paket Simulasi CBT Mandiri 1'
     `);
 
-    // Hubungkan 30 soal simulasi ke paket 1
-    const [allSimQuestions] = await conn.query<RowDataPacket[]>(
-      "SELECT id FROM question_banks WHERE bank_type = 'SIMULATION' AND subject_id = 1 ORDER BY id ASC LIMIT 30"
+    // Hubungkan 30 soal simulasi ke paket 1 (hanya jika belum ada soal terhubung)
+    const [existingSimQ] = await conn.query<RowDataPacket[]>(
+      "SELECT id FROM simulation_questions WHERE simulation_id = 1"
     );
-    for (let i = 0; i < allSimQuestions.length; i++) {
-      const qId = allSimQuestions[i].id;
-      await conn.query(`
-        INSERT INTO simulation_questions (simulation_id, question_id, question_order)
-        VALUES (1, ?, ?)
-        ON DUPLICATE KEY UPDATE question_order = VALUES(question_order)
-      `, [qId, i + 1]);
+    if (existingSimQ.length < 30) {
+      const [allSimQuestions] = await conn.query<RowDataPacket[]>(
+        "SELECT id FROM question_banks WHERE bank_type = 'SIMULATION' AND subject_id = 1 ORDER BY id ASC LIMIT 30"
+      );
+      for (let i = 0; i < allSimQuestions.length; i++) {
+        const qId = allSimQuestions[i].id;
+        await conn.query(`
+          INSERT IGNORE INTO simulation_questions (simulation_id, question_id, question_order)
+          VALUES (1, ?, ?)
+        `, [qId, i + 1]);
+      }
     }
     console.log("   ✓ Paket Simulasi 1 aktif dengan susunan 30 butir soal terpetakan.");
 
