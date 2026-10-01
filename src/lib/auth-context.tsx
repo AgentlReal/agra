@@ -13,7 +13,6 @@ export interface User {
   email: string;
   role: UserRole;
   avatarUrl?: string;
-  grade?: number;
   totalXp?: number;
   currentStreak?: number;
   needsOnboarding?: boolean;
@@ -67,7 +66,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const profileData = profileRes.data || profileRes;
           initialUser.name = profileData.name || initialUser.name;
           initialUser.avatarUrl = profileData.avatar?.imageUrl || profileData.avatarUrl;
-          initialUser.grade = profileData.grade;
           initialUser.totalXp = profileData.totalXp ?? profileData.total_xp ?? 0;
           initialUser.currentStreak = profileData.currentStreak ?? profileData.current_streak ?? 0;
         } catch (profileErr: any) {

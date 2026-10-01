@@ -121,7 +121,7 @@ export const api = {
         method: 'PATCH',
         body: JSON.stringify({ name }),
       }),
-    complete: (data: { grade: number; avatarId: number }) =>
+    complete: (data: { avatarId?: number; presetAvatarId?: number } = {}) =>
       request<any>('/api/v1/profile/complete', {
         method: 'POST',
         body: JSON.stringify(data),

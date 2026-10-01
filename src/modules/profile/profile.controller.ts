@@ -26,7 +26,7 @@ export class ProfileController {
         try {
             const { user } = await requireAuth();
             const dto = await validateBody(req, completeProfileSchema, {
-                defaultCode: "INVALID_GRADE",
+                defaultCode: "VALIDATION_ERROR",
                 statusCode: 400,
             });
             const data = await this.service.completeProfile(user.id, dto);

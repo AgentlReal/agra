@@ -31,12 +31,11 @@ export interface StudentProfileDto {
     totalXp: number;
     milestone: MilestoneDto;
     milestoneProgress: MilestoneProgressDto;
-    grade: 7 | 8 | 9;
 }
 
 export interface CompleteProfileDto {
-    grade: 7 | 8 | 9;
     presetAvatarId?: number;
+    avatarId?: number;
 }
 
 export interface UpdateProfileNameDto {
