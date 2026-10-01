@@ -127,7 +127,7 @@ export default function OnboardingPage() {
                       <Check className="h-2.5 w-2.5" />
                     </div>
                   )}
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-slate-800 to-indigo-950 border border-indigo-500/30 text-indigo-300 mb-2">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 mb-2">
                     <Smile className="h-7 w-7" />
                   </div>
                   <span className="text-xs font-semibold leading-tight line-clamp-1">{av.name}</span>

@@ -153,7 +153,7 @@ export default function SimulationEligibilityPage({ params }: { params: Promise<
                       <Lock className="h-6 w-6 text-amber-400 shrink-0 mt-0.5" />
                       <div>
                         <h4 className="text-sm font-bold text-white">Belum Memenuhi Syarat Akses Simulasi</h4>
-                        <p className="text-xs text-amber-300/90 mt-1">
+                        <p className="text-xs text-amber-300 mt-1">
                           {eligibility?.reason || 'Untuk membuka simulasi, Anda harus menuntaskan seluruh 3 level kognitif pada setiap submateri terlebih dahulu.'}
                         </p>
                       </div>

@@ -121,7 +121,7 @@ export default function DashboardPage() {
                   <div className="flex items-center gap-2 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-2.5">
                     <Sparkles className="h-5 w-5 text-amber-400" />
                     <div>
-                      <p className="text-[10px] text-amber-300/80 uppercase font-semibold">Total XP Formatif</p>
+                      <p className="text-[10px] text-amber-400 uppercase font-semibold">Total XP Formatif</p>
                       <p className="text-sm font-bold text-white">{student?.totalXp ?? user?.totalXp ?? 0} XP</p>
                     </div>
                   </div>
@@ -129,7 +129,7 @@ export default function DashboardPage() {
                   <div className="flex items-center gap-2 rounded-2xl border border-orange-500/30 bg-orange-500/10 px-4 py-2.5">
                     <Flame className="h-5 w-5 text-orange-400" />
                     <div>
-                      <p className="text-[10px] text-orange-300/80 uppercase font-semibold">Aktif Belajar</p>
+                      <p className="text-[10px] text-orange-400 uppercase font-semibold">Aktif Belajar</p>
                       <p className="text-sm font-bold text-white">{user?.currentStreak ?? 1} Hari</p>
                     </div>
                   </div>

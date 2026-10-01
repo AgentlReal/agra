@@ -45,11 +45,23 @@ body {
   display: none !important;
 }
 
-/* 2. Solid High-Contrast Card Backgrounds */
-[data-theme="light"] [class*="bg-slate-900"]:not(header):not(nav):not(button):not([data-theme="dark"]):not([data-theme="dark"] *) {
+/* 2. Solid High-Contrast Card Backgrounds & Gradients */
+[data-theme="light"] [class*="bg-slate-900"]:not(header):not(nav):not(button):not([data-theme="dark"]):not([data-theme="dark"] *),
+[data-theme="light"] [class*="bg-slate-950/"]:not(header):not(nav):not(button):not([data-theme="dark"]):not([data-theme="dark"] *) {
   background-color: #ffffff !important;
   border-color: #e2e8f0 !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0 0 0 / 0.04);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+}
+
+/* Hero & Evaluation Result Gradient Banners: Replace dark-tinted half-tones with clean, solid cards */
+[data-theme="light"] [class*="from-indigo-950"]:not([data-theme="dark"]):not([data-theme="dark"] *),
+[data-theme="light"] [class*="from-purple-950"]:not([data-theme="dark"]):not([data-theme="dark"] *),
+[data-theme="light"] [class*="from-emerald-950"]:not([data-theme="dark"]):not([data-theme="dark"] *),
+[data-theme="light"] [class*="from-amber-950"]:not([data-theme="dark"]):not([data-theme="dark"] *) {
+  background-image: none !important;
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05) !important;
 }
 
 [data-theme="light"] .border-slate-800:not([data-theme="dark"]):not([data-theme="dark"] *) {
@@ -61,72 +73,97 @@ body {
 }
 
 /* 3. Deep Saturated Accent Text (WCAG AA Compliant > 4.5:1 Contrast Ratio) */
-[data-theme="light"] .text-indigo-400:not([data-theme="dark"] *),
-[data-theme="light"] .text-indigo-300:not([data-theme="dark"] *) {
+[data-theme="light"] [class*="text-indigo-400"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="text-indigo-300"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="text-indigo-200"]:not([data-theme="dark"] *) {
   color: #4338ca !important; /* indigo-700 */
 }
 
-[data-theme="light"] .text-purple-400:not([data-theme="dark"] *),
-[data-theme="light"] .text-purple-300:not([data-theme="dark"] *) {
+[data-theme="light"] [class*="text-purple-400"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="text-purple-300"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="text-purple-200"]:not([data-theme="dark"] *) {
   color: #7e22ce !important; /* purple-700 */
 }
 
-[data-theme="light"] .text-amber-400:not([data-theme="dark"] *),
-[data-theme="light"] .text-amber-300:not([data-theme="dark"] *) {
+[data-theme="light"] [class*="text-amber-400"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="text-amber-300"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="text-amber-200"]:not([data-theme="dark"] *) {
   color: #92400e !important; /* amber-800 */
 }
 
-[data-theme="light"] .text-emerald-400:not([data-theme="dark"] *),
-[data-theme="light"] .text-emerald-300:not([data-theme="dark"] *) {
+[data-theme="light"] [class*="text-orange-400"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="text-orange-300"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="text-orange-200"]:not([data-theme="dark"] *) {
+  color: #c2410c !important; /* orange-700 */
+}
+
+[data-theme="light"] [class*="text-emerald-400"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="text-emerald-300"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="text-emerald-200"]:not([data-theme="dark"] *) {
   color: #047857 !important; /* emerald-700 */
 }
 
-[data-theme="light"] .text-cyan-400:not([data-theme="dark"] *),
-[data-theme="light"] .text-cyan-300:not([data-theme="dark"] *) {
+[data-theme="light"] [class*="text-cyan-400"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="text-cyan-300"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="text-cyan-200"]:not([data-theme="dark"] *) {
   color: #0e7490 !important; /* cyan-700 */
 }
 
-[data-theme="light"] .text-rose-400:not([data-theme="dark"] *),
-[data-theme="light"] .text-rose-300:not([data-theme="dark"] *) {
+[data-theme="light"] [class*="text-rose-400"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="text-rose-300"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="text-rose-200"]:not([data-theme="dark"] *) {
   color: #be123c !important; /* rose-700 */
 }
 
-[data-theme="light"] .text-blue-400:not([data-theme="dark"] *),
-[data-theme="light"] .text-blue-300:not([data-theme="dark"] *) {
+[data-theme="light"] [class*="text-blue-400"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="text-blue-300"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="text-blue-200"]:not([data-theme="dark"] *) {
   color: #1d4ed8 !important; /* blue-700 */
 }
 
-/* 4. High-Contrast Badges and Pills */
+/* 4. High-Contrast Badges, Pills, and Callout Cards */
 [data-theme="light"] [class*="bg-indigo-500/"]:not([data-theme="dark"] *),
-[data-theme="light"] [class*="bg-indigo-600/"]:not([data-theme="dark"] *) {
+[data-theme="light"] [class*="bg-indigo-600/"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="bg-indigo-950/"]:not([data-theme="dark"] *) {
   background-color: #eef2ff !important;
   border-color: #c7d2fe !important;
   color: #4338ca !important;
 }
 
 [data-theme="light"] [class*="bg-purple-500/"]:not([data-theme="dark"] *),
-[data-theme="light"] [class*="bg-purple-600/"]:not([data-theme="dark"] *) {
+[data-theme="light"] [class*="bg-purple-600/"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="bg-purple-950/"]:not([data-theme="dark"] *) {
   background-color: #faf5ff !important;
   border-color: #e9d5ff !important;
   color: #7e22ce !important;
 }
 
 [data-theme="light"] [class*="bg-amber-500/"]:not([data-theme="dark"] *),
-[data-theme="light"] [class*="bg-amber-400/"]:not([data-theme="dark"] *) {
+[data-theme="light"] [class*="bg-amber-400/"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="bg-amber-950/"]:not([data-theme="dark"] *) {
   background-color: #fffbeb !important;
   border-color: #fde68a !important;
   color: #92400e !important;
 }
 
+[data-theme="light"] [class*="bg-orange-500/"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="bg-orange-400/"]:not([data-theme="dark"] *) {
+  background-color: #fff7ed !important;
+  border-color: #fed7aa !important;
+  color: #c2410c !important;
+}
+
 [data-theme="light"] [class*="bg-emerald-500/"]:not([data-theme="dark"] *),
-[data-theme="light"] [class*="bg-emerald-600/"]:not([data-theme="dark"] *) {
+[data-theme="light"] [class*="bg-emerald-600/"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="bg-emerald-950/"]:not([data-theme="dark"] *) {
   background-color: #ecfdf5 !important;
   border-color: #a7f3d0 !important;
   color: #047857 !important;
 }
 
 [data-theme="light"] [class*="bg-rose-500/"]:not([data-theme="dark"] *),
-[data-theme="light"] [class*="bg-rose-600/"]:not([data-theme="dark"] *) {
+[data-theme="light"] [class*="bg-rose-600/"]:not([data-theme="dark"] *),
+[data-theme="light"] [class*="bg-rose-950/"]:not([data-theme="dark"] *) {
   background-color: #fff1f2 !important;
   border-color: #fecdd3 !important;
   color: #be123c !important;
@@ -173,6 +210,15 @@ body {
   color: #0f172a !important;
 }
 
+[data-theme="light"] input:disabled,
+[data-theme="light"] textarea:disabled,
+[data-theme="light"] select:disabled {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #64748b !important;
+  cursor: not-allowed !important;
+}
+
 [data-theme="light"] input::placeholder,
 [data-theme="light"] textarea::placeholder {
   color: #64748b !important;
@@ -190,7 +236,28 @@ body {
   border-color: #cbd5e1 !important;
 }
 
-/* 8. Header Navbar */
+/* Selected Option in CBT Exam: High-contrast lavender card with crisp dark text & white badge */
+[data-theme="light"] button[class*="bg-indigo-600/20"],
+[data-theme="light"] button[class*="bg-purple-600/20"] {
+  background-color: #eef2ff !important;
+  border-color: #6366f1 !important;
+  color: #1e1b4b !important;
+}
+
+[data-theme="light"] button[class*="bg-indigo-600/20"] div[class*="bg-indigo-600"],
+[data-theme="light"] button[class*="bg-purple-600/20"] div[class*="bg-purple-600"],
+[data-theme="light"] button[class*="bg-indigo-600/20"] .text-white,
+[data-theme="light"] button[class*="bg-purple-600/20"] .text-white {
+  color: #ffffff !important;
+}
+
+/* 8. CBT Question Palette Active Indicator */
+[data-theme="light"] .ring-white {
+  --tw-ring-color: #4f46e5 !important;
+  box-shadow: 0 0 0 2px #4f46e5 !important;
+}
+
+/* 9. Header Navbar */
 [data-theme="light"] header {
   background-color: rgba(255, 255, 255, 0.95) !important;
   border-bottom-color: #e2e8f0 !important;
