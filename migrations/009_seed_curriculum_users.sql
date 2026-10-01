@@ -76,7 +76,7 @@ ON DUPLICATE KEY UPDATE
 -- -----------------------------------------------------------------------------
 -- 2. PEMBENIHAN KREDENSIAL AUTENTIKASI (TABEL: account)
 -- Standar Keamanan: Scrypt (Better Auth Default: <salt_hex>:<key_hex>)
--- Password Default Seed: KurikulumTKA2026!
+-- Password Default Seed: Andhika12
 -- Provider ID: 'credential'
 -- -----------------------------------------------------------------------------
 
@@ -129,5 +129,5 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- Akun 1: kurikulum_pusat (Koordinator Kurikulum TKA)
 -- Akun 2: kurikulum_mat (Tim Kurikulum Matematika)
 -- Akun 3: kurikulum_bin (Tim Kurikulum Bhs Indonesia)
--- Password Default: KurikulumTKA2026!
+-- Password Default: Andhika12
 -- =============================================================================
