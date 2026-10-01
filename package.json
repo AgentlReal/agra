@@ -13,7 +13,8 @@
     "dev:mock": "concurrently \"npm run dev\" \"npm run mock\"",
     "seed:test": "tsx scripts/seed-testing-data.ts",
     "test": "tsx tests/api.test.ts",
-    "test:full": "tsx tests/api.test.ts"
+    "test:full": "tsx tests/api.test.ts",
+    "test:e2e": "tsx tests/e2e.test.ts"
   },
   "dependencies": {
     "better-auth": "^1.7.6",

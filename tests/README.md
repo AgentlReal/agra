@@ -19,6 +19,12 @@ Direktori ini (`agra/tests/`) adalah ruang kerja resmi tim QA pada branch `QA`. 
   npm run test:full
   ```
 
+* **[`e2e.test.ts`](./e2e.test.ts)**:
+  Test runner otomatis skenario perjalanan pengguna (User Journey & E2E) yang disinkronkan dengan tab `E2E & UI Test` (skenario `TC-UC01` s.d. `TC-UC07`, `TC-NFR`, dan `TC-UI`):
+  ```bash
+  npm run test:e2e
+  ```
+
 ---
 
 ## 2. Standar Penamaan & Penyelarasan Dokumen
