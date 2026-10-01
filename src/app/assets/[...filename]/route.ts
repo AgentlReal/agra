@@ -16,7 +16,7 @@ export async function GET(
     { params }: { params: Promise<{ filename: string[] }> }
 ) {
     const { filename } = await params;
-    const filePath = path.join(process.cwd(), "public", "uploads", ...filename);
+    const filePath = path.join(process.cwd(), "public", "assets", ...filename);
 
     if (!fs.existsSync(filePath)) {
         return new NextResponse("File not found", { status: 404 });

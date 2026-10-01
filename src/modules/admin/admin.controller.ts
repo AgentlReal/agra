@@ -152,14 +152,14 @@ export class AdminController {
 
             const safeExt = ext.replace(/[^a-z0-9]/gi, "").toLowerCase() || "png";
             const uniqueName = `img-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${safeExt}`;
-            const uploadDir = path.join(process.cwd(), "public", "uploads");
+            const uploadDir = path.join(process.cwd(), "public", "assets");
 
             await fs.promises.mkdir(uploadDir, { recursive: true });
             const arrayBuffer = await file.arrayBuffer();
             const buffer = Buffer.from(arrayBuffer);
             await fs.promises.writeFile(path.join(uploadDir, uniqueName), buffer);
 
-            const fileUrl = `/uploads/${uniqueName}`;
+            const fileUrl = `/assets/${uniqueName}`;
             return jsonResponse(
                 {
                     image_url: fileUrl,
