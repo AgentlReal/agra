@@ -12,13 +12,15 @@ import {
   X, 
   AlertTriangle,
   CheckSquare,
-  CircleDot
+  CircleDot,
+  ZoomIn
 } from 'lucide-react';
 
 interface QuestionItem {
   id: string | number;
   questionNumber: number;
   stimulus?: string;
+  stimulusImageUrl?: string | null;
   questionText: string;
   options: { id?: number; key: string; text: string }[];
   questionFormat: 'SINGLE_CHOICE' | 'COMPLEX_CHOICE';
@@ -32,6 +34,7 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string[]>>({});
+  const [zoomImageUrl, setZoomImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [submitModalOpen, setSubmitModalOpen] = useState(false);
@@ -50,6 +53,13 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
               typeof q.stimulus === 'string'
                 ? q.stimulus
                 : (q.stimulus?.content_text || q.stimulusText || '');
+
+            const stimulusImageUrl =
+              q.stimulus_image_url ||
+              q.stimulusImageUrl ||
+              (typeof q.stimulus === 'object' && (q.stimulus?.stimulus_image_url || q.stimulus?.image_url)) ||
+              q.imageUrl ||
+              null;
 
             const mappedOptions = (q.options || []).map((opt: any) => ({
               id: opt.id ?? opt.option_id,
@@ -79,6 +89,7 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
               id: q.session_question_id ?? q.id ?? i + 1,
               questionNumber: q.question_order ?? q.questionNumber ?? i + 1,
               stimulus: stimulusText,
+              stimulusImageUrl,
               questionText: q.question_text || q.questionText || '',
               options: mappedOptions,
               questionFormat,
@@ -249,9 +260,28 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
           </div>
 
           {/* Stimulus */}
-          {currentQ.stimulus && (
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 text-xs text-slate-300 border-l-4 border-l-indigo-500">
-              {currentQ.stimulus}
+          {(currentQ.stimulus || currentQ.stimulusImageUrl) && (
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 text-xs text-slate-300 border-l-4 border-l-indigo-500 space-y-3">
+              {currentQ.stimulus && <div>{currentQ.stimulus}</div>}
+
+              {currentQ.stimulusImageUrl && (
+                <div className="relative group overflow-hidden rounded-xl border border-slate-800/80 bg-slate-950/60 p-2 text-center">
+                  <img
+                    src={currentQ.stimulusImageUrl}
+                    alt="Stimulus visual latihan"
+                    className="max-h-72 sm:max-h-96 w-auto mx-auto object-contain rounded-lg cursor-zoom-in hover:opacity-95 transition-opacity"
+                    onClick={() => setZoomImageUrl(currentQ.stimulusImageUrl || null)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setZoomImageUrl(currentQ.stimulusImageUrl || null)}
+                    className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-lg bg-slate-900/90 px-2.5 py-1 text-[11px] font-semibold text-slate-300 backdrop-blur-sm border border-slate-700 hover:text-white transition-colors"
+                  >
+                    <ZoomIn className="h-3.5 w-3.5" />
+                    <span>Perbesar</span>
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -386,6 +416,32 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
                 {submitting ? 'Menilai...' : 'Ya, Selesaikan'}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lightbox Zoom Modal */}
+      {zoomImageUrl && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-150"
+          onClick={() => setZoomImageUrl(null)}
+        >
+          <div
+            className="relative max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 p-2 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setZoomImageUrl(null)}
+              className="absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-slate-900/90 text-white hover:bg-slate-800 border border-slate-700 transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <img
+              src={zoomImageUrl}
+              alt="Stimulus visual diperbesar"
+              className="max-h-[85vh] w-auto max-w-full object-contain rounded-xl mx-auto"
+            />
           </div>
         </div>
       )}

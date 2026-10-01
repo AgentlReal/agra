@@ -55,7 +55,12 @@ export default function SimulationEligibilityPage({ params }: { params: Promise<
 
     try {
       const res = await api.simulation.startAttempt(subjectId);
-      const attemptId = res?.attemptId || res?.id || res?.data?.attemptId;
+      const attemptId =
+        res?.attempt_id ||
+        res?.attemptId ||
+        res?.id ||
+        res?.data?.attempt_id ||
+        res?.data?.attemptId;
       if (!attemptId) {
         throw new Error('Gagal memulai sesi simulasi.');
       }

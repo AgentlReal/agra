@@ -116,7 +116,14 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
 
     try {
       const res = await api.learning.startAttempt(levelNumber, submaterialId);
-      const attemptId = res?.attemptId || res?.id || res?.sessionId || res?.session?.id;
+      const attemptId =
+        res?.attempt_id ||
+        res?.attemptId ||
+        res?.id ||
+        res?.sessionId ||
+        res?.session?.id ||
+        res?.data?.attempt_id ||
+        res?.data?.attemptId;
       if (!attemptId) {
         throw new Error('Sesi latihan tidak dapat dibuat.');
       }
