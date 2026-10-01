@@ -121,7 +121,7 @@ export const api = {
         method: 'PATCH',
         body: JSON.stringify({ name }),
       }),
-    complete: (data: { avatarId?: number; presetAvatarId?: number } = {}) =>
+    complete: (data: { avatarId?: number; presetAvatarId?: number; grade?: number } = {}) =>
       request<any>('/api/v1/profile/complete', {
         method: 'POST',
         body: JSON.stringify(data),
@@ -187,11 +187,16 @@ export const api = {
 
   // Learning
   learning: {
-    startAttempt: (levelId: string | number, subMaterialId?: string | number) =>
-      request<any>(`/api/v1/learning/levels/${levelId}/attempts`, {
+    startAttempt: async (levelId: string | number, subMaterialId?: string | number) => {
+      const res = await request<any>(`/api/v1/learning/levels/${levelId}/attempts`, {
         method: 'POST',
         body: JSON.stringify({ sub_material_id: Number(subMaterialId || 1) }),
-      }),
+      });
+      if (res && res.attempt_id && !res.attemptId) {
+        res.attemptId = res.attempt_id;
+      }
+      return res;
+    },
     getAttempt: (attemptId: string | number) =>
       request<any>(`/api/v1/learning/attempts/${attemptId}`),
     saveAnswer: (
@@ -224,10 +229,15 @@ export const api = {
   simulation: {
     getEligibility: (subjectId: string | number) =>
       request<any>(`/api/v1/simulations/${subjectId}/eligibility`),
-    startAttempt: (subjectId: string | number) =>
-      request<any>(`/api/v1/simulations/${subjectId}/attempts`, {
+    startAttempt: async (subjectId: string | number) => {
+      const res = await request<any>(`/api/v1/simulations/${subjectId}/attempts`, {
         method: 'POST',
-      }),
+      });
+      if (res && res.attempt_id && !res.attemptId) {
+        res.attemptId = res.attempt_id;
+      }
+      return res;
+    },
     getAttempt: (attemptId: string | number) =>
       request<any>(`/api/v1/simulation-attempts/${attemptId}`),
     saveAnswer: (

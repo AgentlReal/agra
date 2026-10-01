@@ -13,6 +13,7 @@ export interface User {
   email: string;
   role: UserRole;
   avatarUrl?: string;
+  grade?: number;
   totalXp?: number;
   currentStreak?: number;
   needsOnboarding?: boolean;
