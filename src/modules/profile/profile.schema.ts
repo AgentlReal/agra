@@ -3,14 +3,10 @@ import { positiveInteger, requiredString, paginationSchema } from "@/shared/util
 
 export const completeProfileSchema = z
     .object({
-        grade: z.union([z.literal(7), z.literal(8), z.literal(9)], {
-            error: "Kelas harus bernilai 7, 8, atau 9.",
-        }),
         presetAvatarId: positiveInteger("presetAvatarId").optional(),
         avatarId: positiveInteger("avatarId").optional(),
     })
     .transform((data) => ({
-        grade: data.grade,
         presetAvatarId: data.presetAvatarId ?? data.avatarId,
     }));
 

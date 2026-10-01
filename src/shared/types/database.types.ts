@@ -34,7 +34,6 @@ export interface UserProfileRow extends RowDataPacket {
     user_id: string;
     preset_avatar_id: number | null;
     current_milestone_tier_id: number;
-    grade: 7 | 8 | 9;
     total_xp: number;
     is_recall_passed: boolean;
     created_at: Date;

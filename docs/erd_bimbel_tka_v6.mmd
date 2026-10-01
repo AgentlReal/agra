@@ -79,7 +79,6 @@ erDiagram
         varchar user_id FK,UK "Relasi 1-to-1 unik ke users.id (String PK, khusus role SISWA)"
         int preset_avatar_id FK "Relasi ke 12 galeri avatar aman (tanpa upload mandiri)"
         int current_milestone_tier_id FK "Relasi ke 5 milestone tier saat ini"
-        int grade "Kelas Fase D: 7, 8, atau 9"
         bigint total_xp "Total akumulasi poin XP siswa (murni capaian formatif)"
         boolean is_recall_passed "Status kelulusan asesmen pembuka Recall Kemampuanmu"
         timestamp created_at "Waktu pembuatan profil siswa"

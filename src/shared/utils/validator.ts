@@ -197,3 +197,44 @@ export const paginationSchema = z.object({
 });
 
 export type PaginationInput = z.infer<typeof paginationSchema>;
+
+/**
+ * Pola regex ketentuan kata sandi sesuai spesifikasi UCS-01 dan M01_06_07_08_NewPassword:
+ * - Panjang 6 - 12 karakter
+ * - Minimal 1 huruf kapital (A-Z)
+ * - Minimal 1 huruf kecil (a-z)
+ * - Minimal 1 digit angka (0-9)
+ * - Minimal 1 karakter simbol khusus ([^A-Za-z0-9])
+ */
+export const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{6,12}$/;
+
+export function validatePasswordRules(password: unknown): { isValid: boolean; message?: string } {
+    if (typeof password !== "string" || !password) {
+        return { isValid: false, message: "Kata sandi wajib diisi." };
+    }
+    if (password.length < 6 || password.length > 12) {
+        return { isValid: false, message: "Kata sandi harus berukuran 6 - 12 karakter." };
+    }
+    if (!/[A-Z]/.test(password)) {
+        return { isValid: false, message: "Kata sandi harus memuat minimal 1 huruf kapital (A-Z)." };
+    }
+    if (!/[a-z]/.test(password)) {
+        return { isValid: false, message: "Kata sandi harus memuat minimal 1 huruf kecil (a-z)." };
+    }
+    if (!/[0-9]/.test(password)) {
+        return { isValid: false, message: "Kata sandi harus memuat minimal 1 angka (0-9)." };
+    }
+    if (!/[^A-Za-z0-9]/.test(password)) {
+        return { isValid: false, message: "Kata sandi harus memuat minimal 1 karakter simbol khusus." };
+    }
+    return { isValid: true };
+}
+
+export const passwordSchema = z
+    .string({ error: "Kata sandi harus berupa teks (string)" })
+    .min(6, "Kata sandi minimal terdiri dari 6 karakter")
+    .max(12, "Kata sandi maksimal terdiri dari 12 karakter")
+    .regex(/[A-Z]/, "Kata sandi harus memuat minimal 1 huruf kapital (A-Z)")
+    .regex(/[a-z]/, "Kata sandi harus memuat minimal 1 huruf kecil (a-z)")
+    .regex(/[0-9]/, "Kata sandi harus memuat minimal 1 angka (0-9)")
+    .regex(/[^A-Za-z0-9]/, "Kata sandi harus memuat minimal 1 karakter simbol khusus");
