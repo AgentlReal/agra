@@ -43,3 +43,5 @@ next-env.d.ts
 
 # Agents
 .agents
+docs/archive/010_alter_pgk_partial_scoring.sql
+.gitignore
