@@ -146,12 +146,12 @@ export default function AdminBankSoalPage() {
               onClick={() => setBankType(tab.key)}
               className={`flex flex-col items-start p-4 rounded-2xl border text-left transition-all ${
                 bankType === tab.key
-                  ? 'border-purple-500 bg-purple-950/30 text-white ring-2 ring-purple-500/30 shadow-lg'
+                  ? 'border-purple-500 bg-purple-500/20 ring-2 ring-purple-500/30 shadow-lg'
                   : 'border-slate-800 bg-slate-900/60 text-slate-400 hover:border-slate-700 hover:text-white'
               }`}
             >
-              <span className="text-xs font-bold">{tab.title}</span>
-              <span className="text-[11px] text-slate-400 mt-1">{tab.desc}</span>
+              <span className={`text-xs font-bold ${bankType === tab.key ? 'text-purple-300' : ''}`}>{tab.title}</span>
+              <span className={`text-[11px] mt-1 ${bankType === tab.key ? 'text-purple-400' : 'text-slate-400'}`}>{tab.desc}</span>
             </button>
           ))}
         </div>
