@@ -15,10 +15,14 @@ describe("AdminService Unit Tests", () => {
             listQuestions: vi.fn(),
             createQuestion: vi.fn(),
             getQuestionDetail: vi.fn(),
+            updateQuestion: vi.fn(),
             toggleQuestionStatus: vi.fn(),
+            getRandomQuestionsForSimulation: vi.fn(),
             listSimulationPackages: vi.fn(),
             createSimulationPackage: vi.fn(),
             getSimulationPackageById: vi.fn(),
+            updateSimulationPackage: vi.fn(),
+            updateSimulationPackageStatus: vi.fn(),
             getSimulationStats: vi.fn(),
         };
         service = new AdminService(mockRepo as unknown as AdminRepository);
@@ -244,6 +248,142 @@ describe("AdminService Unit Tests", () => {
             expect(res.id).toBe(501);
             expect(res.total_questions).toBe(30);
         });
+
+        it("harus otomatis memilihkan 30 soal acak jika questions tidak disertakan", async () => {
+            const thirtyQuestions = Array.from({ length: 30 }, (_, i) => ({ id: i + 10 }));
+            mockRepo.getRandomQuestionsForSimulation!.mockResolvedValue(thirtyQuestions);
+            mockRepo.createSimulationPackage!.mockResolvedValue(502);
+            mockRepo.getSimulationPackageById!.mockResolvedValue({
+                id: 502,
+                title: "Paket Auto Select",
+                total_questions: 30,
+            } as any);
+
+            const res = await service.createSimulationPackage({
+                subject_id: 1,
+                title: "Paket Auto Select",
+            });
+
+            expect(mockRepo.getRandomQuestionsForSimulation).toHaveBeenCalledWith(1, 30);
+            expect(res.id).toBe(502);
+        });
+
+        it("harus melempar BadRequestError jika stok soal kurang dari 30 butir", async () => {
+            mockRepo.getRandomQuestionsForSimulation!.mockResolvedValue([{ id: 1 }, { id: 2 }]); // Hanya 2 soal
+
+            await expect(
+                service.createSimulationPackage({
+                    subject_id: 1,
+                    title: "Paket Kurang Soal",
+                })
+            ).rejects.toMatchObject({
+                code: "INSUFFICIENT_QUESTION_STOCK",
+            });
+        });
+    });
+
+    describe("updateQuestion", () => {
+        it("harus melempar NotFoundError jika soal tidak ditemukan saat diedit", async () => {
+            mockRepo.getQuestionDetail!.mockResolvedValue(null);
+
+            await expect(
+                service.updateQuestion(999, {
+                    question_text: "Soal Baru",
+                })
+            ).rejects.toThrow(NotFoundError);
+        });
+
+        it("harus menolak update jika format SINGLE_CHOICE diubah menjadi memiliki 2 kunci jawaban benar", async () => {
+            mockRepo.getQuestionDetail!.mockResolvedValue({
+                id: 1,
+                bank_type: "LEVEL_EXERCISE",
+                sub_material_id: 1,
+                cognitive_level_id: 1,
+                question_format: "SINGLE_CHOICE",
+            } as any);
+
+            await expect(
+                service.updateQuestion(1, {
+                    options: [
+                        { option_label: "A", option_text: "A", is_correct: true },
+                        { option_label: "B", option_text: "B", is_correct: true },
+                        { option_label: "C", option_text: "C", is_correct: false },
+                        { option_label: "D", option_text: "D", is_correct: false },
+                    ],
+                })
+            ).rejects.toThrow(BadRequestError);
+        });
+
+        it("harus berhasil memperbarui soal dan mengembalikan data terbaru", async () => {
+            mockRepo.getQuestionDetail!
+                .mockResolvedValueOnce({
+                    id: 1,
+                    bank_type: "LEVEL_EXERCISE",
+                    sub_material_id: 1,
+                    cognitive_level_id: 1,
+                    question_format: "SINGLE_CHOICE",
+                    question_text: "Soal Lama",
+                } as any)
+                .mockResolvedValueOnce({
+                    id: 1,
+                    bank_type: "LEVEL_EXERCISE",
+                    sub_material_id: 1,
+                    cognitive_level_id: 1,
+                    question_format: "SINGLE_CHOICE",
+                    question_text: "Soal Baru",
+                } as any);
+
+            mockRepo.updateQuestion!.mockResolvedValue(undefined);
+
+            const res = await service.updateQuestion(1, {
+                question_text: "Soal Baru",
+            });
+
+            expect(mockRepo.updateQuestion).toHaveBeenCalledWith(1, { question_text: "Soal Baru" });
+            expect(res.question_text).toBe("Soal Baru");
+        });
+    });
+
+    describe("getSimulationPackage & updateSimulationPackageStatus", () => {
+        it("harus melempar NotFoundError jika paket simulasi tidak ditemukan", async () => {
+            mockRepo.getSimulationPackageById!.mockResolvedValue(null);
+
+            await expect(service.getSimulationPackage(999)).rejects.toThrow(NotFoundError);
+        });
+
+        it("harus mengembalikan detail paket simulasi jika ditemukan", async () => {
+            mockRepo.getSimulationPackageById!.mockResolvedValue({
+                id: 1,
+                title: "Paket 1",
+                total_questions: 30,
+            } as any);
+
+            const res = await service.getSimulationPackage(1);
+            expect(res.id).toBe(1);
+            expect(res.title).toBe("Paket 1");
+        });
+
+        it("harus berhasil mengubah status paket simulasi", async () => {
+            mockRepo.getSimulationPackageById!
+                .mockResolvedValueOnce({
+                    id: 1,
+                    title: "Paket 1",
+                    status: "DRAFT",
+                    is_active: false,
+                } as any)
+                .mockResolvedValueOnce({
+                    id: 1,
+                    title: "Paket 1",
+                    status: "ACTIVE",
+                    is_active: true,
+                } as any);
+
+            mockRepo.updateSimulationPackageStatus!.mockResolvedValue(undefined);
+
+            const res = await service.updateSimulationPackageStatus(1, "ACTIVE", true);
+            expect(mockRepo.updateSimulationPackageStatus).toHaveBeenCalledWith(1, "ACTIVE", true);
+            expect(res.status).toBe("ACTIVE");
+        });
     });
 
     describe("getSimulationPackageStats", () => {
@@ -268,3 +408,4 @@ describe("AdminService Unit Tests", () => {
         });
     });
 });
+

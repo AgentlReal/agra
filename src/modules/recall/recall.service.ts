@@ -155,15 +155,6 @@ export class RecallService {
             return this.getResult(attemptId, userId);
         }
 
-        const answeredCount = await this.repo.countAnsweredQuestions(attemptId);
-        if (answeredCount < 30) {
-            throw new AppError(
-                "Jawab seluruh 30 soal sebelum mengirim Recall.",
-                422,
-                "INCOMPLETE_RECALL_ANSWERS"
-            );
-        }
-
         const res = await this.repo.evaluateAndCompleteSession(attemptId, userId);
 
         return {
