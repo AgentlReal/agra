@@ -287,10 +287,12 @@ export class LearningRepository {
         return withTransaction(async (conn) => {
             // Hitung kebenaran tiap soal
             const [evalRows] = await conn.query<Array<RowDataPacket & {
-                student_answer_id: number;
+                session_question_id: number;
+                student_answer_id: number | null;
                 is_question_correct: number;
             }>>(
                 `SELECT 
+                    sq.id AS session_question_id,
                     sa.id AS student_answer_id,
                     CASE 
                         WHEN COUNT(CASE WHEN qo.is_correct = TRUE AND sao.selected_option_id IS NULL THEN 1 END) = 0
@@ -306,7 +308,7 @@ export class LearningRepository {
                  LEFT JOIN student_answer_options sao 
                     ON sao.student_answer_id = sa.id AND sao.selected_option_id = qo.id
                  WHERE sq.session_id = ?
-                 GROUP BY sa.id`,
+                 GROUP BY sq.id, sa.id`,
                 [sessionId]
             );
 
@@ -315,8 +317,14 @@ export class LearningRepository {
                 const isCorrect = Boolean(r.is_question_correct);
                 if (r.student_answer_id) {
                     await conn.execute(
-                        `UPDATE student_answers SET is_correct = ? WHERE id = ?`,
-                        [isCorrect, r.student_answer_id]
+                        `UPDATE student_answers SET is_correct = ?, score = ? WHERE id = ?`,
+                        [isCorrect, isCorrect ? 1.00 : 0.00, r.student_answer_id]
+                    );
+                } else {
+                    await conn.execute(
+                        `INSERT INTO student_answers (session_question_id, score, is_correct, is_flagged, is_skipped, time_spent_seconds, answered_at)
+                         VALUES (?, 0.00, FALSE, FALSE, TRUE, 0, NOW())`,
+                        [r.session_question_id]
                     );
                 }
                 if (isCorrect) correctAnswers++;
