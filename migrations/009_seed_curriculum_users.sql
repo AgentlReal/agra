@@ -94,7 +94,7 @@ INSERT INTO `account` (
     'c0000000-0000-4000-a000-000000000001',
     'credential',
     'c0000000-0000-4000-a000-000000000001',
-    'db0e52bce46fbd716f0b435ae8bfe156:aa809cf205ad702b1655120530f67af03247e0fa0283ec835fe8aa14ac2aef13542dfe317d9650eebda10ae99358e11d8f08eddcf06c22dda8ab3a771ae5c2d7',
+    'Andhika12',
     NOW(),
     NOW()
 ),
