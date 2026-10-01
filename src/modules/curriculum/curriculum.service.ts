@@ -143,14 +143,16 @@ export class CurriculumService {
             throw new NotFoundError("Submateri tidak ditemukan");
         }
 
+        const isRecallPassed = await this.repo.isRecallPassed(userId);
         const prog = await this.repo.getSingleSubMaterialProgress(userId, subMaterialId);
+        const defaultLevel1Status = isRecallPassed ? "AVAILABLE" : "LOCKED";
 
         return {
             isMastered: Boolean(prog?.is_mastered),
             levels: [
                 {
                     level: 1,
-                    status: (prog?.level_1_status as "LOCKED" | "AVAILABLE" | "COMPLETED" | "NEEDS_REMEDIAL") || "AVAILABLE",
+                    status: (prog?.level_1_status as "LOCKED" | "AVAILABLE" | "COMPLETED" | "NEEDS_REMEDIAL") || defaultLevel1Status,
                     score:
                         prog?.level_1_score !== null && prog?.level_1_score !== undefined
                             ? prog.level_1_score

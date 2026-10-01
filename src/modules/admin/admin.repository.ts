@@ -5,10 +5,13 @@ import {
     K10_QuestionSummary,
     K10_Question,
     K10_QuestionInput,
+    K10_QuestionUpdateInput,
     K10_QuestionFilter,
     K11_SimulationPackageSummary,
     K11_SimulationPackage,
     K11_SimulationPackageInput,
+    K11_SimulationPackageUpdateInput,
+    K11_SimulationPackageBlueprintItem,
     K11_SimulationPackageStats,
 } from "./admin.types";
 import { RowDataPacket, ResultSetHeader } from "mysql2";
@@ -301,12 +304,160 @@ export class AdminRepository {
         };
     }
 
+    async updateQuestion(questionId: number, input: K10_QuestionUpdateInput): Promise<void> {
+        await withTransaction(async (conn) => {
+            let stimulusId = input.stimulus_id;
+
+            if (input.stimulus) {
+                const [currRows] = await conn.query<Array<RowDataPacket & { stimulus_id: number | null; subject_id: number }>>(
+                    `SELECT stimulus_id, subject_id FROM question_banks WHERE id = ?`,
+                    [questionId]
+                );
+                const currStimulusId = currRows[0]?.stimulus_id;
+                const subjId = input.subject_id || currRows[0]?.subject_id || 1;
+
+                if (currStimulusId) {
+                    await conn.execute(
+                        `UPDATE stimuli SET title = ?, stimulus_text = ?, stimulus_image_url = ? WHERE id = ?`,
+                        [
+                            input.stimulus.title,
+                            input.stimulus.stimulus_text,
+                            input.stimulus.stimulus_image_url || null,
+                            currStimulusId,
+                        ]
+                    );
+                    stimulusId = currStimulusId;
+                } else {
+                    const [stmRes] = await conn.execute<ResultSetHeader>(
+                        `INSERT INTO stimuli (subject_id, title, stimulus_text, stimulus_image_url) VALUES (?, ?, ?, ?)`,
+                        [
+                            subjId,
+                            input.stimulus.title,
+                            input.stimulus.stimulus_text,
+                            input.stimulus.stimulus_image_url || null,
+                        ]
+                    );
+                    stimulusId = stmRes.insertId;
+                }
+            } else if (input.stimulus === null) {
+                stimulusId = null;
+            }
+
+            const fields: string[] = [];
+            const params: any[] = [];
+
+            if (input.subject_id !== undefined) {
+                fields.push("subject_id = ?");
+                params.push(input.subject_id);
+            }
+            if (input.sub_material_id !== undefined) {
+                fields.push("sub_material_id = ?");
+                params.push(input.sub_material_id);
+            }
+            if (input.cognitive_level_id !== undefined) {
+                fields.push("cognitive_level_id = ?");
+                params.push(input.cognitive_level_id);
+            }
+            if (stimulusId !== undefined) {
+                fields.push("stimulus_id = ?");
+                params.push(stimulusId);
+            }
+            if (input.bank_type !== undefined) {
+                fields.push("bank_type = ?");
+                params.push(input.bank_type);
+            }
+            if (input.question_format !== undefined) {
+                fields.push("question_format = ?");
+                params.push(input.question_format);
+            }
+            if (input.question_text !== undefined) {
+                fields.push("question_text = ?");
+                params.push(input.question_text);
+            }
+            if (input.stimulus_image_url !== undefined) {
+                fields.push("stimulus_image_url = ?");
+                params.push(input.stimulus_image_url);
+            }
+
+            if (fields.length > 0) {
+                params.push(questionId);
+                await conn.execute(`UPDATE question_banks SET ${fields.join(", ")} WHERE id = ?`, params);
+            }
+
+            if (input.options && input.options.length > 0) {
+                await conn.execute(`DELETE FROM question_options WHERE question_id = ?`, [questionId]);
+                for (const opt of input.options) {
+                    await conn.execute(
+                        `INSERT INTO question_options (question_id, option_label, option_text, is_correct)
+                         VALUES (?, ?, ?, ?)`,
+                        [questionId, opt.option_label, opt.option_text, opt.is_correct]
+                    );
+                }
+            }
+
+            if (input.explanation) {
+                const [expRows] = await conn.query<Array<RowDataPacket & { id: number }>>(
+                    `SELECT id FROM question_explanations WHERE question_id = ?`,
+                    [questionId]
+                );
+                if (expRows.length > 0) {
+                    await conn.execute(
+                        `UPDATE question_explanations 
+                         SET explanation_text = ?, reasoning_guide = ?, reference_url = ?
+                         WHERE question_id = ?`,
+                        [
+                            input.explanation.explanation_text,
+                            input.explanation.reasoning_guide || null,
+                            input.explanation.reference_url || null,
+                            questionId,
+                        ]
+                    );
+                } else {
+                    await conn.execute(
+                        `INSERT INTO question_explanations (question_id, explanation_text, reasoning_guide, reference_url)
+                         VALUES (?, ?, ?, ?)`,
+                        [
+                            questionId,
+                            input.explanation.explanation_text,
+                            input.explanation.reasoning_guide || null,
+                            input.explanation.reference_url || null,
+                        ]
+                    );
+                }
+            }
+        });
+    }
+
     async toggleQuestionStatus(questionId: number, isActive: boolean): Promise<void> {
         await execute(`UPDATE question_banks SET is_active = ? WHERE id = ?`, [isActive, questionId]);
     }
 
+    async getRandomQuestionsForSimulation(subjectId: number, count = 30): Promise<Array<{ id: number }>> {
+        let rows = await query<Array<RowDataPacket & { id: number }>>(
+            `SELECT id FROM question_banks 
+             WHERE subject_id = ? AND is_active = TRUE AND bank_type = 'SIMULATION' 
+             ORDER BY RAND() LIMIT ?`,
+            [subjectId, count]
+        );
+
+        if (rows.length < count) {
+            const needed = count - rows.length;
+            const existingIds = rows.map((r) => r.id);
+            const notInClause = existingIds.length > 0 ? `AND id NOT IN (${existingIds.join(",")})` : "";
+            const supplementRows = await query<Array<RowDataPacket & { id: number }>>(
+                `SELECT id FROM question_banks 
+                 WHERE subject_id = ? AND is_active = TRUE AND bank_type = 'LEVEL_EXERCISE' ${notInClause}
+                 ORDER BY RAND() LIMIT ?`,
+                [subjectId, needed]
+            );
+            rows = [...rows, ...supplementRows];
+        }
+
+        return rows.map((r) => ({ id: r.id }));
+    }
+
     async listSimulationPackages(page = 1, limit = 20): Promise<{
-        items: K11_SimulationPackageSummary[];
+        items: (K11_SimulationPackageSummary & { subjectName?: string; participantsCount?: number; averageScore?: number })[];
         totalItems: number;
     }> {
         const countRows = await query<Array<RowDataPacket & { total: number }>>(
@@ -318,6 +469,7 @@ export class AdminRepository {
         const rows = await query<Array<RowDataPacket & {
             id: number;
             subject_id: number;
+            subject_name: string | null;
             title: string;
             package_code: string;
             duration_minutes: number;
@@ -327,14 +479,26 @@ export class AdminRepository {
             status: "DRAFT" | "ACTIVE" | "ARCHIVED";
             is_active: number;
             created_at: Date;
+            participant_count: number | null;
+            avg_score: number | null;
         }>>(
-            `SELECT * FROM simulations ORDER BY id DESC LIMIT ? OFFSET ?`,
+            `SELECT 
+                s.*, 
+                subj.name AS subject_name,
+                (SELECT COUNT(DISTINCT ls.user_id) FROM learning_sessions ls WHERE ls.simulation_id = s.id AND ls.status = 'COMPLETED') AS participant_count,
+                (SELECT COALESCE(AVG(ls.score), 0) FROM learning_sessions ls WHERE ls.simulation_id = s.id AND ls.status = 'COMPLETED') AS avg_score
+             FROM simulations s
+             LEFT JOIN subjects subj ON subj.id = s.subject_id
+             ORDER BY s.id DESC 
+             LIMIT ? OFFSET ?`,
             [limit, offset]
         );
 
-        const items: K11_SimulationPackageSummary[] = rows.map((r) => ({
+        const items = rows.map((r) => ({
             id: r.id,
             subject_id: r.subject_id,
+            subject_name: r.subject_name || "Mata Pelajaran",
+            subjectName: r.subject_name || "Mata Pelajaran",
             title: r.title,
             package_code: r.package_code,
             duration_minutes: r.duration_minutes || 75,
@@ -344,6 +508,8 @@ export class AdminRepository {
             status: r.status,
             is_active: Boolean(r.is_active),
             created_at: r.created_at ? new Date(r.created_at).toISOString() : new Date().toISOString(),
+            participantsCount: Number(r.participant_count || 0),
+            averageScore: Math.round(Number(r.avg_score || 0) * 100) / 100,
         }));
 
         return { items, totalItems };
@@ -351,20 +517,25 @@ export class AdminRepository {
 
     async createSimulationPackage(input: K11_SimulationPackageInput): Promise<number> {
         return withTransaction(async (conn) => {
+            const status = input.status || "DRAFT";
+            const questions = input.questions || [];
+            const packageCode = input.package_code || (input.subject_id === 1 ? "MAT-SIM-01" : "BIN-SIM-01");
+
             const [pkgRes] = await conn.execute<ResultSetHeader>(
                 `INSERT INTO simulations 
                  (subject_id, title, package_code, duration_minutes, total_questions, passing_score, xp_reward, status, is_active)
-                 VALUES (?, ?, ?, 75, ?, 90.00, 500, 'DRAFT', TRUE)`,
+                 VALUES (?, ?, ?, 75, ?, 90.00, 500, ?, TRUE)`,
                 [
                     input.subject_id,
                     input.title,
-                    input.package_code,
-                    input.questions.length,
+                    packageCode,
+                    questions.length || 30,
+                    status,
                 ]
             );
             const packageId = pkgRes.insertId;
 
-            for (const q of input.questions) {
+            for (const q of questions) {
                 await conn.execute(
                     `INSERT INTO simulation_questions (simulation_id, question_id, question_order)
                      VALUES (?, ?, ?)`,
@@ -380,6 +551,7 @@ export class AdminRepository {
         const rows = await query<Array<RowDataPacket & {
             id: number;
             subject_id: number;
+            subject_name: string | null;
             title: string;
             package_code: string;
             duration_minutes: number;
@@ -390,7 +562,10 @@ export class AdminRepository {
             is_active: number;
             created_at: Date;
         }>>(
-            `SELECT * FROM simulations WHERE id = ?`,
+            `SELECT s.*, subj.name AS subject_name 
+             FROM simulations s
+             LEFT JOIN subjects subj ON subj.id = s.subject_id
+             WHERE s.id = ?`,
             [packageId]
         );
         if (rows.length === 0) return null;
@@ -404,9 +579,37 @@ export class AdminRepository {
             [packageId]
         );
 
+        const blueprintRows = await query<Array<RowDataPacket & {
+            material: string;
+            level: string;
+            count: number;
+        }>>(
+            `SELECT 
+                COALESCE(m.name, 'Materi Terpadu') AS material,
+                COALESCE(cl.level_name, 'L1') AS level,
+                COUNT(*) AS count
+             FROM simulation_questions sq
+             JOIN question_banks qb ON qb.id = sq.question_id
+             LEFT JOIN sub_materials sm ON sm.id = qb.sub_material_id
+             LEFT JOIN materials m ON m.id = sm.material_id
+             LEFT JOIN cognitive_levels cl ON cl.id = qb.cognitive_level_id
+             WHERE sq.simulation_id = ?
+             GROUP BY COALESCE(m.name, 'Materi Terpadu'), COALESCE(cl.level_name, 'L1')
+             ORDER BY material ASC, level ASC`,
+            [packageId]
+        );
+
+        const blueprint: K11_SimulationPackageBlueprintItem[] = blueprintRows.map((b) => ({
+            material: b.material,
+            level: b.level,
+            count: Number(b.count),
+        }));
+
         return {
             id: p.id,
             subject_id: p.subject_id,
+            subject_name: p.subject_name || "Mata Pelajaran",
+            subjectName: p.subject_name || "Mata Pelajaran",
             title: p.title,
             package_code: p.package_code,
             duration_minutes: p.duration_minutes || 75,
@@ -420,7 +623,75 @@ export class AdminRepository {
                 question_id: q.question_id,
                 question_order: q.question_order,
             })),
+            blueprint,
         };
+    }
+
+    async updateSimulationPackage(packageId: number, input: K11_SimulationPackageUpdateInput): Promise<void> {
+        await withTransaction(async (conn) => {
+            const fields: string[] = [];
+            const params: any[] = [];
+
+            if (input.title !== undefined) {
+                fields.push("title = ?");
+                params.push(input.title);
+            }
+            if (input.subject_id !== undefined) {
+                fields.push("subject_id = ?");
+                params.push(input.subject_id);
+            }
+            if (input.package_code !== undefined) {
+                fields.push("package_code = ?");
+                params.push(input.package_code);
+            }
+            if (input.status !== undefined) {
+                fields.push("status = ?");
+                params.push(input.status);
+            }
+            if (input.is_active !== undefined) {
+                fields.push("is_active = ?");
+                params.push(input.is_active);
+            }
+            if (input.questions !== undefined && input.questions.length > 0) {
+                fields.push("total_questions = ?");
+                params.push(input.questions.length);
+            }
+
+            if (fields.length > 0) {
+                params.push(packageId);
+                await conn.execute(`UPDATE simulations SET ${fields.join(", ")} WHERE id = ?`, params);
+            }
+
+            if (input.questions && input.questions.length > 0) {
+                await conn.execute(`DELETE FROM simulation_questions WHERE simulation_id = ?`, [packageId]);
+                for (const q of input.questions) {
+                    await conn.execute(
+                        `INSERT INTO simulation_questions (simulation_id, question_id, question_order)
+                         VALUES (?, ?, ?)`,
+                        [packageId, q.question_id, q.question_order]
+                    );
+                }
+            }
+        });
+    }
+
+    async updateSimulationPackageStatus(packageId: number, status?: string, isActive?: boolean): Promise<void> {
+        const fields: string[] = [];
+        const params: any[] = [];
+
+        if (status !== undefined) {
+            fields.push("status = ?");
+            params.push(status);
+        }
+        if (isActive !== undefined) {
+            fields.push("is_active = ?");
+            params.push(isActive);
+        }
+
+        if (fields.length > 0) {
+            params.push(packageId);
+            await execute(`UPDATE simulations SET ${fields.join(", ")} WHERE id = ?`, params);
+        }
     }
 
     async getSimulationStats(packageId: number): Promise<K11_SimulationPackageStats | null> {
@@ -433,19 +704,33 @@ export class AdminRepository {
         const rows = await query<Array<RowDataPacket & {
             participant_count: number;
             average_score: number;
+            highest_score: number;
+            pass_rate: number;
         }>>(
             `SELECT 
                 COUNT(DISTINCT user_id) AS participant_count,
-                COALESCE(AVG(score), 0) AS average_score
+                COALESCE(AVG(score), 0) AS average_score,
+                COALESCE(MAX(score), 0) AS highest_score,
+                COALESCE(SUM(CASE WHEN is_passed = TRUE THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(*), 0), 0) AS pass_rate
              FROM learning_sessions 
              WHERE simulation_id = ? AND status = 'COMPLETED'`,
             [packageId]
         );
 
+        const participantCount = Number(rows[0]?.participant_count || 0);
+        const avgScore = Math.round(Number(rows[0]?.average_score || 0) * 100) / 100;
+        const highestScore = Math.round(Number(rows[0]?.highest_score || 0) * 100) / 100;
+        const passRate = Math.round(Number(rows[0]?.pass_rate || 0) * 100) / 100;
+
         return {
             package_id: packageId,
-            participant_count: Number(rows[0]?.participant_count || 0),
-            average_score: Math.round(Number(rows[0]?.average_score || 0) * 100) / 100,
+            participant_count: participantCount,
+            average_score: avgScore,
+            totalParticipants: participantCount,
+            averageScore: avgScore,
+            highestScore,
+            passRate,
         };
     }
 }
+
