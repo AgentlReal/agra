@@ -46,7 +46,6 @@ CREATE TABLE IF NOT EXISTS `user_profiles` (
     `user_id` VARCHAR(36) NOT NULL COMMENT 'Relasi 1-to-1 unik ke users.id (khusus role SISWA)',
     `preset_avatar_id` INT NULL COMMENT 'Relasi ke 12 galeri avatar aman (tanpa upload mandiri)',
     `current_milestone_tier_id` INT NOT NULL DEFAULT 1 COMMENT 'Relasi ke 5 milestone tier saat ini',
-    `grade` INT NOT NULL COMMENT 'Kelas Fase D SMP/MTs: 7, 8, atau 9',
     `total_xp` BIGINT NOT NULL DEFAULT 0 COMMENT 'Total akumulasi poin XP siswa (murni capaian formatif)',
     `is_recall_passed` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Status kelulusan asesmen pembuka Recall Kemampuanmu',
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Waktu pembuatan profil siswa',
@@ -57,8 +56,7 @@ CREATE TABLE IF NOT EXISTS `user_profiles` (
     KEY `idx_up_milestone_tier` (`current_milestone_tier_id`),
     CONSTRAINT `fk_up_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
     CONSTRAINT `fk_up_preset_avatar` FOREIGN KEY (`preset_avatar_id`) REFERENCES `preset_avatars` (`id`) ON DELETE SET NULL,
-    CONSTRAINT `fk_up_milestone_tier` FOREIGN KEY (`current_milestone_tier_id`) REFERENCES `milestone_tiers` (`id`) ON DELETE RESTRICT,
-    CONSTRAINT `chk_up_grade` CHECK (`grade` IN (7, 8, 9))
+    CONSTRAINT `fk_up_milestone_tier` FOREIGN KEY (`current_milestone_tier_id`) REFERENCES `milestone_tiers` (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Profil pedagogis dan gamifikasi siswa';
 
 
@@ -125,7 +123,7 @@ CREATE TABLE IF NOT EXISTS `cognitive_levels` (
     `level_number` INT NOT NULL COMMENT 'Level 1: Pemahaman, Level 2: Pengaplikasian, Level 3: Penalaran',
     `name` VARCHAR(50) NOT NULL COMMENT 'Nama tingkatan berpikir kognitif: Pemahaman, Pengaplikasian, Penalaran',
     `target_questions` INT NOT NULL DEFAULT 10 COMMENT 'Jumlah butir soal standar per sesi: 10 butir',
-    `passing_score` INT NOT NULL DEFAULT 9 COMMENT 'Ambang batas minimal benar: 9 dari 10 butir (90%)',
+    `passing_score` DECIMAL(4,2) NOT NULL DEFAULT 9.00 COMMENT 'Ambang batas minimal akumulasi skor: 9.00 dari 10 butir (90%)',
     `xp_reward` INT NOT NULL COMMENT 'Nominal reward XP kelulusan level: 50, 75, atau 100 XP',
     `description` TEXT NULL COMMENT 'Definisi operasional dan kata kerja operasional (KKO)',
     PRIMARY KEY (`id`),
@@ -271,7 +269,7 @@ CREATE TABLE IF NOT EXISTS `learning_sessions` (
     `status` ENUM('IN_PROGRESS', 'PAUSED', 'COMPLETED', 'ABANDONED') NOT NULL DEFAULT 'IN_PROGRESS' COMMENT 'Status siklus hidup sesi',
     `submission_type` ENUM('MANUAL', 'TIMEOUT') NULL COMMENT 'Metode submit jawaban: MANUAL (klik selesai) atau TIMEOUT (waktu 75m habis)',
     `total_questions` INT NOT NULL DEFAULT 10 COMMENT 'Jumlah butir soal dalam sesi (10 level / 30 recall / 30 simulasi)',
-    `correct_answers` INT NOT NULL DEFAULT 0 COMMENT 'Jumlah butir soal yang dijawab benar',
+    `correct_answers` DECIMAL(4,2) NOT NULL DEFAULT 0.00 COMMENT 'Akumulasi poin benar dalam sesi (mendukung nilai parsial 0.50)',
     `score` DECIMAL(5,2) NOT NULL DEFAULT 0.00 COMMENT 'Skor persentase akhir sesi evaluasi (0.00 - 100.00)',
     `is_passed` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Status pemenuhan syarat kelulusan sesi (>=90%)',
     `remaining_time_seconds` INT NULL COMMENT 'Sisa waktu hitung mundur server-side untuk simulasi 75m (NULL jika untimed)',
@@ -315,7 +313,8 @@ CREATE TABLE IF NOT EXISTS `session_questions` (
 CREATE TABLE IF NOT EXISTS `student_answers` (
     `id` BIGINT AUTO_INCREMENT NOT NULL COMMENT 'Identifier log pengerjaan butir soal',
     `session_question_id` BIGINT NOT NULL COMMENT 'Relasi 1-to-1 unik ke lembar butir soal sesi',
-    `is_correct` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Kebenaran jawaban (Evaluasi biner All-or-Nothing)',
+    `score` DECIMAL(3,2) NOT NULL DEFAULT 0.00 COMMENT 'Poin butir: 0.00 (salah), 0.50 (parsial 1 benar 1 salah), 1.00 (2 benar utuh)',
+    `is_correct` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Indikator kebenaran penuh (TRUE jika score = 1.00)',
     `is_flagged` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Penanda ragu-ragu butir soal di antarmuka CBT',
     `is_skipped` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Penanda apakah butir soal dilewati sementara',
     `time_spent_seconds` INT NOT NULL DEFAULT 0 COMMENT 'Durasi waktu pengerjaan butir soal dalam detik',
@@ -356,9 +355,9 @@ CREATE TABLE IF NOT EXISTS `student_sub_material_progress` (
     `level_1_status` ENUM('LOCKED', 'AVAILABLE', 'COMPLETED', 'NEEDS_REMEDIAL') NOT NULL DEFAULT 'AVAILABLE' COMMENT 'Status Level 1',
     `level_2_status` ENUM('LOCKED', 'AVAILABLE', 'COMPLETED', 'NEEDS_REMEDIAL') NOT NULL DEFAULT 'LOCKED' COMMENT 'Status Level 2',
     `level_3_status` ENUM('LOCKED', 'AVAILABLE', 'COMPLETED', 'NEEDS_REMEDIAL') NOT NULL DEFAULT 'LOCKED' COMMENT 'Status Level 3',
-    `level_1_score` INT NOT NULL DEFAULT 0 COMMENT 'Skor terbaik benar Level 1 (syarat minimal 9 dari 10)',
-    `level_2_score` INT NOT NULL DEFAULT 0 COMMENT 'Skor terbaik benar Level 2 (syarat minimal 9 dari 10)',
-    `level_3_score` INT NOT NULL DEFAULT 0 COMMENT 'Skor terbaik benar Level 3 (syarat minimal 9 dari 10)',
+    `level_1_score` DECIMAL(4,2) NOT NULL DEFAULT 0.00 COMMENT 'Skor terbaik benar Level 1 (syarat minimal 9.00 dari 10)',
+    `level_2_score` DECIMAL(4,2) NOT NULL DEFAULT 0.00 COMMENT 'Skor terbaik benar Level 2 (syarat minimal 9.00 dari 10)',
+    `level_3_score` DECIMAL(4,2) NOT NULL DEFAULT 0.00 COMMENT 'Skor terbaik benar Level 3 (syarat minimal 9.00 dari 10)',
     `total_cumulative_score` DECIMAL(5,2) NOT NULL DEFAULT 0.00 COMMENT 'Akumulasi skor submateri (syarat minimal 27 dari 30)',
     `is_mastered` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Dual-Condition Mastery: 3 Level Lulus DAN Total Benar >= 27',
     `is_xp_awarded` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Anti-Farming: Flag bonus +250 XP hanya diberikan 1x seumur hidup',
