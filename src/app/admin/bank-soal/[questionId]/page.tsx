@@ -25,6 +25,7 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
   const [subjectId, setSubjectId] = useState('1');
   const [materialName, setMaterialName] = useState('');
   const [submaterialName, setSubmaterialName] = useState('');
+  const [submaterialId, setSubmaterialId] = useState<number | null>(null);
   const [cognitiveLevel, setCognitiveLevel] = useState('L1');
   const [questionType, setQuestionType] = useState<'PG_TUNGGAL' | 'PG_KOMPLEKS'>('PG_TUNGGAL');
 
@@ -72,6 +73,7 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
     setSubjectId(String(q.subjectId || q.subject_id || 1));
     setMaterialName(q.materialName || q.material_name || '');
     setSubmaterialName(q.submaterialName || q.sub_material_name || '');
+    setSubmaterialId(q.sub_material_id || q.subMaterialId || null);
     setCognitiveLevel(String(q.cognitiveLevelId || q.cognitive_level_id || '1'));
     setQuestionType(
       (q.questionFormat || q.question_format) === 'COMPLEX_CHOICE' ? 'PG_KOMPLEKS' : 'PG_TUNGGAL'
@@ -118,13 +120,18 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
     if (!file) return;
 
     setUploadingImage(true);
+    setErrorMsg('');
     try {
       const formData = new FormData();
       formData.append('image', file);
       const res = await api.admin.uploadImage(formData);
-      setImageUrl(res?.url || res?.imageUrl || URL.createObjectURL(file));
-    } catch {
-      setImageUrl(URL.createObjectURL(file));
+      const permanentUrl = res?.imageUrl || res?.image_url || res?.url;
+      if (permanentUrl) {
+        setImageUrl(permanentUrl);
+      }
+    } catch (err: any) {
+      console.error('Failed to upload image:', err);
+      setErrorMsg(err.message || 'Gagal mengunggah berkas gambar ke server.');
     } finally {
       setUploadingImage(false);
     }
@@ -164,10 +171,18 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
           : singleKey === opt.key,
     }));
 
-    const payload = {
-      bank_type: bankType,
+    const normalizedBankType =
+      bankType === 'LATIHAN'
+        ? 'LEVEL_EXERCISE'
+        : bankType === 'SIMULASI'
+        ? 'SIMULATION'
+        : bankType;
+
+    const isRecall = normalizedBankType === 'RECALL';
+
+    const payload: any = {
+      bank_type: normalizedBankType,
       subject_id: Number(subjectId),
-      cognitive_level_id: Number(cognitiveLevel),
       question_format,
       question_text: questionText,
       options: formattedOptions,
@@ -182,18 +197,8 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
           }
         : null,
       stimulus_image_url: imageUrl || null,
-      // Backward-compatible properties
-      bankType,
-      subjectId: Number(subjectId),
-      materialName,
-      submaterialName,
-      cognitiveLevel,
-      questionType,
-      questionFormat: question_format,
-      questionText,
-      correctAnswer: questionType === 'PG_TUNGGAL' ? singleKey : complexKeys,
-      explanationText: explanation,
-      imageUrl: imageUrl || null,
+      sub_material_id: isRecall ? null : (submaterialId || 1),
+      cognitive_level_id: isRecall ? null : (Number(cognitiveLevel) || 1),
     };
 
     try {

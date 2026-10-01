@@ -69,13 +69,18 @@ export default function CreateQuestionPage() {
     if (!file) return;
 
     setUploadingImage(true);
+    setErrorMsg('');
     try {
       const formData = new FormData();
       formData.append('image', file);
       const res = await api.admin.uploadImage(formData);
-      setImageUrl(res?.url || res?.imageUrl || URL.createObjectURL(file));
-    } catch {
-      setImageUrl(URL.createObjectURL(file));
+      const permanentUrl = res?.imageUrl || res?.image_url || res?.url;
+      if (permanentUrl) {
+        setImageUrl(permanentUrl);
+      }
+    } catch (err: any) {
+      console.error('Failed to upload image:', err);
+      setErrorMsg(err.message || 'Gagal mengunggah berkas gambar ke server.');
     } finally {
       setUploadingImage(false);
     }
