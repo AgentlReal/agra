@@ -29,10 +29,7 @@ export class SimulationService {
     private async ensureStudentProfile(userId: string): Promise<void> {
         const profile = await this.profileRepo.findRawProfile(userId);
         if (!profile) {
-            throw new ConflictError(
-                "Lengkapi profil siswa dengan memilih kelas terlebih dahulu.",
-                "PROFILE_INCOMPLETE"
-            );
+            await this.profileRepo.createProfile(userId, 1);
         }
     }
 

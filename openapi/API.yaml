@@ -45,11 +45,11 @@ paths:
       - Auth Murid & Kurikulum
       operationId: signUpStudent
       summary: Registrasi akun siswa melalui plugin Better Auth
-      description: Endpoint plugin Better Auth khusus siswa. Form meminta email, username permanen, name (opsional, default string kosong ""), dan password. Server mengisi users.id, users.emailVerified=false, users.createdAt, users.updatedAt,
+      description: Endpoint plugin Better Auth khusus siswa. Form meminta email, username permanen, name (nama tampilan 3-30 karakter), dan password. Server mengisi users.id, users.emailVerified=false, users.createdAt, users.updatedAt,
         users.role=SISWA, dan users.image=NULL; users.email, users.username, dan users.name berasal dari input
-        tervalidasi (name bernilai string kosong "" bila tidak diisi). Plugin meneruskan name ke proses pembuatan user Better Auth, membuat akun credential,
-        lalu membuat sesi. user_profiles belum dibuat karena grade belum dipilih. Pengguna melanjutkan POST
-        /api/v1/profile/complete untuk memilih kelas dan membuat profil siswa. Konfirmasi password dicocokkan
+        tervalidasi saat registrasi. Plugin meneruskan name ke proses pembuatan user Better Auth, membuat akun credential,
+        lalu membuat sesi dan secara otomatis membuat user_profiles default. Pengguna dapat melanjutkan POST
+        /api/v1/profile/complete untuk memilih avatar jika diinginkan. Konfirmasi password dicocokkan
         pada formulir, bukan dikirim ke API.
       security: []
       requestBody:
@@ -63,6 +63,7 @@ paths:
               - email
               - username
               - password
+              - name
               properties:
                 email:
                   type: string
@@ -80,14 +81,14 @@ paths:
                   $ref: '#/components/schemas/M01_06_07_08_NewPassword'
                 name:
                   type: string
+                  minLength: 3
                   maxLength: 30
-                  default: ""
-                  description: users.name; nama tampilan (maksimal 30 karakter), bernilai string kosong "" bila belum diisi saat registrasi awal dan dapat diperbarui.
+                  description: users.name; nama tampilan pengguna di antarmuka (3-30 karakter) yang diisi saat registrasi awal dan dapat diperbarui.
             example:
               email: user@example.com
               username: user
               password: Belajar1!
-              name: ""
+              name: Siswa Baru
       responses:
         '200':
           description: Akun siswa dan sesi Better Auth dibuat; user_profiles belum ada sampai kelas dipilih.
@@ -120,7 +121,8 @@ paths:
                         description: users.username; permanen setelah registrasi.
                       name:
                         type: string
-                        description: users.name; nama tampilan (maksimal 30 karakter, bernilai string kosong "" bila belum diisi saat registrasi) dan dapat diperbarui.
+                        description: users.name; nama tampilan (3-30 karakter) yang diisi saat registrasi dan dapat diperbarui.
+                        minLength: 3
                         maxLength: 30
                       email:
                         type: string
@@ -891,46 +893,38 @@ paths:
       tags:
       - Profil Siswa
       operationId: completeStudentProfile
-      summary: Memilih kelas dan membuat profil siswa
-      description: Langkah setelah registrasi atau login pertama untuk akun SISWA tanpa user_profiles. Server
-        memvalidasi role, memilih preset avatar default aktif dan milestone awal, lalu secara atomik membuat
-        user_profiles dengan grade, preset_avatar_id, current_milestone_tier_id, total_xp=0, dan is_recall_passed=false.
-        users.name menggunakan nama valid yang diberikan saat registrasi. Hanya satu profil per users.id;
-        jika profil sudah ada, respons 409 tanpa mengubahnya. Bila preset/milestone default tidak tersedia,
-        respons 503 dan tidak membuat profil parsial.
+      summary: Memilih avatar dan melengkapi profil siswa
+      description: Langkah penyiapan avatar awal atau penggantian profil siswa akun SISWA. Server
+        memvalidasi avatar yang dipilih dan memperbarui profil siswa.
       security:
       - BetterAuthSessionCookie: []
       - BetterAuthSecureSessionCookie: []
       x-required-role: SISWA
       requestBody:
-        required: true
+        required: false
         content:
           application/json:
             schema:
               type: object
               additionalProperties: false
-              required:
-              - grade
               properties:
-                grade:
+                presetAvatarId:
                   type: integer
-                  format: int32
-                  enum:
-                  - 7
-                  - 8
-                  - 9
-                  description: user_profiles.grade
+                  description: preset_avatars.id (opsional)
+                avatarId:
+                  type: integer
+                  description: preset_avatars.id (opsional)
             example:
-              grade: 7
+              presetAvatarId: 1
       responses:
         '201':
-          description: Profil siswa berhasil dibuat.
+          description: Profil siswa berhasil diperbarui/dibuat.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/M01_06_07_08_StudentProfileResponse'
         '400':
-          description: Kelas harus berupa 7, 8, atau 9.
+          description: Input tidak valid.
           content:
             application/json:
               schema:
@@ -938,8 +932,8 @@ paths:
               example:
                 success: false
                 error:
-                  code: INVALID_GRADE
-                  message: Kelas harus bernilai 7, 8, atau 9.
+                  code: VALIDATION_ERROR
+                  message: avatarId wajib berupa angka positif.
         '401':
           $ref: '#/components/responses/M01_06_07_08_Unauthorized'
         '403':
@@ -4151,7 +4145,6 @@ components:
       - totalXp
       - milestone
       - milestoneProgress
-      - grade
       properties:
         id:
           type: string
@@ -4178,15 +4171,6 @@ components:
           $ref: '#/components/schemas/M01_06_07_08_Milestone'
         milestoneProgress:
           $ref: '#/components/schemas/M01_06_07_08_MilestoneProgress'
-        grade:
-          type: integer
-          description: user_profiles.grade; wajib 7, 8, atau 9 setelah profil selesai dibuat. Akun tanpa profil
-            menerima 409 PROFILE_INCOMPLETE.
-          format: int32
-          enum:
-          - 7
-          - 8
-          - 9
     M01_06_07_08_StudentProfileResponse:
       type: object
       required:
