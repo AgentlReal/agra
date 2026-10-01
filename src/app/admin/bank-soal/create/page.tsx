@@ -69,13 +69,18 @@ export default function CreateQuestionPage() {
     if (!file) return;
 
     setUploadingImage(true);
+    setErrorMsg('');
     try {
       const formData = new FormData();
       formData.append('image', file);
       const res = await api.admin.uploadImage(formData);
-      setImageUrl(res?.url || res?.imageUrl || URL.createObjectURL(file));
-    } catch {
-      setImageUrl(URL.createObjectURL(file));
+      const permanentUrl = res?.imageUrl || res?.image_url || res?.url;
+      if (permanentUrl) {
+        setImageUrl(permanentUrl);
+      }
+    } catch (err: any) {
+      console.error('Failed to upload image:', err);
+      setErrorMsg(err.message || 'Gagal mengunggah berkas gambar ke server.');
     } finally {
       setUploadingImage(false);
     }
@@ -334,10 +339,10 @@ export default function CreateQuestionPage() {
 
                 <div className="relative flex-1">
                   <input
-                    type="url"
+                    type="text"
                     value={imageUrl}
                     onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder="Atau masukkan tautan URL gambar (https://...)"
+                    placeholder="Atau masukkan path / URL gambar (misal: /assets/gambar.jpeg atau https://...)"
                     className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2 pl-9 text-xs text-white placeholder-slate-500 focus:border-purple-500 focus:outline-none"
                   />
                   <ImageIcon className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />

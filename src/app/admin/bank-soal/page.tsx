@@ -54,10 +54,23 @@ export default function AdminBankSoalPage() {
     setLoading(true);
     setErrorMsg('');
     try {
-      const params: any = { bank: bankType };
-      if (subjectFilter !== 'ALL') params.subject = subjectFilter;
-      if (levelFilter !== 'ALL') params.level = levelFilter;
-      if (statusFilter !== 'ALL') params.status = statusFilter;
+      const bankMap: Record<string, string> = {
+        LATIHAN: 'LEVEL_EXERCISE',
+        SIMULASI: 'SIMULATION',
+        RECALL: 'RECALL',
+      };
+      const params: any = { bank: bankMap[bankType] || bankType };
+      if (subjectFilter === 'MAT') params.subject = 1;
+      else if (subjectFilter === 'BIN') params.subject = 2;
+      else if (subjectFilter !== 'ALL') params.subject = subjectFilter;
+
+      if (levelFilter === 'L1') params.level = 1;
+      else if (levelFilter === 'L2') params.level = 2;
+      else if (levelFilter === 'L3') params.level = 3;
+      else if (levelFilter !== 'ALL') params.level = levelFilter;
+
+      if (statusFilter === 'ACTIVE') params.is_active = true;
+      else if (statusFilter === 'INACTIVE') params.is_active = false;
 
       const res = await api.admin.getQuestions(params);
       const list = res?.items || (Array.isArray(res) ? res : res?.data || []);

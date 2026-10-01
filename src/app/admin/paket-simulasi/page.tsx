@@ -36,8 +36,8 @@ export default function AdminPaketSimulasiPage() {
       const mapped = list.map((pkg: any) => ({
         id: pkg.id,
         title: pkg.title || `Paket Simulasi #${pkg.id}`,
-        subjectName: pkg.subjectName || (pkg.subjectId === 1 ? 'Matematika SMP' : 'Bahasa Indonesia SMP'),
-        totalQuestions: pkg.totalQuestions || 30,
+        subjectName: pkg.subjectName || pkg.subject_name || (pkg.subjectId === 1 || pkg.subject_id === 1 ? 'Matematika SMP' : 'Bahasa Indonesia SMP'),
+        totalQuestions: pkg.totalQuestions || pkg.total_questions || 30,
         status: pkg.status || 'DRAFT',
         participantsCount: pkg.participantsCount ?? pkg.totalParticipants ?? 0,
         averageScore: pkg.averageScore ?? 0,

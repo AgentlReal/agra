@@ -256,11 +256,13 @@ export class RecallRepository {
         return withTransaction(async (conn) => {
             // Evaluasi All-or-Nothing setiap butir soal
             const [evalRows] = await conn.query<Array<RowDataPacket & {
-                student_answer_id: number;
+                session_question_id: number;
+                student_answer_id: number | null;
                 subject_id: number;
                 is_question_correct: number;
             }>>(
                 `SELECT 
+                    sq.id AS session_question_id,
                     sa.id AS student_answer_id,
                     qb.subject_id,
                     CASE 
@@ -277,7 +279,7 @@ export class RecallRepository {
                  LEFT JOIN student_answer_options sao 
                     ON sao.student_answer_id = sa.id AND sao.selected_option_id = qo.id
                  WHERE sq.session_id = ?
-                 GROUP BY sa.id, qb.subject_id`,
+                 GROUP BY sq.id, sa.id, qb.subject_id`,
                 [sessionId]
             );
 
@@ -291,8 +293,14 @@ export class RecallRepository {
                 const isCorrect = Boolean(r.is_question_correct);
                 if (r.student_answer_id) {
                     await conn.execute(
-                        `UPDATE student_answers SET is_correct = ? WHERE id = ?`,
-                        [isCorrect, r.student_answer_id]
+                        `UPDATE student_answers SET is_correct = ?, score = ? WHERE id = ?`,
+                        [isCorrect, isCorrect ? 1.00 : 0.00, r.student_answer_id]
+                    );
+                } else {
+                    await conn.execute(
+                        `INSERT INTO student_answers (session_question_id, score, is_correct, is_flagged, is_skipped, time_spent_seconds, answered_at)
+                         VALUES (?, 0.00, FALSE, FALSE, TRUE, 0, NOW())`,
+                        [r.session_question_id]
                     );
                 }
                 if (isCorrect) totalCorrect++;
@@ -319,7 +327,9 @@ export class RecallRepository {
 
             if (isPassed) {
                 await conn.execute(
-                    `UPDATE user_profiles SET is_recall_passed = TRUE WHERE user_id = ?`,
+                    `INSERT INTO user_profiles (user_id, is_recall_passed) 
+                     VALUES (?, TRUE)
+                     ON DUPLICATE KEY UPDATE is_recall_passed = TRUE`,
                     [userId]
                 );
             }

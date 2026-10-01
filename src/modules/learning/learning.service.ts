@@ -126,7 +126,13 @@ export class LearningService {
                     options: [],
                     selected_option_ids: ans?.selected || [],
                     is_skipped: ans?.isSkipped || false,
-                    stimulus: null,
+                    stimulus: r.stimulus_text ? {
+                        id: 0,
+                        subject_id: 2,
+                        title: "",
+                        content_text: r.stimulus_text,
+                        source_citation: null,
+                    } : null,
                 });
             }
 
@@ -192,15 +198,6 @@ export class LearningService {
         }
         if (session.status === "COMPLETED") {
             return this.getResult(attemptId, userId);
-        }
-
-        const answeredCount = await this.repo.countAnsweredQuestions(attemptId);
-        if (answeredCount < 10) {
-            throw new AppError(
-                "Jawab seluruh 10 soal sebelum mengirim sesi latihan.",
-                422,
-                "INCOMPLETE_ANSWERS"
-            );
         }
 
         const level = await this.repo.getCognitiveLevelById(session.cognitive_level_id!);

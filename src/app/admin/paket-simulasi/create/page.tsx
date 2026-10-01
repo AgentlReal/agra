@@ -34,7 +34,6 @@ export default function CreateSimulationPackagePage() {
       subjectId: Number(subjectId),
       description,
       status,
-      totalQuestions: 30,
     };
 
     try {

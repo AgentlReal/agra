@@ -150,14 +150,44 @@ describe("LearningService Unit Tests", () => {
     });
 
     describe("submitAttempt", () => {
-        it("harus melempar error 422 INCOMPLETE_ANSWERS jika ada butir yang belum terjawab (< 10)", async () => {
-            mockLearningRepo.getSessionById!.mockResolvedValue({ id: 201, status: "IN_PROGRESS" });
-            mockLearningRepo.countAnsweredQuestions!.mockResolvedValue(8); // Kurang 2
-
-            await expect(service.submitAttempt(201, "user-1")).rejects.toMatchObject({
-                statusCode: 422,
-                code: "INCOMPLETE_ANSWERS",
+        it("harus berhasil submit meskipun ada butir yang belum terjawab (< 10) dan mengevaluasinya sebagai salah", async () => {
+            mockLearningRepo.getSessionById!.mockResolvedValue({
+                id: 201,
+                status: "IN_PROGRESS",
+                sub_material_id: 10,
+                cognitive_level_id: 1,
             });
+            mockLearningRepo.getCognitiveLevelById!.mockResolvedValue({
+                id: 1,
+                level_number: 1,
+                name: "Pemahaman",
+                xp_reward: 50,
+            });
+            mockLearningRepo.evaluateAndCompleteSession!.mockResolvedValue({
+                correctAnswers: 5,
+                score: 50,
+                isPassed: false,
+                xpEarned: 0,
+                isSubMaterialMastered: false,
+                nextLevelUnlocked: null,
+            });
+            mockCurriculumRepo.getSingleSubMaterialProgress!.mockResolvedValue({
+                level_1_status: "NEEDS_REMEDIAL",
+            } as any);
+            mockLearningRepo.getUserTotalXp!.mockResolvedValue(0);
+
+            const res = await service.submitAttempt(201, "user-1");
+
+            expect(mockLearningRepo.evaluateAndCompleteSession).toHaveBeenCalledWith(
+                201,
+                "user-1",
+                10,
+                1,
+                50
+            );
+            expect(res.is_passed).toBe(false);
+            expect(res.score).toBe(50);
+            expect(res.next_action).toBe("LEVEL_REMEDIAL");
         });
 
         it("harus mengevaluasi kelulusan (>=9/10), memberikan XP reward, dan mengarahkan ke NEXT_LEVEL", async () => {
