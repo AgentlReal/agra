@@ -2,8 +2,8 @@ erDiagram
     %% =============================================================================
     %% ERD V6.0: PLATFORM PEMBELAJARAN & DRILL-AND-PRACTICE ADAPTIF TKA SMP (FASE D)
     %% Skala Basis Data: Nasional (Mastery Learning, Safe-to-Fail, High Scale MySQL)
-    %% Versi: 6.0 (Eliminasi Modul CTT, Pembersihan Difficulty Generik & Taksonomi Kognitif Murni)
-    %% Tanggal Efektif: 29 September 2026
+    %% Versi: 6.0 (Eliminasi CTT, Nomenklatur Teks Fiksi, Level Names Submateri & Partial Scoring)
+    %% Tanggal Efektif: 2 Oktober 2026 (Sinkronisasi Penuh dengan Migrasi Database)
     %% =============================================================================
 
     %% =============================================================================
@@ -115,7 +115,7 @@ erDiagram
         int id PK "Identifier materi pokok atau bab"
         int subject_id FK "Relasi ke mata pelajaran"
         int prerequisite_material_id FK "Materi prasyarat untuk unlock sekuensial"
-        string title "Judul bab: Bilangan, Aljabar, Geometri, Data, Teks Informasi, Teks Sastra"
+        string title "Judul bab: Bilangan, Aljabar, Geometri, Data, Teks Informasi, Teks Fiksi"
         int order_index "Urutan pembelajaran materi"
         boolean is_active "Status aktif materi"
     }
@@ -126,6 +126,9 @@ erDiagram
         int prerequisite_sub_material_id FK "Submateri prasyarat untuk unlock sekuensial mutlak"
         string code UK "Kode submateri resmi: M-01 s.d. M-10, B-01 s.d. B-06"
         string title "Judul topik submateri"
+        string level_1_name "Nama tampilan Level 1 (default: Pemahaman)"
+        string level_2_name "Nama tampilan Level 2 (default: Pengaplikasian)"
+        string level_3_name "Nama tampilan Level 3 (default: Penalaran)"
         int order_index "Urutan belajar dalam materi pokok"
         decimal passing_threshold "Ambang batas ketuntasan submateri: 90.00"
         int xp_reward "Bonus puncak XP saat Mastered (+250 XP)"
@@ -137,7 +140,7 @@ erDiagram
         int level_number UK "Level 1: Pemahaman, Level 2: Pengaplikasian, Level 3: Penalaran"
         string name "Nama tingkatan berpikir kognitif TKA: Pemahaman, Pengaplikasian, Penalaran"
         int target_questions "Jumlah butir soal standar per sesi: 10 butir"
-        int passing_score "Ambang batas minimal benar: 9 dari 10 butir (90%)"
+        decimal passing_score "Ambang batas minimal skor: 9.00 dari 10 butir (90%)"
         int xp_reward "Nominal reward XP kelulusan level: 50, 75, atau 100 XP"
         text description "Definisi operasional tingkat berpikir kognitif"
     }
@@ -169,7 +172,7 @@ erDiagram
         string bank_type "Pemisahan 3 Bank Terisolasi: RECALL, LEVEL_EXERCISE, SIMULATION"
         string question_format "Format soal: SINGLE_CHOICE (4 opsi A-D) atau COMPLEX_CHOICE (MCMA)"
         text question_text "Teks pertanyaan atau formula matematika LaTeX"
-        string stimulus_image_url "Tautan aset stimulus visual individual jika ada"
+        string question_image_url "Tautan aset stimulus visual individual jika ada"
         boolean is_active "Status keaktifan butir soal (sakelar CMS kurikulum)"
         timestamp created_at "Waktu pembuatan butir soal"
     }
@@ -240,7 +243,7 @@ erDiagram
         string status "Status sesi: IN_PROGRESS, PAUSED, COMPLETED, ABANDONED"
         string submission_type "Tipe penyelesaian: MANUAL (klik selesai) atau TIMEOUT (waktu 75m habis, null jika in progress)"
         int total_questions "Jumlah butir soal dalam sesi (10 level / 30 recall / 30 simulasi)"
-        int correct_answers "Jumlah butir soal yang dijawab benar"
+        decimal correct_answers "Akumulasi poin benar dalam sesi (mendukung nilai parsial 0.50)"
         decimal score "Skor persentase akhir sesi evaluasi"
         boolean is_passed "Status pemenuhan syarat kelulusan sesi (>=90%)"
         int remaining_time_seconds "Sisa waktu hitung mundur server-side untuk simulasi 75m (null jika untimed)"
@@ -260,7 +263,8 @@ erDiagram
     student_answers {
         bigint id PK "Identifier log pengerjaan butir soal"
         bigint session_question_id FK,UK "Relasi 1-to-1 unik ke lembar butir soal sesi"
-        boolean is_correct "Kebenaran jawaban (Evaluasi biner All-or-Nothing)"
+        decimal score "Poin butir: 0.00 (salah), 0.50 (parsial), 1.00 (benar utuh)"
+        boolean is_correct "Indikator kebenaran penuh (TRUE jika score = 1.00)"
         boolean is_flagged "Penanda ragu-ragu butir soal di antarmuka CBT"
         boolean is_skipped "Penanda apakah soal dilewati sementara"
         int time_spent_seconds "Durasi waktu pengerjaan pada butir soal"
@@ -293,9 +297,9 @@ erDiagram
         string level_1_status "Status Level 1: LOCKED, AVAILABLE, COMPLETED, NEEDS_REMEDIAL"
         string level_2_status "Status Level 2: LOCKED, AVAILABLE, COMPLETED, NEEDS_REMEDIAL"
         string level_3_status "Status Level 3: LOCKED, AVAILABLE, COMPLETED, NEEDS_REMEDIAL"
-        int level_1_score "Skor terbaik benar Level 1 (syarat minimal 9 dari 10)"
-        int level_2_score "Skor terbaik benar Level 2 (syarat minimal 9 dari 10)"
-        int level_3_score "Skor terbaik benar Level 3 (syarat minimal 9 dari 10)"
+        decimal level_1_score "Skor terbaik benar Level 1 (syarat minimal 9.00 dari 10)"
+        decimal level_2_score "Skor terbaik benar Level 2 (syarat minimal 9.00 dari 10)"
+        decimal level_3_score "Skor terbaik benar Level 3 (syarat minimal 9.00 dari 10)"
         decimal total_cumulative_score "Akumulasi skor submateri (syarat minimal 27 dari 30)"
         boolean is_mastered "Dual-Condition Mastery: 3 Level Lulus DAN Total Benar >= 27"
         boolean is_xp_awarded "Anti-Farming: Flag bonus +250 XP hanya diberikan 1x seumur hidup"
