@@ -50,7 +50,7 @@ export class CurriculumService {
                 );
                 const allPrereqMastered = prereqSubMaterials.length > 0 && prereqSubMaterials.every((sm) => {
                     const prog = progressMap.get(sm.id);
-                    return prog?.is_mastered === true;
+                    return Boolean(prog?.is_mastered);
                 });
                 if (!allPrereqMastered) {
                     isMaterialLocked = true;
@@ -66,14 +66,14 @@ export class CurriculumService {
 
                 if (!isSmLocked && sm.prerequisite_sub_material_id) {
                     const prereqProg = progressMap.get(sm.prerequisite_sub_material_id);
-                    if (!prereqProg || !prereqProg.is_mastered) {
+                    if (!prereqProg || !Boolean(prereqProg.is_mastered)) {
                         isSmLocked = true;
                     }
                 }
 
                 const smStatus: "LOCKED" | "IN_PROGRESS" | "MASTERED" = isSmLocked
                     ? "LOCKED"
-                    : prog?.is_mastered
+                    : Boolean(prog?.is_mastered)
                     ? "MASTERED"
                     : "IN_PROGRESS";
 
@@ -90,10 +90,17 @@ export class CurriculumService {
                         else levelStatus = "LOCKED";
                     }
 
+                    const customName =
+                        cl.level_number === 1
+                            ? sm.level_1_name
+                            : cl.level_number === 2
+                            ? sm.level_2_name
+                            : sm.level_3_name;
+
                     return {
                         id: cl.id,
                         levelNumber: cl.level_number as 1 | 2 | 3,
-                        name: cl.name as "Pemahaman" | "Pengaplikasian" | "Penalaran",
+                        name: customName || cl.name,
                         status: levelStatus,
                         targetQuestions: cl.target_questions,
                         passingScore: cl.passing_score,
@@ -155,7 +162,7 @@ export class CurriculumService {
                     status: (prog?.level_1_status as "LOCKED" | "AVAILABLE" | "COMPLETED" | "NEEDS_REMEDIAL") || defaultLevel1Status,
                     score:
                         prog?.level_1_score !== null && prog?.level_1_score !== undefined
-                            ? prog.level_1_score
+                            ? Number(prog.level_1_score)
                             : null,
                 },
                 {
@@ -163,7 +170,7 @@ export class CurriculumService {
                     status: (prog?.level_2_status as "LOCKED" | "AVAILABLE" | "COMPLETED" | "NEEDS_REMEDIAL") || "LOCKED",
                     score:
                         prog?.level_2_score !== null && prog?.level_2_score !== undefined
-                            ? prog.level_2_score
+                            ? Number(prog.level_2_score)
                             : null,
                 },
                 {
@@ -171,7 +178,7 @@ export class CurriculumService {
                     status: (prog?.level_3_status as "LOCKED" | "AVAILABLE" | "COMPLETED" | "NEEDS_REMEDIAL") || "LOCKED",
                     score:
                         prog?.level_3_score !== null && prog?.level_3_score !== undefined
-                            ? prog.level_3_score
+                            ? Number(prog.level_3_score)
                             : null,
                 },
             ],

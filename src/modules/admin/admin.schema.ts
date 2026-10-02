@@ -58,6 +58,8 @@ export const createQuestionSchema = z
         questionText: z.string().trim().min(5, "Teks soal minimal 5 karakter").optional(),
         stimulus_image_url: z.string().nullable().optional(),
         stimulusImageUrl: z.string().nullable().optional(),
+        question_image_url: z.string().nullable().optional(),
+        questionImageUrl: z.string().nullable().optional(),
         options: z
             .array(
                 z.object({
@@ -116,7 +118,7 @@ export const createQuestionSchema = z
             bank_type,
             question_format,
             question_text,
-            stimulus_image_url: data.stimulus_image_url ?? data.stimulusImageUrl ?? null,
+            stimulus_image_url: data.stimulus_image_url ?? data.stimulusImageUrl ?? data.question_image_url ?? data.questionImageUrl ?? null,
             options: data.options.map((o) => {
                 const option_label = o.option_label ?? o.optionLabel;
                 const option_text = o.option_text ?? o.optionText;
@@ -167,6 +169,8 @@ export const updateQuestionSchema = z
         questionText: z.string().trim().min(1).optional(),
         stimulus_image_url: z.string().nullable().optional(),
         stimulusImageUrl: z.string().nullable().optional(),
+        question_image_url: z.string().nullable().optional(),
+        questionImageUrl: z.string().nullable().optional(),
         imageUrl: z.string().nullable().optional(),
         options: z
             .array(
@@ -210,7 +214,7 @@ export const updateQuestionSchema = z
         const bank_type = data.bank_type ?? data.bankType;
         const question_format = data.question_format ?? data.questionFormat;
         const question_text = data.question_text ?? data.questionText;
-        const stimulus_image_url = data.stimulus_image_url ?? data.stimulusImageUrl ?? data.imageUrl;
+        const stimulus_image_url = data.stimulus_image_url ?? data.stimulusImageUrl ?? data.question_image_url ?? data.questionImageUrl ?? data.imageUrl;
 
         const options = data.options
             ? data.options.map((o) => ({

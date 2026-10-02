@@ -181,6 +181,24 @@ describe("AdminService Unit Tests", () => {
             ).rejects.toThrow(BadRequestError);
         });
 
+        it("harus menolak soal COMPLEX_CHOICE jika kunci jawaban benar lebih dari 2", async () => {
+            await expect(
+                service.createQuestion({
+                    subject_id: 1,
+                    bank_type: "RECALL",
+                    question_format: "COMPLEX_CHOICE",
+                    question_text: "Soal",
+                    options: [
+                        { option_label: "A", option_text: "A", is_correct: true },
+                        { option_label: "B", option_text: "B", is_correct: true },
+                        { option_label: "C", option_text: "C", is_correct: true }, // 3 kunci benar
+                        { option_label: "D", option_text: "D", is_correct: false },
+                    ],
+                    explanation: { explanation_text: "Penjelasan" },
+                })
+            ).rejects.toThrow(BadRequestError);
+        });
+
         it("harus berhasil membuat soal yang valid dan mengembalikan detailnya", async () => {
             mockRepo.createQuestion!.mockResolvedValue(1001);
             mockRepo.getQuestionDetail!.mockResolvedValue({

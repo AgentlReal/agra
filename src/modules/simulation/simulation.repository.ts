@@ -358,18 +358,20 @@ export class SimulationRepository {
             const [evalRows] = await conn.query<Array<RowDataPacket & {
                 session_question_id: number;
                 student_answer_id: number | null;
-                is_question_correct: number;
+                question_format: "SINGLE_CHOICE" | "COMPLEX_CHOICE";
+                total_correct_options: number;
+                selected_correct_count: number;
+                selected_incorrect_count: number;
+                total_selected_count: number;
             }>>(
                 `SELECT 
                     sq.id AS session_question_id,
                     sa.id AS student_answer_id,
-                    CASE 
-                        WHEN COUNT(CASE WHEN qo.is_correct = TRUE AND sao.selected_option_id IS NULL THEN 1 END) = 0
-                         AND COUNT(CASE WHEN qo.is_correct = FALSE AND sao.selected_option_id IS NOT NULL THEN 1 END) = 0
-                         AND COUNT(sao.selected_option_id) > 0
-                        THEN 1 
-                        ELSE 0 
-                    END AS is_question_correct
+                    qb.question_format,
+                    COUNT(DISTINCT CASE WHEN qo.is_correct = TRUE THEN qo.id END) AS total_correct_options,
+                    COUNT(DISTINCT CASE WHEN qo.is_correct = TRUE AND sao.selected_option_id IS NOT NULL THEN qo.id END) AS selected_correct_count,
+                    COUNT(DISTINCT CASE WHEN qo.is_correct = FALSE AND sao.selected_option_id IS NOT NULL THEN qo.id END) AS selected_incorrect_count,
+                    COUNT(DISTINCT sao.selected_option_id) AS total_selected_count
                  FROM session_questions sq
                  JOIN question_banks qb ON qb.id = sq.question_id
                  LEFT JOIN student_answers sa ON sa.session_question_id = sq.id
@@ -377,17 +379,47 @@ export class SimulationRepository {
                  LEFT JOIN student_answer_options sao 
                     ON sao.student_answer_id = sa.id AND sao.selected_option_id = qo.id
                  WHERE sq.session_id = ?
-                 GROUP BY sq.id, sa.id`,
+                 GROUP BY sq.id, sa.id, qb.question_format`,
                 [sessionId]
             );
 
             let correctAnswers = 0;
             for (const r of evalRows) {
-                const isCorrect = Boolean(r.is_question_correct);
+                const isComplex = r.question_format === "COMPLEX_CHOICE" || Number(r.total_correct_options) > 1;
+                const totalCorrectOptions = Number(r.total_correct_options);
+                const selectedCorrect = Number(r.selected_correct_count);
+                const selectedIncorrect = Number(r.selected_incorrect_count);
+                const totalSelected = Number(r.total_selected_count);
+
+                let questionScore = 0.00;
+                let isCorrect = false;
+
+                if (isComplex) {
+                    if (selectedCorrect >= 2 && selectedIncorrect === 0) {
+                        questionScore = 1.00;
+                        isCorrect = true;
+                    } else if (selectedCorrect === 1) {
+                        // Ketika 1 yang benar maka diberi nilai setengah (0.50)
+                        questionScore = 0.50;
+                        isCorrect = false;
+                    } else {
+                        questionScore = 0.00;
+                        isCorrect = false;
+                    }
+                } else {
+                    if (selectedCorrect === 1 && selectedIncorrect === 0) {
+                        questionScore = 1.00;
+                        isCorrect = true;
+                    } else {
+                        questionScore = 0.00;
+                        isCorrect = false;
+                    }
+                }
+
                 if (r.student_answer_id) {
                     await conn.execute(
                         `UPDATE student_answers SET is_correct = ?, score = ? WHERE id = ?`,
-                        [isCorrect, isCorrect ? 1.00 : 0.00, r.student_answer_id]
+                        [isCorrect, questionScore, r.student_answer_id]
                     );
                 } else {
                     await conn.execute(
@@ -396,12 +428,13 @@ export class SimulationRepository {
                         [r.session_question_id]
                     );
                 }
-                if (isCorrect) correctAnswers++;
+                correctAnswers += questionScore;
             }
 
             const totalQuestions = evalRows.length || 30;
-            const score = Math.round((correctAnswers / totalQuestions) * 100 * 100) / 100;
-            const isPassed = correctAnswers >= 27; // Syarat kelulusan simulasi >= 90% (27 benar)
+            const numericCorrectAnswers = Number(correctAnswers);
+            const score = Math.round((numericCorrectAnswers / totalQuestions) * 100 * 100) / 100;
+            const isPassed = numericCorrectAnswers >= 27; // Syarat kelulusan simulasi >= 90% (27 benar)
 
             const [sess] = await conn.query<Array<RowDataPacket & { duration_used_sec: number }>>(
                 `SELECT TIMESTAMPDIFF(SECOND, start_time, NOW()) AS duration_used_sec 
@@ -414,7 +447,7 @@ export class SimulationRepository {
                 `UPDATE learning_sessions 
                  SET status = 'COMPLETED', submission_type = ?, correct_answers = ?, score = ?, is_passed = ?, remaining_time_seconds = 0, end_time = NOW()
                  WHERE id = ?`,
-                [submissionType, correctAnswers, score, isPassed, sessionId]
+                [submissionType, numericCorrectAnswers, score, isPassed, sessionId]
             );
 
             let xpEarned = 0;

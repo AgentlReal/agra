@@ -212,6 +212,52 @@ describe("SimulationService Unit Tests", () => {
             expect(res.is_doubtful).toBe(true);
             expect(res.remaining_seconds).toBe(4000);
         });
+
+        it("harus menolak simpan jawaban jika pilihan jawaban yang dipilih lebih dari 2 butir opsi", async () => {
+            mockProfileRepo.findRawProfile!.mockResolvedValue({ user_id: "user-1" } as any);
+            mockSimRepo.getSessionById!.mockResolvedValue({
+                id: 301,
+                status: "IN_PROGRESS",
+                simulation_id: 5,
+                start_time: new Date(),
+            });
+            mockSimRepo.getSessionQuestionById!.mockResolvedValue({ id: 1 });
+
+            await expect(
+                service.saveAnswer(301, 1, "user-1", {
+                    selected_option_ids: [1, 2, 3], // 3 opsi -> melebihi batas 2
+                    is_doubtful: false,
+                    time_spent_seconds: 10,
+                    current_question_order: 1,
+                })
+            ).rejects.toThrow("Batas maksimal jawaban yang dipilih adalah 2 butir opsi");
+        });
+
+        it("harus berhasil menyimpan jawaban untuk pilihan ganda kompleks dengan 2 butir opsi terpilih", async () => {
+            mockProfileRepo.findRawProfile!.mockResolvedValue({ user_id: "user-1" } as any);
+            mockSimRepo.getSessionById!.mockResolvedValue({
+                id: 301,
+                status: "IN_PROGRESS",
+                simulation_id: 5,
+                start_time: new Date(),
+            });
+            mockSimRepo.getSessionQuestionById!.mockResolvedValue({ id: 1 });
+            mockSimRepo.upsertAnswer!.mockResolvedValue({
+                sessionQuestionId: 1,
+                answeredAt: new Date(),
+                remainingSeconds: 3600,
+            });
+
+            const res = await service.saveAnswer(301, 1, "user-1", {
+                selected_option_ids: [1, 2], // 2 opsi -> batas maksimal pilihan
+                is_doubtful: false,
+                time_spent_seconds: 15,
+                current_question_order: 1,
+            });
+
+            expect(res.session_question_id).toBe(1);
+            expect(res.remaining_seconds).toBe(3600);
+        });
     });
 
     describe("submitAttempt & getResult", () => {

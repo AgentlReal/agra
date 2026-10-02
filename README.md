@@ -10,6 +10,10 @@ Semua perintah di bawah ini dapat dijalankan menggunakan `npm run <command>` di 
 | `npm run lint` | Menjalankan ESLint untuk mengecek kualitas dan error pada kode. |
 | `npm run migrate` | Mengeksekusi migrasi schema Better Auth dan seluruh file migrasi `.sql` dari folder `migrations/` ke database MySQL. |
 | `npm run db:reset` | Menghapus (*DROP*) seluruh tabel di database untuk memulai migrasi dari awal. |
+| `npm run complete` | Otomatis menyelesaikan Recall, Level Rekognisi, dan Simulasi TKA dengan skor 100% (Lulus). |
+| `npm run complete:recall` | Otomatis menyelesaikan asesmen pembuka 'Recall Kemampuanmu' (membuka akses kurikulum). |
+| `npm run complete:level` | Otomatis menyelesaikan latihan Level Rekognisi (Level 1: Pemahaman) pada seluruh 16 submateri. |
+| `npm run complete:simulasi` | Otomatis menyelesaikan seluruh paket ujian Simulasi TKA CBT 75 menit. |
 | `npm run mock` | Menjalankan Prism Mock API Server berbasis kontrak OpenAPI `openapi/API.yaml` (`http://127.0.0.1:4010`). |
 | `npm run dev:mock` | Menjalankan Next.js dev server dan Prism Mock server secara bersamaan. |
 
@@ -79,6 +83,58 @@ Buka `http://localhost:3000/login.html` setelah menjalankan `npm run dev` atau `
 Halaman login memakai endpoint `/api/mock/auth/sign-in/username` atau `/api/mock/auth/sign-in/email` pada origin Next.js yang sama. Respons menyetel cookie `agra_mock_session` dengan `HttpOnly`, `SameSite=Lax`, dan `Secure` saat HTTPS. Opsi **Ingat saya** memberi cookie `Max-Age` tujuh hari; tanpa opsi itu browser memakai session cookie. Halaman lalu memanggil `/api/mock/auth/get-session` untuk memastikan cookie dikirim kembali. Tombol **Keluar** memanggil `/api/mock/auth/sign-out` dan menghapus cookie.
 
 Mock auth hanya aktif dalam mode development dan tidak memakai database. Cookie mock terpisah dari `better-auth.session_token`, sehingga tidak memberi akses ke endpoint aplikasi yang memerlukan sesi Better Auth asli. Prism di port 4010 tetap digunakan untuk respons API lain, tetapi tidak menyimpan sesi login.
+
+---
+
+### 4. Otomasi Penyelesaian Asesmen (Fast-Complete / Seed State)
+Script otomasi digunakan untuk menyelesaikan tahapan belajar secara instan tanpa harus mengerjakan puluhan butir soal manual. Sangat berguna untuk pengujian antarmuka, verifikasi alur kelulusan, dan presentasi fitur.
+
+- **Menyelesaikan Seluruh Tahapan Sekaligus (Recall, Level Rekognisi, & Simulasi):**
+  ```bash
+  npm run complete
+  # atau
+  npm run complete:all
+  ```
+  *Efek:*
+  1. **Recall Kemampuanmu:** Skor 100% (30/30 benar), status profil `is_recall_passed = TRUE`, membuka navigasi materi kurikulum.
+  2. **Level Rekognisi (Level 1: Pemahaman):** Menyelesaikan Level 1 dengan skor 100% pada seluruh 16 submateri, membuka akses Level 2 (Pengaplikasian).
+  3. **Simulasi TKA CBT:** Menyelesaikan 4 paket simulasi aktif dengan skor 100% (30/30 benar).
+  4. **XP & Milestone Tier:** Mengakumulasi seluruh reward XP dan otomatis menaikkan tier medali siswa.
+
+- **Menyelesaikan Recall Kemampuanmu Saja:**
+  ```bash
+  npm run complete:recall
+  ```
+
+- **Menyelesaikan Level Rekognisi (Level 1 Pemahaman) Saja:**
+  ```bash
+  npm run complete:level
+  ```
+
+- **Menyelesaikan Seluruh Level Kognitif (Level 1, 2, 3 - Tuntas / Mastered):**
+  ```bash
+  npx tsx scripts/complete-assessment.ts --all-levels
+  ```
+
+- **Menyelesaikan Seluruh Paket Simulasi TKA CBT Saja:**
+  ```bash
+  npm run complete:simulasi
+  ```
+
+- **Menentukan Target Akun Siswa Tertentu:**
+  Secara default script akan memilih akun `SISWA` pertama di database (misal `user@example.com`). Anda dapat menentukan akun target menggunakan flag email, username, ID, atau nama pengguna langsung:
+  ```bash
+  # Lewat npm run (disarankan gunakan '--' agar flag diteruskan rapi oleh npm):
+  npm run complete:recall -- --username user
+  npm run complete:all -- --email siswa_custom@example.com
+
+  # Atau cukup tulis username/email langsung setelah script:
+  npm run complete:recall user
+
+  # Atau langsung menggunakan npx tsx:
+  npx tsx scripts/complete-assessment.ts --all --email siswa_custom@example.com
+  npx tsx scripts/complete-assessment.ts --recall --username user
+  ```
 
 ---
 

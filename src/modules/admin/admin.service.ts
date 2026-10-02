@@ -117,6 +117,11 @@ export class AdminService {
                     "Soal COMPLEX_CHOICE wajib memiliki minimal 2 kunci jawaban benar."
                 );
             }
+            if (correctCount > 2) {
+                throw new BadRequestError(
+                    "Soal COMPLEX_CHOICE memiliki batas maksimal 2 kunci jawaban benar yang dipilih."
+                );
+            }
         }
 
         const questionId = await this.repo.createQuestion(input);
@@ -192,6 +197,11 @@ export class AdminService {
                 if (correctCount < 2) {
                     throw new BadRequestError(
                         "Soal COMPLEX_CHOICE wajib memiliki minimal 2 kunci jawaban benar."
+                    );
+                }
+                if (correctCount > 2) {
+                    throw new BadRequestError(
+                        "Soal COMPLEX_CHOICE memiliki batas maksimal 2 kunci jawaban benar yang dipilih."
                     );
                 }
             }
