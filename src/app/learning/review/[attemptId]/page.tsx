@@ -23,17 +23,20 @@ interface ReviewItem {
   stimulus?: string;
   stimulusImageUrl?: string | null;
   questionText: string;
+  questionImageUrl?: string | null;
   options: { id?: number; key: string; text: string; isCorrect: boolean }[];
   questionFormat: 'SINGLE_CHOICE' | 'COMPLEX_CHOICE';
   studentAnswer: string;
   correctAnswer: string;
   isCorrect: boolean;
+  score?: number;
   explanation: string;
 }
 
 export default function LearningReviewPage({ params }: { params: Promise<{ attemptId: string }> }) {
   const { attemptId } = use(params);
   const [questions, setQuestions] = useState<ReviewItem[]>([]);
+  const [levelName, setLevelName] = useState<string | null>(null);
   const [zoomImageUrl, setZoomImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -43,6 +46,9 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
     api.learning
       .getReview(attemptId)
       .then((res: any) => {
+        const lvlName = res?.level_name || res?.levelName || res?.data?.level_name || res?.data?.levelName || null;
+        if (lvlName) setLevelName(lvlName);
+
         const rawQs = res?.reviews || res?.questions || res?.data?.reviews || res?.data?.questions;
         if (Array.isArray(rawQs) && rawQs.length > 0) {
           const qs: ReviewItem[] = rawQs.map((q: any, i: number) => {
@@ -56,6 +62,11 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
               q.stimulusImageUrl ||
               (typeof q.stimulus === 'object' && (q.stimulus?.stimulus_image_url || q.stimulus?.image_url)) ||
               q.imageUrl ||
+              null;
+
+            const questionImageUrl =
+              q.question_image_url ||
+              q.questionImageUrl ||
               null;
 
             const mappedOptions = (q.options || []).map((opt: any) => ({
@@ -87,17 +98,23 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
               correctAnswer = Array.isArray(q.correctAnswer) ? q.correctAnswer.join(', ') : q.correctAnswer;
             }
 
+            const rawScore = typeof q.score === 'number' ? q.score : typeof q.point === 'number' ? q.point : null;
+            const isCorrect = Boolean(q.is_correct ?? q.isCorrect);
+            const score = rawScore !== null ? rawScore : (isCorrect ? 1 : 0);
+
             return {
               id: q.session_question_id ?? q.id ?? i + 1,
               questionNumber: q.question_order ?? q.questionNumber ?? i + 1,
               stimulus: stimulusText,
               stimulusImageUrl,
               questionText: q.question_text || q.questionText || '',
+              questionImageUrl,
               options: mappedOptions,
               questionFormat,
               studentAnswer,
               correctAnswer,
-              isCorrect: Boolean(q.is_correct ?? q.isCorrect),
+              isCorrect,
+              score,
               explanation: q.explanation_text || q.explanation || q.reasoning_guide || 'Pembahasan belum tersedia untuk butir soal ini.',
             };
           });
@@ -124,7 +141,9 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
               <BookOpen className="h-4 w-4" />
               <span>Pembahasan Detail 10 Soal</span>
             </div>
-            <h1 className="text-2xl font-bold text-white">Review Latihan Level Kognitif</h1>
+            <h1 className="text-2xl font-bold text-white">
+              {levelName ? `Review ${levelName}` : 'Review Latihan Level Kognitif'}
+            </h1>
           </div>
 
           <Link
@@ -155,7 +174,11 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
               <div
                 key={q.questionNumber}
                 className={`rounded-2xl border p-5 sm:p-6 backdrop-blur-md ${
-                  q.isCorrect ? 'border-emerald-500/20 bg-slate-900/60' : 'border-rose-500/20 bg-slate-900/60'
+                  q.score === 0.5
+                    ? 'border-amber-500/20 bg-slate-900/60'
+                    : q.isCorrect
+                    ? 'border-emerald-500/20 bg-slate-900/60'
+                    : 'border-rose-500/20 bg-slate-900/60'
                 }`}
               >
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-3 mb-4">
@@ -165,7 +188,7 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
                     </span>
                     {q.questionFormat === 'COMPLEX_CHOICE' ? (
                       <span className="inline-flex items-center gap-1 rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-purple-400">
-                        <CheckSquare className="h-3 w-3" /> Pilihan Ganda Kompleks
+                        <CheckSquare className="h-3 w-3" /> Pilihan Ganda Kompleks (Pilih 1 atau 2)
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-indigo-400">
@@ -174,9 +197,13 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
                     )}
                   </div>
 
-                  {q.isCorrect ? (
+                  {q.score === 0.5 ? (
+                    <span className="flex items-center gap-1 text-xs font-semibold text-amber-400 bg-amber-500/10 rounded-full px-2.5 py-0.5 border border-amber-500/20">
+                      <CheckCircle2 className="h-3.5 w-3.5" /> Benar Sebagian (+0.5)
+                    </span>
+                  ) : q.isCorrect ? (
                     <span className="flex items-center gap-1 text-xs font-semibold text-emerald-400 bg-emerald-500/10 rounded-full px-2.5 py-0.5 border border-emerald-500/20">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> Jawaban Tepat
+                      <CheckCircle2 className="h-3.5 w-3.5" /> Jawaban Tepat (+1)
                     </span>
                   ) : (
                     <span className="flex items-center gap-1 text-xs font-semibold text-rose-400 bg-rose-500/10 rounded-full px-2.5 py-0.5 border border-rose-500/20">
@@ -211,6 +238,25 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
                 )}
 
                 <p className="text-sm font-medium text-white mb-4 leading-relaxed">{q.questionText}</p>
+
+                {q.questionImageUrl && (
+                  <div className="mb-4 relative group overflow-hidden rounded-lg border border-slate-800 bg-slate-900/60 p-2 text-center">
+                    <img
+                      src={q.questionImageUrl}
+                      alt="Ilustrasi pertanyaan"
+                      className="max-h-60 sm:max-h-72 w-auto mx-auto object-contain rounded cursor-zoom-in hover:opacity-95 transition-opacity"
+                      onClick={() => setZoomImageUrl(q.questionImageUrl || null)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setZoomImageUrl(q.questionImageUrl || null)}
+                      className="absolute bottom-2.5 right-2.5 flex items-center gap-1 rounded bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold text-slate-300 backdrop-blur-sm border border-slate-700 hover:text-white transition-colors"
+                    >
+                      <ZoomIn className="h-3 w-3" />
+                      <span>Perbesar</span>
+                    </button>
+                  </div>
+                )}
 
                 <div className="space-y-2 mb-4">
                   {q.options.map((opt) => {

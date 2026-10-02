@@ -132,6 +132,7 @@ export default function CreateQuestionPage() {
           }
         : null,
       stimulus_image_url: imageUrl || null,
+      question_image_url: imageUrl || null,
       // Backward-compatible properties
       bankType,
       subjectId: Number(subjectId),

@@ -79,7 +79,7 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
         const data = res?.data || res;
         setSubmaterial({
           id: submaterialId,
-          title: `Submateri #${submaterialId}`,
+          title: data?.title || data?.name || `Submateri #${submaterialId}`,
           isMastered: Boolean(data?.isMastered),
           progressState: data?.progressState || 'IN_PROGRESS',
         });
@@ -91,6 +91,7 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
           const isPassed = found ? found.status === 'COMPLETED' : false;
           return {
             ...cfg,
+            name: found?.name || cfg.name,
             isUnlocked,
             isPassed,
             highestScore: found?.score ?? null,

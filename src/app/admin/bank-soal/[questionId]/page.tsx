@@ -84,6 +84,8 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
         : (q.stimulus?.stimulus_text || q.stimulusText || '')
     );
     setImageUrl(
+      q.question_image_url ||
+      q.questionImageUrl ||
       q.stimulus_image_url ||
       q.stimulusImageUrl ||
       (typeof q.stimulus === 'object' && (q.stimulus?.stimulus_image_url || q.stimulus?.image_url)) ||
@@ -197,6 +199,7 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
           }
         : null,
       stimulus_image_url: imageUrl || null,
+      question_image_url: imageUrl || null,
       sub_material_id: isRecall ? null : (submaterialId || 1),
       cognitive_level_id: isRecall ? null : (Number(cognitiveLevel) || 1),
     };
