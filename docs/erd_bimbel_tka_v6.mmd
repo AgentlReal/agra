@@ -69,15 +69,15 @@ erDiagram
 
     preset_avatars {
         int id PK "Identifier preset avatar"
-        string name "Nama karakter avatar (misal: Ksatria Buku, Penjelajah Galaksi)"
-        string image_url "URL aset visual kartun ramah anak (12 Preset Resmi)"
+        string name "Nama karakter avatar (misal: Mighty Lion, Pinky Dolphin)"
+        string image_url "URL aset visual kartun ramah anak (6 Preset Resmi)"
         boolean is_active "Status ketersediaan avatar di galeri preset"
     }
 
     user_profiles {
         bigint id PK "Identifier profil siswa"
         varchar user_id FK,UK "Relasi 1-to-1 unik ke users.id (String PK, khusus role SISWA)"
-        int preset_avatar_id FK "Relasi ke 12 galeri avatar aman (tanpa upload mandiri)"
+        int preset_avatar_id FK "Relasi ke 6 galeri avatar aman (tanpa upload mandiri)"
         int current_milestone_tier_id FK "Relasi ke 5 milestone tier saat ini"
         bigint total_xp "Total akumulasi poin XP siswa (murni capaian formatif)"
         boolean is_recall_passed "Status kelulusan asesmen pembuka Recall Kemampuanmu"

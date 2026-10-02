@@ -13,15 +13,15 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
--- Tabel 1: preset_avatars (12 Galeri Avatar Kartun Ramah Anak)
+-- Tabel 1: preset_avatars (6 Galeri Avatar Kartun Ramah Anak)
 -- -----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `preset_avatars` (
     `id` INT AUTO_INCREMENT NOT NULL COMMENT 'Identifier preset avatar',
     `name` VARCHAR(100) NOT NULL COMMENT 'Nama karakter avatar (misal: Ksatria Buku, Penjelajah Galaksi)',
-    `image_url` VARCHAR(255) NOT NULL COMMENT 'URL aset visual kartun ramah anak (12 Preset Resmi)',
+    `image_url` VARCHAR(255) NOT NULL COMMENT 'URL aset visual kartun ramah anak (6 Preset Resmi)',
     `is_active` BOOLEAN NOT NULL DEFAULT TRUE COMMENT 'Status ketersediaan avatar di galeri preset',
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='12 Preset avatar kurasi aman COPPA dan UU PDP';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='6 Preset avatar kurasi aman COPPA dan UU PDP';
 
 -- -----------------------------------------------------------------------------
 -- Tabel 2: milestone_tiers (5 Tingkatan Capaian Prestasi Formatif)
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `milestone_tiers` (
 CREATE TABLE IF NOT EXISTS `user_profiles` (
     `id` BIGINT AUTO_INCREMENT NOT NULL COMMENT 'Identifier unik profil siswa',
     `user_id` VARCHAR(36) NOT NULL COMMENT 'Relasi 1-to-1 unik ke users.id (khusus role SISWA)',
-    `preset_avatar_id` INT NULL COMMENT 'Relasi ke 12 galeri avatar aman (tanpa upload mandiri)',
+    `preset_avatar_id` INT NULL COMMENT 'Relasi ke 6 galeri avatar aman (tanpa upload mandiri)',
     `current_milestone_tier_id` INT NOT NULL DEFAULT 1 COMMENT 'Relasi ke 5 milestone tier saat ini',
     `total_xp` BIGINT NOT NULL DEFAULT 0 COMMENT 'Total akumulasi poin XP siswa (murni capaian formatif)',
     `is_recall_passed` BOOLEAN NOT NULL DEFAULT FALSE COMMENT 'Status kelulusan asesmen pembuka Recall Kemampuanmu',
