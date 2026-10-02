@@ -164,7 +164,7 @@ CREATE TABLE IF NOT EXISTS `question_banks` (
     `bank_type` ENUM('RECALL', 'LEVEL_EXERCISE', 'SIMULATION') NOT NULL COMMENT 'Pemisahan 3 Bank Terisolasi: RECALL, LEVEL_EXERCISE, SIMULATION',
     `question_format` ENUM('SINGLE_CHOICE', 'COMPLEX_CHOICE') NOT NULL DEFAULT 'SINGLE_CHOICE' COMMENT 'Format butir soal: 4 opsi tunggal atau majemuk',
     `question_text` TEXT NOT NULL COMMENT 'Teks pertanyaan atau formula matematika LaTeX',
-    `stimulus_image_url` VARCHAR(255) NULL COMMENT 'Tautan aset stimulus visual individual jika ada',
+    `question_image_url` VARCHAR(255) NULL COMMENT 'Tautan aset stimulus visual individual jika ada',
     `is_active` BOOLEAN NOT NULL DEFAULT TRUE COMMENT 'Status keaktifan butir soal (sakelar CMS kurikulum)',
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Waktu pembuatan butir soal',
     PRIMARY KEY (`id`),
