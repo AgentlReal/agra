@@ -77,6 +77,16 @@ export const saveLearningAnswerSchema = z
         current_question_order: z.coerce.number().int().min(1, "Nomor urut soal minimal 1").max(10, "Nomor urut soal latihan maksimal 10").optional(),
         currentQuestionOrder: z.coerce.number().int().min(1, "Nomor urut soal minimal 1").max(10, "Nomor urut soal latihan maksimal 10").optional(),
     })
+    .refine(
+        (data) => {
+            const ids = data.selected_option_ids ?? data.selectedOptionIds ?? [];
+            return ids.length <= 2;
+        },
+        {
+            message: "Batas maksimal jawaban yang dipilih adalah 2 butir opsi",
+            path: ["selected_option_ids"],
+        }
+    )
     .transform((data) => ({
         selected_option_ids: data.selected_option_ids ?? data.selectedOptionIds ?? [],
         is_skipped: data.is_skipped ?? data.isSkipped ?? false,

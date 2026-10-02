@@ -123,6 +123,8 @@ export class LearningService {
                     question_order: r.question_order,
                     question_type: r.question_format,
                     question_text: r.question_text,
+                    stimulus_image_url: r.stimulus_image_url || null,
+                    question_image_url: r.question_image_url || r.stimulus_image_url || null,
                     options: [],
                     selected_option_ids: ans?.selected || [],
                     is_skipped: ans?.isSkipped || false,
@@ -132,6 +134,7 @@ export class LearningService {
                         title: "",
                         content_text: r.stimulus_text,
                         source_citation: null,
+                        image_url: r.stimulus_image_url || null,
                     } : null,
                 });
             }
@@ -143,13 +146,21 @@ export class LearningService {
             });
         }
 
+        const customLevelName =
+            level?.level_number === 1
+                ? subMaterial?.level_1_name
+                : level?.level_number === 2
+                ? subMaterial?.level_2_name
+                : subMaterial?.level_3_name;
+        const levelName = customLevelName || level?.name || "Pemahaman";
+
         return {
             attempt_id: session.id,
             sub_material_id: session.sub_material_id!,
             sub_material_title: subMaterial?.title || "Submateri",
             cognitive_level_id: session.cognitive_level_id!,
             level_number: (level?.level_number || 1) as 1 | 2 | 3,
-            level_name: (level?.name || "Pemahaman") as "Pemahaman" | "Pengaplikasian" | "Penalaran",
+            level_name: levelName,
             attempt_number: session.attempt_number,
             is_remedial: Boolean(session.is_remedial),
             status: session.status,
@@ -172,6 +183,10 @@ export class LearningService {
         }
         if (session.status !== "IN_PROGRESS") {
             throw new BadRequestError("Sesi pengerjaan sudah selesai atau tidak aktif");
+        }
+
+        if (dto.selected_option_ids && dto.selected_option_ids.length > 2) {
+            throw new BadRequestError("Batas maksimal jawaban yang dipilih adalah 2 butir opsi");
         }
 
         const res = await this.repo.upsertAnswer(
@@ -241,7 +256,7 @@ export class LearningService {
         const totalXp = await this.repo.getUserTotalXp(userId);
 
         const isPassed = evalResult ? evalResult.isPassed : Boolean(session.is_passed);
-        const correctAnswers = evalResult ? evalResult.correctAnswers : session.correct_answers;
+        const correctAnswers = evalResult ? evalResult.correctAnswers : Number(session.correct_answers);
         const score = evalResult ? evalResult.score : Number(session.score);
         const xpEarned = evalResult ? evalResult.xpEarned : 0;
         const isMastered = evalResult ? evalResult.isSubMaterialMastered : Boolean(prog?.is_mastered);
@@ -259,19 +274,28 @@ export class LearningService {
             level_1_status: (prog?.level_1_status as "LOCKED" | "AVAILABLE" | "COMPLETED" | "NEEDS_REMEDIAL") || "AVAILABLE",
             level_2_status: (prog?.level_2_status as "LOCKED" | "AVAILABLE" | "COMPLETED" | "NEEDS_REMEDIAL") || "LOCKED",
             level_3_status: (prog?.level_3_status as "LOCKED" | "AVAILABLE" | "COMPLETED" | "NEEDS_REMEDIAL") || "LOCKED",
-            level_1_score: prog?.level_1_score !== undefined ? prog.level_1_score : null,
-            level_2_score: prog?.level_2_score !== undefined ? prog.level_2_score : null,
-            level_3_score: prog?.level_3_score !== undefined ? prog.level_3_score : null,
+            level_1_score: prog?.level_1_score !== undefined && prog.level_1_score !== null ? Number(prog.level_1_score) : null,
+            level_2_score: prog?.level_2_score !== undefined && prog.level_2_score !== null ? Number(prog.level_2_score) : null,
+            level_3_score: prog?.level_3_score !== undefined && prog.level_3_score !== null ? Number(prog.level_3_score) : null,
             total_cumulative_score: Number(prog?.total_cumulative_score || 0),
             is_mastered: Boolean(prog?.is_mastered),
             mastered_at: prog?.mastered_at ? new Date(prog.mastered_at).toISOString() : null,
         };
 
+        const subMaterial = await this.curriculumRepo.getSubMaterialById(subMaterialId);
+        const customLevelName =
+            level.level_number === 1
+                ? subMaterial?.level_1_name
+                : level.level_number === 2
+                ? subMaterial?.level_2_name
+                : subMaterial?.level_3_name;
+        const levelName = customLevelName || level.name;
+
         return {
             attempt_id: session.id,
             level_id: level.id,
             level_number: level.level_number as 1 | 2 | 3,
-            level_name: level.name,
+            level_name: levelName,
             score,
             correct_answers: correctAnswers,
             total_questions: 10,
@@ -297,16 +321,29 @@ export class LearningService {
         }
 
         const level = await this.repo.getCognitiveLevelById(session.cognitive_level_id!);
+        const subMaterial = session.sub_material_id
+            ? await this.curriculumRepo.getSubMaterialById(session.sub_material_id)
+            : null;
+        const customLevelName =
+            level?.level_number === 1
+                ? subMaterial?.level_1_name
+                : level?.level_number === 2
+                ? subMaterial?.level_2_name
+                : subMaterial?.level_3_name;
+        const levelName = customLevelName || level?.name || "Pemahaman";
+
         const rows = await this.repo.getReviewQuestions(attemptId);
         const map = new Map<number, M04_QuestionReviewItem>();
 
         for (const r of rows) {
+            const sqId = r.session_question_id || r.question_order;
             if (!map.has(r.question_order)) {
                 map.set(r.question_order, {
-                    session_question_id: r.question_order,
+                    session_question_id: sqId,
                     question_order: r.question_order,
                     question_text: r.question_text,
-                    stimulus_image_url: null,
+                    stimulus_image_url: r.stimulus_image_url || null,
+                    question_image_url: r.question_image_url || r.stimulus_image_url || null,
                     options: [],
                     selected_option_ids: [],
                     correct_option_ids: [],
@@ -319,16 +356,19 @@ export class LearningService {
             }
 
             const item = map.get(r.question_order)!;
-            item.options.push({
-                id: r.option_id,
-                option_label: r.option_label as "A" | "B" | "C" | "D",
-                option_text: r.option_text,
-                is_correct: Boolean(r.is_correct),
-            });
-            if (r.is_correct) {
+            const existingOpt = item.options.find((o) => o.id === r.option_id);
+            if (!existingOpt) {
+                item.options.push({
+                    id: r.option_id,
+                    option_label: r.option_label as "A" | "B" | "C" | "D",
+                    option_text: r.option_text,
+                    is_correct: Boolean(r.is_correct),
+                });
+            }
+            if (r.is_correct && !item.correct_option_ids.includes(r.option_id)) {
                 item.correct_option_ids.push(r.option_id);
             }
-            if (r.is_selected) {
+            if (r.is_selected && !item.selected_option_ids.includes(r.option_id)) {
                 item.selected_option_ids.push(r.option_id);
             }
         }
@@ -336,9 +376,9 @@ export class LearningService {
         return {
             attempt_id: session.id,
             level_number: (level?.level_number || 1) as 1 | 2 | 3,
-            level_name: level?.name || "Pemahaman",
+            level_name: levelName,
             total_questions: 10,
-            correct_answers: session.correct_answers,
+            correct_answers: Number(session.correct_answers),
             reviews: Array.from(map.values()),
         };
     }

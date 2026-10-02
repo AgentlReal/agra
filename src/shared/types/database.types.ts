@@ -63,6 +63,9 @@ export interface SubMaterialRow extends RowDataPacket {
     prerequisite_sub_material_id: number | null;
     code: string;
     title: string;
+    level_1_name?: string;
+    level_2_name?: string;
+    level_3_name?: string;
     order_index: number;
     passing_threshold: number;
     xp_reward: number;
@@ -98,6 +101,7 @@ export interface QuestionBankRow extends RowDataPacket {
     question_format: "SINGLE_CHOICE" | "COMPLEX_CHOICE";
     question_text: string;
     stimulus_image_url: string | null;
+    question_image_url?: string | null;
     is_active: boolean;
     created_at: Date;
 }

@@ -281,6 +281,7 @@ export class AdminRepository {
             created_at: q.created_at ? new Date(q.created_at).toISOString() : new Date().toISOString(),
             stimulus_id: q.stimulus_id,
             stimulus_image_url: q.stimulus_image_url,
+            question_image_url: q.stimulus_image_url,
             stimulus: q.stimulus_id
                 ? {
                       id: q.stimulus_id,

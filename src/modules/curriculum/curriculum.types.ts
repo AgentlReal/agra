@@ -9,7 +9,7 @@ export interface ApiSubjectItem {
 export interface ApiCurriculumLevelItem {
     id: number;
     levelNumber: 1 | 2 | 3;
-    name: "Pemahaman" | "Pengaplikasian" | "Penalaran";
+    name: string;
     status: "LOCKED" | "AVAILABLE" | "COMPLETED" | "NEEDS_REMEDIAL";
     targetQuestions: number;
     passingScore: number;

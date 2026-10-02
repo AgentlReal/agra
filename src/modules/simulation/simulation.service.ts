@@ -17,6 +17,7 @@ import {
     NotFoundError,
     ForbiddenError,
     ConflictError,
+    BadRequestError,
 } from "@/shared/errors/app-error";
 
 export class SimulationService {
@@ -272,6 +273,10 @@ export class SimulationService {
             throw new NotFoundError("Nomor soal tidak terdaftar pada sesi simulasi ini");
         }
 
+        if (input.selected_option_ids && input.selected_option_ids.length > 2) {
+            throw new BadRequestError("Batas maksimal jawaban yang dipilih adalah 2 butir opsi");
+        }
+
         const result = await this.repo.upsertAnswer(
             sessionQuestionId,
             input.selected_option_ids,
@@ -350,7 +355,7 @@ export class SimulationService {
             package_id: session.simulation_id || 0,
             package_title: pkg?.title || "Simulasi CBT Mandiri",
             score: Number(session.score),
-            correct_answers: session.correct_answers,
+            correct_answers: Number(session.correct_answers),
             total_questions: 30,
             is_passed: Boolean(session.is_passed),
             xp_earned: xpEarned,
@@ -440,7 +445,7 @@ export class SimulationService {
             attempt_id: session.id,
             package_title: pkg?.title || "Simulasi CBT Mandiri",
             total_questions: 30,
-            correct_answers: session.correct_answers,
+            correct_answers: Number(session.correct_answers),
             reviews: Array.from(reviewMap.values()),
         };
     }

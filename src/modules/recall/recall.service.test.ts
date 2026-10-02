@@ -20,6 +20,7 @@ describe("RecallService Unit Tests", () => {
             countAnsweredQuestions: vi.fn(),
             upsertAnswer: vi.fn(),
             evaluateAndCompleteSession: vi.fn(),
+            getSubjectScores: vi.fn(),
             getReviewQuestions: vi.fn(),
         };
         service = new RecallService(mockRepo as unknown as RecallRepository);

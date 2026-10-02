@@ -127,9 +127,14 @@ export class RecallService {
             throw new BadRequestError("Sesi pengerjaan sudah selesai atau tidak aktif");
         }
 
+        const selected = dto.selectedOptionIds || [];
+        if (selected.length > 2) {
+            throw new BadRequestError("Batas maksimal jawaban yang dipilih adalah 2 butir opsi");
+        }
+
         const res = await this.repo.upsertAnswer(
             questionId,
-            dto.selectedOptionIds || [],
+            selected,
             dto.isSkipped || false,
             dto.timeSpentSeconds || 0,
             dto.currentQuestionOrder
@@ -158,19 +163,19 @@ export class RecallService {
         const res = await this.repo.evaluateAndCompleteSession(attemptId, userId);
 
         return {
-            totalCorrect: res.correctAnswers,
-            isPassed: res.isPassed,
+            totalCorrect: Number(res.correctAnswers),
+            isPassed: Boolean(res.isPassed),
             xpEarned: 0,
             subjectResults: [
                 {
                     subjectId: 1,
-                    correctAnswers: res.mathCorrect,
-                    totalQuestions: res.mathTotal || 15,
+                    correctAnswers: Number(res.mathCorrect),
+                    totalQuestions: Number(res.mathTotal || 15),
                 },
                 {
                     subjectId: 2,
-                    correctAnswers: res.bahasaCorrect,
-                    totalQuestions: res.bahasaTotal || 15,
+                    correctAnswers: Number(res.bahasaCorrect),
+                    totalQuestions: Number(res.bahasaTotal || 15),
                 },
             ],
         };
@@ -182,30 +187,22 @@ export class RecallService {
             throw new NotFoundError("Sesi Recall tidak ditemukan");
         }
 
-        const rows = await this.repo.getReviewQuestions(attemptId);
-        let mathCorrect = 0;
-        let bahasaCorrect = 0;
-        for (const r of rows) {
-            if (r.is_answer_correct) {
-                if (r.subject_id === 1) mathCorrect++;
-                else if (r.subject_id === 2) bahasaCorrect++;
-            }
-        }
+        const scores = await this.repo.getSubjectScores(attemptId);
 
         return {
-            totalCorrect: session.correct_answers,
+            totalCorrect: Number(session.correct_answers),
             isPassed: Boolean(session.is_passed),
             xpEarned: 0,
             subjectResults: [
                 {
                     subjectId: 1,
-                    correctAnswers: mathCorrect,
-                    totalQuestions: 15,
+                    correctAnswers: Number(scores.mathCorrect),
+                    totalQuestions: Number(scores.mathTotal || 15),
                 },
                 {
                     subjectId: 2,
-                    correctAnswers: bahasaCorrect,
-                    totalQuestions: 15,
+                    correctAnswers: Number(scores.bahasaCorrect),
+                    totalQuestions: Number(scores.bahasaTotal || 15),
                 },
             ],
         };
@@ -224,9 +221,10 @@ export class RecallService {
         const map = new Map<number, RecallReviewItem>();
 
         for (const r of rows) {
+            const sqId = r.session_question_id || r.question_order;
             if (!map.has(r.question_order)) {
                 map.set(r.question_order, {
-                    session_question_id: r.question_order,
+                    session_question_id: sqId,
                     subject_id: r.subject_id,
                     question_order: r.question_order,
                     question_text: r.question_text,
@@ -240,13 +238,16 @@ export class RecallService {
             }
 
             const item = map.get(r.question_order)!;
-            item.options.push({
-                id: r.option_id,
-                option_label: r.option_label as "A" | "B" | "C" | "D",
-                option_text: r.option_text,
-                is_correct: Boolean(r.is_correct),
-            });
-            if (r.is_selected) {
+            const existingOpt = item.options.find((o) => o.id === r.option_id);
+            if (!existingOpt) {
+                item.options.push({
+                    id: r.option_id,
+                    option_label: r.option_label as "A" | "B" | "C" | "D",
+                    option_text: r.option_text,
+                    is_correct: Boolean(r.is_correct),
+                });
+            }
+            if (r.is_selected && !item.selected_option_ids.includes(r.option_id)) {
                 item.selected_option_ids.push(r.option_id);
             }
         }

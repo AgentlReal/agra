@@ -53,6 +53,7 @@ export interface K10_Question {
     created_at: string;
     stimulus_id: number | null;
     stimulus_image_url: string | null;
+    question_image_url?: string | null;
     stimulus?: QuestionStimulus | null;
     options: K10_QuestionOption[];
     explanation: K10_QuestionExplanation;
@@ -73,6 +74,7 @@ export interface K10_QuestionInput {
     question_format: "SINGLE_CHOICE" | "COMPLEX_CHOICE";
     question_text: string;
     stimulus_image_url?: string | null;
+    question_image_url?: string | null;
     options: K10_QuestionInputOption[];
     explanation: {
         explanation_text: string;
@@ -95,6 +97,7 @@ export interface K10_QuestionUpdateInput {
     question_format?: "SINGLE_CHOICE" | "COMPLEX_CHOICE";
     question_text?: string;
     stimulus_image_url?: string | null;
+    question_image_url?: string | null;
     options?: K10_QuestionInputOption[];
     explanation?: {
         explanation_text: string;

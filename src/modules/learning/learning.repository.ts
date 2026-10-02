@@ -94,6 +94,7 @@ export class LearningRepository {
         question_format: "SINGLE_CHOICE" | "COMPLEX_CHOICE";
         stimulus_text: string | null;
         stimulus_image_url: string | null;
+        question_image_url: string | null;
         option_id: number;
         option_label: "A" | "B" | "C" | "D";
         option_text: string;
@@ -107,6 +108,7 @@ export class LearningRepository {
                 qb.question_format,
                 stm.stimulus_text,
                 COALESCE(qb.stimulus_image_url, stm.stimulus_image_url) AS stimulus_image_url,
+                qb.stimulus_image_url AS question_image_url,
                 qo.id AS option_id,
                 qo.option_label,
                 qo.option_text
@@ -289,18 +291,20 @@ export class LearningRepository {
             const [evalRows] = await conn.query<Array<RowDataPacket & {
                 session_question_id: number;
                 student_answer_id: number | null;
-                is_question_correct: number;
+                question_format: "SINGLE_CHOICE" | "COMPLEX_CHOICE";
+                total_correct_options: number;
+                selected_correct_count: number;
+                selected_incorrect_count: number;
+                total_selected_count: number;
             }>>(
                 `SELECT 
                     sq.id AS session_question_id,
                     sa.id AS student_answer_id,
-                    CASE 
-                        WHEN COUNT(CASE WHEN qo.is_correct = TRUE AND sao.selected_option_id IS NULL THEN 1 END) = 0
-                         AND COUNT(CASE WHEN qo.is_correct = FALSE AND sao.selected_option_id IS NOT NULL THEN 1 END) = 0
-                         AND COUNT(sao.selected_option_id) > 0
-                        THEN 1 
-                        ELSE 0 
-                    END AS is_question_correct
+                    qb.question_format,
+                    COUNT(DISTINCT CASE WHEN qo.is_correct = TRUE THEN qo.id END) AS total_correct_options,
+                    COUNT(DISTINCT CASE WHEN qo.is_correct = TRUE AND sao.selected_option_id IS NOT NULL THEN qo.id END) AS selected_correct_count,
+                    COUNT(DISTINCT CASE WHEN qo.is_correct = FALSE AND sao.selected_option_id IS NOT NULL THEN qo.id END) AS selected_incorrect_count,
+                    COUNT(DISTINCT sao.selected_option_id) AS total_selected_count
                  FROM session_questions sq
                  JOIN question_banks qb ON qb.id = sq.question_id
                  LEFT JOIN student_answers sa ON sa.session_question_id = sq.id
@@ -308,17 +312,47 @@ export class LearningRepository {
                  LEFT JOIN student_answer_options sao 
                     ON sao.student_answer_id = sa.id AND sao.selected_option_id = qo.id
                  WHERE sq.session_id = ?
-                 GROUP BY sq.id, sa.id`,
+                 GROUP BY sq.id, sa.id, qb.question_format`,
                 [sessionId]
             );
 
             let correctAnswers = 0;
             for (const r of evalRows) {
-                const isCorrect = Boolean(r.is_question_correct);
+                const isComplex = r.question_format === "COMPLEX_CHOICE" || Number(r.total_correct_options) > 1;
+                const totalCorrectOptions = Number(r.total_correct_options);
+                const selectedCorrect = Number(r.selected_correct_count);
+                const selectedIncorrect = Number(r.selected_incorrect_count);
+                const totalSelected = Number(r.total_selected_count);
+
+                let questionScore = 0.00;
+                let isCorrect = false;
+
+                if (isComplex) {
+                    if (selectedCorrect >= 2 && selectedIncorrect === 0) {
+                        questionScore = 1.00;
+                        isCorrect = true;
+                    } else if (selectedCorrect === 1) {
+                        // Ketika 1 yang benar maka diberi nilai setengah (0.50)
+                        questionScore = 0.50;
+                        isCorrect = false;
+                    } else {
+                        questionScore = 0.00;
+                        isCorrect = false;
+                    }
+                } else {
+                    if (selectedCorrect === 1 && selectedIncorrect === 0) {
+                        questionScore = 1.00;
+                        isCorrect = true;
+                    } else {
+                        questionScore = 0.00;
+                        isCorrect = false;
+                    }
+                }
+
                 if (r.student_answer_id) {
                     await conn.execute(
                         `UPDATE student_answers SET is_correct = ?, score = ? WHERE id = ?`,
-                        [isCorrect, isCorrect ? 1.00 : 0.00, r.student_answer_id]
+                        [isCorrect, questionScore, r.student_answer_id]
                     );
                 } else {
                     await conn.execute(
@@ -327,12 +361,13 @@ export class LearningRepository {
                         [r.session_question_id]
                     );
                 }
-                if (isCorrect) correctAnswers++;
+                correctAnswers += questionScore;
             }
 
             const totalQuestions = evalRows.length || 10;
-            const score = Math.round((correctAnswers / totalQuestions) * 100 * 100) / 100;
-            const isPassed = correctAnswers >= 9; // Syarat >= 9 dari 10 (90%)
+            const numericCorrectAnswers = Number(correctAnswers);
+            const score = Math.round((numericCorrectAnswers / totalQuestions) * 100 * 100) / 100;
+            const isPassed = numericCorrectAnswers >= 9; // Syarat >= 9 dari 10 (90%)
             const needsRemedial = !isPassed;
 
             // Selesaikan session
@@ -340,7 +375,7 @@ export class LearningRepository {
                 `UPDATE learning_sessions 
                  SET status = 'COMPLETED', submission_type = 'MANUAL', correct_answers = ?, score = ?, is_passed = ?, end_time = NOW()
                  WHERE id = ?`,
-                [correctAnswers, score, isPassed, sessionId]
+                [numericCorrectAnswers, score, isPassed, sessionId]
             );
 
             // Ambil / inisialisasi student_sub_material_progress
@@ -366,9 +401,9 @@ export class LearningRepository {
             }
 
             // Update status dan skor level terkait
-            let l1Score = prog.level_1_score;
-            let l2Score = prog.level_2_score;
-            let l3Score = prog.level_3_score;
+            let l1Score = Number(prog.level_1_score) || 0;
+            let l2Score = Number(prog.level_2_score) || 0;
+            let l3Score = Number(prog.level_3_score) || 0;
             let l1Status = prog.level_1_status;
             let l2Status = prog.level_2_status;
             let l3Status = prog.level_3_status;
@@ -488,9 +523,12 @@ export class LearningRepository {
     }
 
     async getReviewQuestions(sessionId: number): Promise<Array<RowDataPacket & {
+        session_question_id: number;
         question_order: number;
         question_text: string;
         stimulus_text: string | null;
+        stimulus_image_url: string | null;
+        question_image_url: string | null;
         is_answer_correct: number;
         explanation_text: string | null;
         reasoning_guide: string | null;
@@ -503,9 +541,12 @@ export class LearningRepository {
     }>> {
         return query(
             `SELECT 
+                sq.id AS session_question_id,
                 sq.question_order,
                 qb.question_text,
                 stm.stimulus_text,
+                COALESCE(qb.stimulus_image_url, stm.stimulus_image_url) AS stimulus_image_url,
+                qb.stimulus_image_url AS question_image_url,
                 COALESCE(sa.is_correct, 0) AS is_answer_correct,
                 qe.explanation_text,
                 qe.reasoning_guide,

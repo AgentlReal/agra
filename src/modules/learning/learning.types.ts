@@ -11,6 +11,8 @@ export interface M04_SessionQuestionItem {
     question_order: number;
     question_type: string;
     question_text: string;
+    stimulus_image_url?: string | null;
+    question_image_url?: string | null;
     options: M04_QuestionOptionItem[];
     selected_option_ids: number[];
     is_skipped: boolean;
@@ -21,6 +23,7 @@ export interface M04_SessionQuestionItem {
         title: string;
         content_text: string;
         source_citation: string | null;
+        image_url?: string | null;
     } | null;
 }
 
@@ -30,7 +33,7 @@ export interface M04_LevelSessionDetail {
     sub_material_title: string;
     cognitive_level_id: number;
     level_number: 1 | 2 | 3;
-    level_name: "Pemahaman" | "Pengaplikasian" | "Penalaran";
+    level_name: string;
     attempt_number: number;
     is_remedial: boolean;
     status: "IN_PROGRESS" | "PAUSED" | "COMPLETED" | "ABANDONED";
@@ -95,6 +98,7 @@ export interface M04_QuestionReviewItem {
     question_order: number;
     question_text: string;
     stimulus_image_url: string | null;
+    question_image_url?: string | null;
     options: M04_QuestionReviewItemOption[];
     selected_option_ids: number[];
     correct_option_ids: number[];

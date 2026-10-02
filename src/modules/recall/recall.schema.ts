@@ -14,6 +14,16 @@ export const saveRecallAnswerSchema = z
         time_spent_seconds: nonNegativeInteger("time_spent_seconds").optional(),
         timeSpentSeconds: nonNegativeInteger("timeSpentSeconds").optional(),
     })
+    .refine(
+        (data) => {
+            const ids = data.selected_option_ids ?? data.selectedOptionIds ?? [];
+            return ids.length <= 2;
+        },
+        {
+            message: "Batas maksimal jawaban yang dipilih adalah 2 butir opsi",
+            path: ["selected_option_ids"],
+        }
+    )
     .transform((data) => ({
         selectedOptionIds: data.selected_option_ids ?? data.selectedOptionIds ?? [],
         isSkipped: data.is_skipped ?? data.isSkipped ?? false,
