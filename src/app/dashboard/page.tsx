@@ -22,6 +22,7 @@ import {
   AlertCircle,
   RefreshCw
 } from 'lucide-react';
+import { UserAvatar } from '@/components/common/UserAvatar';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -93,13 +94,13 @@ export default function DashboardPage() {
             <div className="relative overflow-hidden rounded-3xl border border-indigo-900/50 bg-gradient-to-r from-indigo-950 via-slate-900 to-slate-950 p-6 sm:p-8 shadow-2xl">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-500 text-2xl font-bold text-white shadow-xl shadow-indigo-600/30 overflow-hidden">
-                    {student?.avatar?.imageUrl ? (
-                      <img src={student.avatar.imageUrl} alt={student.name || 'Avatar Siswa'} className="h-full w-full object-cover" />
-                    ) : (
-                      student?.name?.[0]?.toUpperCase() || user?.name?.[0]?.toUpperCase() || user?.username?.[0]?.toUpperCase() || 'U'
-                    )}
-                  </div>
+                  <UserAvatar
+                    src={student?.avatar?.imageUrl || user?.avatarUrl}
+                    name={student?.name || user?.name || user?.username}
+                    size="xl"
+                    rounded="2xl"
+                    className="shadow-xl shadow-indigo-600/30"
+                  />
                   <div>
                     <div className="flex items-center gap-2">
                       <h1 className="text-xl sm:text-2xl font-extrabold text-white">

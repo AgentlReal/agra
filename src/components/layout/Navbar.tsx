@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from '@/lib/theme-context';
 import { AppLogo } from '@/components/common/AppLogo';
+import { UserAvatar } from '@/components/common/UserAvatar';
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
@@ -117,9 +118,11 @@ export const Navbar: React.FC = () => {
               onClick={() => setUserDropdownOpen(!userDropdownOpen)}
               className="flex items-center gap-2.5 rounded-full border border-slate-800 bg-slate-900/90 py-1.5 pl-2 pr-3 text-sm hover:border-slate-700 transition-all focus:outline-none"
             >
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white shadow-inner">
-                {user?.name?.[0]?.toUpperCase() || user?.username?.[0]?.toUpperCase() || 'U'}
-              </div>
+              <UserAvatar
+                src={user?.avatarUrl}
+                name={user?.name || user?.username}
+                size="sm"
+              />
               <div className="text-left hidden lg:block">
                 <p className="text-xs font-semibold text-slate-200 leading-none">{user?.name || user?.username || 'Siswa'}</p>
                 <p className="text-[10px] text-indigo-400 font-medium capitalize mt-0.5">{role.toLowerCase().replace('_', ' ')}</p>
@@ -129,10 +132,17 @@ export const Navbar: React.FC = () => {
             {/* Dropdown Menu */}
             {userDropdownOpen && (
               <div className="absolute right-0 mt-2 w-64 rounded-xl border border-slate-800 bg-slate-900 p-2 shadow-2xl backdrop-blur-xl z-50">
-                <div className="border-b border-slate-800 px-3 py-2.5">
-                  <p className="text-xs text-slate-400">Masuk sebagai</p>
-                  <p className="text-sm font-semibold text-white truncate">{user?.name || user?.username || 'Siswa'}</p>
-                  <p className="text-xs text-indigo-400 font-mono">@{user?.username || '-'}</p>
+                <div className="border-b border-slate-800 px-3 py-2.5 flex items-center gap-3">
+                  <UserAvatar
+                    src={user?.avatarUrl}
+                    name={user?.name || user?.username}
+                    size="md"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-slate-400">Masuk sebagai</p>
+                    <p className="text-sm font-semibold text-white truncate">{user?.name || user?.username || 'Siswa'}</p>
+                    <p className="text-xs text-indigo-400 font-mono truncate">@{user?.username || '-'}</p>
+                  </div>
                 </div>
 
                 {role === 'TIM_KURIKULUM' && (
