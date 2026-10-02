@@ -9,22 +9,18 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- -----------------------------------------------------------------------------
--- 1. PEMBENIHAN MASTER PRESET AVATAR RAMAH ANAK (12 Preset Resmi - COPPA & UU PDP)
+-- 1. PEMBENIHAN MASTER PRESET AVATAR RAMAH ANAK (6 Preset Resmi - COPPA & UU PDP)
 -- -----------------------------------------------------------------------------
 INSERT INTO `preset_avatars` (`id`, `name`, `image_url`, `is_active`) VALUES
-(1, 'Ksatria Buku', '/assets/avatars/ksatria_buku.svg', TRUE),
-(2, 'Penjelajah Galaksi', '/assets/avatars/penjelajah_galaksi.svg', TRUE),
-(3, 'Peneliti Cilik', '/assets/avatars/peneliti_cilik.svg', TRUE),
-(4, 'Penjelajah Waktu', '/assets/avatars/penjelajah_waktu.svg', TRUE),
-(5, 'Ahli Logika', '/assets/avatars/ahli_logika.svg', TRUE),
-(6, 'Detektif Bahasa', '/assets/avatars/detektif_bahasa.svg', TRUE),
-(7, 'Petualang Rimba', '/assets/avatars/petualang_rimba.svg', TRUE),
-(8, 'Sahabat Bintang', '/assets/avatars/sahabat_bintang.svg', TRUE),
-(9, 'Penerbang Cita', '/assets/avatars/penerbang_cita.svg', TRUE),
-(10, 'Pelukis Mimpi', '/assets/avatars/pelukis_mimpi.svg', TRUE),
-(11, 'Nakhoda Samudra', '/assets/avatars/nakhoda_samudra.svg', TRUE),
-(12, 'Jawara TKA', '/assets/avatars/jawara_tka.svg', TRUE)
+(1, 'Mighty Lion', '/assets/avatars/mightylion.png', TRUE),
+(2, 'Pinky Dolphin', '/assets/avatars/pinkydolphin.png', TRUE),
+(3, 'Sweetheart Flamingo', '/assets/avatars/sweetheartflamingo.png', TRUE),
+(4, 'Twiny Cherry', '/assets/avatars/twinycherry.png', TRUE),
+(5, 'Sunshine Kiwi', '/assets/avatars/sunshinekiwi.png', TRUE),
+(6, 'Lemon Bright', '/assets/avatars/lemonbright.png', TRUE)
 ON DUPLICATE KEY UPDATE `name` = VALUES(`name`), `image_url` = VALUES(`image_url`), `is_active` = VALUES(`is_active`);
+
+DELETE FROM `preset_avatars` WHERE `id` > 6;
 
 -- -----------------------------------------------------------------------------
 -- 2. PEMBENIHAN 5 TINGKATAN PENCAPAIAN (MILESTONE TIER - DOC-06)
