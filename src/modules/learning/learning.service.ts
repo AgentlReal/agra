@@ -233,7 +233,11 @@ export class LearningService {
             throw new NotFoundError("Sesi latihan tidak ditemukan", "NOT_FOUND");
         }
 
-        const level = await this.repo.getCognitiveLevelById(session.cognitive_level_id!);
+        if (session.session_type !== "LEVEL_EXERCISE" || !session.cognitive_level_id) {
+            throw new BadRequestError("Sesi bukan merupakan sesi latihan level kognitif");
+        }
+
+        const level = await this.repo.getCognitiveLevelById(session.cognitive_level_id);
         return this.buildResultResponse(session.id, userId, session.sub_material_id!, level!);
     }
 
