@@ -11,7 +11,6 @@ import {
   Sparkles, 
   Flame, 
   BookOpen, 
-  GraduationCap, 
   ShieldCheck, 
   Lock, 
   ArrowRight, 

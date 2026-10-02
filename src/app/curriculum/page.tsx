@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { api } from '@/lib/api-client';
-import { BookOpen, GraduationCap, ChevronRight, Layers, ArrowRight, AlertCircle, RefreshCw } from 'lucide-react';
+import { BookOpen, ChevronRight, Layers, ArrowRight, AlertCircle, RefreshCw } from 'lucide-react';
 
 export default function CurriculumIndexPage() {
   const [subjects, setSubjects] = useState<any[]>([]);

@@ -19,6 +19,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { useTheme } from '@/lib/theme-context';
+import { AppLogo } from '@/components/common/AppLogo';
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
@@ -42,8 +43,8 @@ export const Navbar: React.FC = () => {
         {/* Brand Logo */}
         <div className="flex items-center gap-6">
           <Link href="/dashboard" className="flex items-center gap-3 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 via-blue-600 to-cyan-500 shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform">
-              <GraduationCap className="h-6 w-6 text-white" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900/90 border border-slate-700/60 shadow-lg shadow-indigo-500/10 group-hover:scale-105 transition-transform p-1">
+              <AppLogo size={30} />
             </div>
             <div>
               <span className="text-xl font-bold tracking-tight text-white flex items-center gap-1.5">

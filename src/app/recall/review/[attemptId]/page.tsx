@@ -6,7 +6,6 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { api } from '@/lib/api-client';
 import { 
-  GraduationCap, 
   CheckCircle2, 
   XCircle, 
   ArrowLeft, 

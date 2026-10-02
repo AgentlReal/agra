@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api-client';
-import { GraduationCap, Mail, ArrowLeft, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Mail, ArrowLeft, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
+import { AppLogo } from '@/components/common/AppLogo';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -33,8 +34,8 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
           <Link href="/" className="inline-flex items-center gap-2.5">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-500 shadow-lg shadow-indigo-500/20">
-              <GraduationCap className="h-6 w-6 text-white" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-900/90 border border-slate-700/60 shadow-lg shadow-indigo-500/10 p-1">
+              <AppLogo size={34} />
             </div>
             <span className="text-2xl font-bold tracking-tight text-white">AGRA</span>
           </Link>

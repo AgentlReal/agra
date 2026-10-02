@@ -12,8 +12,7 @@ import {
   Sparkles, 
   ArrowRight, 
   RotateCcw, 
-  BookOpen, 
-  GraduationCap 
+  BookOpen 
 } from 'lucide-react';
 
 export default function RecallResultPage({ params }: { params: Promise<{ attemptId: string }> }) {
