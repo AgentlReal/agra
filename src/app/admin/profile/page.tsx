@@ -118,7 +118,7 @@ export default function AdminProfilePage() {
                 <input
                   type="text"
                   disabled
-                  value={user?.username || 'tim_kurikulum'}
+                  value={user?.username || ''}
                   className="mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2 text-xs font-mono text-slate-400 cursor-not-allowed"
                 />
               </div>
@@ -128,7 +128,7 @@ export default function AdminProfilePage() {
                 <input
                   type="email"
                   disabled
-                  value={user?.email || 'tim@example.com'}
+                  value={user?.email || ''}
                   className="mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2 text-xs text-slate-400 cursor-not-allowed"
                 />
               </div>

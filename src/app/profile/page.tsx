@@ -144,7 +144,7 @@ export default function ProfilePage() {
           <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 flex flex-col items-center text-center space-y-4">
             <div className="relative">
               <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-tr from-indigo-600 via-blue-600 to-cyan-500 text-3xl font-extrabold text-white shadow-xl shadow-indigo-600/30">
-                {user?.name?.[0]?.toUpperCase() || 'B'}
+                {user?.name?.[0]?.toUpperCase() || user?.username?.[0]?.toUpperCase() || 'U'}
               </div>
               <button
                 onClick={() => setAvatarModalOpen(true)}
@@ -156,12 +156,14 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <h3 className="text-base font-bold text-white">{user?.name}</h3>
-              <p className="text-xs text-slate-400 font-mono">@{user?.username}</p>
-              <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 px-3 py-0.5 text-xs font-semibold text-indigo-400">
-                <GraduationCap className="h-3.5 w-3.5" />
-                <span>Kelas {user?.grade || 8} SMP</span>
-              </div>
+              <h3 className="text-base font-bold text-white">{user?.name || user?.username || 'Siswa'}</h3>
+              <p className="text-xs text-slate-400 font-mono">@{user?.username || '-'}</p>
+              {user?.grade ? (
+                <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 px-3 py-0.5 text-xs font-semibold text-indigo-400">
+                  <GraduationCap className="h-3.5 w-3.5" />
+                  <span>Kelas {user.grade} SMP</span>
+                </div>
+              ) : null}
             </div>
 
             {/* Total XP Card */}
@@ -171,7 +173,7 @@ export default function ProfilePage() {
               </p>
               <p className="text-2xl font-extrabold text-white mt-1 flex items-center justify-center gap-1.5">
                 <Sparkles className="h-5 w-5 text-amber-400" />
-                <span>{user?.totalXp || 450} XP</span>
+                <span>{user?.totalXp ?? 0} XP</span>
               </p>
             </div>
 

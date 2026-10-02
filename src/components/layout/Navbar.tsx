@@ -89,7 +89,7 @@ export const Navbar: React.FC = () => {
             className="hidden sm:flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-500 border border-amber-500/20 shadow-xs"
           >
             <Sparkles className="h-3.5 w-3.5" />
-            <span>{user?.totalXp || 450} XP</span>
+            <span>{user?.totalXp ?? 0} XP</span>
           </div>
 
           {/* Streak Badge */}
@@ -98,7 +98,7 @@ export const Navbar: React.FC = () => {
             className="hidden sm:flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-500 border border-amber-500/20 shadow-xs"
           >
             <Flame className="h-3.5 w-3.5" />
-            <span>{user?.currentStreak || 5} Hari</span>
+            <span>{user?.currentStreak ?? 0} Hari</span>
           </div>
 
           {/* Theme Toggle Button */}
@@ -117,10 +117,10 @@ export const Navbar: React.FC = () => {
               className="flex items-center gap-2.5 rounded-full border border-slate-800 bg-slate-900/90 py-1.5 pl-2 pr-3 text-sm hover:border-slate-700 transition-all focus:outline-none"
             >
               <div className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-600 text-xs font-bold text-white shadow-inner">
-                {user?.name?.[0]?.toUpperCase() || 'U'}
+                {user?.name?.[0]?.toUpperCase() || user?.username?.[0]?.toUpperCase() || 'U'}
               </div>
               <div className="text-left hidden lg:block">
-                <p className="text-xs font-semibold text-slate-200 leading-none">{user?.name || 'Siswa'}</p>
+                <p className="text-xs font-semibold text-slate-200 leading-none">{user?.name || user?.username || 'Siswa'}</p>
                 <p className="text-[10px] text-indigo-400 font-medium capitalize mt-0.5">{role.toLowerCase().replace('_', ' ')}</p>
               </div>
             </button>
@@ -130,8 +130,8 @@ export const Navbar: React.FC = () => {
               <div className="absolute right-0 mt-2 w-64 rounded-xl border border-slate-800 bg-slate-900 p-2 shadow-2xl backdrop-blur-xl z-50">
                 <div className="border-b border-slate-800 px-3 py-2.5">
                   <p className="text-xs text-slate-400">Masuk sebagai</p>
-                  <p className="text-sm font-semibold text-white truncate">{user?.name}</p>
-                  <p className="text-xs text-indigo-400 font-mono">@{user?.username}</p>
+                  <p className="text-sm font-semibold text-white truncate">{user?.name || user?.username || 'Siswa'}</p>
+                  <p className="text-xs text-indigo-400 font-mono">@{user?.username || '-'}</p>
                 </div>
 
                 {role === 'TIM_KURIKULUM' && (

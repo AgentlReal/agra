@@ -66,7 +66,7 @@ export default function OnboardingPage() {
             Langkah Awal Penyiapan Profil
           </div>
           <h2 className="text-3xl font-extrabold tracking-tight text-white">
-            Hai, {user?.name || 'Siswa Hebat'}! 👋
+            Hai, {user?.name || user?.username || 'Siswa'}! 👋
           </h2>
           <p className="mt-2 text-sm text-slate-300">
             Pilih jenjang kelas dan avatar belajarmu sebelum memulai latihan adaptif TKA SMP.

@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
-import { Database, Layers, UserCheck, ArrowLeftRight, LogOut, ShieldAlert, Sun, Moon } from 'lucide-react';
+import { Database, Layers, UserCheck, LogOut, ShieldAlert, Sun, Moon } from 'lucide-react';
 import { useTheme } from '@/lib/theme-context';
 
 export const AdminNav: React.FC = () => {
@@ -71,19 +71,10 @@ export const AdminNav: React.FC = () => {
             {isLight ? <Moon className="h-4 w-4 text-purple-600" /> : <Sun className="h-4 w-4 text-amber-400" />}
           </button>
 
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-            title="Ke Portal Siswa"
-          >
-            <ArrowLeftRight className="h-3.5 w-3.5 text-indigo-400" />
-            <span>Lihat Mode Siswa</span>
-          </Link>
-
           <div className="flex items-center gap-2 pl-2 border-l border-slate-800">
             <div className="text-right hidden sm:block">
-              <p className="text-xs font-semibold text-slate-200">{user?.name || 'Tim Kurikulum'}</p>
-              <p className="text-[10px] text-purple-400 font-mono">@{user?.username || 'tim_kurikulum'}</p>
+              <p className="text-xs font-semibold text-slate-200">{user?.name || user?.username || 'Admin'}</p>
+              <p className="text-[10px] text-purple-400 font-mono">@{user?.username || 'admin'}</p>
             </div>
             <button
               onClick={() => logout()}

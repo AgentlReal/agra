@@ -9,7 +9,7 @@ import { GraduationCap, Lock, Check, AlertCircle, ArrowRight, ShieldCheck, Eye, 
 function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get('token') || 'mock_token';
+  const token = searchParams.get('token') || '';
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -18,6 +18,12 @@ function ResetPasswordForm() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [success, setSuccess] = useState(false);
+
+  React.useEffect(() => {
+    if (!token) {
+      setErrorMsg('Token tautan pemulihan kata sandi tidak ditemukan atau tidak valid. Silakan ajukan permohonan baru dari halaman Lupa Kata Sandi.');
+    }
+  }, [token]);
 
   const hasLength = password.length >= 6 && password.length <= 12;
   const hasUpper = /[A-Z]/.test(password);
@@ -29,6 +35,10 @@ function ResetPasswordForm() {
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!token) {
+      setErrorMsg('Token tautan pemulihan kata sandi tidak ditemukan atau tidak valid. Silakan ajukan permohonan baru dari halaman Lupa Kata Sandi.');
+      return;
+    }
     if (!isValid) return;
 
     setLoading(true);

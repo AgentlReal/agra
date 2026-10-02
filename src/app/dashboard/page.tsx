@@ -96,22 +96,24 @@ export default function DashboardPage() {
                 <div className="flex items-center gap-4">
                   <div className="flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-500 text-2xl font-bold text-white shadow-xl shadow-indigo-600/30 overflow-hidden">
                     {student?.avatar?.imageUrl ? (
-                      <img src={student.avatar.imageUrl} alt={student.name} className="h-full w-full object-cover" />
+                      <img src={student.avatar.imageUrl} alt={student.name || 'Avatar Siswa'} className="h-full w-full object-cover" />
                     ) : (
-                      student?.name?.[0]?.toUpperCase() || 'S'
+                      student?.name?.[0]?.toUpperCase() || user?.name?.[0]?.toUpperCase() || user?.username?.[0]?.toUpperCase() || 'U'
                     )}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
                       <h1 className="text-xl sm:text-2xl font-extrabold text-white">
-                        Halo, {student?.name || 'Siswa Hebat'}! 👋
+                        Halo, {student?.name || user?.name || user?.username || 'Siswa'}! 👋
                       </h1>
-                      <span className="rounded-md bg-indigo-500/20 px-2 py-0.5 text-xs font-semibold text-indigo-400 border border-indigo-500/30">
-                        Kelas {user?.grade || 8} SMP
-                      </span>
+                      {user?.grade ? (
+                        <span className="rounded-md bg-indigo-500/20 px-2 py-0.5 text-xs font-semibold text-indigo-400 border border-indigo-500/30">
+                          Kelas {user.grade} SMP
+                        </span>
+                      ) : null}
                     </div>
                     <p className="mt-1 text-xs text-slate-300">
-                      Tier: <span className="font-semibold text-cyan-400">{student?.milestone?.tierName || 'Penjelajah Pengetahuan'}</span>
+                      Tier: <span className="font-semibold text-cyan-400">{student?.milestone?.title || student?.milestone?.tierName || '-'}</span>
                     </p>
                   </div>
                 </div>
@@ -130,7 +132,7 @@ export default function DashboardPage() {
                     <Flame className="h-5 w-5 text-orange-400" />
                     <div>
                       <p className="text-[10px] text-orange-400 uppercase font-semibold">Aktif Belajar</p>
-                      <p className="text-sm font-bold text-white">{user?.currentStreak ?? 1} Hari</p>
+                      <p className="text-sm font-bold text-white">{user?.currentStreak ?? 0} Hari</p>
                     </div>
                   </div>
                 </div>

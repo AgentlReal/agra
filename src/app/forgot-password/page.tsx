@@ -54,14 +54,6 @@ export default function ForgotPasswordPage() {
               <p className="text-xs text-slate-300 leading-relaxed">
                 Kami telah mengirimkan tautan reset kata sandi ke <span className="font-semibold text-indigo-400">{email}</span>. Periksa kotak masuk dan folder spam Anda.
               </p>
-              <div className="pt-2">
-                <Link
-                  href="/reset-password?token=mock_token_sample"
-                  className="inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 underline"
-                >
-                  Simulasikan Buka Tautan Reset Password <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </div>
               <div className="pt-4 border-t border-slate-800">
                 <Link
                   href="/login"
