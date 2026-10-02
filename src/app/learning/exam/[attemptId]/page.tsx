@@ -15,6 +15,8 @@ import {
   CircleDot,
   ZoomIn
 } from 'lucide-react';
+import FormattedContent from '@/components/common/FormattedContent';
+import OptionRenderer from '@/components/common/OptionRenderer';
 
 interface QuestionItem {
   id: string | number;
@@ -270,7 +272,7 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
           {/* Stimulus */}
           {(currentQ.stimulus || currentQ.stimulusImageUrl) && (
             <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 text-xs text-slate-300 border-l-4 border-l-indigo-500 space-y-3">
-              {currentQ.stimulus && <div>{currentQ.stimulus}</div>}
+              {currentQ.stimulus && <FormattedContent content={currentQ.stimulus} />}
 
               {currentQ.stimulusImageUrl && (
                 <div className="relative group overflow-hidden rounded-xl border border-slate-800/80 bg-slate-950/60 p-2 text-center">
@@ -312,9 +314,9 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
               )}
             </div>
 
-            <p className="text-sm sm:text-base font-medium text-white leading-relaxed">
-              {currentQ.questionText}
-            </p>
+            <div className="text-sm sm:text-base font-medium text-white leading-relaxed">
+              <FormattedContent content={currentQ.questionText} />
+            </div>
 
             {currentQ.questionImageUrl && (
               <div className="mt-4 relative group overflow-hidden rounded-xl border border-slate-800/80 bg-slate-950/60 p-2 text-center">
@@ -369,7 +371,9 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
                     >
                       {isSelected && isComplex ? <Check className="h-4 w-4" /> : opt.key}
                     </div>
-                    <span className="text-xs sm:text-sm pt-0.5 leading-relaxed">{opt.text}</span>
+                    <div className="text-xs sm:text-sm pt-0.5 leading-relaxed flex-1">
+                      <OptionRenderer text={opt.text} onZoom={setZoomImageUrl} />
+                    </div>
                   </button>
                 );
               })}

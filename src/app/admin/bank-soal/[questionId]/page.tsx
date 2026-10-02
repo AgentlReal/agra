@@ -14,8 +14,11 @@ import {
   ShieldCheck, 
   Edit3,
   Trash2,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Eye
 } from 'lucide-react';
+import FormattedContent from '@/components/common/FormattedContent';
+import OptionRenderer from '@/components/common/OptionRenderer';
 
 export default function EditQuestionPage({ params }: { params: Promise<{ questionId: string }> }) {
   const router = useRouter();
@@ -425,6 +428,103 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
                 required
                 className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2 text-xs text-white"
               />
+            </div>
+
+            {/* Section 5: Live Preview */}
+            <div className="rounded-2xl border border-indigo-500/30 bg-slate-900/90 p-6 space-y-4 shadow-xl">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-indigo-400" />
+                  5. Pratinjau Tampilan Siswa (Live LaTeX, Markdown & Gambar)
+                </h3>
+                <span className="rounded-full bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 text-[10px] font-semibold text-indigo-300">
+                  Pratinjau Otomatis
+                </span>
+              </div>
+
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Format yang didukung: rumus LaTeX inline (<code className="text-indigo-300 font-mono">$...$</code>), block math (<code className="text-indigo-300 font-mono">$$...$$</code>), markdown (<code className="text-indigo-300 font-mono">**tebal**</code>, <code className="text-indigo-300 font-mono">*miring*</code>), dan gambar pada opsi (<code className="text-indigo-300 font-mono">/assets/gambar.png</code> atau <code className="text-indigo-300 font-mono">![alt](url)</code>).
+              </p>
+
+              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-5 space-y-4">
+                {stimulus && (
+                  <div className="rounded-lg border border-slate-800/80 bg-slate-900/40 p-3 text-xs text-slate-300 border-l-4 border-l-purple-500">
+                    <p className="text-[10px] font-bold text-purple-400 uppercase tracking-wider mb-1">Stimulus / Narasi:</p>
+                    <FormattedContent content={stimulus} />
+                  </div>
+                )}
+
+                {imageUrl && (
+                  <div className="rounded-lg border border-slate-800/80 bg-slate-900/40 p-2 text-center">
+                    <img
+                      src={imageUrl}
+                      alt="Pratinjau Stimulus"
+                      className="max-h-48 w-auto mx-auto object-contain rounded"
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Pertanyaan:</p>
+                  {questionText ? (
+                    <div className="text-sm font-medium text-white leading-relaxed">
+                      <FormattedContent content={questionText} />
+                    </div>
+                  ) : (
+                    <p className="text-xs italic text-slate-500">Belum ada teks pokok soal...</p>
+                  )}
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Pilihan Jawaban:</p>
+                  <div className="space-y-2">
+                    {options.map((opt) => {
+                      const isKey = questionType === 'PG_TUNGGAL' 
+                        ? singleKey === opt.key 
+                        : complexKeys.includes(opt.key);
+                      return (
+                        <div
+                          key={opt.key}
+                          className={`flex items-start gap-3 p-3 rounded-xl border text-xs ${
+                            isKey
+                              ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-200'
+                              : 'border-slate-800 bg-slate-900/40 text-slate-300'
+                          }`}
+                        >
+                          <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[11px] font-bold ${
+                            isKey ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300'
+                          }`}>
+                            {opt.key}
+                          </span>
+                          <div className="flex-1 pt-0.5">
+                            {opt.text ? (
+                              <OptionRenderer text={opt.text} />
+                            ) : (
+                              <span className="italic text-slate-500 text-[11px]">(Belum diisi)</span>
+                            )}
+                          </div>
+                          {isKey && (
+                            <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider shrink-0 mt-0.5">
+                              (Kunci Jawaban)
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {explanation && (
+                  <div className="rounded-lg border border-indigo-500/30 bg-indigo-950/20 p-3.5 text-xs text-indigo-200">
+                    <p className="font-bold text-indigo-400 text-[10px] uppercase tracking-wider mb-1">
+                      Pratinjau Pembahasan:
+                    </p>
+                    <div className="leading-relaxed text-slate-300">
+                      <FormattedContent content={explanation} />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex justify-end gap-3 pt-4">

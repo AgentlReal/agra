@@ -17,6 +17,8 @@ import {
   ZoomIn,
   X
 } from 'lucide-react';
+import FormattedContent from '@/components/common/FormattedContent';
+import OptionRenderer from '@/components/common/OptionRenderer';
 
 interface ReviewQuestion {
   id: string | number;
@@ -266,7 +268,7 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
                   {/* Stimulus */}
                   {(q.stimulus || q.stimulusImageUrl) && (
                     <div className="mb-4 rounded-xl border border-slate-800 bg-slate-950/60 p-3.5 text-xs text-slate-300 space-y-2.5">
-                      {q.stimulus && <div>{q.stimulus}</div>}
+                      {q.stimulus && <FormattedContent content={q.stimulus} />}
 
                       {q.stimulusImageUrl && (
                         <div className="relative group overflow-hidden rounded-lg border border-slate-800 bg-slate-900/60 p-2 text-center">
@@ -290,9 +292,9 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
                   )}
 
                   {/* Question Text */}
-                  <p className="text-sm font-medium text-white mb-4 leading-relaxed">
-                    {q.questionText}
-                  </p>
+                  <div className="text-sm font-medium text-white mb-4 leading-relaxed">
+                    <FormattedContent content={q.questionText} />
+                  </div>
 
                   {/* Question Image */}
                   {q.questionImageUrl && (
@@ -344,7 +346,9 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
                           <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-slate-800 text-[11px] font-bold">
                             {opt.key}
                           </span>
-                          <span className="flex-1">{opt.text}</span>
+                          <div className="flex-1">
+                            <OptionRenderer text={opt.text} onZoom={setZoomImageUrl} />
+                          </div>
                           {isCorrectOpt && isStudentOpt && (
                             <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
                               (Kunci Benar • Jawaban Anda)
@@ -370,7 +374,9 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
                     <p className="font-bold text-indigo-400 flex items-center gap-1.5 mb-1 text-[11px] uppercase tracking-wider">
                       <BookOpen className="h-3.5 w-3.5" /> Pembahasan Konsep:
                     </p>
-                    <p className="leading-relaxed text-slate-300">{q.explanation}</p>
+                    <div className="leading-relaxed text-slate-300">
+                      <FormattedContent content={q.explanation} />
+                    </div>
                   </div>
                 </div>
               ))}

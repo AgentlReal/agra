@@ -17,6 +17,8 @@ import {
   CircleDot,
   ZoomIn
 } from 'lucide-react';
+import FormattedContent from '@/components/common/FormattedContent';
+import OptionRenderer from '@/components/common/OptionRenderer';
 
 interface QuestionItem {
   id: string | number;
@@ -337,7 +339,7 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
                   <p className="font-semibold text-indigo-400 mb-1 text-[11px] uppercase tracking-wider">
                     Teks Stimulus Soal:
                   </p>
-                  <div>{currentQ.stimulus}</div>
+                  <FormattedContent content={currentQ.stimulus} />
                 </div>
               )}
 
@@ -374,9 +376,9 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
                 />
               </div>
             )}
-            <p className="text-sm sm:text-base font-medium text-white leading-relaxed">
-              {currentQ.questionText}
-            </p>
+            <div className="text-sm sm:text-base font-medium text-white leading-relaxed">
+              <FormattedContent content={currentQ.questionText} />
+            </div>
 
             {/* Options List */}
             <div className="mt-6 space-y-3">
@@ -413,7 +415,9 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
                     >
                       {isSelected && isComplex ? <Check className="h-4 w-4" /> : opt.key}
                     </div>
-                    <span className="text-xs sm:text-sm pt-0.5 leading-relaxed">{opt.text}</span>
+                    <div className="text-xs sm:text-sm pt-0.5 leading-relaxed flex-1">
+                      <OptionRenderer text={opt.text} onZoom={setZoomImageUrl} />
+                    </div>
                   </button>
                 );
               })}
