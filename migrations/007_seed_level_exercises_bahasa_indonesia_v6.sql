@@ -1,190 +1,197 @@
 -- =============================================================================
--- SEEDING TKA: BANK SOAL LATIHAN (LEVEL_EXERCISE) - BAHASA INDONESIA
--- ERD Version: v6.0 (Clean Schema, No CTT, No difficulty_level)
--- Source: Kumpulan Soal/Bahasa Indonesia (361 Butir Soal Terkalibrasi)
--- Re-indexed & Re-validated:
---   - stimuli: ID 38 s.d. 200 (163 Stimulus)
---   - question_banks: ID 181 s.d. 541 (361 Soal)
---   - question_options: ID 721 s.d. 2144 (1424 Opsi Jawaban)
---   - question_explanations: ID 181 s.d. 541 (361 Pembahasan)
+-- PEMBENIHAN BANK SOAL LEVEL EXERCISES: BAHASA INDONESIA (FASE D)
+-- Platform Pembelajaran & Drill-and-Practice Adaptif TKA SMP (Fase D)
+-- Arsitektur ERD Versi: 6.0 FINAL (Tanpa CTT, 3 Level Kognitif Murni Kemendikdasmen)
+-- Dokumen Acuan: TKA-DOC-02 (SRS), TKA-DOC-09 (Kurikulum), TKA-DOC-11 (Bank Soal),
+--                TKA-DOC-12 (Penilaian Mastery), TKA-DOC-13 (Blueprint Asesmen)
+-- File: migrations/007_seed_level_exercises_bahasa_indonesia_v6.sql
+-- Total: 163 Stimuli Wacana (ID 35-197), 360 Butir Soal Master (ID 181-540),
+--        1420 Pilihan Jawaban (ID 721-2140), 360 Pembahasan Pasca-Sesi (ID 181-540)
+-- Bank Type: LEVEL_EXERCISE (Terisolasi dari RECALL dan SIMULATION)
+-- Standardisasi & Validasi:
+--   - 6 Submateri Bahasa Indonesia (B-01 s.d B-06 / Submaterial ID 11 s.d 16)
+--   - 3 Level Kognitif: 1 (Pemahaman), 2 (Pengaplikasian), 3 (Penalaran)
+--   - Tepat 20 Butir Soal per Level (6 submateri x 3 level x 20 butir = 360 butir)
+--   - Eliminasi duplikasi pada Submateri 16 Level 1 (Butir Soal 486 lama)
+--   - Menyesuaikan nama kolom schema v6: question_image_url
 -- =============================================================================
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- -----------------------------------------------------------------------------
--- 1. PEMBENIHAN TEKS STIMULUS (STIMULI - 163 Stimulus, ID 38..200)
+-- 1. PEMBENIHAN TEKS STIMULUS BACAAN (STIMULI - 163 Wacana, ID 35..197)
 -- -----------------------------------------------------------------------------
 INSERT INTO `stimuli` (`id`, `subject_id`, `title`, `stimulus_text`, `stimulus_image_url`) VALUES
-(38, 2, 'Perkembangan teknologi kecerdasan buatan (AI) saat ini semak', 'Perkembangan teknologi kecerdasan buatan (AI) saat ini semakin pesat dan merambah hampir ke seluruh aspek kehidupan manusia. Banyak perusahaan skala besar maupun menengah kini mulai menggunakan algoritma khusus untuk memproses big data dan meningkatkan efisiensi kerja di berbagai divisi. Otomatisasi dalam berbagai bidang industri, mulai dari pabrik perakitan otomotif yang digerakkan oleh robot hingga layanan pelanggan daring, menjadi bukti nyata dari inovasi ini. Pekerjaan repetitif yang sebelumnya membutuhkan waktu berhari-hari kini dapat diselesaikan hanya dalam hitungan menit.
+(35, 2, 'Perkembangan teknologi kecerdasan buatan (AI) saat ini semak', 'Perkembangan teknologi kecerdasan buatan (AI) saat ini semakin pesat dan merambah hampir ke seluruh aspek kehidupan manusia. Banyak perusahaan skala besar maupun menengah kini mulai menggunakan algoritma khusus untuk memproses big data dan meningkatkan efisiensi kerja di berbagai divisi. Otomatisasi dalam berbagai bidang industri, mulai dari pabrik perakitan otomotif yang digerakkan oleh robot hingga layanan pelanggan daring, menjadi bukti nyata dari inovasi ini. Pekerjaan repetitif yang sebelumnya membutuhkan waktu berhari-hari kini dapat diselesaikan hanya dalam hitungan menit.
 Namun, hal ini juga menuntut pekerja untuk terus beradaptasi dengan sistem baru agar tidak tertinggal oleh kemajuan zaman. Para pekerja diimbau untuk mempelajari keterampilan baru yang tidak mudah digantikan oleh mesin, seperti kemampuan negosiasi, pemikiran kritis, dan kepemimpinan. Perusahaan juga diharapkan memberikan pelatihan rutin bagi karyawannya agar transisi teknologi ini tidak memicu pemutusan hubungan kerja secara massal akibat disrupsi digital.
 Lebih lanjut, penggunaan sistem komputasi ini harus tetap diawasi secara ketat. Walaupun teknologi mampu bekerja secara cepat dan tanpa lelah, keputusan akhir yang berkaitan dengan etika moral dan empati tetap membutuhkan campur tangan manusia. Oleh karena itu, sinergi yang harmonis antara kecerdasan buatan dan kecerdasan manusia adalah kunci utama. Kolaborasi ini akan menciptakan lingkungan kerja yang produktif, adaptif, dan tetap menjunjung tinggi nilai kemanusiaan.', NULL),
-(39, 2, 'Pengolahan limbah rumah tangga sebenarnya bisa dilakukan den', 'Pengolahan limbah rumah tangga sebenarnya bisa dilakukan dengan cara yang sangat sederhana di lingkungan tempat tinggal kita sendiri, salah satunya adalah dengan membuat kompos. Sampah organik, seperti sisa sayuran segar, cangkang telur, dan kulit buah-buahan, sangat mudah terdegradasi oleh mikroorganisme yang ada di dalam tanah. Proses alami ini tidak membutuhkan peralatan yang mahal atau teknologi tinggi, melainkan hanya membutuhkan ketelatenan dan kesadaran dari setiap anggota keluarga untuk mulai memilah sampah dari dapur.
+(36, 2, 'Pengolahan limbah rumah tangga sebenarnya bisa dilakukan den', 'Pengolahan limbah rumah tangga sebenarnya bisa dilakukan dengan cara yang sangat sederhana di lingkungan tempat tinggal kita sendiri, salah satunya adalah dengan membuat kompos. Sampah organik, seperti sisa sayuran segar, cangkang telur, dan kulit buah-buahan, sangat mudah terdegradasi oleh mikroorganisme yang ada di dalam tanah. Proses alami ini tidak membutuhkan peralatan yang mahal atau teknologi tinggi, melainkan hanya membutuhkan ketelatenan dan kesadaran dari setiap anggota keluarga untuk mulai memilah sampah dari dapur.
 Metode pengolahan sampah organik ini terbukti sangat ramah lingkungan dan membawa banyak manfaat bagi ekosistem sekitar. Dengan melakukan pengomposan, kita dapat secara signifikan mengurangi volume tumpukan sampah yang berakhir di tempat pembuangan akhir. Selain itu, proses pembusukan alami ini pada akhirnya akan menghasilkan pupuk organik berkualitas tinggi. Pupuk alami ini sangat baik untuk menyuburkan tanah di pekarangan rumah, membuat tanaman hias maupun tanaman sayur tumbuh lebih rimbun.
 Bagi masyarakat perkotaan yang memiliki lahan terbatas, metode pembuatan kompos bisa dilakukan menggunakan wadah tertutup atau komposter mini yang tidak menimbulkan bau menyengat. Kesadaran kolektif dalam mengelola sisa konsumsi harian ini merupakan langkah kecil namun berdampak besar bagi kelestarian lingkungan. Jika setiap rumah tangga rutin melakukan praktik ini, permasalahan penumpukan sampah di perkotaan dapat diatasi secara berkelanjutan.', NULL),
-(40, 2, 'Menjaga imunitas tubuh sangatlah penting, terutama saat kita', 'Menjaga imunitas tubuh sangatlah penting, terutama saat kita sedang menghadapi peralihan musim atau yang sering disebut sebagai musim pancaroba. Pada masa ini, perubahan cuaca yang ekstrem dari panas terik ke hujan deras dapat membuat tubuh rentan terhadap berbagai serangan virus maupun bakteri. Tubuh manusia sangat membutuhkan asupan nutrisi yang seimbang setiap harinya untuk memperlancar metabolisme serta membangun perisai pertahanan alami yang kuat. Tanpa asupan gizi dan metabolisme yang baik, fungsi organ-organ vital akan rentan mengalami penurunan performa secara drastis.
+(37, 2, 'Menjaga imunitas tubuh sangatlah penting, terutama saat kita', 'Menjaga imunitas tubuh sangatlah penting, terutama saat kita sedang menghadapi peralihan musim atau yang sering disebut sebagai musim pancaroba. Pada masa ini, perubahan cuaca yang ekstrem dari panas terik ke hujan deras dapat membuat tubuh rentan terhadap berbagai serangan virus maupun bakteri. Tubuh manusia sangat membutuhkan asupan nutrisi yang seimbang setiap harinya untuk memperlancar metabolisme serta membangun perisai pertahanan alami yang kuat. Tanpa asupan gizi dan metabolisme yang baik, fungsi organ-organ vital akan rentan mengalami penurunan performa secara drastis.
 Oleh sebab itu, pakar kesehatan dan ahli gizi sangat menyarankan kita untuk rutin mengonsumsi sumber protein nabati maupun hewani secara proporsional. Konsumsi ikan, telur, daging tanpa lemak, serta aneka kacang-kacangan dan tahu tempe harus diatur porsinya agar tidak berlebihan namun tetap memenuhi kebutuhan harian. Pola makan yang teratur dan porsi yang seimbang ini menjadi kunci utama agar tubuh tetap bugar dan penuh energi dalam menjalani rutinitas harian.
 Selain mengatur pola makan, istirahat yang cukup dan pengelolaan stres juga tidak boleh diabaikan. Tidur malam minimal tujuh hingga delapan jam akan memberikan waktu bagi sel-sel tubuh untuk melakukan regenerasi diri. Ditambah dengan olahraga ringan seperti berjalan kaki atau bersepeda setiap pagi, sirkulasi darah akan menjadi lebih lancar. Kombinasi gaya hidup sehat inilah yang akan menjamin ketahanan fisik bekerja secara maksimal.', NULL),
-(41, 2, 'Lidah buaya adalah tanaman dengan banyak sekali manfaat', 'Lidah buaya adalah tanaman dengan banyak sekali manfaat. Tanaman berduri ini sangat mudah ditanam di pekarangan. Daun lidah buaya memiliki daging tebal berair bening. Banyak orang menyebut tanaman ini dengan Aloe vera. Kandungan air di dalam daunnya sangat melimpah sekali. Lendir pada daun tersebut mengandung berbagai macam vitamin. Tanaman ini sudah digunakan sejak zaman nenek moyang. Masyarakat memanfaatkan lidah buaya untuk ramuan obat tradisional.
+(38, 2, 'Lidah buaya adalah tanaman dengan banyak sekali manfaat', 'Lidah buaya adalah tanaman dengan banyak sekali manfaat. Tanaman berduri ini sangat mudah ditanam di pekarangan. Daun lidah buaya memiliki daging tebal berair bening. Banyak orang menyebut tanaman ini dengan Aloe vera. Kandungan air di dalam daunnya sangat melimpah sekali. Lendir pada daun tersebut mengandung berbagai macam vitamin. Tanaman ini sudah digunakan sejak zaman nenek moyang. Masyarakat memanfaatkan lidah buaya untuk ramuan obat tradisional.
 Manfaat paling terkenal adalah untuk menyuburkan rambut kepala. Lendir lidah buaya membuat rambut menjadi hitam lebat. Tanaman ini juga sangat bagus untuk kesehatan kulit. Getah beningnya bisa mengobati luka bakar yang ringan. Banyak produk kecantikan menggunakan ekstrak lidah buaya asli. Sabun cuci muka dari lidah buaya sangat menyegarkan. Kulit wajah menjadi lembap dan bebas jerawat membandel. Tanaman herbal ini memang memiliki khasiat luar biasa.
 Selain untuk luar, lidah buaya bisa dikonsumsi langsung. Daging daun lidah buaya sering dijadikan minuman segar. Minuman lidah buaya sangat cocok diminum saat siang. Rasa minuman ini sangat manis dan juga menyegarkan. Konsumsi lidah buaya bisa meredakan gejala panas dalam. Sistem pencernaan manusia juga menjadi sehat dan lancar. Cara mengolah lidah buaya cukup mudah untuk dipraktikkan. Cuci bersih daging daun untuk membuang getah pahit. Rebus sebentar daging daun sebelum dicampur dengan sirup.', NULL),
-(42, 2, 'Kenaikan harga barang pokok dan jasa secara terus-menerus da', 'Kenaikan harga barang pokok dan jasa secara terus-menerus dalam rentang waktu tertentu di dalam ilmu ekonomi sering dikenal dengan istilah inflasi. Kondisi ekonomi yang meresahkan masyarakat ini tidak jarang dipicu oleh adanya fluktuasi atau ketidakstabilan harga bahan bakar minyak bumi di pasar internasional. Ketika harga minyak mentah dunia melonjak tajam, biaya operasional pabrik dan ongkos distribusi barang logistik secara otomatis akan membengkak, yang pada akhirnya dampaknya akan dibebankan kepada konsumen akhir melalui kenaikan harga jual produk di pasaran.
+(39, 2, 'Kenaikan harga barang pokok dan jasa secara terus-menerus da', 'Kenaikan harga barang pokok dan jasa secara terus-menerus dalam rentang waktu tertentu di dalam ilmu ekonomi sering dikenal dengan istilah inflasi. Kondisi ekonomi yang meresahkan masyarakat ini tidak jarang dipicu oleh adanya fluktuasi atau ketidakstabilan harga bahan bakar minyak bumi di pasar internasional. Ketika harga minyak mentah dunia melonjak tajam, biaya operasional pabrik dan ongkos distribusi barang logistik secara otomatis akan membengkak, yang pada akhirnya dampaknya akan dibebankan kepada konsumen akhir melalui kenaikan harga jual produk di pasaran.
 Akibat langsung dari rentetan kejadian sistemik ini adalah daya beli masyarakat, khususnya di kalangan menengah ke bawah, yang mengalami penurunan sangat drastis. Dengan jumlah pendapatan upah bulanan yang cenderung stagnan atau tetap sama, masyarakat terpaksa harus mengurangi porsi konsumsi harian mereka karena nilai tukar uang merosot. Kebutuhan dasar seperti beras, minyak goreng, dan telur mendadak terasa sangat mahal dan sulit dijangkau oleh sebagian besar keluarga yang berpenghasilan rendah.
 Untuk mengatasi krisis yang berpotensi memicu masalah kesenjangan sosial ini, pemerintah pun harus segera turun tangan melakukan intervensi pasar secara masif. Langkah yang biasanya diambil adalah mendistribusikan cadangan pangan nasional atau memberikan subsidi bantuan langsung demi menjaga stabilisasi perekonomian. Kebijakan strategis tersebut diharapkan mampu meredam gejolak harga komoditas pokok dan mengembalikan kesejahteraan finansial masyarakat.', NULL),
-(43, 2, 'Saat langit malam sangat cerah tanpa terhalang awan mendung,', 'Saat langit malam sangat cerah tanpa terhalang awan mendung, kita bisa melihat hamparan bintang di angkasa luas dengan mata telanjang. Sejak zaman dahulu, peradaban manusia telah memetakan berbagai rasi bintang atau yang secara ilmiah disebut sebagai konstelasi. Gugusan bintang ini membentuk pola-pola unik yang sering digunakan sebagai kalender pertanian atau petunjuk arah oleh para pelaut kuno saat mengarungi samudra. Kini, pengamatan astronomi telah berkembang pesat menggunakan teleskop super canggih untuk memetakan objek langit yang jaraknya jutaan tahun cahaya dari bumi.
+(40, 2, 'Saat langit malam sangat cerah tanpa terhalang awan mendung,', 'Saat langit malam sangat cerah tanpa terhalang awan mendung, kita bisa melihat hamparan bintang di angkasa luas dengan mata telanjang. Sejak zaman dahulu, peradaban manusia telah memetakan berbagai rasi bintang atau yang secara ilmiah disebut sebagai konstelasi. Gugusan bintang ini membentuk pola-pola unik yang sering digunakan sebagai kalender pertanian atau petunjuk arah oleh para pelaut kuno saat mengarungi samudra. Kini, pengamatan astronomi telah berkembang pesat menggunakan teleskop super canggih untuk memetakan objek langit yang jaraknya jutaan tahun cahaya dari bumi.
 Sementara itu, di sistem tata surya kita sendiri, planet-planet terus bergerak secara teratur mengelilingi matahari pada lintasan melingkar yang disebut orbit. Fenomena pergerakan yang sangat stabil ini bisa terjadi karena adanya gaya gravitasi yang dihasilkan oleh matahari sebagai pusat tata surya. Gaya tarik-menarik massa yang sangat kuat ini berfungsi untuk menahan planet-planet, termasuk bumi, agar tidak terlempar bebas dan hilang ke ruang angkasa yang hampa udara dan bersuhu beku.
 Lebih jauh dari batas tata surya kita, galaksi tempat kita bermukim, yakni Bima Sakti, ternyata hanyalah satu dari miliaran galaksi lain di alam semesta. Bima Sakti masih menyimpan jutaan misteri kosmik yang terus diteliti oleh para ilmuwan dari berbagai badan antariksa dunia. Eksplorasi luar angkasa ini membuktikan bahwa batas pengetahuan manusia tentang semesta akan terus berkembang seiring kemajuan teknologi sains.', NULL),
-(44, 2, 'Pertunjukan musik orkestra simfoni malam itu berlangsung den', 'Pertunjukan musik orkestra simfoni malam itu berlangsung dengan sangat megah dan berhasil memukau seluruh penonton yang memenuhi aula utama. Berbagai jenis instrumen, mulai dari alat musik gesek seperti biola dan selo hingga alat musik tiup seperti seruling dan terompet, dimainkan secara serentak. Penyatuan berbagai variasi instrumen ini menghasilkan sebuah harmoni yang sangat indah, selaras, dan mampu menyentuh relung hati para pendengar. Suasana syahdu tersebut seketika membuat seluruh penonton terhanyut dalam setiap bait nada klasik yang dilantunkan.
+(41, 2, 'Pertunjukan musik orkestra simfoni malam itu berlangsung den', 'Pertunjukan musik orkestra simfoni malam itu berlangsung dengan sangat megah dan berhasil memukau seluruh penonton yang memenuhi aula utama. Berbagai jenis instrumen, mulai dari alat musik gesek seperti biola dan selo hingga alat musik tiup seperti seruling dan terompet, dimainkan secara serentak. Penyatuan berbagai variasi instrumen ini menghasilkan sebuah harmoni yang sangat indah, selaras, dan mampu menyentuh relung hati para pendengar. Suasana syahdu tersebut seketika membuat seluruh penonton terhanyut dalam setiap bait nada klasik yang dilantunkan.
 Di atas panggung, pertunjukan luar biasa ini berada di bawah kendali penuh dan arahan tangan sang maestro yang sangat berpengalaman. Tokoh ahli di bidang seni musik ini memimpin puluhan pemusik dengan gerakan tongkatnya yang penuh wibawa, ekspresif, dan memiliki presisi ketukan tinggi. Ruangan gedung konser yang memiliki desain arsitektur akustik luar biasa turut mendukung kesuksesan acara tersebut. Resonansi suara alat musik terdengar sangat jernih, tajam, dan memanjakan telinga, bahkan hingga ke barisan kursi penonton paling belakang.
 Pada akhirnya, pertunjukan yang berlangsung selama lebih dari dua jam tersebut ditutup dengan tepuk tangan meriah yang bergemuruh dari seluruh penjuru ruangan. Apresiasi penonton yang berdiri memberikan standing ovation membuktikan bahwa seni musik klasik masih memiliki tempat istimewa di hati masyarakat modern. Kolaborasi antara keahlian musisi, kepiawaian pemimpin orkestra, dan kualitas akustik ruangan benar-benar menciptakan malam mahakarya.', NULL),
-(45, 2, 'Di bawah cahaya lampu jalanan kota yang remang dan tertutup', 'Di bawah cahaya lampu jalanan kota yang remang dan tertutup kabut tipis, suasana malam itu terasa sangat mencekam dan penuh teka-teki. Dari kejauhan, tampak sebuah siluet pria berpostur tinggi yang mengenakan mantel panjang serta topi fedora berwarna gelap. Bayangan hitam tanpa bentuk wajah yang jelas tersebut bergerak mengendap-endap secara mencurigakan di sekitar gang sempit di belakang gedung museum sejarah. Sosok misterius itu kemudian perlahan menunduk, memeriksa keadaan sekitar dengan waspada, dan dengan sigap memungut secarik kertas yang jatuh tertiup angin malam.
+(42, 2, 'Di bawah cahaya lampu jalanan kota yang remang dan tertutup', 'Di bawah cahaya lampu jalanan kota yang remang dan tertutup kabut tipis, suasana malam itu terasa sangat mencekam dan penuh teka-teki. Dari kejauhan, tampak sebuah siluet pria berpostur tinggi yang mengenakan mantel panjang serta topi fedora berwarna gelap. Bayangan hitam tanpa bentuk wajah yang jelas tersebut bergerak mengendap-endap secara mencurigakan di sekitar gang sempit di belakang gedung museum sejarah. Sosok misterius itu kemudian perlahan menunduk, memeriksa keadaan sekitar dengan waspada, dan dengan sigap memungut secarik kertas yang jatuh tertiup angin malam.
 Detektif Arya, yang sejak awal malam sudah mengintai dari balik semak belukar di seberang jalan, terus memperhatikan setiap gerak-gerik sosok tersebut. Ia memegang kamera dengan lensa jarak jauh, lalu dengan hati-hati merekam kejadian singkat itu dan mencatatnya sebagai petunjuk baru yang sangat krusial. Selama berminggu-minggu, Arya telah dikerahkan menyelidiki kasus pencurian permata legendaris yang hilang dari brankas museum tanpa meninggalkan jejak sidik jari atau kerusakan fisik sedikit pun.
 Berkat kejadian tak terduga pada malam berkabut itu, benang merah dari kasus pencurian permata bernilai miliaran rupiah ini perlahan-lahan mulai terkuak kebenarannya. Kertas yang dipungut oleh tersangka ternyata berisi rincian peta denah museum, letak sensor alarm, dan rute pelarian yang telah direncanakan dengan matang. Penemuan petunjuk ini menjadi titik terang bagi kepolisian untuk segera membongkar sindikat kejahatan tersebut.', NULL),
-(46, 2, 'Setelah berbulan-bulan menunjukkan tanda-tanda peningkatan a', 'Setelah berbulan-bulan menunjukkan tanda-tanda peningkatan aktivitas berupa gemuruh vulkanik, gunung berapi yang terletak di perbatasan kabupaten itu akhirnya meletus. Pada pertengahan malam yang sunyi, gunung tersebut mengalami erupsi dahsyat yang melontarkan material pijar sejauh puluhan kilometer ke udara. Muntahan magma yang sangat panas disertai awan panas dan abu vulkanik pekat menyebar dengan cepat, kemudian mengalir deras menerjang kawasan lembah terdekat. Pemandangan langit seketika berubah menjadi merah menyala akibat pantulan cahaya lava yang menyala di tengah kegelapan malam.
+(43, 2, 'Setelah berbulan-bulan menunjukkan tanda-tanda peningkatan a', 'Setelah berbulan-bulan menunjukkan tanda-tanda peningkatan aktivitas berupa gemuruh vulkanik, gunung berapi yang terletak di perbatasan kabupaten itu akhirnya meletus. Pada pertengahan malam yang sunyi, gunung tersebut mengalami erupsi dahsyat yang melontarkan material pijar sejauh puluhan kilometer ke udara. Muntahan magma yang sangat panas disertai awan panas dan abu vulkanik pekat menyebar dengan cepat, kemudian mengalir deras menerjang kawasan lembah terdekat. Pemandangan langit seketika berubah menjadi merah menyala akibat pantulan cahaya lava yang menyala di tengah kegelapan malam.
 Beruntung, beberapa jam sebelum letusan besar sungguhan terjadi, alat seismograf digital yang berada di pos pemantauan telah mencatat lonjakan aktivitas kegempaan yang tidak wajar. Berdasarkan data akurat tersebut, tim penyelamat gabungan dari pemerintah daerah segera melakukan langkah mitigasi yang sangat cepat dan terukur. Tindakan pengurangan risiko bencana ini dilakukan dengan membunyikan sirine peringatan dini berkali-kali dan mengevakuasi seluruh penduduk desa yang berada di zona bahaya ke tempat pengungsian.
 Keesokan harinya, meskipun letusan utama telah mereda perlahan, hujan abu vulkanik masih terus mengguyur wilayah di sekitar lereng pegunungan hingga menyelimuti atap-atap rumah warga. Pemerintah dibantu oleh relawan medis kini berfokus penuh pada penyaluran logistik, persediaan air bersih, dan pembagian masker untuk melindungi pernapasan para pengungsi dari partikel debu yang sangat berbahaya bagi paru-paru.', NULL),
-(47, 2, 'Atlet lari maraton nasional yang mewakili Indonesia itu menu', 'Atlet lari maraton nasional yang mewakili Indonesia itu menunjukkan performa yang sangat gemilang dalam perlombaan tingkat Asia yang diselenggarakan di bawah cuaca terik. Ia memperlihatkan stamina yang luar biasa tangguh, mampu menjaga daya tahan fisik dan ritme pernapasan meskipun harus menempuh lintasan aspal sepanjang puluhan kilometer. Berdasarkan analisis pelatih, ia rupanya menerapkan strategi khusus dengan berlari pada kecepatan yang sangat stabil di sepuluh kilometer pertama, murni untuk menyimpan cadangan energi hingga mendekati garis akhir perlombaan.
+(44, 2, 'Atlet lari maraton nasional yang mewakili Indonesia itu menu', 'Atlet lari maraton nasional yang mewakili Indonesia itu menunjukkan performa yang sangat gemilang dalam perlombaan tingkat Asia yang diselenggarakan di bawah cuaca terik. Ia memperlihatkan stamina yang luar biasa tangguh, mampu menjaga daya tahan fisik dan ritme pernapasan meskipun harus menempuh lintasan aspal sepanjang puluhan kilometer. Berdasarkan analisis pelatih, ia rupanya menerapkan strategi khusus dengan berlari pada kecepatan yang sangat stabil di sepuluh kilometer pertama, murni untuk menyimpan cadangan energi hingga mendekati garis akhir perlombaan.
 Meskipun persaingan di lintasan lari tersebut sangat ketat dan menguras banyak keringat, suasana pertandingan secara keseluruhan tetap berlangsung dengan damai dan saling menghargai. Semua peserta dari berbagai negara tetap menjunjung tinggi sportivitas yang menjadi napas dan landasan moral utama dari setiap kejuaraan olahraga. Para atlet tidak segan-segan untuk saling memberikan semangat, menghindari perbuatan curang dengan tidak saling jegal, dan dengan jujur mengakui keunggulan strategi yang diterapkan pesaingnya.
 Pada puncaknya, memasuki kilometer terakhir menjelang garis finis, persaingan semakin memanas antara pelari Indonesia dan atlet asal Kenya. Dengan sisa tenaga yang ada, atlet dari Kenya melakukan sprint kejutan yang luar biasa cepat sehingga berhasil menyalip barisan terdepan, berhak membawa pulang medali emas. Meski hanya finis di urutan kedua, atlet nasional kita tetap tersenyum bangga dan memberikan pelukan selamat secara langsung.', NULL),
-(48, 2, 'Candi Borobudur adalah candi Buddha terbesar di seluruh duni', 'Candi Borobudur adalah candi Buddha terbesar di seluruh dunia. Bangunan megah ini terletak di wilayah Magelang, Jawa Tengah. Candi bersejarah ini dibangun pada masa pemerintahan Dinasti Syailendra. Pembangunan monumen suci ini terjadi sekitar abad kedelapan Masehi. Borobudur memiliki sembilan teras bertumpuk yang sangat indah sekali. Enam teras di bagian bawah memiliki bentuk bujur sangkar. Tiga teras di bagian atas dibangun dengan bentuk bundar. Pada bagian puncak candi terdapat sebuah stupa sangat besar.
+(45, 2, 'Candi Borobudur adalah candi Buddha terbesar di seluruh duni', 'Candi Borobudur adalah candi Buddha terbesar di seluruh dunia. Bangunan megah ini terletak di wilayah Magelang, Jawa Tengah. Candi bersejarah ini dibangun pada masa pemerintahan Dinasti Syailendra. Pembangunan monumen suci ini terjadi sekitar abad kedelapan Masehi. Borobudur memiliki sembilan teras bertumpuk yang sangat indah sekali. Enam teras di bagian bawah memiliki bentuk bujur sangkar. Tiga teras di bagian atas dibangun dengan bentuk bundar. Pada bagian puncak candi terdapat sebuah stupa sangat besar.
 Stupa utama tersebut dikelilingi oleh tujuh puluh dua stupa. Stupa yang berukuran lebih kecil itu memiliki banyak lubang. Di dalam setiap lubang terdapat arca Buddha duduk bersila. Dinding candi dihiasi relief tentang ajaran suci agama Buddha. Banyak wisatawan asing datang untuk melihat keindahan candi ini. Mereka sangat kagum melihat ukiran batu yang sangat detail. Pemerintah selalu berusaha menjaga kelestarian warisan budaya dunia ini. Pengunjung tidak boleh membuang sampah sembarangan di area candi.
 Kita semua harus bangga memiliki bangunan bersejarah sangat megah. Keindahan candi ini terlihat paling jelas saat matahari terbit. Sinar matahari pagi membuat batu candi tampak bersinar terang. Banyak fotografer mengabadikan momen indah itu dari atas candi. Berada di Candi Borobudur memberikan pengalaman yang sangat berkesan. Mari kita terus merawat peninggalan leluhur bangsa Indonesia ini. Candi Borobudur akan selalu menjadi kebanggaan bagi seluruh rakyat.', NULL),
-(49, 2, 'Gunung Bromo merupakan sebuah gunung berapi sangat aktif', 'Gunung Bromo merupakan sebuah gunung berapi sangat aktif. Gunung ini terletak di wilayah provinsi Jawa Timur. Lokasi gunung mencakup empat wilayah kabupaten yang berbeda. Gunung ini berada di dalam taman nasional besar. Nama taman nasional itu adalah Bromo Tengger Semeru. Ketinggian Gunung Bromo mencapai ribuan meter dari laut. Bentuk tubuh gunung ini bertautan dengan lembah luas. Sebuah kaldera besar mengelilingi kawasan gunung berapi ini.
+(46, 2, 'Gunung Bromo merupakan sebuah gunung berapi sangat aktif', 'Gunung Bromo merupakan sebuah gunung berapi sangat aktif. Gunung ini terletak di wilayah provinsi Jawa Timur. Lokasi gunung mencakup empat wilayah kabupaten yang berbeda. Gunung ini berada di dalam taman nasional besar. Nama taman nasional itu adalah Bromo Tengger Semeru. Ketinggian Gunung Bromo mencapai ribuan meter dari laut. Bentuk tubuh gunung ini bertautan dengan lembah luas. Sebuah kaldera besar mengelilingi kawasan gunung berapi ini.
 Hamparan lautan pasir luas menjadi daya tarik utama. Pasir hitam tersebut membentang sangat jauh memanjakan mata. Para pengunjung biasanya menyewa mobil jip untuk berkeliling. Kawah Gunung Bromo juga selalu mengeluarkan asap putih. Asap putih tersebut berbau belerang yang sangat menyengat. Pengunjung harus menaiki ratusan anak tangga menuju kawah. Anak tangga itu terbuat dari beton yang kuat. Pemandangan dari atas bibir kawah terlihat sangat menakjubkan. Suhu udara di sekitar kawasan ini sangat dingin.
 Gunung Bromo adalah destinasi wisata favorit di Indonesia. Turis lokal maupun mancanegara sering berkunjung ke sana. Momen matahari terbit adalah pemandangan yang paling dicari. Banyak orang rela bangun pagi untuk melihatnya langsung. Penduduk asli sekitar gunung disebut sebagai Suku Tengger. Suku Tengger memiliki kebudayaan yang masih sangat terjaga. Mereka rutin mengadakan upacara adat pada waktu tertentu. Upacara adat itu bertujuan sebagai bentuk rasa syukur. Kawasan wisata Bromo wajib dijaga kelestariannya oleh semua.', NULL),
-(50, 2, 'Hutan mangrove memiliki peran penting bagi ekosistem daerah', 'Hutan mangrove memiliki peran penting bagi ekosistem daerah pesisir. Pohon mangrove memiliki akar kuat yang masuk ke lumpur. Akar tanaman ini mampu menahan abrasi air laut ganas. Hutan mangrove dapat memecah gelombang besar dari arah laut. Bencana alam seperti tsunami dapat diredam oleh pepohonan ini. Selain itu, mangrove menjadi habitat bagi berbagai jenis hewan. Banyak jenis ikan kecil bersembunyi di sela akar pohon.
+(47, 2, 'Hutan mangrove memiliki peran penting bagi ekosistem daerah', 'Hutan mangrove memiliki peran penting bagi ekosistem daerah pesisir. Pohon mangrove memiliki akar kuat yang masuk ke lumpur. Akar tanaman ini mampu menahan abrasi air laut ganas. Hutan mangrove dapat memecah gelombang besar dari arah laut. Bencana alam seperti tsunami dapat diredam oleh pepohonan ini. Selain itu, mangrove menjadi habitat bagi berbagai jenis hewan. Banyak jenis ikan kecil bersembunyi di sela akar pohon.
 Kepiting juga hidup dan mencari makan di daerah tersebut. Burung bangau sering bertengger di atas dahan pohon mangrove. Mereka selalu bersiap untuk menangkap ikan di permukaan air. Hutan mangrove sangat bermanfaat bagi kelangsungan hidup para nelayan. Sayangnya, banyak hutan mangrove kini rusak akibat ulah manusia. Lahan hutan mangrove sering diubah menjadi area tambak ikan. Kerusakan ini membuat lingkungan pesisir menjadi sangat rentan sekali. Gelombang laut dapat langsung menghantam permukiman warga di pesisir.
 Kita harus segera bertindak untuk menyelamatkan sisa hutan mangrove. Kegiatan menanam bibit mangrove baru harus rutin kita lakukan. Pemerintah wajib melarang perusakan hutan di seluruh wilayah pesisir. Warga setempat harus menjaga kelestarian alam demi masa depan. Mangrove yang lebat akan menjaga keseimbangan lingkungan pantai kita. Udara di sekitar pantai juga menjadi lebih sejuk segar. Mari lestarikan hutan mangrove untuk melindungi bumi tercinta ini.', NULL),
-(51, 2, 'Pemanasan global merupakan peningkatan suhu rata-rata pada a', 'Pemanasan global merupakan peningkatan suhu rata-rata pada atmosfer bumi. Suhu permukaan laut dan daratan juga ikut menjadi panas. Fenomena alam ini sangat berbahaya bagi kelangsungan makhluk hidup. Salah satu penyebab utama masalah ini adalah emisi karbon. Gas karbon ini menciptakan efek rumah kaca yang parah. Banyak kendaraan bermotor menghasilkan asap gas buang yang beracun. Aktivitas industri pabrik juga menambah jumlah polusi udara harian.
+(48, 2, 'Pemanasan global merupakan peningkatan suhu rata-rata pada a', 'Pemanasan global merupakan peningkatan suhu rata-rata pada atmosfer bumi. Suhu permukaan laut dan daratan juga ikut menjadi panas. Fenomena alam ini sangat berbahaya bagi kelangsungan makhluk hidup. Salah satu penyebab utama masalah ini adalah emisi karbon. Gas karbon ini menciptakan efek rumah kaca yang parah. Banyak kendaraan bermotor menghasilkan asap gas buang yang beracun. Aktivitas industri pabrik juga menambah jumlah polusi udara harian.
 Dampak dari pemanasan global sudah mulai terasa saat ini. Es di wilayah kutub utara dan selatan perlahan mencair. Hal ini menyebabkan naiknya permukaan air laut setiap tahun. Pulau kecil di tengah lautan terancam tenggelam secara perlahan. Perubahan cuaca yang sangat ekstrem juga sering terjadi sekarang. Musim kemarau menjadi sangat panjang dan menyebabkan kekeringan parah. Curah hujan tinggi dapat memicu banjir bandang yang merusak.
 Kita semua harus berupaya untuk mengurangi dampak pemanasan global. Menggunakan transportasi umum adalah langkah kecil yang sangat berarti. Kita juga harus rajin menanam pohon di lingkungan sekitar. Pohon rindang mampu menyerap polusi gas karbon dioksida berbahaya. Penghematan energi listrik juga wajib dilakukan di setiap rumah. Matikan semua peralatan elektronik saat tidak digunakan oleh keluarga. Menjaga bumi adalah tugas bersama seluruh umat manusia sekarang. Mari wujudkan lingkungan yang sehat untuk generasi masa depan. Langkah kecil kita akan menyelamatkan bumi dari kerusakan parah.', NULL),
-(52, 2, 'Pemerintah kota mulai menggalakkan aturan baru kantong belan', 'Pemerintah kota mulai menggalakkan aturan baru kantong belanja kain. Tujuan utama program sosial ini adalah menjaga kebersihan lingkungan. Volume tumpukan sampah plastik harus segera dikurangi mulai sekarang. Sampah berbahan plastik sangat sulit hancur di dalam tanah. Tumpukan sampah plastik bisa membuat kondisi tanah menjadi rusak. Banyak pasar swalayan besar mulai menerapkan kebijakan pelestarian lingkungan. Kantong belanja plastik kini tidak diberikan secara cuma-cuma lagi.
+(49, 2, 'Pemerintah kota mulai menggalakkan aturan baru kantong belan', 'Pemerintah kota mulai menggalakkan aturan baru kantong belanja kain. Tujuan utama program sosial ini adalah menjaga kebersihan lingkungan. Volume tumpukan sampah plastik harus segera dikurangi mulai sekarang. Sampah berbahan plastik sangat sulit hancur di dalam tanah. Tumpukan sampah plastik bisa membuat kondisi tanah menjadi rusak. Banyak pasar swalayan besar mulai menerapkan kebijakan pelestarian lingkungan. Kantong belanja plastik kini tidak diberikan secara cuma-cuma lagi.
 Para pembeli harus selalu membawa tas belanja dari rumah. Jika pembeli ternyata lupa membawa tas kain dari rumah. Pembeli tersebut wajib membayar uang untuk membeli kantong plastik. Harga eceran kantong plastik sengaja dibuat menjadi cukup mahal. Tujuannya agar para warga merasa enggan membeli kantong plastik. Kebijakan tegas dari pemerintah kota ini dinilai sangat efektif. Sampah berbahan plastik dari rumah tangga mulai banyak berkurang. Target penurunan volume sampah kota adalah empat puluh persen.
 Target persentase besar tersebut harus tercapai dalam satu tahun. Warga kota kini mulai terbiasa membawa tas kain sendiri. Tas belanja kain ini bisa digunakan secara berulang kali. Tas berbahan kain tebal juga sangat kuat membawa barang. Lingkungan wilayah kota kita menjadi bersih dari sampah plastik. Saluran air kini tidak mudah tersumbat oleh tumpukan sampah. Bencana banjir tahunan dapat dicegah dengan langkah sangat sederhana. Mari kita dukung program pemerintah demi kebaikan lingkungan bersama.', NULL),
-(53, 2, 'Pisang merupakan salah satu buah tropis paling populer', 'Pisang merupakan salah satu buah tropis paling populer. Buah manis ini sangat mudah ditemukan di Indonesia. Tanaman pisang dapat tumbuh subur di berbagai tempat. Harga buah pisang di pasar juga sangat terjangkau. Warna kulit pisang akan berubah kuning saat matang. Daging buahnya memiliki tekstur yang sangat lembut sekali. Rasa manis alami membuat buah ini banyak disukai. Orang biasa memakan buah ini secara langsung saja.
+(50, 2, 'Pisang merupakan salah satu buah tropis paling populer', 'Pisang merupakan salah satu buah tropis paling populer. Buah manis ini sangat mudah ditemukan di Indonesia. Tanaman pisang dapat tumbuh subur di berbagai tempat. Harga buah pisang di pasar juga sangat terjangkau. Warna kulit pisang akan berubah kuning saat matang. Daging buahnya memiliki tekstur yang sangat lembut sekali. Rasa manis alami membuat buah ini banyak disukai. Orang biasa memakan buah ini secara langsung saja.
 Buah pisang mengandung sangat banyak nutrisi yang penting. Kandungan kalium di dalam buah pisang sangat tinggi. Kalium berfungsi untuk menjaga kesehatan organ jantung manusia. Pisang juga menjadi sumber karbohidrat alami yang baik. Karbohidrat tersebut memberikan energi tambahan bagi tubuh kita. Banyak atlet mengonsumsi buah pisang sebelum mulai bertanding. Buah ini juga kaya akan kandungan serat pencernaan. Serat buah membantu melancarkan sistem pencernaan di perut. Vitamin dalam pisang membantu meningkatkan daya tahan tubuh.
 Pisang dapat diolah menjadi berbagai macam jenis makanan. Orang sering membuat keripik pisang sebagai camilan gurih. Pisang goreng adalah makanan ringan favorit masyarakat kita. Buah ini juga cocok dicampur ke dalam sereal. Daun tanaman pisang sering dimanfaatkan sebagai pembungkus makanan. Jantung pisang juga bisa dimasak menjadi sayur lezat. Hampir semua bagian tanaman ini memberikan banyak manfaat. Mengonsumsi buah pisang setiap hari sangat dianjurkan ahli. Tubuh manusia akan menjadi lebih sehat dan bugar.', NULL),
-(54, 2, 'Sarapan pagi merupakan waktu makan yang sangat paling pentin', 'Sarapan pagi merupakan waktu makan yang sangat paling penting. Makanan bergizi pada pagi hari memberikan sangat banyak manfaat. Tubuh manusia selalu membutuhkan pasokan energi untuk memulai aktivitas. Otak kita juga butuh asupan nutrisi agar tetap fokus. Mengonsumsi makanan sehat setiap pagi sangat dianjurkan oleh ahli. Anak usia sekolah wajib menikmati sarapan pada setiap pagi. Siswa yang rajin menyantap sarapan terbukti menjadi lebih pintar.
+(51, 2, 'Sarapan pagi merupakan waktu makan yang sangat paling pentin', 'Sarapan pagi merupakan waktu makan yang sangat paling penting. Makanan bergizi pada pagi hari memberikan sangat banyak manfaat. Tubuh manusia selalu membutuhkan pasokan energi untuk memulai aktivitas. Otak kita juga butuh asupan nutrisi agar tetap fokus. Mengonsumsi makanan sehat setiap pagi sangat dianjurkan oleh ahli. Anak usia sekolah wajib menikmati sarapan pada setiap pagi. Siswa yang rajin menyantap sarapan terbukti menjadi lebih pintar.
 Tingkat konsentrasi belajar siswa di dalam kelas menjadi baik. Materi penjelasan pelajaran dapat diserap dengan sangat mudah sekali. Siswa yang rutin makan sarapan jarang merasa sangat mengantuk. Mereka juga tidak merasa lemas saat sedang mengikuti pelajaran. Anak yang sering melewatkan makan sarapan terlihat sangat pucat. Kondisi perut kosong membuat anak sulit menjaga konsentrasi penuh. Anak tersebut bisa mudah jatuh sakit jika dibiarkan terus. Oleh karena alasan itu sarapan pagi adalah kegiatan wajib.
 Menu hidangan sarapan setiap pagi harus selalu diperhatikan saksama. Makanan sehat tersebut harus mengandung unsur karbohidrat yang kompleks. Contoh utama sumber karbohidrat baik adalah nasi atau roti. Protein nabati hewani juga sangat penting bagi kesehatan tubuh. Telur ayam dan susu segar adalah sumber protein terbaik. Serat alami dari buah manis juga sangat dibutuhkan tubuh. Porsi makan sarapan pagi tidak perlu dibuat terlalu banyak. Hal paling penting adalah komposisi kandungan gizi makanan tersebut.', NULL),
-(55, 2, 'Proses terjadinya hujan selalu diawali dengan penguapan air', 'Proses terjadinya hujan selalu diawali dengan penguapan air bumi. Air laut dan sungai menguap karena sengatan panas matahari. Proses naiknya uap air bumi ini sering disebut evaporasi. Uap air hangat tersebut kemudian perlahan naik menuju atmosfer. Suhu pada lapisan atmosfer atas bumi terasa sangat dingin. Di tempat sangat dingin tersebut uap air mengalami kondensasi. Proses perubahan uap kondensasi ini sering disebut sebagai pengembunan.
+(52, 2, 'Proses terjadinya hujan selalu diawali dengan penguapan air', 'Proses terjadinya hujan selalu diawali dengan penguapan air bumi. Air laut dan sungai menguap karena sengatan panas matahari. Proses naiknya uap air bumi ini sering disebut evaporasi. Uap air hangat tersebut kemudian perlahan naik menuju atmosfer. Suhu pada lapisan atmosfer atas bumi terasa sangat dingin. Di tempat sangat dingin tersebut uap air mengalami kondensasi. Proses perubahan uap kondensasi ini sering disebut sebagai pengembunan.
 Hasil proses pengembunan uap air itu perlahan membentuk awan. Angin kencang lalu membawa awan berkumpul menjadi lebih besar. Awan yang berkumpul tersebut perlahan berubah menjadi sangat berat. Awan tebal tersebut tidak lagi mampu menampung titik air. Saat hal berat itu terjadi maka terjadilah proses presipitasi. Proses presipitasi adalah jatuhnya titik air ke permukaan bumi. Titik air yang jatuh membasahi bumi sering disebut hujan. Air hujan segar membasahi daratan tanah dan tanaman hijau.
 Genangan air hujan akan mengalir menuju badan sungai besar. Sungai tersebut membawa air terus mengalir kembali menuju laut. Siklus perputaran air bumi ini akan berulang secara terus-menerus. Ketersediaan pasokan air bersih di bumi menjadi selalu terjaga. Semua jenis makhluk hidup pasti sangat membutuhkan air hujan. Tanaman liar juga bisa tumbuh subur karena air hujan. Turunnya air hujan adalah anugerah alam yang luar biasa. Siklus hidrologi alam ini menyeimbangkan kondisi cuaca di bumi.', NULL),
-(56, 2, 'Peristiwa Sumpah Pemuda berawal dari kegiatan Kongres Pemuda', 'Peristiwa Sumpah Pemuda berawal dari kegiatan Kongres Pemuda Indonesia. Kongres bersejarah ini digagas oleh sekumpulan pelajar yang hebat. Mereka tergabung dalam organisasi Perhimpunan Pelajar Pelajar seluruh Indonesia. Kongres pemuda nasional ini sengaja diadakan dalam tiga rapat. Setiap sesi rapat penting diselenggarakan di gedung yang berbeda. Rapat pertama dilaksanakan tepat pada tanggal dua puluh tujuh. Bulan Oktober tahun seribu sembilan ratus dua puluh delapan.
+(53, 2, 'Peristiwa Sumpah Pemuda berawal dari kegiatan Kongres Pemuda', 'Peristiwa Sumpah Pemuda berawal dari kegiatan Kongres Pemuda Indonesia. Kongres bersejarah ini digagas oleh sekumpulan pelajar yang hebat. Mereka tergabung dalam organisasi Perhimpunan Pelajar Pelajar seluruh Indonesia. Kongres pemuda nasional ini sengaja diadakan dalam tiga rapat. Setiap sesi rapat penting diselenggarakan di gedung yang berbeda. Rapat pertama dilaksanakan tepat pada tanggal dua puluh tujuh. Bulan Oktober tahun seribu sembilan ratus dua puluh delapan.
 Lokasi sesi rapat pertama berada di Gedung Pemuda Katolik. Rapat hari pertama ini membahas arti penting sebuah persatuan. Rapat kedua kemudian diadakan keesokan harinya pada waktu pagi. Tanggal pelaksanaan adalah dua puluh delapan di bulan Oktober. Lokasi acara rapat kedua bertempat di Gedung Bioskop Jawa. Agenda utama rapat kedua adalah membahas tentang masalah pendidikan. Rapat ketiga langsung dilaksanakan pada malam hari yang sama. Rapat terakhir ini menjadi puncak seluruh acara kongres pemuda.
 Lokasi acara rapat ketiga berada di Gedung Klub Indonesia. Rapat sangat bersejarah ini menghasilkan sebuah rumusan Sumpah Pemuda. Naskah suci Sumpah Pemuda dibacakan dengan suara sangat lantang. Tokoh pemuda hebat bernama Soegondo Djojopoespito membacakan naskah bersejarah. Semua pemuda peserta kongres merasa sangat bangga dan terharu. Lagu kebangsaan Indonesia Raya ikut dikumandangkan pada acara tersebut. Momen ini menjadi tonggak sejarah persatuan bagi bangsa Indonesia. Semangat menjaga persatuan para pemuda ini sangat patut ditiru.', NULL),
-(57, 2, 'Membuat olahan telur asin ternyata sangatlah mudah sekali', 'Membuat olahan telur asin ternyata sangatlah mudah sekali. Langkah pertama adalah menyiapkan beberapa butir telur bebek. Pastikan telur bebek tersebut masih dalam keadaan mentah. Cuci semua permukaan cangkang telur bebek hingga bersih. Hilangkan semua kotoran yang menempel pada kulit telur. Langkah kedua adalah mengamplas kulit telur secara perlahan. Proses ini bertujuan agar pori cangkang menjadi terbuka. Langkah ketiga adalah membuat adonan pembungkus telur asin.
+(54, 2, 'Membuat olahan telur asin ternyata sangatlah mudah sekali', 'Membuat olahan telur asin ternyata sangatlah mudah sekali. Langkah pertama adalah menyiapkan beberapa butir telur bebek. Pastikan telur bebek tersebut masih dalam keadaan mentah. Cuci semua permukaan cangkang telur bebek hingga bersih. Hilangkan semua kotoran yang menempel pada kulit telur. Langkah kedua adalah mengamplas kulit telur secara perlahan. Proses ini bertujuan agar pori cangkang menjadi terbuka. Langkah ketiga adalah membuat adonan pembungkus telur asin.
 Siapkan bahan campuran berupa bubuk abu gosok hitam. Tambahkan butiran garam kasar ke dalam wadah abu. Tuangkan sedikit air bersih ke dalam campuran tersebut. Aduk perlahan hingga adonan bertekstur kental seperti pasta. Langkah keempat adalah membalut seluruh bagian permukaan telur. Gunakan adonan abu gosok untuk menutupi seluruh cangkang. Ketebalan balutan abu disarankan sekitar satu sentimeter saja.
 Langkah kelima adalah tahap menyimpan butiran telur bebek. Simpan semua telur ke dalam sebuah wadah tertutup. Biarkan proses pengasinan berlangsung selama empat belas hari. Proses maksimal dapat dilakukan hingga dua puluh hari. Tahap terakhir adalah proses membersihkan seluruh balutan abu. Cuci kembali butiran telur bebek menggunakan air bersih. Rebus butiran telur asin tersebut hingga benar-benar matang. Telur asin rebus sudah siap untuk disajikan bersama.', NULL),
-(58, 2, 'Daur hidup serangga ini merupakan sebuah contoh metamorfosis', 'Daur hidup serangga ini merupakan sebuah contoh metamorfosis. Proses pertumbuhan serangga ini sering disebut metamorfosis sempurna. Fase pertama selalu dimulai dari sebuah butiran telur. Induk betina meletakkan telur pada bagian permukaan daun. Butiran telur kecil tersebut menempel sangat kuat sekali. Setelah lewat beberapa hari telur akan menetas perlahan. Fase kedua dimulai saat telur berubah menjadi larva. Larva serangga ini lebih sering disebut sebagai ulat.
+(55, 2, 'Daur hidup serangga ini merupakan sebuah contoh metamorfosis', 'Daur hidup serangga ini merupakan sebuah contoh metamorfosis. Proses pertumbuhan serangga ini sering disebut metamorfosis sempurna. Fase pertama selalu dimulai dari sebuah butiran telur. Induk betina meletakkan telur pada bagian permukaan daun. Butiran telur kecil tersebut menempel sangat kuat sekali. Setelah lewat beberapa hari telur akan menetas perlahan. Fase kedua dimulai saat telur berubah menjadi larva. Larva serangga ini lebih sering disebut sebagai ulat.
 Ulat kecil tersebut biasanya sangat rakus memakan dedaunan. Mereka makan terus untuk mengumpulkan banyak energi tubuh. Ukuran tubuh ulat akan mencapai batas tumbuh maksimal. Setelah besar ulat mulai mencari tempat paling aman. Ulat bersiap memasuki fase ketiga yaitu menjadi kepompong. Fase diam ini juga sering disebut istilah pupa. Dalam fase ini ulat membungkus rapat tubuhnya sendiri.
 Hewan ini berpuasa selama berada di dalam cangkang. Ulat beristirahat panjang selama waktu belasan hari penuh. Seluruh bentuk tubuh ulat mengalami proses perubahan total. Setelah waktu selesai cangkang kepompong perlahan mulai terbuka. Fase keempat dimulai saat wujud serangga mulai keluar. Serangga bersayap indah keluar dari dalam cangkang kepompong. Serangga cantik ini mulai dikenal sebagai hewan dewasa. Hewan bersayap yang sangat menawan ini disebut imago.', NULL),
-(59, 2, 'Daur hidup kupu-kupu merupakan contoh metamorfosis sempurna', 'Daur hidup kupu-kupu merupakan contoh metamorfosis sempurna. Fase pertama dimulai dari telur yang biasanya menempel pada daun. Setelah beberapa hari, telur menetas menjadi larva atau ulat yang sangat rakus memakan dedaunan. Setelah ukuran ulat mencapai maksimal, ulat akan mencari tempat aman untuk berubah menjadi pupa atau kepompong. Dalam fase kepompong, ulat berpuasa dan beristirahat selama belasan hari. Daur hidup serangga ini merupakan sebuah contoh metamorfosis. Proses pertumbuhan serangga ini sering disebut metamorfosis sempurna. Fase pertama selalu dimulai dari sebuah butiran telur. Induk betina meletakkan telur pada bagian permukaan daun. Butiran telur kecil tersebut menempel sangat kuat sekali. Setelah lewat beberapa hari telur akan menetas perlahan. Fase kedua dimulai saat telur berubah menjadi larva. Larva serangga ini lebih sering disebut sebagai ulat.
+(56, 2, 'Daur hidup kupu-kupu merupakan contoh metamorfosis sempurna', 'Daur hidup kupu-kupu merupakan contoh metamorfosis sempurna. Fase pertama dimulai dari telur yang biasanya menempel pada daun. Setelah beberapa hari, telur menetas menjadi larva atau ulat yang sangat rakus memakan dedaunan. Setelah ukuran ulat mencapai maksimal, ulat akan mencari tempat aman untuk berubah menjadi pupa atau kepompong. Dalam fase kepompong, ulat berpuasa dan beristirahat selama belasan hari. Daur hidup serangga ini merupakan sebuah contoh metamorfosis. Proses pertumbuhan serangga ini sering disebut metamorfosis sempurna. Fase pertama selalu dimulai dari sebuah butiran telur. Induk betina meletakkan telur pada bagian permukaan daun. Butiran telur kecil tersebut menempel sangat kuat sekali. Setelah lewat beberapa hari telur akan menetas perlahan. Fase kedua dimulai saat telur berubah menjadi larva. Larva serangga ini lebih sering disebut sebagai ulat.
 Ulat kecil tersebut biasanya sangat rakus memakan dedaunan. Mereka makan terus untuk mengumpulkan banyak energi tubuh. Ukuran tubuh ulat akan mencapai batas tumbuh maksimal. Setelah besar ulat mulai mencari tempat paling aman. Ulat bersiap memasuki fase ketiga yaitu menjadi kepompong. Fase diam ini juga sering disebut istilah pupa. Dalam fase ini ulat membungkus rapat tubuhnya sendiri.
 Hewan ini berpuasa selama berada di dalam cangkang. Ulat beristirahat panjang selama waktu belasan hari penuh. Seluruh bentuk tubuh ulat mengalami proses perubahan total. Setelah waktu selesai cangkang kepompong perlahan mulai terbuka. Fase keempat dimulai saat wujud serangga mulai keluar. Serangga bersayap indah keluar dari dalam cangkang kepompong. Serangga cantik ini mulai dikenal sebagai hewan dewasa. Hewan bersayap yang sangat menawan ini disebut imago.', NULL),
-(60, 2, 'Taman Mini Indonesia Indah merupakan destinasi wisata nasion', 'Taman Mini Indonesia Indah merupakan destinasi wisata nasional. Tempat rekreasi ini memiliki kerangka pembagian area unik. Area bagian depan dikhususkan untuk lokasi anjungan daerah. Anjungan tersebut mewakili seluruh bangunan arsitektur tradisional nusantara. Pengunjung bisa melihat berbagai rumah adat dari provinsi. Rumah adat tersebut dibangun menyerupai bentuk bangunan aslinya. Setiap bangunan adat menyimpan banyak benda bersejarah daerah. Wisatawan dapat mempelajari budaya lokal di setiap anjungan.
+(57, 2, 'Taman Mini Indonesia Indah merupakan destinasi wisata nasion', 'Taman Mini Indonesia Indah merupakan destinasi wisata nasional. Tempat rekreasi ini memiliki kerangka pembagian area unik. Area bagian depan dikhususkan untuk lokasi anjungan daerah. Anjungan tersebut mewakili seluruh bangunan arsitektur tradisional nusantara. Pengunjung bisa melihat berbagai rumah adat dari provinsi. Rumah adat tersebut dibangun menyerupai bentuk bangunan aslinya. Setiap bangunan adat menyimpan banyak benda bersejarah daerah. Wisatawan dapat mempelajari budaya lokal di setiap anjungan.
 Bergerak ke area tengah pengunjung akan menemukan danau. Danau buatan berukuran besar tersebut terlihat sangat indah. Di bagian tengah danau terdapat miniatur kepulauan nusantara. Pulau kecil buatan itu dibentuk menyerupai peta negara. Pemandangan pulau tersebut sangat cantik dilihat dari atas. Pengunjung bisa menyewa perahu untuk mengelilingi danau buatan. Angin sejuk berhembus pelan di sekitar area perairan.
 Perjalanan berlanjut menuju wilayah area belakang taman wisata. Di lokasi ini terdapat banyak sekali bangunan museum. Museum tematik didirikan untuk menyimpan benda koleksi berharga. Contoh museum populer adalah bangunan khusus ilmu transportasi. Ada juga museum fauna yang berbentuk hewan komodo. Wahana rekreasi keluarga juga tersedia di area belakang. Anak kecil bisa bermain dengan aman di sana. Taman ini sangat cocok untuk tujuan liburan keluarga.', NULL),
-(61, 2, 'Langkah mencuci bagian tangan harus sesuai standar kesehatan', 'Langkah mencuci bagian tangan harus sesuai standar kesehatan. Standar kesehatan mengatur tahapan cuci tangan secara berurutan. Mulailah dengan membasahi kedua permukaan telapak tangan anda. Gunakan air bersih mengalir dari lubang keran wastafel. Setelah tangan basah tuangkan sabun cair secukupnya saja. Gosok seluruh permukaan telapak tangan dengan gerakan memutar. Jangan lupa menggosok bagian punggung tangan secara bergantian. Bersihkan juga semua kotoran pada area sela jari.
+(58, 2, 'Langkah mencuci bagian tangan harus sesuai standar kesehatan', 'Langkah mencuci bagian tangan harus sesuai standar kesehatan. Standar kesehatan mengatur tahapan cuci tangan secara berurutan. Mulailah dengan membasahi kedua permukaan telapak tangan anda. Gunakan air bersih mengalir dari lubang keran wastafel. Setelah tangan basah tuangkan sabun cair secukupnya saja. Gosok seluruh permukaan telapak tangan dengan gerakan memutar. Jangan lupa menggosok bagian punggung tangan secara bergantian. Bersihkan juga semua kotoran pada area sela jari.
 Langkah berikutnya adalah membersihkan bagian kuku ujung jari. Posisikan kedua tangan saling mengunci secara erat bergantian. Gerakan saling mengunci ini akan membuang sisa kuman. Setelah itu bersihkan bagian ibu jari tangan anda. Gosok ibu jari menggunakan sebuah gerakan memutar perlahan. Pastikan bagian pangkal ibu jari juga ikut digosok. Sabun akan membunuh semua bakteri jahat di tangan.
 Tahap paling akhir adalah membilas sisa busa sabun. Bilas kedua tangan menggunakan air bersih yang mengalir. Pastikan tidak ada sisa sabun tertinggal di kulit. Tutup keran wastafel secara hati hati setelah selesai. Segera keringkan kedua tangan anda menggunakan tisu bersih. Anda juga bisa memakai handuk kering yang bersih. Jangan mengusap tangan basah pada bagian pakaian anda. Tangan anda sekarang sudah bersih dari ancaman kuman.', NULL),
-(62, 2, 'Struktur Candi Borobudur ternyata mencerminkan ajaran agama', 'Struktur Candi Borobudur ternyata mencerminkan ajaran agama Buddha. Bangunan candi ini menggambarkan tingkatan alam semesta raya. Terdapat tiga tingkatan utama pada bangunan candi ini. Tingkatan paling bawah pada bangunan candi disebut Kamadhatu. Bagian Kamadhatu ini melambangkan kondisi alam kehidupan dunia. Manusia pada alam ini masih terikat hawa nafsu. Mereka masih sangat memikirkan urusan duniawi setiap hari. Bagian dasar candi ditutupi oleh batuan fondasi kuat.
+(59, 2, 'Struktur Candi Borobudur ternyata mencerminkan ajaran agama', 'Struktur Candi Borobudur ternyata mencerminkan ajaran agama Buddha. Bangunan candi ini menggambarkan tingkatan alam semesta raya. Terdapat tiga tingkatan utama pada bangunan candi ini. Tingkatan paling bawah pada bangunan candi disebut Kamadhatu. Bagian Kamadhatu ini melambangkan kondisi alam kehidupan dunia. Manusia pada alam ini masih terikat hawa nafsu. Mereka masih sangat memikirkan urusan duniawi setiap hari. Bagian dasar candi ditutupi oleh batuan fondasi kuat.
 Setelah menaiki tangga kita sampai pada tingkatan tengah. Tingkatan tengah bangunan suci candi ini dinamakan Rupadhatu. Bagian Rupadhatu melambangkan sebuah proses alam masa peralihan. Di alam ini manusia mulai meninggalkan urusan duniawi. Hawa nafsu jahat manusia perlahan mulai bisa dikendalikan. Namun jiwa manusia masih terikat pada wujud nyata. Dinding candi tingkatan ini dipenuhi pahatan relief indah.
 Perjalanan berlanjut menuju tingkatan candi yang paling atas. Tingkatan suci paling tinggi ini sering disebut Arupadhatu. Arupadhatu melambangkan alam suci yang paling tinggi sekali. Di alam suci ini jiwa terbebas dari duniawi. Jiwa manusia tidak lagi terikat pada wujud rupa. Hal ini ditandai dengan hadirnya stupa berbentuk bundar. Dinding batu stupa bundar tidak lagi berukir relief. Kemegahan struktur candi ini mengandung nilai filosofi tinggi.', NULL),
-(63, 2, 'STIMULUS 1 – Kebun Sekolah dan Suhu Lingkungan', 'Sejak awal semester, SMP Harapan Jaya mengubah halaman belakang sekolah yang sebelumnya dipenuhi paving menjadi kebun kecil. Siswa menanam cabai, tomat, bayam, dan beberapa tanaman obat. Setiap kelas mendapat jadwal merawat tanaman dua kali seminggu. Guru IPA mencatat bahwa bagian halaman yang ditanami terasa lebih sejuk pada siang hari dibandingkan area yang masih tertutup paving. Daun tanaman juga membantu menahan percikan air ketika hujan deras sehingga tanah tidak cepat terkikis. Pada bulan pertama, beberapa tanaman mati karena penyiraman tidak teratur. Setelah dibuat jadwal piket yang lebih jelas, kondisi tanaman membaik. Sekolah kemudian memasang papan informasi yang menjelaskan nama tanaman dan manfaatnya. Saat istirahat, sejumlah siswa terlihat duduk di sekitar kebun karena tempat itu dianggap lebih nyaman daripada koridor yang panas. Kepala sekolah berencana memperluas kebun pada semester berikutnya, tetapi ia meminta guru dan siswa mengevaluasi terlebih dahulu tanaman mana yang paling mudah dirawat dan paling sesuai dengan kondisi halaman. Pada kegiatan refleksi, siswa diminta mencatat perubahan yang mereka rasakan sejak kebun dibuat. Sebagian siswa menyebut halaman belakang kini lebih nyaman digunakan untuk membaca atau berdiskusi. Guru juga mengingatkan bahwa kebun tidak boleh mengganggu jalur berjalan dan harus tetap dirawat bersama. Karena itu, manfaat kebun dipandang berkaitan dengan pengelolaan, bukan sekadar jumlah tanaman.', NULL),
-(64, 2, 'STIMULUS 2 – Gerakan Membawa Tumbler', 'Kantin SMP Nusantara mulai mengurangi penggunaan gelas plastik sekali pakai. Pada awalnya, pengelola kantin menyediakan potongan harga kecil bagi siswa yang membawa tumbler. Sekolah juga memasang dua titik pengisian air minum sehingga siswa tidak perlu membeli minuman kemasan setiap kali haus. Tiga bulan kemudian, petugas kebersihan mencatat jumlah gelas plastik yang dikumpulkan setelah jam istirahat turun hampir setengah dibandingkan sebelum program dimulai. Namun, sampah plastik belum hilang sepenuhnya karena beberapa siswa masih membeli minuman dalam kemasan ketika lupa membawa tumbler. Pengelola kantin tidak menghapus minuman kemasan secara langsung. Menurutnya, perubahan kebiasaan perlu dilakukan secara bertahap agar siswa memiliki waktu untuk menyesuaikan diri. Dalam rapat evaluasi, OSIS mengusulkan agar kampanye tidak hanya berupa poster, tetapi juga menggunakan pengumuman singkat dan contoh dari pengurus kelas. Guru pembina OSIS menilai usulan tersebut lebih mudah diterapkan karena siswa dapat melihat kebiasaan baru secara langsung. Sekolah berencana mengevaluasi kembali jumlah sampah setelah satu semester. OSIS mencatat bahwa siswa yang lupa membawa tumbler masih menjadi bagian yang perlu diperhatikan. Karena itu, pengurus mengusulkan agar tempat pengisian air mudah terlihat dan tersedia di lokasi yang dekat dengan kegiatan siswa. Pengelola kantin menyetujui evaluasi berkala agar kebijakan pengurangan sampah tetap realistis dan dapat dijalankan oleh warga sekolah. Evaluasi tersebut dilakukan agar perubahan kebiasaan dapat dipantau dari waktu ke waktu.', NULL),
-(65, 2, 'STIMULUS 3 – Perpustakaan Digital Desa', 'Perpustakaan Desa Sukamaju menyediakan layanan peminjaman buku digital bagi pelajar. Warga dapat menggunakan ponsel untuk membaca buku melalui aplikasi yang dikelola perpustakaan. Pada bulan pertama, jumlah pengguna belum banyak karena sebagian siswa belum mengetahui cara mengakses koleksi. Pengelola kemudian mengadakan pelatihan singkat di balai desa dan membuat panduan bergambar. Setelah itu, jumlah peminjaman meningkat, terutama untuk buku pengetahuan umum dan cerita anak. Meskipun demikian, layanan tersebut masih menghadapi kendala. Sinyal internet di beberapa bagian desa tidak stabil, sedangkan tidak semua keluarga memiliki perangkat yang dapat digunakan bergantian. Untuk mengatasi masalah itu, perpustakaan membuka ruang baca dengan jaringan internet pada sore hari. Pengelola juga mengatur jadwal agar siswa yang tidak memiliki perangkat dapat menggunakan tablet milik perpustakaan. Kepala desa mengatakan bahwa keberhasilan program tidak cukup diukur dari jumlah buku yang tersedia. Menurutnya, akses dan kemampuan warga menggunakan layanan juga perlu diperhatikan. Pada akhir semester, pengelola akan membandingkan data peminjaman dan jumlah pengguna aktif untuk menentukan layanan yang perlu diperbaiki. Pengelola menyadari bahwa peningkatan peminjaman belum tentu berarti semua pengguna sudah mahir menggunakan layanan. Beberapa siswa masih meminta bantuan saat mengunduh buku atau mengatur aplikasi. Oleh sebab itu, pelatihan lanjutan dan pendampingan tetap disiapkan. Program tersebut diarahkan agar teknologi benar-benar memperluas kesempatan membaca, bukan hanya menambah jumlah koleksi digital.', NULL),
-(66, 2, 'STIMULUS 4 – Kantin dan Sisa Makanan', 'Kantin SMP Cendekia mencatat banyak makanan tersisa setelah jam makan siang. Sebagian siswa membeli makanan lebih banyak daripada yang mampu mereka habiskan. Kondisi itu membuat petugas harus membuang nasi, sayur, dan lauk yang masih layak beberapa jam sebelumnya. Untuk mengetahui penyebabnya, OSIS melakukan pengamatan selama dua minggu. Mereka menemukan bahwa makanan paling sering tersisa pada hari ketika kantin menyediakan porsi besar dengan harga sedikit lebih murah. Beberapa siswa mengatakan mereka tertarik membeli karena harganya terjangkau, tetapi kemudian tidak sanggup menghabiskan seluruh porsi. Berdasarkan hasil pengamatan, kantin menawarkan dua ukuran porsi dan tetap mempertahankan pilihan makanan yang sama. Siswa juga diperbolehkan meminta porsi kecil tanpa dikenai biaya tambahan. Sebulan kemudian, jumlah sisa makanan berkurang. Pengelola kantin mengatakan bahwa perubahan tersebut bukan berarti siswa harus makan lebih sedikit, melainkan memilih porsi sesuai kebutuhan. Guru IPS menggunakan hasil pengamatan itu sebagai contoh bahwa kebiasaan konsumsi dapat memengaruhi jumlah sampah. Sekolah berencana membuat papan informasi yang mengajak siswa mempertimbangkan kebutuhan sebelum membeli makanan. Guru mengajak siswa membandingkan jumlah makanan yang dibeli dengan jumlah yang tersisa tanpa menyalahkan kelompok tertentu. Dari kegiatan itu, siswa belajar bahwa keputusan sederhana sebelum membeli dapat berpengaruh pada jumlah sampah. Pengelola juga tetap memperhatikan kenyamanan siswa sehingga pilihan porsi tidak dipandang sebagai pembatasan, melainkan cara mengurangi makanan yang terbuang.', NULL),
-(67, 2, 'STIMULUS 5 – Lampu Jalan Tenaga Surya', 'Di sebuah desa pesisir, pemerintah daerah memasang lampu jalan bertenaga surya di jalur yang menghubungkan permukiman dengan dermaga. Sebelumnya, beberapa bagian jalan gelap setelah matahari terbenam sehingga warga harus menggunakan senter ketika berjalan. Lampu baru menyimpan energi dari panel surya pada siang hari dan menggunakannya untuk penerangan malam. Pada minggu pertama, warga menyambut pemasangan tersebut karena jalan menjadi lebih terang. Namun, setelah beberapa hari hujan berturut-turut, sebagian lampu menyala lebih redup daripada biasanya. Petugas menjelaskan bahwa kinerja lampu dipengaruhi oleh energi yang tersimpan dan kondisi panel menerima cahaya matahari. Setelah panel dibersihkan dan sistem diperiksa, penerangan kembali membaik. Pemerintah daerah kemudian memasang jadwal pemeriksaan berkala. Warga juga diminta melaporkan apabila panel tertutup kotoran atau lampu tidak menyala. Ketua RT menilai bahwa teknologi baru tetap membutuhkan perawatan agar manfaatnya dapat bertahan. Pemerintah daerah sedang mempertimbangkan pemasangan lampu serupa di jalan lain, tetapi akan melihat data penggunaan dan biaya perawatan terlebih dahulu. Selain pemeriksaan teknis, pemerintah daerah meminta warga ikut menjaga area sekitar lampu agar panel tidak mudah tertutup kotoran. Data gangguan dan waktu perbaikan akan dicatat sebagai bahan evaluasi. Dengan demikian, keputusan memperluas penggunaan lampu tidak hanya berdasarkan kesan bahwa jalan lebih terang, tetapi juga berdasarkan pengalaman penggunaan dan kemampuan pemeliharaan.', NULL),
-(68, 2, 'STIMULUS 1 – Embung untuk Musim Kemarau', 'Kelompok tani di Desa Wanasari membuat embung kecil untuk menampung air hujan. Sebelum embung dibangun, petani sering mengandalkan sumur dangkal untuk menyiram tanaman pada awal musim kemarau. Ketika hujan berhenti lebih lama, permukaan air sumur turun sehingga sebagian lahan tidak dapat ditanami. Setelah embung selesai, air hujan yang biasanya mengalir begitu saja ke saluran desa dapat ditampung dan digunakan ketika persediaan air mulai berkurang. Petani tetap diminta mengatur penggunaan air karena kapasitas embung terbatas. Pada musim kemarau pertama, beberapa petani membuka saluran air terlalu sering sehingga persediaan turun lebih cepat. Kelompok tani kemudian membuat jadwal pengambilan air berdasarkan luas lahan dan jenis tanaman. Setelah aturan diterapkan, penurunan volume air menjadi lebih terkendali. Ketua kelompok tani menjelaskan bahwa embung bukan sumber air tanpa batas, melainkan cadangan yang harus dikelola bersama. Ia juga mengingatkan bahwa keberhasilan program bergantung pada kebiasaan petani dalam menggunakan air secara hemat. Pemerintah desa berencana memperbaiki saluran masuk embung agar lebih banyak air hujan dapat tertampung pada musim berikutnya. Aturan tersebut juga membuat petani dapat memperkirakan kebutuhan air sebelum mengambilnya. Jika persediaan dipakai tanpa perencanaan, petani yang mengambil air lebih banyak dapat mengurangi kesempatan petani lain memperoleh bagian yang cukup. Karena itu, pengelolaan embung tidak hanya berkaitan dengan jumlah air, tetapi juga dengan cara membagi sumber daya yang terbatas.', NULL),
-(69, 2, 'STIMULUS 2 – Baterai dari Sampah Organik', 'Tim siswa sebuah SMP melakukan percobaan sederhana membuat sumber listrik dari bahan organik yang mudah ditemukan di rumah. Mereka menggunakan beberapa jenis buah dengan tingkat kematangan berbeda dan memasang elektroda pada setiap buah. Tegangan yang dihasilkan tidak sama. Buah yang lebih asam cenderung menghasilkan tegangan lebih besar pada percobaan mereka, tetapi hasil juga dipengaruhi oleh ukuran buah dan kondisi elektroda. Pada percobaan pertama, beberapa kelompok memperoleh hasil berbeda meskipun menggunakan jenis buah yang sama. Guru meminta mereka memeriksa kembali cara memasang elektroda dan memastikan alat ukur digunakan dengan benar. Setelah prosedur diseragamkan, perbedaan hasil menjadi lebih kecil. Guru menjelaskan bahwa percobaan tersebut bukan bertujuan menggantikan baterai rumah tangga, melainkan membantu siswa memahami bahwa reaksi kimia dapat menghasilkan energi listrik. Siswa kemudian membandingkan hasil setiap buah dan mencatat faktor yang mungkin memengaruhinya. Mereka menyadari bahwa kesimpulan dari percobaan perlu didukung oleh pengukuran yang konsisten. Pada akhir kegiatan, kelompok menyusun laporan yang memisahkan hasil pengamatan dari dugaan penyebab perbedaan. Guru menekankan bahwa hasil percobaan tidak boleh diperlakukan sebagai angka yang pasti berlaku untuk semua keadaan. Kondisi buah, elektroda, suhu, dan cara pengukuran dapat memengaruhi hasil. Dengan membandingkan beberapa percobaan dan mencatat prosedurnya, siswa dapat menjelaskan temuan secara lebih hati-hati. Kegiatan tersebut sekaligus melatih mereka membedakan bukti dari dugaan.', NULL),
-(70, 2, 'STIMULUS 3 – Jalur Sepeda ke Sekolah', 'Beberapa siswa SMP Mutiara mulai bersepeda ke sekolah setelah pemerintah kota membuat jalur sepeda di ruas jalan dekat sekolah. Pada minggu pertama, jumlah pesepeda belum banyak karena sebagian orang tua masih khawatir dengan kondisi lalu lintas. Sekolah kemudian mengatur titik berkumpul dan meminta siswa menggunakan helm serta mengikuti rute yang telah ditentukan. Guru juga bekerja sama dengan warga sekitar untuk mengingatkan pengendara kendaraan bermotor agar tidak menggunakan jalur sepeda sebagai tempat berhenti. Setelah beberapa minggu, lebih banyak siswa terlihat menggunakan sepeda, terutama mereka yang tinggal tidak terlalu jauh dari sekolah. Namun, ketika hujan deras turun pada pagi hari, jumlah pesepeda kembali menurun. Sekolah tidak menganggap penurunan tersebut sebagai kegagalan program. Menurut guru pembina, pilihan transportasi dipengaruhi oleh keamanan, jarak, cuaca, dan kesiapan keluarga. Sekolah berencana memperbaiki tempat parkir sepeda dan menambah sosialisasi keselamatan. Orang tua juga diminta memberikan izin berdasarkan kondisi perjalanan anak masing-masing. Dengan demikian, program bersepeda tidak hanya dipandang sebagai kegiatan olahraga, tetapi sebagai pilihan transportasi yang memerlukan dukungan lingkungan. Sekolah juga menyadari bahwa tidak semua siswa memiliki kondisi perjalanan yang sama. Siswa yang tinggal sangat dekat mungkin lebih mudah bersepeda, sedangkan siswa yang tinggal jauh membutuhkan pilihan lain. Karena itu, keberhasilan program tidak hanya dilihat dari banyaknya pesepeda, tetapi dari sejauh mana lingkungan mendukung perjalanan yang aman dan realistis.', NULL),
-(71, 2, 'STIMULUS 4 – Ikan Asing di Kolam Desa', 'Warga Desa Mekarsari menemukan ikan dengan bentuk yang tidak biasa di kolam yang selama ini digunakan untuk memelihara ikan lokal. Beberapa warga ingin segera memasukkan ikan tersebut ke kolam budidaya karena ukurannya cepat besar. Namun, penyuluh perikanan meminta mereka tidak terburu-buru. Ia menjelaskan bahwa ikan yang berasal dari luar lingkungan setempat dapat membawa risiko jika berkembang tanpa pengawasan. Untuk memastikan jenisnya, sampel ikan diperiksa dan dibandingkan dengan informasi dari dinas perikanan. Hasil pemeriksaan menunjukkan bahwa ikan tersebut memang bukan jenis yang biasa dibudidayakan warga. Setelah itu, warga sepakat memisahkan ikan tersebut dari kolam utama sambil menunggu petunjuk lebih lanjut. Penyuluh juga meminta warga tidak membuang ikan ke sungai atau danau karena tindakan tersebut dapat membuat ikan menyebar ke lingkungan lain. Sebagian warga awalnya menganggap langkah itu berlebihan karena ikan terlihat sehat. Namun, penyuluh menekankan bahwa kondisi satu atau dua ikan tidak cukup untuk menentukan dampak terhadap ekosistem. Desa kemudian membuat pengumuman agar warga melaporkan temuan serupa. Keputusan akhir mengenai pemanfaatan ikan akan dibuat setelah identifikasi dan penilaian lebih lanjut. Keputusan untuk memisahkan ikan menunjukkan bahwa tindakan pencegahan dapat dilakukan sebelum dampak benar-benar terlihat. Warga tidak diminta langsung memusnahkan ikan, tetapi juga tidak diperbolehkan menyebarkannya. Pendekatan tersebut memberi waktu bagi pihak yang berwenang untuk mengumpulkan informasi dan menentukan langkah berdasarkan identifikasi yang lebih pasti.', NULL),
-(72, 2, 'STIMULUS 5 – Mikroplastik pada Air Hujan', 'Sebuah kelompok peneliti sekolah melakukan pengamatan sederhana terhadap air hujan yang ditampung di tiga lokasi berbeda. Mereka menemukan partikel kecil pada sebagian sampel setelah air diperiksa menggunakan alat pembesar. Hasil tersebut belum langsung dianggap sebagai bukti bahwa semua partikel berasal dari plastik. Peneliti siswa mencatat lokasi, waktu pengambilan, arah angin, dan kondisi wadah. Mereka menyadari bahwa wadah yang terbuka dapat menerima debu atau kotoran dari lingkungan sekitar. Karena itu, sampel berikutnya diambil dengan wadah yang lebih terlindungi dan prosedur yang sama di setiap lokasi. Hasil pengamatan kedua menunjukkan jumlah partikel yang berbeda dari pengamatan pertama. Guru pembimbing meminta siswa tidak menarik kesimpulan terlalu jauh dari data tersebut. Menurutnya, penelitian sederhana tetap harus memperhatikan kemungkinan sumber kesalahan. Siswa kemudian membandingkan sampel dan mencatat bagian yang belum dapat dipastikan. Mereka juga mencari informasi tentang metode identifikasi mikroplastik yang digunakan dalam penelitian ilmiah. Kegiatan tersebut membuat siswa memahami bahwa menemukan partikel kecil bukan berarti mereka langsung mengetahui asal, jenis, atau dampaknya. Kesimpulan perlu disusun berdasarkan bukti yang cukup dan metode yang sesuai. Guru kemudian meminta siswa menyusun tabel yang membedakan fakta, dugaan, dan pertanyaan yang belum terjawab. Misalnya, keberadaan partikel merupakan hasil pengamatan, sedangkan dugaan tentang asal partikel masih memerlukan pemeriksaan. Cara tersebut membantu siswa memahami bahwa penelitian tidak hanya menghasilkan jawaban, tetapi juga dapat menunjukkan batas pengetahuan yang tersedia.', NULL),
-(73, 2, 'STIMULUS 1 – Atap Hijau di Sekolah', 'SMP Bina Karya sedang menguji penggunaan sebagian atap gedung sebagai taman atap. Pada tahap awal, sekolah menanam beberapa jenis tanaman yang tahan panas dan membutuhkan sedikit air. Tim pengelola mengukur suhu permukaan atap dan mencatat jumlah air yang digunakan setiap minggu. Setelah dua bulan, area yang ditanami menunjukkan suhu permukaan yang lebih rendah dibandingkan bagian atap yang tidak ditanami. Namun, tanaman pada sisi yang terkena angin kuat tumbuh lebih lambat. Pengelola kemudian memasang pelindung sederhana dan memilih tanaman yang lebih sesuai. Sekolah belum berencana mengubah seluruh atap karena biaya pemasangan dan perawatan masih dihitung. Jika hasil pengamatan berikutnya menunjukkan bahwa tanaman dapat bertahan dengan penggunaan air yang wajar, sekolah akan mempertimbangkan memperluas area taman atap. Guru IPA juga mengusulkan agar data suhu dikumpulkan sepanjang musim berbeda karena kondisi cuaca dapat memengaruhi hasil. Siswa dilibatkan dalam pencatatan dan perawatan agar mereka memahami proses pengamatan. Keputusan perluasan akan dibuat setelah sekolah memiliki data yang cukup tentang kondisi tanaman, kebutuhan air, dan biaya perawatan. Tim sekolah juga harus memastikan konstruksi atap mampu menahan beban tambahan dan sistem drainase tidak terganggu. Hal tersebut menjadi bagian dari pemeriksaan sebelum perluasan. Dengan begitu, keputusan tidak hanya didasarkan pada penurunan suhu, tetapi juga pada keamanan bangunan dan kemampuan sekolah merawat taman dalam jangka lebih panjang.', NULL),
-(74, 2, 'STIMULUS 2 – Bus Sekolah dan Kemacetan', 'Sebuah sekolah di pusat kota mencoba layanan bus antar-jemput bagi siswa yang tinggal di beberapa kawasan sekitar. Pada bulan pertama, bus hanya digunakan oleh sebagian siswa karena jadwal belum sesuai dengan waktu keberangkatan mereka. Sekolah kemudian mengumpulkan masukan dari orang tua dan siswa. Rute diubah agar beberapa titik penjemputan lebih dekat dengan permukiman. Setelah perubahan, jumlah penumpang meningkat. Kepala sekolah juga mencatat bahwa kendaraan pribadi yang masuk ke halaman sekolah pada pagi hari berkurang. Namun, bus membutuhkan biaya operasional dan harus berangkat tepat waktu agar tidak mengganggu jadwal pelajaran. Ketika satu bus mengalami kerusakan, beberapa siswa terlambat karena kendaraan pengganti belum tersedia. Sekolah kini mempertimbangkan penambahan satu kendaraan cadangan, tetapi keputusan tersebut bergantung pada jumlah pengguna tetap dan biaya yang diperlukan. Pengelola juga berencana menggunakan data ketepatan waktu untuk mengevaluasi rute. Jika layanan terbukti digunakan secara konsisten dan mampu mengurangi kendaraan yang masuk ke sekolah, sekolah akan mempertimbangkan mempertahankan atau memperluas layanan tersebut. Orang tua masih dapat memilih menggunakan kendaraan lain ketika kondisi perjalanan tidak aman. Sekolah juga tidak ingin menambah kendaraan jika bus yang ada belum dimanfaatkan secara optimal. Karena itu, data jumlah penumpang, ketepatan waktu, dan biaya akan menjadi dasar untuk menentukan apakah perubahan layanan benar-benar diperlukan. Sekolah juga akan meninjau kembali jadwal perjalanan berdasarkan data penggunaan.', NULL),
-(75, 2, 'STIMULUS 3 – Program Membaca Lima Belas Menit', 'SMP Pelita Bangsa menjalankan program membaca selama lima belas menit sebelum pelajaran pertama. Pada awal pelaksanaan, sebagian siswa membaca dengan antusias, tetapi sebagian lainnya hanya membuka buku tanpa benar-benar membaca. Guru kemudian meminta siswa menuliskan satu kalimat tentang bagian yang mereka baca setiap beberapa hari. Sekolah tidak mewajibkan jenis buku tertentu karena siswa memiliki minat yang berbeda. Setelah beberapa minggu, guru melihat lebih banyak siswa membawa buku sendiri dan beberapa siswa mulai saling bertukar rekomendasi bacaan. Namun, guru juga menemukan bahwa sebagian siswa memilih bacaan yang sangat tipis agar cepat selesai ketika diminta menuliskan ringkasan. Untuk mengatasi hal itu, sekolah berencana menilai kebiasaan membaca melalui catatan sederhana, bukan jumlah halaman atau jumlah buku yang selesai. Perpustakaan juga akan membuat rak rekomendasi berdasarkan tema agar siswa lebih mudah memilih bacaan. Kepala sekolah mengatakan bahwa tujuan utama program bukan mengejar banyaknya buku, tetapi membangun kebiasaan membaca yang berlangsung secara konsisten. Pada akhir semester, sekolah akan membandingkan catatan partisipasi dan hasil survei minat baca siswa untuk melihat perubahan yang terjadi. Guru berharap catatan sederhana tidak berubah menjadi tugas yang membuat siswa kehilangan minat. Karena itu, bentuk catatan akan dibuat singkat dan berkala. Jika cara tersebut membantu siswa mempertahankan kebiasaan membaca tanpa menambah beban yang berlebihan, sekolah dapat menggunakan pola yang sama pada semester berikutnya.', NULL),
-(76, 2, 'STIMULUS 4 – Kebun Hidroponik dan Air', 'OSIS SMP Tunas Bangsa membuat kebun hidroponik di halaman sempit belakang laboratorium. Sistem tersebut memungkinkan tanaman ditanam tanpa tanah dalam jumlah besar. Pada percobaan awal, selada tumbuh cukup baik, tetapi penggunaan air lebih banyak daripada yang diperkirakan karena sebagian air harus diganti secara berkala. Tim siswa kemudian memeriksa kebocoran pipa dan menemukan sambungan yang kurang rapat. Setelah diperbaiki, kehilangan air berkurang. Mereka juga mulai mencatat jumlah air yang ditambahkan setiap hari. Guru pembimbing meminta siswa membandingkan penggunaan air hidroponik dengan kebutuhan penyiraman tanaman di kebun tanah, tetapi perbandingan harus dilakukan pada luas tanam yang setara. Sekolah belum memutuskan apakah sistem hidroponik akan diperluas. Selain kebutuhan air, siswa perlu menghitung biaya listrik untuk pompa dan biaya perawatan. Jika hasil perhitungan menunjukkan bahwa sistem dapat dikelola dengan biaya dan penggunaan air yang wajar, sekolah akan menambah beberapa instalasi. Sebaliknya, jika kebutuhan perawatan terlalu tinggi, sistem akan tetap digunakan sebagai proyek pembelajaran dalam skala kecil. Tim siswa juga akan memperhatikan apakah tanaman tumbuh sehat dalam jangka waktu lebih panjang. Hasil yang baik dalam beberapa minggu belum tentu menunjukkan sistem mudah dirawat sepanjang tahun. Oleh karena itu, keputusan perluasan kemungkinan baru dibuat setelah data air, listrik, perawatan, dan kondisi tanaman terkumpul secara cukup. Catatan tersebut akan digunakan untuk melihat perubahan kebutuhan dari waktu ke waktu.', NULL),
-(77, 2, 'STIMULUS 5 – Papan Informasi Banjir', 'Di sebuah kelurahan yang sering mengalami genangan setelah hujan deras, warga memasang papan informasi tinggi muka air di dekat saluran utama. Papan tersebut diberi beberapa tanda ketinggian agar warga dapat melihat perubahan air dari jarak tertentu. Pada awalnya, warga hanya menggunakan papan untuk mengetahui apakah air sedang naik atau turun. Setelah terjadi hujan deras pada malam hari, ketua RT meminta warga mencatat ketinggian air pada waktu yang sama setiap tiga puluh menit. Catatan tersebut kemudian dibandingkan dengan waktu mulai hujan dan kondisi saluran. Warga menemukan bahwa kenaikan air berlangsung lebih cepat ketika saluran tersumbat oleh sampah. Setelah saluran dibersihkan, kenaikan air pada hujan berikutnya berlangsung lebih lambat, meskipun curah hujan tidak persis sama. Kelurahan kemudian berencana membuat catatan rutin dan menempatkan nomor kontak petugas pada papan. Namun, ketua RT mengingatkan bahwa papan bukan alat untuk memastikan banjir akan terjadi. Papan hanya membantu warga memantau kondisi sehingga mereka dapat lebih cepat mengetahui perubahan dan mengambil tindakan sesuai situasi. Jika pencatatan rutin menghasilkan pola yang jelas, kelurahan akan mempertimbangkan memasang papan serupa di titik lain. Warga juga diingatkan bahwa informasi dari papan harus dibaca bersama kondisi lapangan. Misalnya, perubahan ketinggian air yang cepat perlu segera dilaporkan, tetapi keputusan keselamatan tetap mengikuti arahan petugas. Dengan pemantauan yang konsisten, data dari papan dapat menjadi salah satu sumber informasi untuk memahami pola genangan di lingkungan tersebut.', NULL),
-(78, 2, 'Bacalah wacana berikut!', 'Sisa makanan rumah tangga seringkali berakhir di tempat pembuangan akhir dan menghasilkan gas metana yang berbahaya bagi lingkungan. Pengolahan sampah organik menjadi pupuk kompos mandiri di rumah dapat mengurangi volume sampah secara signifikan sekaligus menyuburkan tanaman.', NULL),
-(79, 2, 'Bacalah wacana berikut!', 'Penggunaan transportasi publik, seperti bus kota dan kereta komuter, terbukti dapat memangkas waktu tempuh akibat kemacetan serta menurunkan tingkat polusi udara di pusat perkotaan.', NULL),
-(80, 2, 'Bacalah wacana berikut!', 'Membaca label nutrisi pada kemasan makanan sangat penting untuk mengontrol asupan gula, garam, dan lemak harian. Hal ini bertujuan untuk mencegah risiko penyakit tidak menular seperti diabetes dan hipertensi sejak dini.', NULL),
-(81, 2, 'Bacalah wacana berikut!', 'Erosi pantai akibat abrasi air laut dapat dicegah dengan menanam pohon bakau di sepanjang garis pantai. Akar bakau yang kokoh mampu menahan gelombang laut dan menjaga ekosistem pesisir tetap seimbang.', NULL),
-(82, 2, 'Bacalah wacana berikut!', 'Transfers uang elektronik dan transaksi nirkontak kini makin diminati karena dinilai praktis, cepat, dan mengurangi risiko kehilangan uang tunai saat beraktivitas di luar rumah.', NULL),
-(83, 2, 'Bacalah wacana berikut!', 'Paparan sinar biru dari layar gawai menjelang tidur dapat mengganggu produksi hormon melatonin, sehingga menyebabkan kualitas tidur menurun dan tubuh terasa lelah saat bangun pagi.', NULL),
-(84, 2, 'Bacalah wacana berikut!', 'Penggunaan air secara bijak, seperti mematikan keran saat menggosok gigi dan memanfaatkan air bekas cucian beras untuk menyiram tanaman, dapat menjaga ketersediaan air bersih lokal.', NULL),
-(85, 2, 'Bacalah wacana berikut!', 'Konsumsi sayuran lokal organik tidak hanya menjamin kesehatan tubuh dari paparan pestisida, tetapi juga membantu perekonomian petani di daerah sekitar.', NULL),
-(86, 2, 'Bacalah wacana berikut!', 'Aktivitas fisik teratur selama 30 menit sehari dapat meningkatkan daya tahan tubuh, memperkuat otot, dan mengurangi risiko stres pada remaja sekolah.', NULL),
-(87, 2, 'Bacalah wacana berikut!', 'Pemilahan sampah berdasarkan jenisnya (organik, anorganik, dan B3) memudahkan proses daur ulang di bank sampah serta meminimalkan penumpukan limbah berbahaya.', NULL),
-(88, 2, 'Bacalah wacana berikut!', 'Membawa tas belanja ramah lingkungan sendiri saat berbelanja dapat menurunkan penggunaan kantong plastik sekali pakai yang sulit terurai di alam.', NULL),
-(89, 2, 'Bacalah wacana berikut!', 'Literasi digital memberikan kemampuan untuk menyaring informasi berita sebelum dibagikan, sehingga masyarakat dapat terhindar dari bahaya hoaks dan provokasi online.', NULL),
-(90, 2, 'Bacalah wacana berikut!', 'Penghijauan di pekarangan rumah menggunakan tanaman obat keluarga (TOGA) seperti jahe, kunyit, dan temulawak membantu penyediaan pertolongan pertama alami untuk kesehatan keluarga.', NULL),
-(91, 2, 'Bacalah wacana berikut!', 'Menjaga kebersihan saluran air dan got secara berkala dapat mencegah munculnya genangan air yang menjadi tempat berkembang biak nyamuk Aedes aegypti pembawa demam berdarah.', NULL),
-(92, 2, 'Bacalah wacana berikut!', 'Penggunaan sarana penerangan LED hemat energi mampu mengurangi konsumsi listrik rumah tangga hingga 60% dibandingkan lampu pijar konvensional.', NULL),
-(93, 2, 'Bacalah wacana berikut!', 'Mencuci tangan menggunakan sabun dan air mengalir selama minimal 20 detik merupakan langkah paling efektif untuk membasmi kuman dan mencegah penularan penyakit saluran pencernaan.', NULL),
-(94, 2, 'Bacalah wacana berikut!', 'Eksploitasi kertas yang berlebihan berdampak langsung pada penebangan pohon di hutan. Memanipulasi dokumen menjadi bentuk digital (paperless) membantu menjaga kelestarian hutan alam.', NULL),
-(95, 2, 'Bacalah wacana berikut!', 'Pencemaran suara dari knalpot tidak standar (brong) dapat meningkatkan level stres dan mengganggu konsentrasi belajar serta waktu istirahat warga di lingkungan permukiman.', NULL),
-(96, 2, 'Bacalah wacana berikut!', 'Diversifikasi pangan lokal dengan memanfaatkan singkong, ubi jalar, dan jagung dapat mengurangi ketergantungan masyarakat terhadap beras serta memperkuat ketahanan pangan nasional.', NULL),
-(97, 2, 'Bacalah wacana berikut!', 'Olahraga rutin bersama anggota keluarga dapat mempererat ikatan emosional sekaligus menjaga kebugaran fisik bersama di pertambahan usia.', NULL),
-(98, 2, 'Bacalah dua teks berikut!', 'Teks 1: Teh hijau kaya akan antioksidan katekin yang berfungsi melembabkan kulit dan menangkal radikal bebas dari sinar matahari.
+(60, 2, 'STIMULUS 1 – Kebun Sekolah dan Suhu Lingkungan', 'Sejak awal semester, SMP Harapan Jaya mengubah halaman belakang sekolah yang sebelumnya dipenuhi paving menjadi kebun kecil. Siswa menanam cabai, tomat, bayam, dan beberapa tanaman obat. Setiap kelas mendapat jadwal merawat tanaman dua kali seminggu. Guru IPA mencatat bahwa bagian halaman yang ditanami terasa lebih sejuk pada siang hari dibandingkan area yang masih tertutup paving. Daun tanaman juga membantu menahan percikan air ketika hujan deras sehingga tanah tidak cepat terkikis. Pada bulan pertama, beberapa tanaman mati karena penyiraman tidak teratur. Setelah dibuat jadwal piket yang lebih jelas, kondisi tanaman membaik. Sekolah kemudian memasang papan informasi yang menjelaskan nama tanaman dan manfaatnya. Saat istirahat, sejumlah siswa terlihat duduk di sekitar kebun karena tempat itu dianggap lebih nyaman daripada koridor yang panas. Kepala sekolah berencana memperluas kebun pada semester berikutnya, tetapi ia meminta guru dan siswa mengevaluasi terlebih dahulu tanaman mana yang paling mudah dirawat dan paling sesuai dengan kondisi halaman. Pada kegiatan refleksi, siswa diminta mencatat perubahan yang mereka rasakan sejak kebun dibuat. Sebagian siswa menyebut halaman belakang kini lebih nyaman digunakan untuk membaca atau berdiskusi. Guru juga mengingatkan bahwa kebun tidak boleh mengganggu jalur berjalan dan harus tetap dirawat bersama. Karena itu, manfaat kebun dipandang berkaitan dengan pengelolaan, bukan sekadar jumlah tanaman.', NULL),
+(61, 2, 'STIMULUS 2 – Gerakan Membawa Tumbler', 'Kantin SMP Nusantara mulai mengurangi penggunaan gelas plastik sekali pakai. Pada awalnya, pengelola kantin menyediakan potongan harga kecil bagi siswa yang membawa tumbler. Sekolah juga memasang dua titik pengisian air minum sehingga siswa tidak perlu membeli minuman kemasan setiap kali haus. Tiga bulan kemudian, petugas kebersihan mencatat jumlah gelas plastik yang dikumpulkan setelah jam istirahat turun hampir setengah dibandingkan sebelum program dimulai. Namun, sampah plastik belum hilang sepenuhnya karena beberapa siswa masih membeli minuman dalam kemasan ketika lupa membawa tumbler. Pengelola kantin tidak menghapus minuman kemasan secara langsung. Menurutnya, perubahan kebiasaan perlu dilakukan secara bertahap agar siswa memiliki waktu untuk menyesuaikan diri. Dalam rapat evaluasi, OSIS mengusulkan agar kampanye tidak hanya berupa poster, tetapi juga menggunakan pengumuman singkat dan contoh dari pengurus kelas. Guru pembina OSIS menilai usulan tersebut lebih mudah diterapkan karena siswa dapat melihat kebiasaan baru secara langsung. Sekolah berencana mengevaluasi kembali jumlah sampah setelah satu semester. OSIS mencatat bahwa siswa yang lupa membawa tumbler masih menjadi bagian yang perlu diperhatikan. Karena itu, pengurus mengusulkan agar tempat pengisian air mudah terlihat dan tersedia di lokasi yang dekat dengan kegiatan siswa. Pengelola kantin menyetujui evaluasi berkala agar kebijakan pengurangan sampah tetap realistis dan dapat dijalankan oleh warga sekolah. Evaluasi tersebut dilakukan agar perubahan kebiasaan dapat dipantau dari waktu ke waktu.', NULL),
+(62, 2, 'STIMULUS 3 – Perpustakaan Digital Desa', 'Perpustakaan Desa Sukamaju menyediakan layanan peminjaman buku digital bagi pelajar. Warga dapat menggunakan ponsel untuk membaca buku melalui aplikasi yang dikelola perpustakaan. Pada bulan pertama, jumlah pengguna belum banyak karena sebagian siswa belum mengetahui cara mengakses koleksi. Pengelola kemudian mengadakan pelatihan singkat di balai desa dan membuat panduan bergambar. Setelah itu, jumlah peminjaman meningkat, terutama untuk buku pengetahuan umum dan cerita anak. Meskipun demikian, layanan tersebut masih menghadapi kendala. Sinyal internet di beberapa bagian desa tidak stabil, sedangkan tidak semua keluarga memiliki perangkat yang dapat digunakan bergantian. Untuk mengatasi masalah itu, perpustakaan membuka ruang baca dengan jaringan internet pada sore hari. Pengelola juga mengatur jadwal agar siswa yang tidak memiliki perangkat dapat menggunakan tablet milik perpustakaan. Kepala desa mengatakan bahwa keberhasilan program tidak cukup diukur dari jumlah buku yang tersedia. Menurutnya, akses dan kemampuan warga menggunakan layanan juga perlu diperhatikan. Pada akhir semester, pengelola akan membandingkan data peminjaman dan jumlah pengguna aktif untuk menentukan layanan yang perlu diperbaiki. Pengelola menyadari bahwa peningkatan peminjaman belum tentu berarti semua pengguna sudah mahir menggunakan layanan. Beberapa siswa masih meminta bantuan saat mengunduh buku atau mengatur aplikasi. Oleh sebab itu, pelatihan lanjutan dan pendampingan tetap disiapkan. Program tersebut diarahkan agar teknologi benar-benar memperluas kesempatan membaca, bukan hanya menambah jumlah koleksi digital.', NULL),
+(63, 2, 'STIMULUS 4 – Kantin dan Sisa Makanan', 'Kantin SMP Cendekia mencatat banyak makanan tersisa setelah jam makan siang. Sebagian siswa membeli makanan lebih banyak daripada yang mampu mereka habiskan. Kondisi itu membuat petugas harus membuang nasi, sayur, dan lauk yang masih layak beberapa jam sebelumnya. Untuk mengetahui penyebabnya, OSIS melakukan pengamatan selama dua minggu. Mereka menemukan bahwa makanan paling sering tersisa pada hari ketika kantin menyediakan porsi besar dengan harga sedikit lebih murah. Beberapa siswa mengatakan mereka tertarik membeli karena harganya terjangkau, tetapi kemudian tidak sanggup menghabiskan seluruh porsi. Berdasarkan hasil pengamatan, kantin menawarkan dua ukuran porsi dan tetap mempertahankan pilihan makanan yang sama. Siswa juga diperbolehkan meminta porsi kecil tanpa dikenai biaya tambahan. Sebulan kemudian, jumlah sisa makanan berkurang. Pengelola kantin mengatakan bahwa perubahan tersebut bukan berarti siswa harus makan lebih sedikit, melainkan memilih porsi sesuai kebutuhan. Guru IPS menggunakan hasil pengamatan itu sebagai contoh bahwa kebiasaan konsumsi dapat memengaruhi jumlah sampah. Sekolah berencana membuat papan informasi yang mengajak siswa mempertimbangkan kebutuhan sebelum membeli makanan. Guru mengajak siswa membandingkan jumlah makanan yang dibeli dengan jumlah yang tersisa tanpa menyalahkan kelompok tertentu. Dari kegiatan itu, siswa belajar bahwa keputusan sederhana sebelum membeli dapat berpengaruh pada jumlah sampah. Pengelola juga tetap memperhatikan kenyamanan siswa sehingga pilihan porsi tidak dipandang sebagai pembatasan, melainkan cara mengurangi makanan yang terbuang.', NULL),
+(64, 2, 'STIMULUS 5 – Lampu Jalan Tenaga Surya', 'Di sebuah desa pesisir, pemerintah daerah memasang lampu jalan bertenaga surya di jalur yang menghubungkan permukiman dengan dermaga. Sebelumnya, beberapa bagian jalan gelap setelah matahari terbenam sehingga warga harus menggunakan senter ketika berjalan. Lampu baru menyimpan energi dari panel surya pada siang hari dan menggunakannya untuk penerangan malam. Pada minggu pertama, warga menyambut pemasangan tersebut karena jalan menjadi lebih terang. Namun, setelah beberapa hari hujan berturut-turut, sebagian lampu menyala lebih redup daripada biasanya. Petugas menjelaskan bahwa kinerja lampu dipengaruhi oleh energi yang tersimpan dan kondisi panel menerima cahaya matahari. Setelah panel dibersihkan dan sistem diperiksa, penerangan kembali membaik. Pemerintah daerah kemudian memasang jadwal pemeriksaan berkala. Warga juga diminta melaporkan apabila panel tertutup kotoran atau lampu tidak menyala. Ketua RT menilai bahwa teknologi baru tetap membutuhkan perawatan agar manfaatnya dapat bertahan. Pemerintah daerah sedang mempertimbangkan pemasangan lampu serupa di jalan lain, tetapi akan melihat data penggunaan dan biaya perawatan terlebih dahulu. Selain pemeriksaan teknis, pemerintah daerah meminta warga ikut menjaga area sekitar lampu agar panel tidak mudah tertutup kotoran. Data gangguan dan waktu perbaikan akan dicatat sebagai bahan evaluasi. Dengan demikian, keputusan memperluas penggunaan lampu tidak hanya berdasarkan kesan bahwa jalan lebih terang, tetapi juga berdasarkan pengalaman penggunaan dan kemampuan pemeliharaan.', NULL),
+(65, 2, 'STIMULUS 1 – Embung untuk Musim Kemarau', 'Kelompok tani di Desa Wanasari membuat embung kecil untuk menampung air hujan. Sebelum embung dibangun, petani sering mengandalkan sumur dangkal untuk menyiram tanaman pada awal musim kemarau. Ketika hujan berhenti lebih lama, permukaan air sumur turun sehingga sebagian lahan tidak dapat ditanami. Setelah embung selesai, air hujan yang biasanya mengalir begitu saja ke saluran desa dapat ditampung dan digunakan ketika persediaan air mulai berkurang. Petani tetap diminta mengatur penggunaan air karena kapasitas embung terbatas. Pada musim kemarau pertama, beberapa petani membuka saluran air terlalu sering sehingga persediaan turun lebih cepat. Kelompok tani kemudian membuat jadwal pengambilan air berdasarkan luas lahan dan jenis tanaman. Setelah aturan diterapkan, penurunan volume air menjadi lebih terkendali. Ketua kelompok tani menjelaskan bahwa embung bukan sumber air tanpa batas, melainkan cadangan yang harus dikelola bersama. Ia juga mengingatkan bahwa keberhasilan program bergantung pada kebiasaan petani dalam menggunakan air secara hemat. Pemerintah desa berencana memperbaiki saluran masuk embung agar lebih banyak air hujan dapat tertampung pada musim berikutnya. Aturan tersebut juga membuat petani dapat memperkirakan kebutuhan air sebelum mengambilnya. Jika persediaan dipakai tanpa perencanaan, petani yang mengambil air lebih banyak dapat mengurangi kesempatan petani lain memperoleh bagian yang cukup. Karena itu, pengelolaan embung tidak hanya berkaitan dengan jumlah air, tetapi juga dengan cara membagi sumber daya yang terbatas.', NULL),
+(66, 2, 'STIMULUS 2 – Baterai dari Sampah Organik', 'Tim siswa sebuah SMP melakukan percobaan sederhana membuat sumber listrik dari bahan organik yang mudah ditemukan di rumah. Mereka menggunakan beberapa jenis buah dengan tingkat kematangan berbeda dan memasang elektroda pada setiap buah. Tegangan yang dihasilkan tidak sama. Buah yang lebih asam cenderung menghasilkan tegangan lebih besar pada percobaan mereka, tetapi hasil juga dipengaruhi oleh ukuran buah dan kondisi elektroda. Pada percobaan pertama, beberapa kelompok memperoleh hasil berbeda meskipun menggunakan jenis buah yang sama. Guru meminta mereka memeriksa kembali cara memasang elektroda dan memastikan alat ukur digunakan dengan benar. Setelah prosedur diseragamkan, perbedaan hasil menjadi lebih kecil. Guru menjelaskan bahwa percobaan tersebut bukan bertujuan menggantikan baterai rumah tangga, melainkan membantu siswa memahami bahwa reaksi kimia dapat menghasilkan energi listrik. Siswa kemudian membandingkan hasil setiap buah dan mencatat faktor yang mungkin memengaruhinya. Mereka menyadari bahwa kesimpulan dari percobaan perlu didukung oleh pengukuran yang konsisten. Pada akhir kegiatan, kelompok menyusun laporan yang memisahkan hasil pengamatan dari dugaan penyebab perbedaan. Guru menekankan bahwa hasil percobaan tidak boleh diperlakukan sebagai angka yang pasti berlaku untuk semua keadaan. Kondisi buah, elektroda, suhu, dan cara pengukuran dapat memengaruhi hasil. Dengan membandingkan beberapa percobaan dan mencatat prosedurnya, siswa dapat menjelaskan temuan secara lebih hati-hati. Kegiatan tersebut sekaligus melatih mereka membedakan bukti dari dugaan.', NULL),
+(67, 2, 'STIMULUS 3 – Jalur Sepeda ke Sekolah', 'Beberapa siswa SMP Mutiara mulai bersepeda ke sekolah setelah pemerintah kota membuat jalur sepeda di ruas jalan dekat sekolah. Pada minggu pertama, jumlah pesepeda belum banyak karena sebagian orang tua masih khawatir dengan kondisi lalu lintas. Sekolah kemudian mengatur titik berkumpul dan meminta siswa menggunakan helm serta mengikuti rute yang telah ditentukan. Guru juga bekerja sama dengan warga sekitar untuk mengingatkan pengendara kendaraan bermotor agar tidak menggunakan jalur sepeda sebagai tempat berhenti. Setelah beberapa minggu, lebih banyak siswa terlihat menggunakan sepeda, terutama mereka yang tinggal tidak terlalu jauh dari sekolah. Namun, ketika hujan deras turun pada pagi hari, jumlah pesepeda kembali menurun. Sekolah tidak menganggap penurunan tersebut sebagai kegagalan program. Menurut guru pembina, pilihan transportasi dipengaruhi oleh keamanan, jarak, cuaca, dan kesiapan keluarga. Sekolah berencana memperbaiki tempat parkir sepeda dan menambah sosialisasi keselamatan. Orang tua juga diminta memberikan izin berdasarkan kondisi perjalanan anak masing-masing. Dengan demikian, program bersepeda tidak hanya dipandang sebagai kegiatan olahraga, tetapi sebagai pilihan transportasi yang memerlukan dukungan lingkungan. Sekolah juga menyadari bahwa tidak semua siswa memiliki kondisi perjalanan yang sama. Siswa yang tinggal sangat dekat mungkin lebih mudah bersepeda, sedangkan siswa yang tinggal jauh membutuhkan pilihan lain. Karena itu, keberhasilan program tidak hanya dilihat dari banyaknya pesepeda, tetapi dari sejauh mana lingkungan mendukung perjalanan yang aman dan realistis.', NULL),
+(68, 2, 'STIMULUS 4 – Ikan Asing di Kolam Desa', 'Warga Desa Mekarsari menemukan ikan dengan bentuk yang tidak biasa di kolam yang selama ini digunakan untuk memelihara ikan lokal. Beberapa warga ingin segera memasukkan ikan tersebut ke kolam budidaya karena ukurannya cepat besar. Namun, penyuluh perikanan meminta mereka tidak terburu-buru. Ia menjelaskan bahwa ikan yang berasal dari luar lingkungan setempat dapat membawa risiko jika berkembang tanpa pengawasan. Untuk memastikan jenisnya, sampel ikan diperiksa dan dibandingkan dengan informasi dari dinas perikanan. Hasil pemeriksaan menunjukkan bahwa ikan tersebut memang bukan jenis yang biasa dibudidayakan warga. Setelah itu, warga sepakat memisahkan ikan tersebut dari kolam utama sambil menunggu petunjuk lebih lanjut. Penyuluh juga meminta warga tidak membuang ikan ke sungai atau danau karena tindakan tersebut dapat membuat ikan menyebar ke lingkungan lain. Sebagian warga awalnya menganggap langkah itu berlebihan karena ikan terlihat sehat. Namun, penyuluh menekankan bahwa kondisi satu atau dua ikan tidak cukup untuk menentukan dampak terhadap ekosistem. Desa kemudian membuat pengumuman agar warga melaporkan temuan serupa. Keputusan akhir mengenai pemanfaatan ikan akan dibuat setelah identifikasi dan penilaian lebih lanjut. Keputusan untuk memisahkan ikan menunjukkan bahwa tindakan pencegahan dapat dilakukan sebelum dampak benar-benar terlihat. Warga tidak diminta langsung memusnahkan ikan, tetapi juga tidak diperbolehkan menyebarkannya. Pendekatan tersebut memberi waktu bagi pihak yang berwenang untuk mengumpulkan informasi dan menentukan langkah berdasarkan identifikasi yang lebih pasti.', NULL),
+(69, 2, 'STIMULUS 5 – Mikroplastik pada Air Hujan', 'Sebuah kelompok peneliti sekolah melakukan pengamatan sederhana terhadap air hujan yang ditampung di tiga lokasi berbeda. Mereka menemukan partikel kecil pada sebagian sampel setelah air diperiksa menggunakan alat pembesar. Hasil tersebut belum langsung dianggap sebagai bukti bahwa semua partikel berasal dari plastik. Peneliti siswa mencatat lokasi, waktu pengambilan, arah angin, dan kondisi wadah. Mereka menyadari bahwa wadah yang terbuka dapat menerima debu atau kotoran dari lingkungan sekitar. Karena itu, sampel berikutnya diambil dengan wadah yang lebih terlindungi dan prosedur yang sama di setiap lokasi. Hasil pengamatan kedua menunjukkan jumlah partikel yang berbeda dari pengamatan pertama. Guru pembimbing meminta siswa tidak menarik kesimpulan terlalu jauh dari data tersebut. Menurutnya, penelitian sederhana tetap harus memperhatikan kemungkinan sumber kesalahan. Siswa kemudian membandingkan sampel dan mencatat bagian yang belum dapat dipastikan. Mereka juga mencari informasi tentang metode identifikasi mikroplastik yang digunakan dalam penelitian ilmiah. Kegiatan tersebut membuat siswa memahami bahwa menemukan partikel kecil bukan berarti mereka langsung mengetahui asal, jenis, atau dampaknya. Kesimpulan perlu disusun berdasarkan bukti yang cukup dan metode yang sesuai. Guru kemudian meminta siswa menyusun tabel yang membedakan fakta, dugaan, dan pertanyaan yang belum terjawab. Misalnya, keberadaan partikel merupakan hasil pengamatan, sedangkan dugaan tentang asal partikel masih memerlukan pemeriksaan. Cara tersebut membantu siswa memahami bahwa penelitian tidak hanya menghasilkan jawaban, tetapi juga dapat menunjukkan batas pengetahuan yang tersedia.', NULL),
+(70, 2, 'STIMULUS 1 – Atap Hijau di Sekolah', 'SMP Bina Karya sedang menguji penggunaan sebagian atap gedung sebagai taman atap. Pada tahap awal, sekolah menanam beberapa jenis tanaman yang tahan panas dan membutuhkan sedikit air. Tim pengelola mengukur suhu permukaan atap dan mencatat jumlah air yang digunakan setiap minggu. Setelah dua bulan, area yang ditanami menunjukkan suhu permukaan yang lebih rendah dibandingkan bagian atap yang tidak ditanami. Namun, tanaman pada sisi yang terkena angin kuat tumbuh lebih lambat. Pengelola kemudian memasang pelindung sederhana dan memilih tanaman yang lebih sesuai. Sekolah belum berencana mengubah seluruh atap karena biaya pemasangan dan perawatan masih dihitung. Jika hasil pengamatan berikutnya menunjukkan bahwa tanaman dapat bertahan dengan penggunaan air yang wajar, sekolah akan mempertimbangkan memperluas area taman atap. Guru IPA juga mengusulkan agar data suhu dikumpulkan sepanjang musim berbeda karena kondisi cuaca dapat memengaruhi hasil. Siswa dilibatkan dalam pencatatan dan perawatan agar mereka memahami proses pengamatan. Keputusan perluasan akan dibuat setelah sekolah memiliki data yang cukup tentang kondisi tanaman, kebutuhan air, dan biaya perawatan. Tim sekolah juga harus memastikan konstruksi atap mampu menahan beban tambahan dan sistem drainase tidak terganggu. Hal tersebut menjadi bagian dari pemeriksaan sebelum perluasan. Dengan begitu, keputusan tidak hanya didasarkan pada penurunan suhu, tetapi juga pada keamanan bangunan dan kemampuan sekolah merawat taman dalam jangka lebih panjang.', NULL),
+(71, 2, 'STIMULUS 2 – Bus Sekolah dan Kemacetan', 'Sebuah sekolah di pusat kota mencoba layanan bus antar-jemput bagi siswa yang tinggal di beberapa kawasan sekitar. Pada bulan pertama, bus hanya digunakan oleh sebagian siswa karena jadwal belum sesuai dengan waktu keberangkatan mereka. Sekolah kemudian mengumpulkan masukan dari orang tua dan siswa. Rute diubah agar beberapa titik penjemputan lebih dekat dengan permukiman. Setelah perubahan, jumlah penumpang meningkat. Kepala sekolah juga mencatat bahwa kendaraan pribadi yang masuk ke halaman sekolah pada pagi hari berkurang. Namun, bus membutuhkan biaya operasional dan harus berangkat tepat waktu agar tidak mengganggu jadwal pelajaran. Ketika satu bus mengalami kerusakan, beberapa siswa terlambat karena kendaraan pengganti belum tersedia. Sekolah kini mempertimbangkan penambahan satu kendaraan cadangan, tetapi keputusan tersebut bergantung pada jumlah pengguna tetap dan biaya yang diperlukan. Pengelola juga berencana menggunakan data ketepatan waktu untuk mengevaluasi rute. Jika layanan terbukti digunakan secara konsisten dan mampu mengurangi kendaraan yang masuk ke sekolah, sekolah akan mempertimbangkan mempertahankan atau memperluas layanan tersebut. Orang tua masih dapat memilih menggunakan kendaraan lain ketika kondisi perjalanan tidak aman. Sekolah juga tidak ingin menambah kendaraan jika bus yang ada belum dimanfaatkan secara optimal. Karena itu, data jumlah penumpang, ketepatan waktu, dan biaya akan menjadi dasar untuk menentukan apakah perubahan layanan benar-benar diperlukan. Sekolah juga akan meninjau kembali jadwal perjalanan berdasarkan data penggunaan.', NULL),
+(72, 2, 'STIMULUS 3 – Program Membaca Lima Belas Menit', 'SMP Pelita Bangsa menjalankan program membaca selama lima belas menit sebelum pelajaran pertama. Pada awal pelaksanaan, sebagian siswa membaca dengan antusias, tetapi sebagian lainnya hanya membuka buku tanpa benar-benar membaca. Guru kemudian meminta siswa menuliskan satu kalimat tentang bagian yang mereka baca setiap beberapa hari. Sekolah tidak mewajibkan jenis buku tertentu karena siswa memiliki minat yang berbeda. Setelah beberapa minggu, guru melihat lebih banyak siswa membawa buku sendiri dan beberapa siswa mulai saling bertukar rekomendasi bacaan. Namun, guru juga menemukan bahwa sebagian siswa memilih bacaan yang sangat tipis agar cepat selesai ketika diminta menuliskan ringkasan. Untuk mengatasi hal itu, sekolah berencana menilai kebiasaan membaca melalui catatan sederhana, bukan jumlah halaman atau jumlah buku yang selesai. Perpustakaan juga akan membuat rak rekomendasi berdasarkan tema agar siswa lebih mudah memilih bacaan. Kepala sekolah mengatakan bahwa tujuan utama program bukan mengejar banyaknya buku, tetapi membangun kebiasaan membaca yang berlangsung secara konsisten. Pada akhir semester, sekolah akan membandingkan catatan partisipasi dan hasil survei minat baca siswa untuk melihat perubahan yang terjadi. Guru berharap catatan sederhana tidak berubah menjadi tugas yang membuat siswa kehilangan minat. Karena itu, bentuk catatan akan dibuat singkat dan berkala. Jika cara tersebut membantu siswa mempertahankan kebiasaan membaca tanpa menambah beban yang berlebihan, sekolah dapat menggunakan pola yang sama pada semester berikutnya.', NULL),
+(73, 2, 'STIMULUS 4 – Kebun Hidroponik dan Air', 'OSIS SMP Tunas Bangsa membuat kebun hidroponik di halaman sempit belakang laboratorium. Sistem tersebut memungkinkan tanaman ditanam tanpa tanah dalam jumlah besar. Pada percobaan awal, selada tumbuh cukup baik, tetapi penggunaan air lebih banyak daripada yang diperkirakan karena sebagian air harus diganti secara berkala. Tim siswa kemudian memeriksa kebocoran pipa dan menemukan sambungan yang kurang rapat. Setelah diperbaiki, kehilangan air berkurang. Mereka juga mulai mencatat jumlah air yang ditambahkan setiap hari. Guru pembimbing meminta siswa membandingkan penggunaan air hidroponik dengan kebutuhan penyiraman tanaman di kebun tanah, tetapi perbandingan harus dilakukan pada luas tanam yang setara. Sekolah belum memutuskan apakah sistem hidroponik akan diperluas. Selain kebutuhan air, siswa perlu menghitung biaya listrik untuk pompa dan biaya perawatan. Jika hasil perhitungan menunjukkan bahwa sistem dapat dikelola dengan biaya dan penggunaan air yang wajar, sekolah akan menambah beberapa instalasi. Sebaliknya, jika kebutuhan perawatan terlalu tinggi, sistem akan tetap digunakan sebagai proyek pembelajaran dalam skala kecil. Tim siswa juga akan memperhatikan apakah tanaman tumbuh sehat dalam jangka waktu lebih panjang. Hasil yang baik dalam beberapa minggu belum tentu menunjukkan sistem mudah dirawat sepanjang tahun. Oleh karena itu, keputusan perluasan kemungkinan baru dibuat setelah data air, listrik, perawatan, dan kondisi tanaman terkumpul secara cukup. Catatan tersebut akan digunakan untuk melihat perubahan kebutuhan dari waktu ke waktu.', NULL),
+(74, 2, 'STIMULUS 5 – Papan Informasi Banjir', 'Di sebuah kelurahan yang sering mengalami genangan setelah hujan deras, warga memasang papan informasi tinggi muka air di dekat saluran utama. Papan tersebut diberi beberapa tanda ketinggian agar warga dapat melihat perubahan air dari jarak tertentu. Pada awalnya, warga hanya menggunakan papan untuk mengetahui apakah air sedang naik atau turun. Setelah terjadi hujan deras pada malam hari, ketua RT meminta warga mencatat ketinggian air pada waktu yang sama setiap tiga puluh menit. Catatan tersebut kemudian dibandingkan dengan waktu mulai hujan dan kondisi saluran. Warga menemukan bahwa kenaikan air berlangsung lebih cepat ketika saluran tersumbat oleh sampah. Setelah saluran dibersihkan, kenaikan air pada hujan berikutnya berlangsung lebih lambat, meskipun curah hujan tidak persis sama. Kelurahan kemudian berencana membuat catatan rutin dan menempatkan nomor kontak petugas pada papan. Namun, ketua RT mengingatkan bahwa papan bukan alat untuk memastikan banjir akan terjadi. Papan hanya membantu warga memantau kondisi sehingga mereka dapat lebih cepat mengetahui perubahan dan mengambil tindakan sesuai situasi. Jika pencatatan rutin menghasilkan pola yang jelas, kelurahan akan mempertimbangkan memasang papan serupa di titik lain. Warga juga diingatkan bahwa informasi dari papan harus dibaca bersama kondisi lapangan. Misalnya, perubahan ketinggian air yang cepat perlu segera dilaporkan, tetapi keputusan keselamatan tetap mengikuti arahan petugas. Dengan pemantauan yang konsisten, data dari papan dapat menjadi salah satu sumber informasi untuk memahami pola genangan di lingkungan tersebut.', NULL),
+(75, 2, 'Bacalah wacana berikut!', 'Sisa makanan rumah tangga seringkali berakhir di tempat pembuangan akhir dan menghasilkan gas metana yang berbahaya bagi lingkungan. Pengolahan sampah organik menjadi pupuk kompos mandiri di rumah dapat mengurangi volume sampah secara signifikan sekaligus menyuburkan tanaman.', NULL),
+(76, 2, 'Bacalah wacana berikut!', 'Penggunaan transportasi publik, seperti bus kota dan kereta komuter, terbukti dapat memangkas waktu tempuh akibat kemacetan serta menurunkan tingkat polusi udara di pusat perkotaan.', NULL),
+(77, 2, 'Bacalah wacana berikut!', 'Membaca label nutrisi pada kemasan makanan sangat penting untuk mengontrol asupan gula, garam, dan lemak harian. Hal ini bertujuan untuk mencegah risiko penyakit tidak menular seperti diabetes dan hipertensi sejak dini.', NULL),
+(78, 2, 'Bacalah wacana berikut!', 'Erosi pantai akibat abrasi air laut dapat dicegah dengan menanam pohon bakau di sepanjang garis pantai. Akar bakau yang kokoh mampu menahan gelombang laut dan menjaga ekosistem pesisir tetap seimbang.', NULL),
+(79, 2, 'Bacalah wacana berikut!', 'Transfers uang elektronik dan transaksi nirkontak kini makin diminati karena dinilai praktis, cepat, dan mengurangi risiko kehilangan uang tunai saat beraktivitas di luar rumah.', NULL),
+(80, 2, 'Bacalah wacana berikut!', 'Paparan sinar biru dari layar gawai menjelang tidur dapat mengganggu produksi hormon melatonin, sehingga menyebabkan kualitas tidur menurun dan tubuh terasa lelah saat bangun pagi.', NULL),
+(81, 2, 'Bacalah wacana berikut!', 'Penggunaan air secara bijak, seperti mematikan keran saat menggosok gigi dan memanfaatkan air bekas cucian beras untuk menyiram tanaman, dapat menjaga ketersediaan air bersih lokal.', NULL),
+(82, 2, 'Bacalah wacana berikut!', 'Konsumsi sayuran lokal organik tidak hanya menjamin kesehatan tubuh dari paparan pestisida, tetapi juga membantu perekonomian petani di daerah sekitar.', NULL),
+(83, 2, 'Bacalah wacana berikut!', 'Aktivitas fisik teratur selama 30 menit sehari dapat meningkatkan daya tahan tubuh, memperkuat otot, dan mengurangi risiko stres pada remaja sekolah.', NULL),
+(84, 2, 'Bacalah wacana berikut!', 'Pemilahan sampah berdasarkan jenisnya (organik, anorganik, dan B3) memudahkan proses daur ulang di bank sampah serta meminimalkan penumpukan limbah berbahaya.', NULL),
+(85, 2, 'Bacalah wacana berikut!', 'Membawa tas belanja ramah lingkungan sendiri saat berbelanja dapat menurunkan penggunaan kantong plastik sekali pakai yang sulit terurai di alam.', NULL),
+(86, 2, 'Bacalah wacana berikut!', 'Literasi digital memberikan kemampuan untuk menyaring informasi berita sebelum dibagikan, sehingga masyarakat dapat terhindar dari bahaya hoaks dan provokasi online.', NULL),
+(87, 2, 'Bacalah wacana berikut!', 'Penghijauan di pekarangan rumah menggunakan tanaman obat keluarga (TOGA) seperti jahe, kunyit, dan temulawak membantu penyediaan pertolongan pertama alami untuk kesehatan keluarga.', NULL),
+(88, 2, 'Bacalah wacana berikut!', 'Menjaga kebersihan saluran air dan got secara berkala dapat mencegah munculnya genangan air yang menjadi tempat berkembang biak nyamuk Aedes aegypti pembawa demam berdarah.', NULL),
+(89, 2, 'Bacalah wacana berikut!', 'Penggunaan sarana penerangan LED hemat energi mampu mengurangi konsumsi listrik rumah tangga hingga 60% dibandingkan lampu pijar konvensional.', NULL),
+(90, 2, 'Bacalah wacana berikut!', 'Mencuci tangan menggunakan sabun dan air mengalir selama minimal 20 detik merupakan langkah paling efektif untuk membasmi kuman dan mencegah penularan penyakit saluran pencernaan.', NULL),
+(91, 2, 'Bacalah wacana berikut!', 'Eksploitasi kertas yang berlebihan berdampak langsung pada penebangan pohon di hutan. Memanipulasi dokumen menjadi bentuk digital (paperless) membantu menjaga kelestarian hutan alam.', NULL),
+(92, 2, 'Bacalah wacana berikut!', 'Pencemaran suara dari knalpot tidak standar (brong) dapat meningkatkan level stres dan mengganggu konsentrasi belajar serta waktu istirahat warga di lingkungan permukiman.', NULL),
+(93, 2, 'Bacalah wacana berikut!', 'Diversifikasi pangan lokal dengan memanfaatkan singkong, ubi jalar, dan jagung dapat mengurangi ketergantungan masyarakat terhadap beras serta memperkuat ketahanan pangan nasional.', NULL),
+(94, 2, 'Bacalah wacana berikut!', 'Olahraga rutin bersama anggota keluarga dapat mempererat ikatan emosional sekaligus menjaga kebugaran fisik bersama di pertambahan usia.', NULL),
+(95, 2, 'Bacalah dua teks berikut!', 'Teks 1: Teh hijau kaya akan antioksidan katekin yang berfungsi melembabkan kulit dan menangkal radikal bebas dari sinar matahari.
 
 Teks 2: Konsumsi teh hijau secara teratur membantu menjaga kesehatan kulit karena kandungan antioksidannya dapat melindungi jaringan sel dari kerusakan akibat radiasi UV.', NULL),
-(99, 2, 'Bacalah dua teks berikut!', 'Teks A: Perpustakaan digital sekolah menyediakan ribuan judul buku yang dapat diakses kapan saja melalui jaringan internet.
+(96, 2, 'Bacalah dua teks berikut!', 'Teks A: Perpustakaan digital sekolah menyediakan ribuan judul buku yang dapat diakses kapan saja melalui jaringan internet.
 
 Teks B: Pengunjung perpustakaan fisik sekolah mengalami penurunan karena siswa lebih memilih mengunduh e-book dari platform perpustakaan digital.', NULL),
-(100, 2, 'Bacalah teks berikut!', 'Pemerintah daerah meresmikan taman kota baru yang dilengkapi dengan jalur joging, area bermain anak, dan fasilitas Wi-Fi gratis. Namun, jumlah tempat sampah di kawasan tersebut masih sangat terbatas sehingga beberapa sudut taman mulai dipenuhi sampah.', NULL),
-(101, 2, 'Bacalah paragraf berikut!', 'Bencana banjir yang melanda kawasan permukiman tersebut disebabkan oleh tingginya curah hujan. Selain faktor alam, penyumbatan saluran air oleh sampah plastik turut memperparah luapan air ke rumah-rumah warga.', NULL),
-(102, 2, 'Bacalah dua teks berikut!', 'Teks 1: Tanaman lidah buaya memiliki gel alami yang efektif mendinginkan kulit terbakar matahari dan mempercepat penyembuhan luka gores ringan.
+(97, 2, 'Bacalah teks berikut!', 'Pemerintah daerah meresmikan taman kota baru yang dilengkapi dengan jalur joging, area bermain anak, dan fasilitas Wi-Fi gratis. Namun, jumlah tempat sampah di kawasan tersebut masih sangat terbatas sehingga beberapa sudut taman mulai dipenuhi sampah.', NULL),
+(98, 2, 'Bacalah paragraf berikut!', 'Bencana banjir yang melanda kawasan permukiman tersebut disebabkan oleh tingginya curah hujan. Selain faktor alam, penyumbatan saluran air oleh sampah plastik turut memperparah luapan air ke rumah-rumah warga.', NULL),
+(99, 2, 'Bacalah dua teks berikut!', 'Teks 1: Tanaman lidah buaya memiliki gel alami yang efektif mendinginkan kulit terbakar matahari dan mempercepat penyembuhan luka gores ringan.
 
 Teks 2: Lidah buaya umum digunakan dalam produk kecantikan karena kandungan nutrisinya dapat menjaga kelembapan rambut dan mengatasi ketombe.', NULL),
-(103, 2, 'Bacalah cuplikan teks berikut!', 'Sistem transportasi Moda Raya Terpadu (MRT) mengoperasikan rangkaian kereta bertenaga listrik. Sarana ini mampu mengangkut ribuan penumpang per hari tanpa menghasilkan emisi gas buang langsung di jalan raya.', NULL),
-(104, 2, 'Bacalah dua tabel data informasi berikut!', 'Teks A: Produksi sampah plastik di Kota X mencapai 500 ton per hari, dengan tingkat daur ulang hanya sebesar 10%.
+(100, 2, 'Bacalah cuplikan teks berikut!', 'Sistem transportasi Moda Raya Terpadu (MRT) mengoperasikan rangkaian kereta bertenaga listrik. Sarana ini mampu mengangkut ribuan penumpang per hari tanpa menghasilkan emisi gas buang langsung di jalan raya.', NULL),
+(101, 2, 'Bacalah dua tabel data informasi berikut!', 'Teks A: Produksi sampah plastik di Kota X mencapai 500 ton per hari, dengan tingkat daur ulang hanya sebesar 10%.
 
 Teks B: Kota X berhasil mendaur ulang 50 ton sampah plastik setiap harinya dari total seluruh sampah plastik yang dihasilkan masyarakat.', NULL),
-(105, 2, 'Bacalah wacana berikut!', 'Museum Nasional menyimpan beragam benda cagar budaya bertema sejarah. Koleksi tersebut dirawat dengan teknik khusus agar keaslian bahannya tidak rusak oleh kelembapan udara.', NULL),
-(106, 2, 'Bacalah wacana berikut!', 'Pembangkit listrik tenaga surya (PLTS) memanfaatkan panel fotovoltaik untuk mengubah sinar matahari menjadi energi listrik. Teknologi ini sangat ramah lingkungan karena tidak menghasilkan emisi karbon.', NULL),
-(107, 2, 'Bacalah dua kalimat berikut!', '(1) Hutan mangrove berfungsi menahan gelombang pasang air laut.
+(102, 2, 'Bacalah wacana berikut!', 'Museum Nasional menyimpan beragam benda cagar budaya bertema sejarah. Koleksi tersebut dirawat dengan teknik khusus agar keaslian bahannya tidak rusak oleh kelembapan udara.', NULL),
+(103, 2, 'Bacalah wacana berikut!', 'Pembangkit listrik tenaga surya (PLTS) memanfaatkan panel fotovoltaik untuk mengubah sinar matahari menjadi energi listrik. Teknologi ini sangat ramah lingkungan karena tidak menghasilkan emisi karbon.', NULL),
+(104, 2, 'Bacalah dua kalimat berikut!', '(1) Hutan mangrove berfungsi menahan gelombang pasang air laut.
 
 (2) Akan tetapi, keberadaan hutan mangrove kini terancam oleh alih fungsi lahan menjadi kawasan tambak.', NULL),
-(108, 2, 'Bacalah dua Teks Informasi berikut!', 'Teks 1: Kampanye penggunaan sepeda ke sekolah berhasil menurunkan tingkat emisi karbon di sekitar area sekolah sebesar 15% dalam tiga bulan.
+(105, 2, 'Bacalah dua Teks Informasi berikut!', 'Teks 1: Kampanye penggunaan sepeda ke sekolah berhasil menurunkan tingkat emisi karbon di sekitar area sekolah sebesar 15% dalam tiga bulan.
 
 Teks 2: Program bersepeda bersama ke sekolah yang digelar setiap Jumat memicu siswa untuk lebih aktif berolahraga sekaligus menjaga kebersihan udara sekolah.', NULL),
-(109, 2, 'Bacalah wacana singkat berikut!', 'Diversifikasi tanaman pangan dapat dilakukan dengan metode tumpang sari. Metode ini memanfaatkan satu areal lahan untuk menanam dua atau lebih jenis tanaman yang berbeda secara bersamaan.', NULL),
-(110, 2, 'Bacalah teks berikut!', 'Penggunaan pupuk organik secara kontinyu mampu mengembalikan kesuburan tanah yang rusak akibat pemakaian pupuk kimia jangka panjang. Tanah menjadi lebih gembur dan mikroorganisme baik dapat berkembang kembali.', NULL),
-(111, 2, 'Bacalah dua kutipan berita berikut!', 'Berita A: Gempa magnitudo 5,6 mengguncang kota Y pada pukul 08.00 WIB. Tidak ada potensi tsunami akibat gempa dangkal ini.
+(106, 2, 'Bacalah wacana singkat berikut!', 'Diversifikasi tanaman pangan dapat dilakukan dengan metode tumpang sari. Metode ini memanfaatkan satu areal lahan untuk menanam dua atau lebih jenis tanaman yang berbeda secara bersamaan.', NULL),
+(107, 2, 'Bacalah teks berikut!', 'Penggunaan pupuk organik secara kontinyu mampu mengembalikan kesuburan tanah yang rusak akibat pemakaian pupuk kimia jangka panjang. Tanah menjadi lebih gembur dan mikroorganisme baik dapat berkembang kembali.', NULL),
+(108, 2, 'Bacalah dua kutipan berita berikut!', 'Berita A: Gempa magnitudo 5,6 mengguncang kota Y pada pukul 08.00 WIB. Tidak ada potensi tsunami akibat gempa dangkal ini.
 
 Berita B: Gempa bumi tektonik mengguncang wilayah kota Y pagi ini. BMKG mengonfirmasi bahwa masyarakat tidak perlu panik terhadap ancaman gelombang tsunami.', NULL),
-(112, 2, 'Bacalah wacana berikut!', 'Gerakan literasi sekolah mewajibkan siswa membaca buku nonpelajaran selama 15 menit sebelum kegiatan belajar dimulakan. Hal ini bertujuan membentuk budaya membaca dan memperluas wawasan siswa.', NULL),
-(113, 2, 'Bacalah teks berikut!', 'Penggunaan plastik sekali pakai pada pembungkus makanan berkontribusi besar terhadap tumpukan limbah laut. Sebaliknya, wadah berbahan kaca atau baja tahan karat dapat digunakan berulang kali sehingga lebih ramah lingkungan.', NULL),
-(114, 2, 'Bacalah dua teks berikut!', 'Teks 1: Vaksinasi memperkuat sistem imun tubuh dengan membentuk antibodi untuk melawan infeksi virus berbahaya.
+(109, 2, 'Bacalah wacana berikut!', 'Gerakan literasi sekolah mewajibkan siswa membaca buku nonpelajaran selama 15 menit sebelum kegiatan belajar dimulakan. Hal ini bertujuan membentuk budaya membaca dan memperluas wawasan siswa.', NULL),
+(110, 2, 'Bacalah teks berikut!', 'Penggunaan plastik sekali pakai pada pembungkus makanan berkontribusi besar terhadap tumpukan limbah laut. Sebaliknya, wadah berbahan kaca atau baja tahan karat dapat digunakan berulang kali sehingga lebih ramah lingkungan.', NULL),
+(111, 2, 'Bacalah dua teks berikut!', 'Teks 1: Vaksinasi memperkuat sistem imun tubuh dengan membentuk antibodi untuk melawan infeksi virus berbahaya.
 
 Teks 2: Dengan menerima vaksinasi, risiko mengalami gejala berat akibat paparan virus dapat ditekan secara signifikan.', NULL),
-(115, 2, 'Bacalah teks berikut!', 'Restorasi lahan gambut dilakukan melalui pembasahan kembali (rewetting), penyekatan parit, dan penanaman vegetasi asli. Langkah ini penting untuk mencegah kebakaran hutan saat musim kemarau panjang.', NULL),
-(116, 2, 'Bacalah wacana berikut!', 'Eksplorasi luar angkasa membutuhkan teknologi roket berkecakapan tinggi untuk menembus atmosfer bumi. Bahan bakar cair sering digunakan karena menghasilkan dorongan yang stabil dan kuat.', NULL),
-(117, 2, 'Bacalah dua teks berikut!', 'Teks A: Penggunaan kantong belanja kain menurunkan volume sampah plastik rumah tangga hingga 40% di Desa Z.
+(112, 2, 'Bacalah teks berikut!', 'Restorasi lahan gambut dilakukan melalui pembasahan kembali (rewetting), penyekatan parit, dan penanaman vegetasi asli. Langkah ini penting untuk mencegah kebakaran hutan saat musim kemarau panjang.', NULL),
+(113, 2, 'Bacalah wacana berikut!', 'Eksplorasi luar angkasa membutuhkan teknologi roket berkecakapan tinggi untuk menembus atmosfer bumi. Bahan bakar cair sering digunakan karena menghasilkan dorongan yang stabil dan kuat.', NULL),
+(114, 2, 'Bacalah dua teks berikut!', 'Teks A: Penggunaan kantong belanja kain menurunkan volume sampah plastik rumah tangga hingga 40% di Desa Z.
 
 Teks B: Warga Desa Z kini terbiasa membawa kantong kain sendiri, sehingga lingkungan desa tampak lebih bersih dari ceceran plastik.', NULL),
-(118, 2, 'Bacalah teks informasi berikut!', 'Setiap tahun, ratusan ton sampah plastik beracun mencemari ekosistem lautan. Penyu dan penyu hijau sering kali mengira kantong plastik mengapung sebagai ubur-ubur, lalu memakannya hingga saluran pencernaan mereka tersumbat parah dan berujung pada kematian yang menyiksa.', NULL),
-(119, 2, 'Bacalah teks informasi berikut!', 'Tim relawan muda berhasil mendirikan perpustakaan keliling dengan mengayuh sepeda tua menembus jalanan terjal di pelosok desa. Berkat aksi tulus ini, anak-anak di daerah terisolasi kini dapat menikmati ratusan buku bacaan secara gratis setiap minggunya.', NULL),
-(120, 2, 'Bacalah teks informasi berikut!', 'Bencana banjir bandang yang menerjang Pemukiman X menghanyutkan puluhan rumah warga dalam sekejap. Ratusan kepala keluarga kini terpaksa mengungsi di tenda-tenda darurat dengan keterbatasan bahan makanan dan air bersih di tengah cuaca dingin.', NULL),
-(121, 2, 'Bacalah teks informasi berikut!', 'Seorang remaja disabilitas berusia 15 tahun berhasil menciptakan alat pemurni air sederhana berbahan barang bekas untuk membantunya mendapatkan air bersih di kawasan tempat tinggalnya yang kusam.', NULL),
-(122, 2, 'Bacalah teks informasi berikut!', 'Maraknya aksi cyberbullying atau perundungan siber di media sosial telah menyebabkan banyak remaja mengalami depresi berat, kehilangan rasa percaya diri, hingga menarik diri dari lingkungan sosialnya.', NULL),
-(123, 2, 'Bacalah teks informasi berikut!', 'Praktek pembalakan liar yang tak terkendali mengancam habitat asli orang utan di Hutan Kalimantan. Jika terus dibiarkan, satwa langka kebanggaan Indonesia ini diperkirakan akan punah dalam kurun waktu beberapa dekade mendatang.', NULL),
-(124, 2, 'Bacalah teks informasi berikut!', 'Berkat gotong royong warga desa selama tiga bulan, saluran irigasi yang sebelumnya tersumbat kini dapat mengalirkan air bersih ke ribuan hektar sawah. Musim panen kali ini disambut dengan tawa dan rasa syukur oleh seluruh petani.', NULL),
-(125, 2, 'Bacalah teks informasi berikut!', 'Penggunaan bahasa vulgar dan caci maki dalam komentar media sosial kini kian marak terjadi pada ruang publik digital. Hal ini dinilai merusak etika kesantunan berbahasa dan menurunkan nilai kesopanan generasi muda.', NULL),
-(126, 2, 'Bacalah teks informasi berikut!', 'Data menunjukkan bahwa penderita gangguan penglihatan pada anak usia sekolah meningkat 30% akibat paparan layar gawai (gadget) tanpa jeda istirahat dan jarak pandang yang tidak memadai.', NULL),
-(127, 2, 'Bacalah teks informasi berikut!', 'Program "Satu Hari Tanpa Sampah Plastik" di pasar tradisional berhasil menghemat penggunaan lebih dari 10.000 kantong plastik dalam sehari. Keberhasilan ini terwujud berkat kesadaran tinggi dari para pedagang dan pembeli.', NULL),
-(128, 2, 'Bacalah teks informasi berikut!', 'Krisis air bersih melanda daerah X selama musim kemarau panjang. Warga setempat, termasuk lansia dan anak-anak, harus berjalan kaki sejauh 5 kilometer setiap pagi demi mendapatkan seember air bersih.', NULL),
-(129, 2, 'Bacalah teks informasi berikut!', 'Sejumlah inovator muda menciptakan alat pendeteksi gempa murah berbasis sensor sederhana. Inovasi ini ditujukan bagi warga kurang mampu di daerah rawan bencana agar mendapat peringatan dini secara cepat.', NULL),
-(130, 2, 'Bacalah teks informasi berikut!', 'Penyebaran informasi bohong (hoaks) terkait isu kesehatan membuat banyak masyarakat menolak melakukan vaksinasi, yang pada akhirnya memicu kembali lonjakan kasus penyakit menular di beberapa daerah.', NULL),
-(131, 2, 'Bacalah teks informasi berikut!', 'Aksi penanaman sejuta pohon mangrove di wilayah pesisir pantai tidak hanya mencegah abrasi, tetapi juga berhasil mengembalikan habitat burung-burung langka yang sempat menghilang selama bertahun-tahun.', NULL),
-(132, 2, 'Bacalah teks informasi berikut!', 'Banyak atlet Indonesia berusia muda berhasil meraih medali emas di ajang kejuaraan internasional meski berlatih dengan fasilitas olahraga yang sangat terbatas di daerah asal mereka.', NULL),
-(133, 2, 'Bacalah teks informasi berikut!', 'Penumpukan sampah makanan (food waste) di tempat pembuangan akhir tidak hanya membuang nutrisi berharga, tetapi juga menghasilkan gas rumah kaca yang memicu pemanasan global saat masih banyak masyarakat kurang mampu kekurangan gizi.', NULL),
-(134, 2, 'Bacalah teks informasi berikut!', 'Gerakan "Dapur Komunitas" yang didirikan sukarelawan berhasil menyediakan ribuan porsi makanan gizi seimbang setiap hari secara gratis bagi warga miskin kota yang terdampak pemutusan hubungan kerja.', NULL),
-(135, 2, 'Bacalah teks informasi berikut!', 'Penggunaan istilah asing berlebihan dalam artikel berita tanpa disertai padanan bahasa Indonesia yang tepat dapat menyulitkan masyarakat awam dalam memahami isi pesan penting berita tersebut.', NULL),
-(136, 2, 'Bacalah teks informasi berikut!', 'Komunitas pecinta alam lokal berhasil membersihkan 5 ton sampah plastik dari dasar danau dalam waktu dua hari melalui aksi penyelaman sukarela tanpa dibayar sedikit pun.', NULL),
-(137, 2, 'Bacalah teks informasi berikut!', 'Aksi pembukaan lahan baru dengan cara membakar hutan telah menyebabkan asap pekat menyelimuti pemukiman. Ribuan anak-anak mengidap penyakit Infeksi Saluran Pernapasan Akut (ISPA) dan sekolah terpaksa diliburkan.', NULL),
-(138, 2, 'Kebun Mini di Halaman Rumah', 'Lahan sempit bukan halangan untuk berkebun. Banyak keluarga menanam sayur di pot bekas. Pot itu diletakkan di teras atau pagar. Cara ini cocok untuk halaman kecil dan hemat biaya. Pekarangan sempit pun dapat menjadi hijau. Tanaman hijau juga membuat rumah terasa sejuk.
+(115, 2, 'Bacalah teks informasi berikut!', 'Setiap tahun, ratusan ton sampah plastik beracun mencemari ekosistem lautan. Penyu dan penyu hijau sering kali mengira kantong plastik mengapung sebagai ubur-ubur, lalu memakannya hingga saluran pencernaan mereka tersumbat parah dan berujung pada kematian yang menyiksa.', NULL),
+(116, 2, 'Bacalah teks informasi berikut!', 'Tim relawan muda berhasil mendirikan perpustakaan keliling dengan mengayuh sepeda tua menembus jalanan terjal di pelosok desa. Berkat aksi tulus ini, anak-anak di daerah terisolasi kini dapat menikmati ratusan buku bacaan secara gratis setiap minggunya.', NULL),
+(117, 2, 'Bacalah teks informasi berikut!', 'Bencana banjir bandang yang menerjang Pemukiman X menghanyutkan puluhan rumah warga dalam sekejap. Ratusan kepala keluarga kini terpaksa mengungsi di tenda-tenda darurat dengan keterbatasan bahan makanan dan air bersih di tengah cuaca dingin.', NULL),
+(118, 2, 'Bacalah teks informasi berikut!', 'Seorang remaja disabilitas berusia 15 tahun berhasil menciptakan alat pemurni air sederhana berbahan barang bekas untuk membantunya mendapatkan air bersih di kawasan tempat tinggalnya yang kusam.', NULL),
+(119, 2, 'Bacalah teks informasi berikut!', 'Maraknya aksi cyberbullying atau perundungan siber di media sosial telah menyebabkan banyak remaja mengalami depresi berat, kehilangan rasa percaya diri, hingga menarik diri dari lingkungan sosialnya.', NULL),
+(120, 2, 'Bacalah teks informasi berikut!', 'Praktek pembalakan liar yang tak terkendali mengancam habitat asli orang utan di Hutan Kalimantan. Jika terus dibiarkan, satwa langka kebanggaan Indonesia ini diperkirakan akan punah dalam kurun waktu beberapa dekade mendatang.', NULL),
+(121, 2, 'Bacalah teks informasi berikut!', 'Berkat gotong royong warga desa selama tiga bulan, saluran irigasi yang sebelumnya tersumbat kini dapat mengalirkan air bersih ke ribuan hektar sawah. Musim panen kali ini disambut dengan tawa dan rasa syukur oleh seluruh petani.', NULL),
+(122, 2, 'Bacalah teks informasi berikut!', 'Penggunaan bahasa vulgar dan caci maki dalam komentar media sosial kini kian marak terjadi pada ruang publik digital. Hal ini dinilai merusak etika kesantunan berbahasa dan menurunkan nilai kesopanan generasi muda.', NULL),
+(123, 2, 'Bacalah teks informasi berikut!', 'Data menunjukkan bahwa penderita gangguan penglihatan pada anak usia sekolah meningkat 30% akibat paparan layar gawai (gadget) tanpa jeda istirahat dan jarak pandang yang tidak memadai.', NULL),
+(124, 2, 'Bacalah teks informasi berikut!', 'Program "Satu Hari Tanpa Sampah Plastik" di pasar tradisional berhasil menghemat penggunaan lebih dari 10.000 kantong plastik dalam sehari. Keberhasilan ini terwujud berkat kesadaran tinggi dari para pedagang dan pembeli.', NULL),
+(125, 2, 'Bacalah teks informasi berikut!', 'Krisis air bersih melanda daerah X selama musim kemarau panjang. Warga setempat, termasuk lansia dan anak-anak, harus berjalan kaki sejauh 5 kilometer setiap pagi demi mendapatkan seember air bersih.', NULL),
+(126, 2, 'Bacalah teks informasi berikut!', 'Sejumlah inovator muda menciptakan alat pendeteksi gempa murah berbasis sensor sederhana. Inovasi ini ditujukan bagi warga kurang mampu di daerah rawan bencana agar mendapat peringatan dini secara cepat.', NULL),
+(127, 2, 'Bacalah teks informasi berikut!', 'Penyebaran informasi bohong (hoaks) terkait isu kesehatan membuat banyak masyarakat menolak melakukan vaksinasi, yang pada akhirnya memicu kembali lonjakan kasus penyakit menular di beberapa daerah.', NULL),
+(128, 2, 'Bacalah teks informasi berikut!', 'Aksi penanaman sejuta pohon mangrove di wilayah pesisir pantai tidak hanya mencegah abrasi, tetapi juga berhasil mengembalikan habitat burung-burung langka yang sempat menghilang selama bertahun-tahun.', NULL),
+(129, 2, 'Bacalah teks informasi berikut!', 'Banyak atlet Indonesia berusia muda berhasil meraih medali emas di ajang kejuaraan internasional meski berlatih dengan fasilitas olahraga yang sangat terbatas di daerah asal mereka.', NULL),
+(130, 2, 'Bacalah teks informasi berikut!', 'Penumpukan sampah makanan (food waste) di tempat pembuangan akhir tidak hanya membuang nutrisi berharga, tetapi juga menghasilkan gas rumah kaca yang memicu pemanasan global saat masih banyak masyarakat kurang mampu kekurangan gizi.', NULL),
+(131, 2, 'Bacalah teks informasi berikut!', 'Gerakan "Dapur Komunitas" yang didirikan sukarelawan berhasil menyediakan ribuan porsi makanan gizi seimbang setiap hari secara gratis bagi warga miskin kota yang terdampak pemutusan hubungan kerja.', NULL),
+(132, 2, 'Bacalah teks informasi berikut!', 'Penggunaan istilah asing berlebihan dalam artikel berita tanpa disertai padanan bahasa Indonesia yang tepat dapat menyulitkan masyarakat awam dalam memahami isi pesan penting berita tersebut.', NULL),
+(133, 2, 'Bacalah teks informasi berikut!', 'Komunitas pecinta alam lokal berhasil membersihkan 5 ton sampah plastik dari dasar danau dalam waktu dua hari melalui aksi penyelaman sukarela tanpa dibayar sedikit pun.', NULL),
+(134, 2, 'Bacalah teks informasi berikut!', 'Aksi pembukaan lahan baru dengan cara membakar hutan telah menyebabkan asap pekat menyelimuti pemukiman. Ribuan anak-anak mengidap penyakit Infeksi Saluran Pernapasan Akut (ISPA) dan sekolah terpaksa diliburkan.', NULL),
+(135, 2, 'Kebun Mini di Halaman Rumah', 'Lahan sempit bukan halangan untuk berkebun. Banyak keluarga menanam sayur di pot bekas. Pot itu diletakkan di teras atau pagar. Cara ini cocok untuk halaman kecil dan hemat biaya. Pekarangan sempit pun dapat menjadi hijau. Tanaman hijau juga membuat rumah terasa sejuk.
 
 Langkah pertama adalah menyiapkan media tanam. Media tanam adalah bahan tempat akar tumbuh. Biasanya berupa campuran tanah dan pupuk kandang. Campuran itu harus gembur agar akar mudah berkembang. Pot perlu memiliki lubang di bagian bawah. Lubang itu mengalirkan kelebihan air.
 
@@ -193,7 +200,7 @@ Setelah itu, taburkan benih di atas media tanam. Benih sawi mulai bertunas setel
 Sawi biasanya siap dipanen setelah empat minggu. Pemanenan sebaiknya dilakukan pada pagi hari. Petik daun yang sudah lebar terlebih dahulu. Daun yang muda dibiarkan tumbuh lagi. Dengan begitu, panen dapat dilakukan berulang kali.
 
 Selain hemat, berkebun mini menyehatkan keluarga. Sayuran segar bebas dari bahan kimia berlebihan. Hasil panen bisa dimasak untuk makan bersama. Kegiatan ini juga mengisi waktu luang dengan bermanfaat. Anak-anak belajar mencintai tanaman sejak dini. Keluarga pun makin akrab saat berkebun bersama.', NULL),
-(139, 2, 'Sepeda Tua Raka', 'Pagi itu Raka mengayuh sepeda tuanya. Rantainya berbunyi keras di sepanjang jalan. Jalanan desa masih lembap oleh embun. Embun masih menempel di daun pinggir jalan. Teman-temannya melaju dengan sepeda baru. Raka menunduk dan mempercepat kayuhannya. Wajahnya terasa panas menahan malu.
+(136, 2, 'Sepeda Tua Raka', 'Pagi itu Raka mengayuh sepeda tuanya. Rantainya berbunyi keras di sepanjang jalan. Jalanan desa masih lembap oleh embun. Embun masih menempel di daun pinggir jalan. Teman-temannya melaju dengan sepeda baru. Raka menunduk dan mempercepat kayuhannya. Wajahnya terasa panas menahan malu.
 
 Ia teringat kejadian dua tahun lalu. Waktu itu Bapak membawa pulang sepeda ini. Uang Bapak hanya cukup untuk sepeda bekas. Catnya sudah kusam dan berkarat. "Sepeda ini tua, tetapi kuat," kata Bapak. Setiap sore Bapak membersihkan dan meminyaki rantainya. Raka hanya diam mengamati dari teras.
 
@@ -202,7 +209,7 @@ Di tengah jalan, hujan turun dengan deras. Air hujan mengalir dari rambut Raka. 
 "Naiklah, Dod! Kita berboncengan saja," ajak Raka. Dodi ragu, lalu duduk di boncengan. Sepeda tua itu tetap melaju menembus hujan. Air hujan membasahi seragam mereka berdua. Rantainya masih berbunyi keras seperti tadi. Namun, Raka tidak lagi merasa malu. Ia justru tersenyum mengingat pesan Bapak.
 
 Sesampainya di sekolah, Dodi mengucapkan terima kasih. Katanya, "Sepedamu hebat sekali, Ka!" Raka hanya tertawa kecil sambil mengangguk. Bel sekolah berbunyi tepat saat mereka tiba. Dalam hati, ia berjanji merawat sepeda itu. Sepeda tua itu kini terasa berharga.', NULL),
-(140, 2, 'Lebah Kelulut, Lebah Tanpa Sengat', 'Lebah kelulut adalah lebah kecil tanpa sengat. Ukuran tubuhnya hanya sekitar lima milimeter. Karena kecil, lebah ini mudah masuk celah sempit. Lebah ini banyak dipelihara di daerah tropis. Lebah ini hidup dalam koloni. Koloni adalah kelompok lebah yang tinggal bersama. Satu koloni dipimpin oleh seekor ratu.
+(137, 2, 'Lebah Kelulut, Lebah Tanpa Sengat', 'Lebah kelulut adalah lebah kecil tanpa sengat. Ukuran tubuhnya hanya sekitar lima milimeter. Karena kecil, lebah ini mudah masuk celah sempit. Lebah ini banyak dipelihara di daerah tropis. Lebah ini hidup dalam koloni. Koloni adalah kelompok lebah yang tinggal bersama. Satu koloni dipimpin oleh seekor ratu.
 
 Sarang lebah kelulut biasanya dibuat di lubang kayu. Peternak memindahkannya ke kotak kayu bernama stup. Stup diletakkan di tempat yang teduh. Kotak itu melindungi lebah dari hujan. Peternak dapat memeriksa kondisi sarang dengan aman.
 
@@ -211,7 +218,7 @@ Lebah kelulut menghasilkan madu dan propolis. Madunya berasa asam segar dan sedi
 Lebah ini juga membantu penyerbukan bunga. Penyerbukan adalah perpindahan serbuk sari ke putik. Proses itu membuat bunga dapat menjadi buah. Tanpa penyerbukan, banyak bunga akan gugur. Karena itu, kebun buah membutuhkan kehadiran lebah.
 
 Merawat lebah kelulut tidak sulit. Peternak cukup menjaga kebersihan stup. Peternak juga rajin memeriksa sarang setiap minggu. Musuh alami lebah, seperti semut, perlu dijauhkan. Bunga di sekitar kebun perlu ditanam. Bunga itu menjadi sumber makanan lebah. Dengan begitu, lebah tidak mudah pergi jauh.', NULL),
-(141, 2, 'Menunggu di Dermaga', 'Senja mulai turun di Pelabuhan Sendang. Langit berwarna jingga bercampur ungu. Ayu duduk sendirian di ujung dermaga. Ia sudah menunggu sejak sore tadi. Angin laut meniup rambutnya yang panjang. Burung camar terbang rendah di atas air. Ia menatap cakrawala dengan gelisah.
+(138, 2, 'Menunggu di Dermaga', 'Senja mulai turun di Pelabuhan Sendang. Langit berwarna jingga bercampur ungu. Ayu duduk sendirian di ujung dermaga. Ia sudah menunggu sejak sore tadi. Angin laut meniup rambutnya yang panjang. Burung camar terbang rendah di atas air. Ia menatap cakrawala dengan gelisah.
 
 Sudah tiga hari Ayah belum pulang. Kapal Ayah berangkat sebelum badai datang. Setiap malam Ibu menyalakan pelita di jendela. Katanya, cahaya itu penunjuk jalan pulang. Ibu berusaha tenang di depan adik-adik Ayu. Namun, Ayu tahu Ibu juga sangat cemas. Mata Ibu sering menatap ke arah laut.
 
@@ -220,7 +227,7 @@ Dari kejauhan, mercusuar berkedip pelan. Cahayanya menyapu permukaan laut yang g
 Tiba-tiba, sebuah titik cahaya muncul di ujung laut. Titik itu tampak makin besar. Ayu berdiri dan menajamkan pandangannya. Ayu menahan napas dan tidak berkedip. Cahaya itu bergerak pelan mendekati pelabuhan. Jantungnya berdebar sangat kencang di dadanya.
 
 Itu benar-benar kapal Ayah! Suara mesinnya terdengar lirih, tetapi pasti. Para nelayan berlarian menyambut di dermaga. Seorang nelayan tua menepuk pundak Ayu. Ayu melambaikan tangan sambil menangis lega. Di kejauhan, Ibu tersenyum di depan jendela.', NULL),
-(142, 2, 'Terumbu Karang yang Memutih', 'Terumbu karang adalah rumah bagi banyak biota laut. Ikan, kepiting, dan penyu bergantung pada karang. Meski luasnya kecil, karang menopang banyak kehidupan. Karena itu, karang disebut ekosistem yang penting. Wisatawan pun tertarik menyelam untuk melihatnya. Kerusakan karang dapat memengaruhi seluruh kehidupan laut.
+(139, 2, 'Terumbu Karang yang Memutih', 'Terumbu karang adalah rumah bagi banyak biota laut. Ikan, kepiting, dan penyu bergantung pada karang. Meski luasnya kecil, karang menopang banyak kehidupan. Karena itu, karang disebut ekosistem yang penting. Wisatawan pun tertarik menyelam untuk melihatnya. Kerusakan karang dapat memengaruhi seluruh kehidupan laut.
 
 Karang hidup bersama alga yang sangat kecil. Alga memberi makanan dan warna pada karang. Karang tampak indah karena warna alga itu. Sebaliknya, karang memberi tempat tinggal bagi alga. Hubungan itu bersifat saling menguntungkan.
 
@@ -229,7 +236,7 @@ Suhu laut yang terlalu panas membuat alga keluar. Karang pun kehilangan warna da
 Aktivitas manusia juga merusak terumbu karang. Penangkapan ikan dengan bom mematahkan karang. Jangkar kapal dapat menyeret dan merusak karang. Limbah dari daratan membuat air laut keruh. Sampah plastik juga menutupi permukaan karang. Akibatnya, cahaya matahari sulit menembus air.
 
 Para peneliti kini menanam karang buatan. Bibit karang ditempelkan pada rangka besi. Rangka itu ditenggelamkan di perairan dangkal. Dalam beberapa tahun, karang mulai tumbuh kembali. Cara ini sudah dicoba di beberapa pulau. Hasilnya cukup menggembirakan bagi para peneliti.', NULL),
-(143, 2, 'Surat untuk Nadia', 'Hujan gerimis turun di halaman rumah Nadia. Ia duduk di beranda sambil memegang sepucuk surat. Amplopnya sedikit basah di bagian ujung. Tulisan tangan Kakak terlihat sangat rapi. Nadia menantikan surat ini selama berminggu-minggu.
+(140, 2, 'Surat untuk Nadia', 'Hujan gerimis turun di halaman rumah Nadia. Ia duduk di beranda sambil memegang sepucuk surat. Amplopnya sedikit basah di bagian ujung. Tulisan tangan Kakak terlihat sangat rapi. Nadia menantikan surat ini selama berminggu-minggu.
 
 Setahun lalu Kakak pergi merantau ke Kalimantan. Kakak adalah anak sulung di keluarga mereka. Sejak Ayah sakit, penghasilan keluarga berkurang. Ia bekerja di pabrik kayu agar adik-adiknya tetap bersekolah. Nadia menangis ketika mengantar Kakak ke terminal. Hatinya terasa berat melepas kepergian itu.
 
@@ -238,7 +245,7 @@ Dalam surat itu, Kakak bercerita tentang pekerjaannya. Tulisannya panjang dan be
 Nadia teringat sifat Kakak yang kepala batu. Kakak tidak mau menerima bantuan siapa pun. Ia tidak suka dikasihani oleh orang lain. Kakak selalu bilang bisa mengatasi semuanya sendiri. Nadia sering menasihatinya agar mau beristirahat. Sifat itu membuat Nadia kesal sekaligus kagum.
 
 Nadia melipat surat itu dengan hati-hati. Ia membaca surat itu sampai tiga kali. Ia menyimpannya di dalam laci meja belajar. Besok Nadia akan membalas surat itu. Ia berjanji akan belajar lebih tekun. Di langit, awan kelabu perlahan menepi. Seberkas cahaya sore menembus sela-sela genting.', NULL),
-(144, 2, 'Listrik dari Sinar Matahari', 'Desa Tanjung belum dialiri listrik selama puluhan tahun. Warga memakai lampu minyak untuk penerangan. Sebelumnya, malam di desa itu sangat gelap. Anak-anak sulit belajar setelah matahari terbenam. Pada tahun 2023, desa itu menerima panel surya. Panel surya adalah alat penangkap sinar matahari.
+(141, 2, 'Listrik dari Sinar Matahari', 'Desa Tanjung belum dialiri listrik selama puluhan tahun. Warga memakai lampu minyak untuk penerangan. Sebelumnya, malam di desa itu sangat gelap. Anak-anak sulit belajar setelah matahari terbenam. Pada tahun 2023, desa itu menerima panel surya. Panel surya adalah alat penangkap sinar matahari.
 
 Panel surya mengubah cahaya menjadi listrik. Proses itu disebut konversi energi. Karena itu, desa memasang dua puluh panel. Panel dipasang di atap balai desa. Listrik yang dihasilkan disimpan dalam baterai. Baterai itu diletakkan di ruangan yang kering. Dengan baterai, listrik tetap tersedia pada malam hari.
 
@@ -247,14 +254,14 @@ Sinar matahari termasuk energi terbarukan. Energi terbarukan tidak akan habis di
 Kini warga dapat belajar dan bekerja pada malam hari. Anak-anak membaca dengan lampu yang terang. Ibu-ibu menjahit hingga larut malam. Suasana malam di desa kini lebih hidup. Balai desa kini ramai oleh kegiatan warga. Toko kecil pun dapat berjualan lebih lama.
 
 Namun, panel surya membutuhkan perawatan rutin. Debu di permukaan panel harus dibersihkan. Baterai yang rusak perlu diganti secepatnya. Karena itu, desa membentuk tim perawat khusus. Tim itu terdiri atas lima pemuda desa. Mereka berlatih selama dua minggu di kota.', NULL),
-(145, 2, 'Teks 1: Layang-Layang Kakek (Teks Fiksi)', '[1] Sore itu, Bima duduk termenung di beranda. Angin bertiup kencang dari arah sawah. Suara jangkrik mulai terdengar dari kebun. Kakek Jaya keluar membawa gulungan benang. "Ayo, kita buat layang-layang," ajak Kakek. Bima menoleh dengan wajah murung. Ia baru saja kalah dalam lomba lari. Hatinya masih terasa berat dan kesal. Ia enggan menjawab ajakan itu.
+(142, 2, 'Teks 1: Layang-Layang Kakek (Teks Fiksi)', '[1] Sore itu, Bima duduk termenung di beranda. Angin bertiup kencang dari arah sawah. Suara jangkrik mulai terdengar dari kebun. Kakek Jaya keluar membawa gulungan benang. "Ayo, kita buat layang-layang," ajak Kakek. Bima menoleh dengan wajah murung. Ia baru saja kalah dalam lomba lari. Hatinya masih terasa berat dan kesal. Ia enggan menjawab ajakan itu.
 
 [2] Kakek mengambil bambu dan kertas warna merah. Ia membelah bambu menjadi bilah tipis. Bima membantu menyerut ujung bilah itu. Mereka merekatkan kertas dengan lem nasi. Ruang tamu penuh serpihan bambu dan kertas. Sambil bekerja, Kakek bercerita tentang masa kecilnya. Dulu, Kakek sering jatuh saat memanjat pohon. Namun, ia selalu bangkit dan mencoba lagi.
 
 [3] Layang-layang itu selesai menjelang magrib. Bima berlari ke lapangan sambil memegang benang. Angin mengangkat layang-layang ke langit jingga. Warna merahnya tampak indah di langit. Namun, benangnya tiba-tiba putus. Layang-layang terbang jauh ke tepi hutan. Bima terdiam dan hampir menangis. Kakek menepuk pundaknya dengan lembut.
 
 [4] "Kita bisa membuat yang baru," kata Kakek. Bima menghapus air matanya dengan lengan baju. Keesokan harinya, mereka membuat layang-layang biru. Kali ini Bima mengikat benang lebih kuat. Layang-layang itu terbang tinggi dan stabil. Kakek tertawa senang melihat cucunya bangkit. Bima tersenyum lebar menatap langit. Ia tidak lagi sedih karena kekalahannya.', NULL),
-(146, 2, 'Teks 2: Hadiah untuk Bu Ningsih (Teks Fiksi)', '[1] Pagi itu, Laras tiba di sekolah lebih awal. Udara pagi terasa sejuk dan segar. Ia membawa kotak kecil berbungkus kertas kuning. Isinya sebuah bros berbentuk bunga matahari. Bros itu ia buat sendiri selama seminggu. Hari ini Bu Ningsih berulang tahun. Laras ingin memberi kejutan untuk wali kelasnya. Jantungnya berdebar karena gugup.
+(143, 2, 'Teks 2: Hadiah untuk Bu Ningsih (Teks Fiksi)', '[1] Pagi itu, Laras tiba di sekolah lebih awal. Udara pagi terasa sejuk dan segar. Ia membawa kotak kecil berbungkus kertas kuning. Isinya sebuah bros berbentuk bunga matahari. Bros itu ia buat sendiri selama seminggu. Hari ini Bu Ningsih berulang tahun. Laras ingin memberi kejutan untuk wali kelasnya. Jantungnya berdebar karena gugup.
 
 [2] Di kelas, Laras bertemu Yoga dan Maya. Mereka juga membawa hadiah untuk Bu Ningsih. Teman-temannya tertawa riang di dekat jendela. Yoga membawa buku catatan bersampul biru. Maya membawa sekuntum mawar dari kebunnya. Laras merasa hadiahnya paling sederhana. Ia menyembunyikan kotaknya di dalam tas. Wajahnya berubah murung dan malu.
 
@@ -269,14 +276,14 @@ Namun, panel surya membutuhkan perawatan rutin. Debu di permukaan panel harus di
 [3] Tiba-tiba ombak besar menghantam perahu. Jaring tersangkut karang dan tidak bisa ditarik. Pak Darto mengerutkan dahi. "Ari, pegang tali ini kuat-kuat," katanya. Ari menggenggam tali dengan kedua tangan. Mereka menarik bersama sekuat tenaga. Akhirnya jaring terlepas dari karang.
 
 [4] Pak Darto tersenyum lebar pada anaknya. "Kamu sudah seperti nelayan sungguhan," ujarnya. Wajah Ari memerah karena bangga. Hasil tangkapan hari itu tidak banyak. Namun, Ari merasa lebih berani dari sebelumnya. Ia bertekad ikut melaut lagi besok. Perahu pun kembali ke tepi pantai. Sepanjang jalan, Ari bercerita dengan riang. Pak Darto mendengarkannya sambil tertawa. Mereka pulang dengan hati gembira.', NULL),
-(147, 2, 'Teks 4: Sudut Baca Bu Wati (Teks Fiksi)', '[1] Dimas berjalan cepat menuju perpustakaan desa. Bangunan itu kecil dan bercat putih. Rak-raknya penuh buku yang mulai lusuh. Bunyi kipas tua berdengung pelan. Bu Wati, penjaga perpustakaan, menyambutnya ramah. Setiap Sabtu, Dimas datang paling awal. Ia gemar membaca buku tentang luar angkasa. Buku-buku baru jarang datang ke sana. Karena itu, ia merawat setiap buku.
+(144, 2, 'Teks 4: Sudut Baca Bu Wati (Teks Fiksi)', '[1] Dimas berjalan cepat menuju perpustakaan desa. Bangunan itu kecil dan bercat putih. Rak-raknya penuh buku yang mulai lusuh. Bunyi kipas tua berdengung pelan. Bu Wati, penjaga perpustakaan, menyambutnya ramah. Setiap Sabtu, Dimas datang paling awal. Ia gemar membaca buku tentang luar angkasa. Buku-buku baru jarang datang ke sana. Karena itu, ia merawat setiap buku.
 
 [2] Hari itu, Dimas mencari buku tentang planet. Namun, buku itu tidak ada di rak. Bu Wati mengatakan buku itu sedang dipinjam. Peminjamnya adalah Tika, teman sekelas Dimas. Dimas merasa sedikit kecewa. Ia lalu duduk di sudut ruangan. Di sana ia membaca kamus bergambar. Waktu terasa berjalan lambat.
 
 [3] Tak lama kemudian, Tika datang membawa buku itu. Buku itu bersampul biru tua. "Aku sudah selesai membaca," kata Tika. "Kamu boleh membacanya sekarang." Mata Dimas berbinar mendengarnya. Mereka lalu membaca buku itu bersama-sama. Tika menunjuk gambar planet berwarna biru. Dimas menjelaskan bahwa planet itu bernama Neptunus. Suasana perpustakaan menjadi hangat. Tawa mereka terdengar sampai halaman.
 
 [4] Sejak hari itu, mereka sering membaca bersama. Bu Wati pun membuat sudut baca kecil. Ia memasang tikar dan dua bantal di sana. Anak-anak lain mulai ikut bergabung. Kegiatan itu berlangsung setiap akhir pekan. Perpustakaan yang sepi kini menjadi ramai. Dimas senang karena banyak kawan baru. Ia berharap perpustakaan itu terus hidup.', NULL),
-(148, 2, 'Teks 5: Anak Kucing di Pasar (Teks Fiksi)', '[1] Wulan berjalan bersama ibunya di pasar pagi. Suasana ramai dan penuh suara pedagang. Bau ikan asin dan buah menyengat hidung. Ibu sibuk memilih sayur di lapak. Keranjang belanja ibu sudah hampir penuh. Wulan menunggu sambil memandang sekeliling. Tiba-tiba terdengar suara mengeong lemah.
+(145, 2, 'Teks 5: Anak Kucing di Pasar (Teks Fiksi)', '[1] Wulan berjalan bersama ibunya di pasar pagi. Suasana ramai dan penuh suara pedagang. Bau ikan asin dan buah menyengat hidung. Ibu sibuk memilih sayur di lapak. Keranjang belanja ibu sudah hampir penuh. Wulan menunggu sambil memandang sekeliling. Tiba-tiba terdengar suara mengeong lemah.
 
 [2] Wulan mencari asal suara itu. Ia berjongkok pelan agar tidak menakutinya. Ia menemukan anak kucing di bawah meja. Bulunya kotor dan tubuhnya gemetar. Tidak ada yang tampak memiliki kucing itu. Wulan menggendongnya dengan hati-hati. Ia lalu menunjukkannya kepada ibu.
 
@@ -285,19 +292,19 @@ Namun, panel surya membutuhkan perawatan rutin. Debu di permukaan panel harus di
 [4] Di ujung pasar, seorang nenek berteriak. "Mimi! Itu kucingku!" serunya sambil berlari. Nenek itu memeluk anak kucing tersebut. Wajah nenek tampak lega dan bahagia. Ia berkata kucingnya kabur sejak pagi. Nenek berterima kasih berkali-kali kepada Wulan. Wulan tersenyum walau agak sedih berpisah.
 
 [5] Nenek memberi Wulan sebungkus kue pisang. Kue itu masih hangat dan harum. Wulan menolaknya dengan sopan. Namun, nenek tetap memaksa dengan ramah. Dalam perjalanan pulang, Wulan merasa bahagia. Ibu mengusap kepalanya dengan bangga. Wulan belajar bahwa menolong itu menyenangkan.', NULL),
-(149, 2, 'Teks 6: Sepeda Hijau untuk Ayah (Teks Fiksi)', '[1] Kiki menabung setiap hari selama tiga bulan. Kadang ia menahan diri saat ingin jajan. Uangnya ia simpan di celengan ayam. Ia ingin membelikan ayahnya sepeda baru. Sepeda tua ayah sering rusak di jalan. Ayah bekerja mengantar koran setiap pagi. Kiki tidak tega melihat ayahnya kelelahan. Ia percaya usaha kecil akan membuahkan hasil.
+(146, 2, 'Teks 6: Sepeda Hijau untuk Ayah (Teks Fiksi)', '[1] Kiki menabung setiap hari selama tiga bulan. Kadang ia menahan diri saat ingin jajan. Uangnya ia simpan di celengan ayam. Ia ingin membelikan ayahnya sepeda baru. Sepeda tua ayah sering rusak di jalan. Ayah bekerja mengantar koran setiap pagi. Kiki tidak tega melihat ayahnya kelelahan. Ia percaya usaha kecil akan membuahkan hasil.
 
 [2] Suatu sore, celengan itu akhirnya penuh. Kiki memecahkannya di depan ibu. Uangnya berjumlah cukup untuk sebuah sepeda bekas. Ibu terharu dan memeluk Kiki. Mereka lalu pergi ke toko sepeda. Toko itu berada di dekat terminal. Kiki memeriksa setiap sepeda dengan teliti. Pemilik toko menunjukkan sepeda hijau yang kokoh. Sepeda itu tampak bersih dan mengilap.
 
 [3] Namun, harga sepeda itu lebih mahal. Uang Kiki kurang seratus ribu rupiah. Hujan gerimis mulai turun di luar. Kiki tertunduk lesu di depan toko. Tiba-tiba pemilik toko tersenyum.', NULL),
-(150, 2, 'Teks 7: Kebun Nenek di Atas Kertas (Teks Fiksi)', '[1] Sinta duduk diam di depan kertas kosong. Suasana aula terasa riuh dan tegang. Lomba melukis dimulai lima menit lalu. Teman-temannya sudah mulai mewarnai. Tangan Sinta terasa dingin dan gemetar. Ia takut hasilnya tidak bagus. Jantungnya berdetak semakin kencang. Ia menggigit bibir bawahnya. Waktu terus berjalan tanpa henti. Guru pendamping tersenyum menyemangati dari sudut aula.
+(147, 2, 'Teks 7: Kebun Nenek di Atas Kertas (Teks Fiksi)', '[1] Sinta duduk diam di depan kertas kosong. Suasana aula terasa riuh dan tegang. Lomba melukis dimulai lima menit lalu. Teman-temannya sudah mulai mewarnai. Tangan Sinta terasa dingin dan gemetar. Ia takut hasilnya tidak bagus. Jantungnya berdetak semakin kencang. Ia menggigit bibir bawahnya. Waktu terus berjalan tanpa henti. Guru pendamping tersenyum menyemangati dari sudut aula.
 
 [2] Sinta teringat pesan neneknya minggu lalu. "Gambarlah apa yang kamu cintai," kata nenek. Ia lalu memejamkan mata sejenak. Bayangan kebun nenek muncul di pikirannya. Bunga melati tumbuh subur di sana. Kupu-kupu beterbangan di antara daunnya. Senyum kecil muncul di wajah Sinta. Rasa takutnya perlahan menghilang. Napasnya mulai teratur kembali.
 
 [3] Sinta mulai menggoreskan pensilnya dengan yakin. Ia melukis kebun nenek dengan warna cerah. Warna hijau dan putih mendominasi lukisannya. Waktu berlalu tanpa ia sadari. Beberapa peserta melirik karyanya dengan kagum. Saat bel berbunyi, lukisannya baru selesai. Ia menyerahkan karyanya kepada juri. Lalu ia menunggu pengumuman dengan cemas. Ia menikmati setiap goresan warna. Tangannya tak lagi gemetar.
 
 [4] Nama Sinta disebut sebagai juara kedua. Ia hampir tidak percaya mendengarnya. Piala kecil diserahkan ke tangannya. Sinta berlari memeluk neneknya yang menunggu. "Nenek benar," bisiknya sambil terisak bahagia. Nenek mengusap kepala cucunya dengan lembut. Mulai hari itu, Sinta tidak takut lagi. Semua peserta bertepuk tangan meriah.', NULL),
-(151, 2, 'Teks 8: Malam Banjir di Kampung Rafi (Teks Fiksi)', '[1] Hujan deras mengguyur kampung Rafi sejak sore. Petir menyambar di kejauhan. Air sungai naik dengan cepat. Lampu di kampung padam mendadak. Warga mulai cemas melihatnya. Pak RT memukul kentongan berkali-kali. Semua orang diminta berkumpul di balai desa. Rafi ikut berlari bersama ibunya. Ibu menggenggam tangannya erat-erat. Air mulai masuk ke halaman rumah.
+(148, 2, 'Teks 8: Malam Banjir di Kampung Rafi (Teks Fiksi)', '[1] Hujan deras mengguyur kampung Rafi sejak sore. Petir menyambar di kejauhan. Air sungai naik dengan cepat. Lampu di kampung padam mendadak. Warga mulai cemas melihatnya. Pak RT memukul kentongan berkali-kali. Semua orang diminta berkumpul di balai desa. Rafi ikut berlari bersama ibunya. Ibu menggenggam tangannya erat-erat. Air mulai masuk ke halaman rumah.
 
 [2] Di balai desa, warga saling membantu. Suasana terasa hangat meski penuh kecemasan. Ibu-ibu menyiapkan nasi bungkus dan teh hangat. Bapak-bapak mengangkut barang ke tempat tinggi. Rafi membagikan selimut kepada para lansia. Tiba-tiba ia menyadari adiknya hilang. Wajahnya pucat dan tangannya gemetar. Semua orang berusaha tetap tenang.
 
@@ -308,102 +315,102 @@ Namun, panel surya membutuhkan perawatan rutin. Debu di permukaan panel harus di
 Ia mengenal ayah Kiki sebagai pengantar koran. "Kekurangannya tidak perlu dibayar," katanya. Kiki hampir tidak percaya mendengarnya.
 
 [4] Malam itu, Kiki menaruh sepeda di teras. Ayah pulang dan terdiam melihatnya. Matanya basah oleh air mata bahagia. Ia memeluk Kiki dengan erat. Keesokan paginya, ayah mengantar koran dengan riang. Kiki melambaikan tangan dari depan pagar. Kiki tidur nyenyak dengan hati lega. Sepeda hijau itu melaju di jalan kampung.', NULL),
-(152, 2, 'Teks 1 – Sepeda Biru Milik Laras', 'Laras menerima sepeda biru dari kakaknya. Cat sepeda itu sudah mengelupas. Rantainya berkarat dan joknya robek di sudut. Teman-temannya bersepeda dengan sepeda baru yang mengilap. Laras hanya menunduk setiap kali mereka lewat.
+(149, 2, 'Teks 1 – Sepeda Biru Milik Laras', 'Laras menerima sepeda biru dari kakaknya. Cat sepeda itu sudah mengelupas. Rantainya berkarat dan joknya robek di sudut. Teman-temannya bersepeda dengan sepeda baru yang mengilap. Laras hanya menunduk setiap kali mereka lewat.
 Suatu sore, ayah memanggil Laras ke bengkel kecil di belakang rumah. Di sana, ayah sudah menyiapkan kaleng cat, kain lap, dan minyak pelumas. "Ayo, kita rawat bersama," ajak ayah. Laras ragu, tetapi ia tetap mengambil kuas.
 Mereka bekerja sampai lampu teras menyala. Laras mengampelas karat dengan sabar. Ia mengecat ulang setiap bagian dengan hati-hati. Sesekali ia berhenti untuk mengelap keringat. Ayah hanya tersenyum melihat ketekunan putrinya.
 Keesokan harinya, sepeda itu tampak berbeda. Warna birunya cerah seperti langit pagi. Laras mengayuhnya pelan melewati lapangan. Teman-temannya menoleh dan bertanya-tanya. "Kamu beli di mana?" tanya Dinda. Laras menepuk sadel sambil tersenyum lebar. "Ini sepedaku sendiri. Kami memperbaikinya kemarin," jawabnya.', NULL),
-(153, 2, 'Teks 2 – Pulang Sebelum Badai', 'Langit di atas dermaga mulai menghitam. Angin bertiup kencang dari arah laut. Perahu-perahu kecil bergoyang keras di tambatannya. Pak Hasan, kakek Bayu, berdiri di ujung dermaga sambil menatap cakrawala. Di sampingnya, Bayu memeluk jaket tipisnya erat-erat.
+(150, 2, 'Teks 2 – Pulang Sebelum Badai', 'Langit di atas dermaga mulai menghitam. Angin bertiup kencang dari arah laut. Perahu-perahu kecil bergoyang keras di tambatannya. Pak Hasan, kakek Bayu, berdiri di ujung dermaga sambil menatap cakrawala. Di sampingnya, Bayu memeluk jaket tipisnya erat-erat.
 "Ayah belum pulang," bisik Bayu. Ia menggigit bibir bawahnya. Pak Hasan menepuk bahunya dan tidak berkata apa-apa. Sejak siang, ia sudah tiga kali memeriksa radio di pos jaga. Suara yang terdengar hanya desis panjang.
 Para nelayan lain berkumpul membawa lampu petromaks. Mereka berbicara pelan dan bergantian menatap laut. Ibu Sari membagikan teh hangat kepada semua orang. Tak seorang pun mau pulang lebih dulu.
 Menjelang tengah malam, setitik cahaya muncul jauh di tengah ombak. Cahaya itu bergerak naik turun. Bayu meloncat dan berteriak nyaring. "Itu lampu perahu Ayah!" Semua orang bersorak. Beberapa nelayan segera berlari menyiapkan tali tambat.', NULL),
-(154, 2, 'Teks 3 – Dompet di Bangku Halte', 'Dimas duduk menunggu bus di halte sekolah. Hujan gerimis turun sejak siang. Di bangku sebelahnya tergeletak sebuah dompet cokelat. Ia mengamatinya sebentar lalu membukanya. Isinya beberapa lembar uang dan sebuah kartu identitas.
+(151, 2, 'Teks 3 – Dompet di Bangku Halte', 'Dimas duduk menunggu bus di halte sekolah. Hujan gerimis turun sejak siang. Di bangku sebelahnya tergeletak sebuah dompet cokelat. Ia mengamatinya sebentar lalu membukanya. Isinya beberapa lembar uang dan sebuah kartu identitas.
 Perut Dimas berbunyi keras. Sejak pagi ia belum sempat makan. Uang di dompet itu cukup untuk membeli sepiring nasi, bahkan sekantong jajanan. Ia menelan ludah. Namun, foto seorang ibu di kartu identitas itu membuatnya terdiam. Wajah itu mirip ibunya sendiri.
 Dimas membayangkan ibu itu kebingungan mencari dompetnya. Ia pun berdiri dan menyusuri jalan menuju alamat di kartu. Sepatunya basah oleh genangan. Setelah dua puluh menit, ia sampai di sebuah warung kecil. Seorang ibu sedang mengaduk-aduk laci dengan wajah pucat.
 "Permisi, Bu. Ini dompet Ibu?" tanya Dimas. Ibu itu terperangah lalu memeluknya. "Terima kasih, Nak. Itu uang untuk membayar sekolah anakku," katanya terbata-bata. Dimas hanya mengangguk. Perutnya masih lapar, tetapi hatinya terasa hangat.', NULL),
-(155, 2, 'Teks 4 – Ladang Terakhir Pak Sarman', 'Di ujung desa, hanya tersisa satu ladang jagung. Pemiliknya, Pak Sarman, sudah menggarapnya selama empat puluh tahun. Sawah-sawah lain telah berganti pagar seng dan gudang pabrik. Setiap pagi, truk-truk besar melintas dan meninggalkan debu.
+(152, 2, 'Teks 4 – Ladang Terakhir Pak Sarman', 'Di ujung desa, hanya tersisa satu ladang jagung. Pemiliknya, Pak Sarman, sudah menggarapnya selama empat puluh tahun. Sawah-sawah lain telah berganti pagar seng dan gudang pabrik. Setiap pagi, truk-truk besar melintas dan meninggalkan debu.
 Suatu hari, seorang pria berjas datang membawa map tebal. Ia menawarkan harga yang sangat tinggi. "Bapak bisa hidup nyaman seumur hidup," katanya. Pak Sarman menatap map itu lama sekali, lalu menggeleng pelan.
 Wahyu, putranya, tak habis pikir. "Kenapa tidak dijual saja, Pak?" tanyanya. Pak Sarman mengambil segenggam tanah dan mengusapnya di telapak tangan. "Tanah ini yang menyekolahkanmu," jawabnya. "Aku tidak menjual yang menghidupi kita."
 Malam itu Wahyu tidak bisa tidur. Ia teringat masa kecilnya di antara batang jagung. Esok harinya ia bangun lebih pagi dari ayahnya. Tanpa disuruh, ia mengambil cangkul dan berjalan ke ladang.', NULL),
-(156, 2, 'Teks 5 – Pelajaran Terakhir Bu Wening', 'Bu Wening akan pensiun akhir bulan ini. Selama tiga puluh tahun, ia mengajar di sekolah dasar yang sama. Murid-muridnya menyayanginya, meski ia dikenal sangat tegas. Ia tidak pernah membiarkan pekerjaan rumah dikerjakan asal-asalan.
+(153, 2, 'Teks 5 – Pelajaran Terakhir Bu Wening', 'Bu Wening akan pensiun akhir bulan ini. Selama tiga puluh tahun, ia mengajar di sekolah dasar yang sama. Murid-muridnya menyayanginya, meski ia dikenal sangat tegas. Ia tidak pernah membiarkan pekerjaan rumah dikerjakan asal-asalan.
 Pada hari terakhir, kelas enam tampak berbeda. Meja-meja disusun melingkar. Di tengahnya ada kue sederhana dengan lilin kecil. Bu Wening terkejut dan berdiri terpaku di ambang pintu. Matanya berkaca-kaca.
 Rian, ketua kelas, maju sambil membawa selembar kertas. "Bu, dulu kami sebal dengan PR yang banyak," katanya sambil tersenyum. "Sekarang kami sadar, itu cara Ibu menyiapkan kami." Beberapa anak mengusap pipi mereka. Bu Wening menarik napas panjang.
 "Ibu tidak pernah merasa mengajar sendirian," ujarnya pelan. "Kalian yang mengajari Ibu bersabar." Ia lalu membuka tasnya dan mengeluarkan penghapus papan tulis yang sudah aus. Benda itu ia letakkan di meja Rian. "Simpanlah. Suatu hari kalian akan mengerti."', NULL),
-(157, 2, 'Teks 6 – Rahasia Jam Saku Kakek Wiryo', 'Di sudut lemari tua kamar kakek, tersimpan sebuah kotak beludru merah kusam. Ardi sering melihat kakek mengusap kotak itu setiap malam sebelum tidur. Rasa penasaran mendorong Ardi mendekati meja saat sang kakek sedang menyiram tanaman di pekarangan. Di dalam kotak itu, terbaring sebuah jam saku perak dengan kaca retak halus dan jarum detik yang tak lagi berputar.
+(154, 2, 'Teks 6 – Rahasia Jam Saku Kakek Wiryo', 'Di sudut lemari tua kamar kakek, tersimpan sebuah kotak beludru merah kusam. Ardi sering melihat kakek mengusap kotak itu setiap malam sebelum tidur. Rasa penasaran mendorong Ardi mendekati meja saat sang kakek sedang menyiram tanaman di pekarangan. Di dalam kotak itu, terbaring sebuah jam saku perak dengan kaca retak halus dan jarum detik yang tak lagi berputar.
 "Kek, kenapa jam mati ini selalu Kakek simpan dengan rapi?" tanya Ardi ketika kakek melangkah masuk ke kamar. Kakek Wiryo tersenyum teduh. Beliau duduk di tepi dipan lalu menepuk pundak cucunya perlahan.
 "Jam ini pemberian buyutmu saat kakek pertama kali merantau tanpa bekal uang sepeser pun," ujar kakek lirih. "Retakan ini terjadi saat kakek terjatuh saat bekerja keras membangun usaha pertama. Jarumnya memang berhenti berdetak, tetapi setiap kali memandangnya, kakek selalu teringat bahwa waktu perjuangan tidak boleh disia-siakan."
 Ardi terdiam memandangi jam saku berdebu itu. Kini ia mengerti, barang rusak tak selalu menjadi sampah tak berguna, melainkan bisa menjadi pengingat abadi tentang ketabahan meniti kehidupan.', NULL),
-(158, 2, 'Teks 7 – Jembatan Bambu Desa Karang', 'Hujan deras semalam suntuk meluapkan Sungai Cikaso dan menghanyutkan jembatan bambu penghubung Dusun Karang dengan sekolah. Pagi itu, puluhan anak berseragam putih-biru berdiri gamang di tepian sungai yang berarus deras dan keruh. Jika memutar melewati jembatan beton jalan raya kabupaten, mereka harus berjalan kaki sejauh delapan kilometer.
+(155, 2, 'Teks 7 – Jembatan Bambu Desa Karang', 'Hujan deras semalam suntuk meluapkan Sungai Cikaso dan menghanyutkan jembatan bambu penghubung Dusun Karang dengan sekolah. Pagi itu, puluhan anak berseragam putih-biru berdiri gamang di tepian sungai yang berarus deras dan keruh. Jika memutar melewati jembatan beton jalan raya kabupaten, mereka harus berjalan kaki sejauh delapan kilometer.
 Pak Danu, seorang perajin bambu paruh baya, segera keluar dari rumahnya sambil memanggul sebilah parang tajam dan tambang kelapa. "Ayo kumpulkan batang bambu tua dari kebun belakang! Sebelum bel sekolah berbunyi, jembatan darurat harus sudah terpasang!" serunya lantang.
 Mendengar seruan tersebut, para pemuda dan warga desa bergegas membawa bambu, pasak kayu, dan anyaman kawat. Mereka bahu-membahu menancapkan tiang penyangga di dasar sungai yang licin, mengabaikan dinginnya air pagi. Tepat pukul tujuh kurang lima belas menit, sebatang jembatan titian ganda kokoh selesai terbentang. Wajah-wajah tegang anak-anak seketika berganti senyum riang saat mereka melangkah menyeberang tepat pada waktunya.', NULL),
-(159, 2, 'Teks 8 – Layang-Layang Arman', 'Arman membuat layang-layang dari kertas bekas. Rangkanya dari bilah bambu yang ia serut sendiri. Ekornya panjang, terbuat dari sobekan kain lurik. Ia bangga pada hasil karyanya. Sore itu ia berlari ke tanah lapang.
+(156, 2, 'Teks 8 – Layang-Layang Arman', 'Arman membuat layang-layang dari kertas bekas. Rangkanya dari bilah bambu yang ia serut sendiri. Ekornya panjang, terbuat dari sobekan kain lurik. Ia bangga pada hasil karyanya. Sore itu ia berlari ke tanah lapang.
 Angin bertiup sedang. Layang-layang itu naik perlahan, lalu melambung tinggi. Arman melepas benang sedikit demi sedikit. Hatinya ikut terbang bersama layangan itu. Namun, tiba-tiba benang terasa ringan. Layang-layang itu meliuk-liuk lalu jatuh di atas atap rumah Pak Kades.
 Arman terdiam. Wajahnya memerah menahan tangis. Benangnya putus karena tergores kaca di atas pagar. Pak Kades keluar dan mengambil layangan itu dengan tangga. "Ini punyamu, Nak?" tanyanya. Arman mengangguk lesu.
 "Sayang sekali, ya. Tapi lihat, kerangkanya masih utuh," kata Pak Kades. Ia menyerahkan layangan sambil tersenyum. "Cukup ganti benangnya, ia bisa terbang lagi." Arman menerimanya dengan mata berbinar. Semangatnya kembali menyala seperti api yang ditiup.', NULL),
-(160, 2, 'Teks 9 – Warung Bu Tini', 'Warung Bu Tini selalu ramai sejak subuh. Aroma bawang goreng menyebar sampai ke ujung gang. Para pekerja pabrik singgah untuk membeli nasi bungkus. Harganya murah, porsinya pun besar. Bu Tini melayani semua pembeli dengan ramah.
+(157, 2, 'Teks 9 – Warung Bu Tini', 'Warung Bu Tini selalu ramai sejak subuh. Aroma bawang goreng menyebar sampai ke ujung gang. Para pekerja pabrik singgah untuk membeli nasi bungkus. Harganya murah, porsinya pun besar. Bu Tini melayani semua pembeli dengan ramah.
 Pada suatu hari, harga beras naik tajam. Bu Tini menghitung ulang modalnya di buku lusuh. Keningnya berkerut dalam. Jika harga nasi dinaikkan, pelanggannya bisa pergi. Jika tidak, ia akan merugi setiap hari.
 Malam itu ia berunding dengan suaminya. Pak Damar menyarankan agar porsi nasi dikurangi sedikit. Bu Tini menggeleng. "Mereka bekerja keras, Pak. Perut lapar tak bisa dibohongi," ujarnya. Akhirnya ia memilih memangkas keuntungan dan menambah menu sayur murah.
 Sebulan kemudian, warungnya justru makin ramai. Pelanggan lama membawa teman-teman baru. Mereka membicarakan kejujuran Bu Tini sepanjang jalan. Buku lusuh itu kini penuh catatan pemasukan yang stabil.', NULL),
-(161, 2, 'Teks 10 – Tugas Kelompok Sinta', 'Guru memberi tugas membuat maket rumah adat. Sinta satu kelompok dengan Beni, Cahya, dan Farhan. Mereka sepakat berkumpul di rumah Sinta pada hari Sabtu. Sinta sudah menyiapkan lem, gunting, dan karton bekas.
+(158, 2, 'Teks 10 – Tugas Kelompok Sinta', 'Guru memberi tugas membuat maket rumah adat. Sinta satu kelompok dengan Beni, Cahya, dan Farhan. Mereka sepakat berkumpul di rumah Sinta pada hari Sabtu. Sinta sudah menyiapkan lem, gunting, dan karton bekas.
 Sabtu pagi, hanya Cahya yang datang. Beni mengirim pesan bahwa ia harus membantu ibunya. Farhan tidak memberi kabar sama sekali. Sinta menghela napas panjang. Ia mulai mengerjakan bagian dasar maket bersama Cahya.
 Menjelang siang, Farhan muncul dengan wajah penuh sesal. Ia mengaku ketiduran karena semalam menjaga adiknya yang demam. Sinta hampir marah, tetapi ia menahannya. Ia teringat wajah letih Farhan di sekolah kemarin.
 "Tidak apa-apa. Bagianmu membuat atap," kata Sinta sambil menyodorkan bambu. Farhan mengangguk penuh semangat. Sore itu, atap limasan buatannya menjadi bagian paling rapi. Kelompok mereka mendapat nilai tertinggi di kelas.', NULL),
-(162, 2, 'Teks 11 – Seruling Kakek', 'Setiap senja, Kakek duduk di beranda sambil meniup seruling bambu. Nadanya lirih dan panjang. Suara itu mengalir pelan melewati sawah dan menyentuh atap-atap rumah. Anak-anak berhenti bermain untuk mendengarkannya. Bahkan burung-burung tampak enggan pulang ke sarang.
+(159, 2, 'Teks 11 – Seruling Kakek', 'Setiap senja, Kakek duduk di beranda sambil meniup seruling bambu. Nadanya lirih dan panjang. Suara itu mengalir pelan melewati sawah dan menyentuh atap-atap rumah. Anak-anak berhenti bermain untuk mendengarkannya. Bahkan burung-burung tampak enggan pulang ke sarang.
 Kirana, cucunya, sangat menyukai suara itu. Ia sering duduk di lantai beranda dan memeluk lututnya. "Kek, ajari aku," pintanya suatu hari. Kakek tersenyum dan menyerahkan seruling kecil dari laci.
 Latihan pertama terdengar seperti pekikan kucing terjepit. Kirana tertawa geli, tetapi ia terus mencoba. Berhari-hari ia berlatih hingga bibirnya pegal. Kakek hanya membetulkan letak jarinya dan bersabar.
 Ketika musim panen tiba, Kakek jatuh sakit dan tak sanggup meniup seruling. Sore itu, Kirana duduk di beranda dan memainkan tembang yang sama. Nadanya belum sempurna, tetapi terasa hangat. Dari dalam kamar, Kakek memejamkan mata dan tersenyum. Baginya, tembang itu terasa seperti pelukan yang lembut.', NULL),
-(163, 2, 'Teks 12 – Surat untuk Bu Ratmi', 'Pak Joko sudah dua puluh tahun menjadi tukang pos di desa itu. Ia hafal setiap nama dan belokan jalan. Pagi itu, tasnya berisi satu surat yang tampak aneh. Amplopnya menguning dan pinggirannya rapuh. Alamatnya tertulis dengan tinta yang mulai pudar.
+(160, 2, 'Teks 12 – Surat untuk Bu Ratmi', 'Pak Joko sudah dua puluh tahun menjadi tukang pos di desa itu. Ia hafal setiap nama dan belokan jalan. Pagi itu, tasnya berisi satu surat yang tampak aneh. Amplopnya menguning dan pinggirannya rapuh. Alamatnya tertulis dengan tinta yang mulai pudar.
 Surat itu ditujukan kepada Bu Ratmi, penjahit tua di ujung desa. Pak Joko mengetuk pintu rumahnya dengan hati-hati. Bu Ratmi membuka amplop dengan tangan gemetar. Ia membaca isinya pelan-pelan, lalu menutup mulutnya.
 Surat itu ditulis oleh suaminya lima puluh tahun lalu. Sang suami berlayar dan tak pernah kembali. Surat itu ternyata tersimpan di kantor pos lama yang baru dibongkar. Air mata Bu Ratmi jatuh membasahi kertas rapuh itu.
 "Terima kasih sudah mengantarnya, Nak," ujarnya lirih. Pak Joko hanya menunduk. Tenggorokannya terasa tercekat. Sore itu ia pulang lebih lambat dari biasanya. Ia berjalan sambil mengenang orang-orang yang pernah menunggu kabar darinya.', NULL),
-(164, 2, 'Teks 13 – Perahu Kertas di Selokan Hujan', 'Gerimis deras menderu di atas seng atap rumah Gani. Dari teras depan, Gani dan adiknya, Fajar, asyik melipat lembaran kertas kalender menjadi dua buah perahu kecil. Fajar memberi garis merah pada perahunya, sementara perahu Gani berwarna biru tua.
+(161, 2, 'Teks 13 – Perahu Kertas di Selokan Hujan', 'Gerimis deras menderu di atas seng atap rumah Gani. Dari teras depan, Gani dan adiknya, Fajar, asyik melipat lembaran kertas kalender menjadi dua buah perahu kecil. Fajar memberi garis merah pada perahunya, sementara perahu Gani berwarna biru tua.
 "Ayo kita luncurkan di parit depan!" ajak Fajar dengan mata berbinar-binar. Air selokan mengalir deras mengikis lumut pembatas jalan. Kedua perahu kertas itu meluncur laju bersisian, menari-nari di atas buih air kecokelatan.
 Namun, baru berjalan sepuluh meter, perahu Fajar tersangkut di antara jeratan kantong plastik dan botol bekas yang menyumbat gorong-gorong. Air mendesak dinding kertas tipis itu hingga terlipat dan tenggelam perlahan ke dasar lumpur. Senyum Fajar mendadak padam. Matanya berawan mendung menatap bangkai perahunya yang karam.
 Gani merangkul pundak sang adik lalu menariknya menepi. "Bukan perahumu yang salah, Jar. Selokan kita yang sedang sakit karena tertimbun sampah manusia."', NULL),
-(165, 2, 'Teks 14 – Aroma Roti Pagi Hari', 'Kala azan subuh baru saja usai berkumandang, semerbak harum mentega bakar dan vanila hangat telah menyelinap melalui celah ventilasi kamar Raka. Aroma manis yang mengelus indra penciuman itu selalu berasal dari oven pemanggang toko roti Pak Johan di sudut persimpangan gang.
+(162, 2, 'Teks 14 – Aroma Roti Pagi Hari', 'Kala azan subuh baru saja usai berkumandang, semerbak harum mentega bakar dan vanila hangat telah menyelinap melalui celah ventilasi kamar Raka. Aroma manis yang mengelus indra penciuman itu selalu berasal dari oven pemanggang toko roti Pak Johan di sudut persimpangan gang.
 Raka segera mencuci muka dan melangkah keluar rumah. Di depan toko, sebuah mobil bak terbuka sedang menurunkan pasokan bahan pokok. Melihat Pak Johan yang berambut memutih membungkuk mengangkat karung gandum seberat dua puluh kilogram, Raka bergegas mendekat.
 "Biar saya bantu angkat karung gula dan menteganya ke gudang, Pak," tawar Raka seraya menyingsingkan lengan kemeja seragamnya. Pak Johan menyeka peluh di dahinya, lalu tersenyum lebar hingga garis-garis keriput di sudut matanya terlihat jelas.
 Setelah semua karung tertata rapi di rak kayu, Pak Johan menyodorkan sepotong roti isi selai cokelat yang masih mengepul hangat. Rasa legit cokelat lumer di lidah Raka, menghadirkan kehangatan luar biasa sebelum melangkahkan kaki menuju gerbang sekolah.', NULL),
-(166, 2, 'Teks 15 – Tendangan Penentu', 'Skor akhir pertandingan masih imbang satu sama. Waktu tersisa tinggal dua menit. Rio berdiri di dekat garis tengah dengan napas terengah-engah. Kakinya terasa berat karena berlari sejak awal babak. Di pinggir lapangan, pelatih berteriak menyuruhnya menjaga posisi.
+(163, 2, 'Teks 15 – Tendangan Penentu', 'Skor akhir pertandingan masih imbang satu sama. Waktu tersisa tinggal dua menit. Rio berdiri di dekat garis tengah dengan napas terengah-engah. Kakinya terasa berat karena berlari sejak awal babak. Di pinggir lapangan, pelatih berteriak menyuruhnya menjaga posisi.
 Bola tiba-tiba melambung ke arahnya. Rio menahannya dengan dada, lalu menggiringnya ke depan. Dua pemain lawan menghadang dari kiri dan kanan. Ia melirik ke sisi kanan. Di sana, Ilham sudah berlari bebas tanpa penjaga.
 Sebulan lalu, Rio pernah gagal memberi umpan pada Ilham. Bola itu terlalu keras dan melewati sasaran. Sejak saat itu, ia lebih sering menembak sendiri. Kini kesempatan yang sama datang lagi. Gawang lawan terlihat begitu dekat.
 Rio menarik napas dalam-dalam. Ia menatap Ilham sekali lagi. Kakinya mulai bersiap mengayun. Penonton berdiri menahan napas. Peluit wasit belum berbunyi.', NULL),
-(167, 2, 'Teks 16 – Pohon Mangga di Halaman', 'Bimo menanam bibit mangga di halaman sekolah. Guru memintanya merawat bibit itu sampai berbuah. Ia menyiram setiap pagi sebelum bel berbunyi. Teman-temannya menertawakan kegigihannya. "Tanaman itu baru berbuah lima tahun lagi," ejek mereka.
+(164, 2, 'Teks 16 – Pohon Mangga di Halaman', 'Bimo menanam bibit mangga di halaman sekolah. Guru memintanya merawat bibit itu sampai berbuah. Ia menyiram setiap pagi sebelum bel berbunyi. Teman-temannya menertawakan kegigihannya. "Tanaman itu baru berbuah lima tahun lagi," ejek mereka.
 Bimo tidak menghiraukannya. Ia membuat pagar bambu kecil di sekeliling bibit. Ia juga mengumpulkan daun kering untuk pupuk. Kadang ia membersihkan gulma sambil bersenandung. Bibit itu tumbuh tegak dengan daun hijau mengilap.
 Beberapa bulan kemudian, kemarau panjang datang. Tanah sekolah mengering dan retak-retak. Banyak tanaman layu dan meranggas. Sumur sekolah pun nyaris kering. Kepala sekolah mengumumkan bahwa air harus dihemat.
 Pagi itu Bimo datang membawa dua botol bekas berisi air. Ia sengaja menyisihkan air minum di rumah. Ia menuang perlahan di sekitar akar bibit. Teman-temannya memandangnya dari jauh. Kini tak seorang pun yang tertawa.', NULL),
-(168, 2, 'Teks 17 – Kotak Bekal Nadia', 'Nadia membuka kotak bekalnya dengan riang. Ibunya membuatkan nasi goreng dengan telur mata sapi. Aromanya membuat perut teman-teman berbunyi. Di ujung bangku, Tomi hanya menatap selembar roti tawar. Ia berpura-pura sibuk membaca buku.
+(165, 2, 'Teks 17 – Kotak Bekal Nadia', 'Nadia membuka kotak bekalnya dengan riang. Ibunya membuatkan nasi goreng dengan telur mata sapi. Aromanya membuat perut teman-teman berbunyi. Di ujung bangku, Tomi hanya menatap selembar roti tawar. Ia berpura-pura sibuk membaca buku.
 Nadia memperhatikan Tomi selama beberapa hari. Setiap istirahat, bekalnya selalu sama. Tomi tidak pernah membeli jajanan di kantin. Ia juga menolak setiap kali diajak. Alasannya selalu sama, "Aku masih kenyang."
 Hari ini Nadia sengaja membawa bekal dua kali lipat. Ia mengaduk nasi gorengnya sambil melirik Tomi. Tangannya sempat ragu memegang sendok. Ia khawatir Tomi tersinggung jika ditawari langsung. Ia lalu tersenyum kecil seolah menemukan gagasan.
 "Tom, tolong bantu aku," kata Nadia sambil menyodorkan kotak bekalnya. "Ibuku membuat terlalu banyak. Aku tidak sanggup menghabiskannya." Tomi menatap kotak itu lama. Perutnya berbunyi pelan.', NULL),
-(169, 2, 'Teks 18 – Suara dari Gudang Tua', 'Sore itu langit kelabu tanpa matahari. Arif, Yuda, dan Salsa bermain di dekat gudang tua. Gudang itu sudah lama ditinggalkan pemiliknya. Pintunya berderit saat tertiup angin. Kata warga, tempat itu sering terdengar bunyi aneh.
+(166, 2, 'Teks 18 – Suara dari Gudang Tua', 'Sore itu langit kelabu tanpa matahari. Arif, Yuda, dan Salsa bermain di dekat gudang tua. Gudang itu sudah lama ditinggalkan pemiliknya. Pintunya berderit saat tertiup angin. Kata warga, tempat itu sering terdengar bunyi aneh.
 Tiba-tiba terdengar bunyi lirih dari dalam. Bunyi itu seperti rintihan kecil yang berulang. Yuda mundur selangkah dengan wajah pucat. Salsa justru mendekat dan menempelkan telinga di dinding. Arif memegang senter dengan tangan gemetar.
 "Kayaknya bukan hantu," bisik Salsa. "Itu seperti suara anak kucing." Ia mendorong pintu perlahan. Cahaya senter menyapu sudut gelap yang berdebu. Di balik tumpukan karung, sesuatu tampak bergerak-gerak.
 Arif menelan ludah dan melangkah maju. Tiba-tiba hujan turun deras di luar. Atap seng berbunyi nyaring seperti tabuhan. Sesuatu di balik karung itu mengeong makin keras. Ketiga anak itu saling berpandangan.', NULL),
-(170, 2, 'Teks 19 – Panggung Pertama Elsa', 'Elsa sudah berlatih piano selama tiga bulan. Setiap malam jarinya menari di atas tuts. Kini ia harus tampil pada pentas seni sekolah. Hatinya berdebar sejak pagi. Telapak tangannya dingin dan basah.
+(167, 2, 'Teks 19 – Panggung Pertama Elsa', 'Elsa sudah berlatih piano selama tiga bulan. Setiap malam jarinya menari di atas tuts. Kini ia harus tampil pada pentas seni sekolah. Hatinya berdebar sejak pagi. Telapak tangannya dingin dan basah.
 Di balik tirai, ia mengintip ratusan penonton yang duduk berderet. Ruang aula terasa penuh dan riuh. Elsa menggenggam lembaran not lagunya erat-erat. Nama peserta sebelumnya dipanggil satu per satu. Sebentar lagi giliran Elsa.
 "Tarik napas dalam, Nak," bisik Bu Guru di sampingnya. "Kamu sudah siap." Elsa mengangguk kaku. Kakinya terasa lemas ketika melangkah ke panggung. Lampu sorot menyilaukan matanya.
 Ia duduk di depan piano besar itu. Aula mendadak hening. Elsa menaruh jarinya di atas tuts. Bayangan lupa nada menyergap pikirannya. Ia memejamkan mata sejenak dan mengingat ibunya di kursi barisan depan.', NULL),
-(171, 2, 'Teks 20 – Sepatu Lari Pandu', 'Babak final lari cepat 100 meter antar-SMP akan dimulai dalam lima belas menit. Pandu melakukan pemanasan ringan di lintasan kedua. Namun naas, saat melakukan hentakan awalan balok start, sol sepatu lari kanannya robek menganga. Pandu terhenyak lesu di rumput tepi lintasan. Ia tidak membawa sepatu cadangan, sementara toko olahraga terdekat berjarak tempuh tiga puluh menit.
+(168, 2, 'Teks 20 – Sepatu Lari Pandu', 'Babak final lari cepat 100 meter antar-SMP akan dimulai dalam lima belas menit. Pandu melakukan pemanasan ringan di lintasan kedua. Namun naas, saat melakukan hentakan awalan balok start, sol sepatu lari kanannya robek menganga. Pandu terhenyak lesu di rumput tepi lintasan. Ia tidak membawa sepatu cadangan, sementara toko olahraga terdekat berjarak tempuh tiga puluh menit.
 Riki, rival terberat Pandu dari sekolah tetangga, mendekat seraya menenteng tas perlengkapannya. Riki baru saja menyelesaikan nomor lompat jauh dan melihat kepanikan Pandu.
 "Pakai sepatuku ini, Ndu. Ukuran kaki kita sama-sama empat puluh dua," tawar Riki sambil menyodorkan sepasang sepatu berduri oranye miliknya. Pandu terperangah menatap wajah saingannya itu. "Tapi ini sepatu andalanmu untuk final estafet nanti sore, Rik?"
 "Final estafet masih empat jam lagi. Kemenangan sejati adalah bertanding melawan kemampuan terbaikmu, bukan menang karena sepatumu jebol," jawab Riki tegas seraya menepuk bahu Pandu. Pandu menghela napas, rasa haru seketika menjalari dadanya.
 ────────────────────────────────────────', NULL),
-(172, 2, 'Teks 20 – Sepatu Lari Pandu', 'Babak final lari cepat 100 meter antar-SMP akan dimulai dalam lima belas menit. Pandu melakukan pemanasan ringan di lintasan kedua. Namun naas, saat melakukan hentakan awalan balok start, sol sepatu lari kanannya robek menganga. Pandu terhenyak lesu di rumput tepi lintasan. Ia tidak membawa sepatu cadangan, sementara toko olahraga terdekat berjarak tempuh tiga puluh menit.
+(169, 2, 'Teks 20 – Sepatu Lari Pandu', 'Babak final lari cepat 100 meter antar-SMP akan dimulai dalam lima belas menit. Pandu melakukan pemanasan ringan di lintasan kedua. Namun naas, saat melakukan hentakan awalan balok start, sol sepatu lari kanannya robek menganga. Pandu terhenyak lesu di rumput tepi lintasan. Ia tidak membawa sepatu cadangan, sementara toko olahraga terdekat berjarak tempuh tiga puluh menit.
 Riki, rival terberat Pandu dari sekolah tetangga, mendekat seraya menenteng tas perlengkapannya. Riki baru saja menyelesaikan nomor lompat jauh dan melihat kepanikan Pandu.
 "Pakai sepatuku ini, Ndu. Ukuran kaki kita sama-sama empat puluh dua," tawar Riki sambil menyodorkan sepasang sepatu berduri oranye miliknya. Pandu terperangah menatap wajah saingannya itu. "Tapi ini sepatu andalanmu untuk final estafet nanti sore, Rik?"
 "Final estafet masih empat jam lagi. Kemenangan sejati adalah bertanding melawan kemampuan terbaikmu, bukan menang karena sepatumu jebol," jawab Riki tegas seraya menepuk bahu Pandu. Pandu menghela napas, rasa haru seketika menjalari dadanya.', NULL),
-(173, 2, 'Teks 21 – Layar Terkembang di Teluk Sunyi', 'Perahu kayu milik Hendra melaju tenang membelah perairan Teluk Sunyi. Nelayan muda itu tersenyum puas menyaksikan jaring penariknya mulai dipenuhi ikan tongkol berkilat perak. Hasil tangkapan hari ini berpotensi menjadi rekor terbaiknya sepanjang musim melaut.
+(170, 2, 'Teks 21 – Layar Terkembang di Teluk Sunyi', 'Perahu kayu milik Hendra melaju tenang membelah perairan Teluk Sunyi. Nelayan muda itu tersenyum puas menyaksikan jaring penariknya mulai dipenuhi ikan tongkol berkilat perak. Hasil tangkapan hari ini berpotensi menjadi rekor terbaiknya sepanjang musim melaut.
 Akan tetapi, saat hendak menebar jaring kedua, pandangan Hendra tertumbuk pada gumpalan awan kumulonimbus raksasa yang membubung pekat di batas cakrawala barat daya. Angin laut mendadak berbalik arah menjadi dingin dan menyengat, diiringi gulungan riak ombak yang meninggi.
 Hendra teringat pesan mendiang ayahnya: jangan pernah menantang keangkuhan badai hanya demi ambisi memenuhi palka perahu. Jika memaksakan menebar jaring lagi, ia membutuhkan waktu minimal satu jam untuk menariknya kembali ke atas geladak.
 Hendra menatap tumpukan jaring di tangannya, lalu beralih menatap langit barat yang kian menggelap pekat. Tanpa ragu lagi, tangannya mencengkeram tuas kemudi dan mulai menarik tali layar utama.', NULL),
-(174, 2, '"Pesan yang Belum Selesai"', 'Raka menerima pesan di grup kelas bahwa sekolah akan diliburkan selama tiga hari karena ada perbaikan listrik. Ia hampir langsung meneruskannya kepada teman-temannya. Namun, ia teringat bahwa sebelumnya pernah beredar pesan palsu di grup tersebut. Raka kemudian bertanya kepada ketua kelas dan memeriksa pengumuman resmi sekolah. Ternyata, informasi itu benar, tetapi hanya untuk satu hari. Raka segera memberi tahu teman-temannya bahwa pesan sebelumnya tidak sepenuhnya benar.', NULL),
-(175, 2, '"Poster Lomba"', 'Mira dan Sinta ditugaskan membuat poster untuk lomba kebersihan kelas. Mira ingin segera menyelesaikannya sendiri karena merasa idenya paling bagus. Sinta mengingatkan bahwa tugas itu diberikan kepada mereka berdua. Setelah berdiskusi, mereka membagi pekerjaan. Mira membuat ilustrasi, sedangkan Sinta menyusun informasi lomba. Poster selesai tepat waktu dan keduanya sepakat bahwa hasilnya lebih baik karena dikerjakan bersama.', NULL),
-(176, 2, '"Suara dari Belakang Kelas"', 'Ketika presentasi berlangsung, Danu salah mengucapkan sebuah istilah. Beberapa teman menertawakannya. Danu sempat menunduk, tetapi kemudian memperbaiki ucapannya setelah mendapat masukan dari guru. Seusai presentasi, seorang teman meminta maaf karena ikut menertawakannya. Danu menerima permintaan maaf itu dan berkata bahwa kesalahan saat belajar merupakan hal yang wajar selama seseorang mau memperbaikinya.', NULL),
-(177, 2, '"Suara dari Belakang Kelas"', 'Ketika presentasi berlangsung, Danu salah mengucapkan sebuah istilah. Beberapa teman menertawakannya. Danu sempat menunduk, tetapi kemudian memperbaiki ucapannya setelah mendapat masukan dari guru. Seusai presentasi, seorang teman meminta maaf karena ikut menertawakannya. Danu menerima permintaan maaf itu dan berkata bahwa kesalahan saat belajar merupakan hal yang wajar.', NULL),
-(178, 2, '"Bangku Taman"', 'Setiap istirahat, siswa kelas VIII duduk di taman sekolah. Suatu hari mereka melihat beberapa bangku penuh coretan. Lani mengusulkan agar mereka melaporkannya kepada guru, bukan mencoret bagian lain untuk membalas. Setelah itu, kelas mereka membuat kegiatan sederhana untuk membersihkan taman dan memasang tulisan, “Gunakan dan Jaga Bersama.” Mereka berharap siswa lain ikut menjaga fasilitas sekolah.', NULL),
-(179, 2, '"Bangku Taman"', 'Setiap istirahat, siswa kelas VIII duduk di taman sekolah. Suatu hari mereka melihat beberapa bangku penuh coretan. Lani mengusulkan agar mereka melaporkannya kepada guru, bukan mencoret bagian lain untuk membalas. Setelah itu, kelas mereka membuat kegiatan sederhana untuk membersihkan taman dan memasang tulisan, “Gunakan dan Jaga Bersama.” Mereka berharap siswa lain ikut menjaga fasilitas sekolah', NULL),
-(180, 2, '"Dompet di Lapangan"', 'Sepulang olahraga, Bima menemukan dompet di dekat lapangan. Di dalamnya terdapat sejumlah uang dan kartu pelajar. Beberapa teman menyarankan agar uang itu digunakan untuk membeli makanan dan dompetnya dibuang. Bima menolak. Ia menyerahkan dompet tersebut kepada guru piket. Tidak lama kemudian, pemilik dompet datang dengan wajah lega karena uang itu akan digunakan untuk membayar kebutuhan sekolah.', NULL),
-(181, 2, '"Pesan yang Belum Selesai"', 'Raka menerima pesan di grup kelas bahwa sekolah akan diliburkan selama tiga hari karena ada perbaikan listrik. Ia hampir langsung meneruskannya kepada teman-temannya. Namun, ia teringat bahwa sebelumnya pernah beredar pesan palsu di grup tersebut. Raka kemudian bertanya kepada ketua kelas dan memeriksa pengumuman resmi sekolah. Ternyata, informasi itu benar, tetapi hanya untuk satu hari. Raka segera memberi tahu teman-temannya bahwa pesan sebelumnya tidak sepenuhnya benar.
+(171, 2, '"Pesan yang Belum Selesai"', 'Raka menerima pesan di grup kelas bahwa sekolah akan diliburkan selama tiga hari karena ada perbaikan listrik. Ia hampir langsung meneruskannya kepada teman-temannya. Namun, ia teringat bahwa sebelumnya pernah beredar pesan palsu di grup tersebut. Raka kemudian bertanya kepada ketua kelas dan memeriksa pengumuman resmi sekolah. Ternyata, informasi itu benar, tetapi hanya untuk satu hari. Raka segera memberi tahu teman-temannya bahwa pesan sebelumnya tidak sepenuhnya benar.', NULL),
+(172, 2, '"Poster Lomba"', 'Mira dan Sinta ditugaskan membuat poster untuk lomba kebersihan kelas. Mira ingin segera menyelesaikannya sendiri karena merasa idenya paling bagus. Sinta mengingatkan bahwa tugas itu diberikan kepada mereka berdua. Setelah berdiskusi, mereka membagi pekerjaan. Mira membuat ilustrasi, sedangkan Sinta menyusun informasi lomba. Poster selesai tepat waktu dan keduanya sepakat bahwa hasilnya lebih baik karena dikerjakan bersama.', NULL),
+(173, 2, '"Suara dari Belakang Kelas"', 'Ketika presentasi berlangsung, Danu salah mengucapkan sebuah istilah. Beberapa teman menertawakannya. Danu sempat menunduk, tetapi kemudian memperbaiki ucapannya setelah mendapat masukan dari guru. Seusai presentasi, seorang teman meminta maaf karena ikut menertawakannya. Danu menerima permintaan maaf itu dan berkata bahwa kesalahan saat belajar merupakan hal yang wajar selama seseorang mau memperbaikinya.', NULL),
+(174, 2, '"Suara dari Belakang Kelas"', 'Ketika presentasi berlangsung, Danu salah mengucapkan sebuah istilah. Beberapa teman menertawakannya. Danu sempat menunduk, tetapi kemudian memperbaiki ucapannya setelah mendapat masukan dari guru. Seusai presentasi, seorang teman meminta maaf karena ikut menertawakannya. Danu menerima permintaan maaf itu dan berkata bahwa kesalahan saat belajar merupakan hal yang wajar.', NULL),
+(175, 2, '"Bangku Taman"', 'Setiap istirahat, siswa kelas VIII duduk di taman sekolah. Suatu hari mereka melihat beberapa bangku penuh coretan. Lani mengusulkan agar mereka melaporkannya kepada guru, bukan mencoret bagian lain untuk membalas. Setelah itu, kelas mereka membuat kegiatan sederhana untuk membersihkan taman dan memasang tulisan, “Gunakan dan Jaga Bersama.” Mereka berharap siswa lain ikut menjaga fasilitas sekolah.', NULL),
+(176, 2, '"Bangku Taman"', 'Setiap istirahat, siswa kelas VIII duduk di taman sekolah. Suatu hari mereka melihat beberapa bangku penuh coretan. Lani mengusulkan agar mereka melaporkannya kepada guru, bukan mencoret bagian lain untuk membalas. Setelah itu, kelas mereka membuat kegiatan sederhana untuk membersihkan taman dan memasang tulisan, “Gunakan dan Jaga Bersama.” Mereka berharap siswa lain ikut menjaga fasilitas sekolah', NULL),
+(177, 2, '"Dompet di Lapangan"', 'Sepulang olahraga, Bima menemukan dompet di dekat lapangan. Di dalamnya terdapat sejumlah uang dan kartu pelajar. Beberapa teman menyarankan agar uang itu digunakan untuk membeli makanan dan dompetnya dibuang. Bima menolak. Ia menyerahkan dompet tersebut kepada guru piket. Tidak lama kemudian, pemilik dompet datang dengan wajah lega karena uang itu akan digunakan untuk membayar kebutuhan sekolah.', NULL),
+(178, 2, '"Pesan yang Belum Selesai"', 'Raka menerima pesan di grup kelas bahwa sekolah akan diliburkan selama tiga hari karena ada perbaikan listrik. Ia hampir langsung meneruskannya kepada teman-temannya. Namun, ia teringat bahwa sebelumnya pernah beredar pesan palsu di grup tersebut. Raka kemudian bertanya kepada ketua kelas dan memeriksa pengumuman resmi sekolah. Ternyata, informasi itu benar, tetapi hanya untuk satu hari. Raka segera memberi tahu teman-temannya bahwa pesan sebelumnya tidak sepenuhnya benar.
 
 "Poster Lomba"
 
@@ -420,30 +427,30 @@ Setiap istirahat, siswa kelas VIII duduk di taman sekolah. Suatu hari mereka mel
 "Dompet di Lapangan"
 
 Sepulang olahraga, Bima menemukan dompet di dekat lapangan. Di dalamnya terdapat sejumlah uang dan kartu pelajar. Beberapa teman menyarankan agar uang itu digunakan untuk membeli makanan dan dompetnya dibuang. Bima menolak. Ia menyerahkan dompet tersebut kepada guru piket. Tidak lama kemudian, pemilik dompet datang dengan wajah lega karena uang itu akan digunakan untuk membayar kebutuhan sekolah', NULL),
-(182, 2, '"Pesan yang Belum Selesai"', 'Raka menerima pesan di grup kelas bahwa sekolah akan diliburkan selama tiga hari karena ada perbaikan listrik. Ia hampir langsung meneruskannya kepada teman-temannya. Namun, ia teringat bahwa sebelumnya pernah beredar pesan palsu di grup tersebut. Raka kemudian bertanya kepada ketua kelas dan memeriksa pengumuman resmi sekolah. Ternyata, informasi itu benar, tetapi hanya untuk satu hari. Raka segera memberi tahu teman-temannya bahwa pesan sebelumnya tidak sepenuhnya benar.
+(179, 2, '"Pesan yang Belum Selesai"', 'Raka menerima pesan di grup kelas bahwa sekolah akan diliburkan selama tiga hari karena ada perbaikan listrik. Ia hampir langsung meneruskannya kepada teman-temannya. Namun, ia teringat bahwa sebelumnya pernah beredar pesan palsu di grup tersebut. Raka kemudian bertanya kepada ketua kelas dan memeriksa pengumuman resmi sekolah. Ternyata, informasi itu benar, tetapi hanya untuk satu hari. Raka segera memberi tahu teman-temannya bahwa pesan sebelumnya tidak sepenuhnya benar.
 
 "Bangku Taman"
 
 Setiap istirahat, siswa kelas VIII duduk di taman sekolah. Suatu hari mereka melihat beberapa bangku penuh coretan. Lani mengusulkan agar mereka melaporkannya kepada guru, bukan mencoret bagian lain untuk membalas. Setelah itu, kelas mereka membuat kegiatan sederhana untuk membersihkan taman dan memasang tulisan, “Gunakan dan Jaga Bersama.” Mereka berharap siswa lain ikut menjaga fasilitas sekolah', NULL),
-(183, 2, 'P1 “Sepeda Tua” Nara menemukan sepeda tua milik ayahnya di g', 'P1 “Sepeda Tua” Nara menemukan sepeda tua milik ayahnya di gudang. Walaupun catnya mengelupas, sepeda itu masih dapat digunakan. Nara membersihkannya dan mengganti rantai yang rusak. Ia kemudian menggunakan sepeda tersebut ke perpustakaan.
+(180, 2, 'P1 “Sepeda Tua” Nara menemukan sepeda tua milik ayahnya di g', 'P1 “Sepeda Tua” Nara menemukan sepeda tua milik ayahnya di gudang. Walaupun catnya mengelupas, sepeda itu masih dapat digunakan. Nara membersihkannya dan mengganti rantai yang rusak. Ia kemudian menggunakan sepeda tersebut ke perpustakaan.
 
 P1 “Sepatu Lama” Reno menemukan sepatu olahraga lama di lemari. Solnya sudah sedikit terlepas, tetapi bagian lainnya masih baik. Ia memperbaikinya dengan bantuan ayahnya. Sepatu itu kemudian dipakai Reno untuk latihan.', NULL),
-(184, 2, 'P2 “Hujan di Halaman” Hujan turun sejak sore', 'P2 “Hujan di Halaman” Hujan turun sejak sore. Sari berdiri di teras sambil memperhatikan halaman yang mulai dipenuhi genangan. Ia kemudian mengambil sapu lidi dan membersihkan saluran air yang tersumbat daun.
+(181, 2, 'P2 “Hujan di Halaman” Hujan turun sejak sore', 'P2 “Hujan di Halaman” Hujan turun sejak sore. Sari berdiri di teras sambil memperhatikan halaman yang mulai dipenuhi genangan. Ia kemudian mengambil sapu lidi dan membersihkan saluran air yang tersumbat daun.
 
 P2 “Pagi Berawan” Sejak pagi langit terlihat gelap. Dimas melihat beberapa daun memenuhi selokan di depan rumah. Ia mengambil tongkat kecil dan membersihkan saluran tersebut sebelum berangkat sekolah.', NULL),
-(185, 2, 'P3 “Lukisan Rani” Rani kecewa ketika warna pada lukisannya b', 'P3 “Lukisan Rani” Rani kecewa ketika warna pada lukisannya bercampur. Ia hampir membuang kertas itu. Namun, setelah melihat kembali lukisannya, ia menemukan bahwa campuran warna tersebut justru membentuk bayangan yang menarik. Rani akhirnya melanjutkan lukisan itu.
+(182, 2, 'P3 “Lukisan Rani” Rani kecewa ketika warna pada lukisannya b', 'P3 “Lukisan Rani” Rani kecewa ketika warna pada lukisannya bercampur. Ia hampir membuang kertas itu. Namun, setelah melihat kembali lukisannya, ia menemukan bahwa campuran warna tersebut justru membentuk bayangan yang menarik. Rani akhirnya melanjutkan lukisan itu.
 
 P3 “Cerita Fajar” Fajar lupa memasukkan salah satu tokoh ketika menulis cerita. Ia sempat ingin menghapus seluruh tulisannya. Setelah membaca kembali cerita tersebut, ia menemukan cara memasukkan tokoh itu tanpa mengubah alur utama.', NULL),
-(186, 2, 'P4 “Jembatan” Dara menyeberangi jembatan kecil setiap pulang', 'P4 “Jembatan” Dara menyeberangi jembatan kecil setiap pulang sekolah. Suatu hari jembatan itu rusak. Dara tidak memaksakan diri melewatinya. Ia memilih menggunakan jalan lain yang lebih jauh.
+(183, 2, 'P4 “Jembatan” Dara menyeberangi jembatan kecil setiap pulang', 'P4 “Jembatan” Dara menyeberangi jembatan kecil setiap pulang sekolah. Suatu hari jembatan itu rusak. Dara tidak memaksakan diri melewatinya. Ia memilih menggunakan jalan lain yang lebih jauh.
 
 P4 “Jalan Licin” Bayu melihat jalan di depan rumahnya licin setelah hujan. Ia sebenarnya ingin segera pergi, tetapi memilih berjalan lebih lambat dan menggunakan jalan yang memiliki pegangan.', NULL),
-(187, 2, 'P5 “Surat untuk Ibu” Aku menulis surat untuk Ibu malam ini', 'P5 “Surat untuk Ibu” Aku menulis surat untuk Ibu malam ini. Tidak panjang, hanya beberapa baris. Namun setiap kata terasa berat, sebab rindu ternyata tidak mudah ditulis.
+(184, 2, 'P5 “Surat untuk Ibu” Aku menulis surat untuk Ibu malam ini', 'P5 “Surat untuk Ibu” Aku menulis surat untuk Ibu malam ini. Tidak panjang, hanya beberapa baris. Namun setiap kata terasa berat, sebab rindu ternyata tidak mudah ditulis.
 
 P5 “Pesan Pagi” Pagi datang membawa cahaya. Aku membuka jendela dan tersenyum. Hari ini terasa ringan, seolah semua harapan kembali tumbuh.', NULL),
-(188, 2, 'Pasangan P1', 'P1 “Sepeda Tua” Nara menemukan sepeda tua milik ayahnya di gudang. Walaupun catnya mengelupas, sepeda itu masih dapat digunakan. Nara membersihkannya dan mengganti rantai yang rusak. Ia kemudian menggunakan sepeda tersebut ke perpustakaan.
+(185, 2, 'Pasangan P1', 'P1 “Sepeda Tua” Nara menemukan sepeda tua milik ayahnya di gudang. Walaupun catnya mengelupas, sepeda itu masih dapat digunakan. Nara membersihkannya dan mengganti rantai yang rusak. Ia kemudian menggunakan sepeda tersebut ke perpustakaan.
 
 P1 “Sepatu Lama” Reno menemukan sepatu olahraga lama di lemari. Solnya sudah sedikit terlepas, tetapi bagian lainnya masih baik. Ia memperbaikinya dengan bantuan ayahnya. Sepatu itu kemudian dipakai Reno untuk latihan.', NULL),
-(189, 2, 'Pasangan P2', 'P2 “Hujan di Halaman” Hujan turun sejak sore. Sari berdiri di teras sambil memperhatikan halaman yang mulai dipenuhi genangan. Ia kemudian mengambil sapu lidi dan membersihkan saluran air yang tersumbat daun.
+(186, 2, 'Pasangan P2', 'P2 “Hujan di Halaman” Hujan turun sejak sore. Sari berdiri di teras sambil memperhatikan halaman yang mulai dipenuhi genangan. Ia kemudian mengambil sapu lidi dan membersihkan saluran air yang tersumbat daun.
 
 P2 “Pagi Berawan” Sejak pagi langit terlihat gelap. Dimas melihat beberapa daun memenuhi selokan di depan rumah. Ia mengambil tongkat kecil dan membersihkan saluran tersebut sebelum berangkat sekolah.
 
@@ -452,7 +459,7 @@ Pasangan P4
 P4 “Jembatan” Dara menyeberangi jembatan kecil setiap pulang sekolah. Suatu hari jembatan itu rusak. Dara tidak memaksakan diri melewatinya. Ia memilih menggunakan jalan lain yang lebih jauh.
 
 P4 “Jalan Licin” Bayu melihat jalan di depan rumahnya licin setelah hujan. Ia sebenarnya ingin segera pergi, tetapi memilih berjalan lebih lambat dan menggunakan jalan yang memiliki pegangan.', NULL),
-(190, 2, 'Pasangan P3', 'P3 “Lukisan Rani” Rani kecewa ketika warna pada lukisannya bercampur. Ia hampir membuang kertas itu. Namun, setelah melihat kembali lukisannya, ia menemukan bahwa campuran warna tersebut justru membentuk bayangan yang menarik. Rani akhirnya melanjutkan lukisan itu.
+(187, 2, 'Pasangan P3', 'P3 “Lukisan Rani” Rani kecewa ketika warna pada lukisannya bercampur. Ia hampir membuang kertas itu. Namun, setelah melihat kembali lukisannya, ia menemukan bahwa campuran warna tersebut justru membentuk bayangan yang menarik. Rani akhirnya melanjutkan lukisan itu.
 
 P3 “Cerita Fajar” Fajar lupa memasukkan salah satu tokoh ketika menulis cerita. Ia sempat ingin menghapus seluruh tulisannya. Setelah membaca kembali cerita tersebut, ia menemukan cara memasukkan tokoh itu tanpa mengubah alur utama.
 
@@ -461,7 +468,7 @@ Pasangan P4
 P4 “Jembatan” Dara menyeberangi jembatan kecil setiap pulang sekolah. Suatu hari jembatan itu rusak. Dara tidak memaksakan diri melewatinya. Ia memilih menggunakan jalan lain yang lebih jauh.
 
 P4 “Jalan Licin” Bayu melihat jalan di depan rumahnya licin setelah hujan. Ia sebenarnya ingin segera pergi, tetapi memilih berjalan lebih lambat dan menggunakan jalan yang memiliki pegangan.', NULL),
-(191, 2, 'Pasangan P1', 'P1 “Sepeda Tua” Nara menemukan sepeda tua milik ayahnya di gudang. Walaupun catnya mengelupas, sepeda itu masih dapat digunakan. Nara membersihkannya dan mengganti rantai yang rusak. Ia kemudian menggunakan sepeda tersebut ke perpustakaan.
+(188, 2, 'Pasangan P1', 'P1 “Sepeda Tua” Nara menemukan sepeda tua milik ayahnya di gudang. Walaupun catnya mengelupas, sepeda itu masih dapat digunakan. Nara membersihkannya dan mengganti rantai yang rusak. Ia kemudian menggunakan sepeda tersebut ke perpustakaan.
 
 P1 “Sepatu Lama” Reno menemukan sepatu olahraga lama di lemari. Solnya sudah sedikit terlepas, tetapi bagian lainnya masih baik. Ia memperbaikinya dengan bantuan ayahnya. Sepatu itu kemudian dipakai Reno untuk latihan.
 
@@ -470,21 +477,21 @@ Pasangan P3
 P3 “Lukisan Rani” Rani kecewa ketika warna pada lukisannya bercampur. Ia hampir membuang kertas itu. Namun, setelah melihat kembali lukisannya, ia menemukan bahwa campuran warna tersebut justru membentuk bayangan yang menarik. Rani akhirnya melanjutkan lukisan itu.
 
 P3 “Cerita Fajar” Fajar lupa memasukkan salah satu tokoh ketika menulis cerita. Ia sempat ingin menghapus seluruh tulisannya. Setelah membaca kembali cerita tersebut, ia menemukan cara memasukkan tokoh itu tanpa mengubah alur utama.', NULL),
-(192, 2, '"Kursi Kosong"', 'Sejak pagi, kursi di sebelah Arga tetap kosong. Biasanya, Rian selalu duduk di sana dan mengajaknya berbicara sebelum pelajaran dimulai. Hari itu Arga baru mengetahui bahwa Rian harus pindah mengikuti orang tuanya ke kota lain. Sepulang sekolah, Arga memandang kursi tersebut beberapa saat. Ia tersenyum kecil ketika menemukan secarik kertas di bawah meja: “Jangan berhenti bercerita. Suatu hari kita akan bertemu lagi.”
+(189, 2, '"Kursi Kosong"', 'Sejak pagi, kursi di sebelah Arga tetap kosong. Biasanya, Rian selalu duduk di sana dan mengajaknya berbicara sebelum pelajaran dimulai. Hari itu Arga baru mengetahui bahwa Rian harus pindah mengikuti orang tuanya ke kota lain. Sepulang sekolah, Arga memandang kursi tersebut beberapa saat. Ia tersenyum kecil ketika menemukan secarik kertas di bawah meja: “Jangan berhenti bercerita. Suatu hari kita akan bertemu lagi.”
 
 Respons emosional yang paling sesuai setelah membaca Teks', NULL),
-(193, 2, '"Kursi Kosong"', 'Sejak pagi, kursi di sebelah Arga tetap kosong. Biasanya, Rian selalu duduk di sana dan mengajaknya berbicara sebelum pelajaran dimulai. Hari itu Arga baru mengetahui bahwa Rian harus pindah mengikuti orang tuanya ke kota lain. Sepulang sekolah, Arga memandang kursi tersebut beberapa saat. Ia tersenyum kecil ketika menemukan secarik kertas di bawah meja: “Jangan berhenti bercerita. Suatu hari kita akan bertemu lagi.”', NULL),
-(194, 2, '"Kursi Kosong"', 'Sejak pagi, kursi di sebelah Arga tetap kosong. Biasanya, Rian selalu duduk di sana dan mengajaknya berbicara sebelum pelajaran dimulai. Hari itu Arga baru mengetahui bahwa Rian harus pindah mengikuti orang tuanya ke kota lain. Sepulang sekolah, Arga memandang kursi tersebut beberapa saat. Ia tersenyum kecil ketika menemukan secarik kertas di bawah meja: “Jangan berhenti bercerita. Suatu hari kita akan bertemu lagi.”
+(190, 2, '"Kursi Kosong"', 'Sejak pagi, kursi di sebelah Arga tetap kosong. Biasanya, Rian selalu duduk di sana dan mengajaknya berbicara sebelum pelajaran dimulai. Hari itu Arga baru mengetahui bahwa Rian harus pindah mengikuti orang tuanya ke kota lain. Sepulang sekolah, Arga memandang kursi tersebut beberapa saat. Ia tersenyum kecil ketika menemukan secarik kertas di bawah meja: “Jangan berhenti bercerita. Suatu hari kita akan bertemu lagi.”', NULL),
+(191, 2, '"Kursi Kosong"', 'Sejak pagi, kursi di sebelah Arga tetap kosong. Biasanya, Rian selalu duduk di sana dan mengajaknya berbicara sebelum pelajaran dimulai. Hari itu Arga baru mengetahui bahwa Rian harus pindah mengikuti orang tuanya ke kota lain. Sepulang sekolah, Arga memandang kursi tersebut beberapa saat. Ia tersenyum kecil ketika menemukan secarik kertas di bawah meja: “Jangan berhenti bercerita. Suatu hari kita akan bertemu lagi.”
 
 Respons emosional yang dapat muncul secara wajar setelah', NULL),
-(195, 2, '"Lampu di Rumah Nenek"', 'Malam itu listrik di kampung padam. Sinta membawa lampu kecil ke rumah neneknya yang tinggal sendirian. Nenek awalnya menolak karena tidak ingin merepotkan cucunya. Sinta tetap tinggal sampai listrik menyala kembali. Ketika lampu rumah akhirnya menyala, nenek menggenggam tangan Sinta sambil berkata, “Kamu membuat malam ini tidak terasa panjang.”
+(192, 2, '"Lampu di Rumah Nenek"', 'Malam itu listrik di kampung padam. Sinta membawa lampu kecil ke rumah neneknya yang tinggal sendirian. Nenek awalnya menolak karena tidak ingin merepotkan cucunya. Sinta tetap tinggal sampai listrik menyala kembali. Ketika lampu rumah akhirnya menyala, nenek menggenggam tangan Sinta sambil berkata, “Kamu membuat malam ini tidak terasa panjang.”
 
 Respons emosional yang tepat terhadap tindakan Sinta dalam', NULL),
-(196, 2, '"Lampu di Rumah Nenek"', 'Malam itu listrik di kampung padam. Sinta membawa lampu kecil ke rumah neneknya yang tinggal sendirian. Nenek awalnya menolak karena tidak ingin merepotkan cucunya. Sinta tetap tinggal sampai listrik menyala kembali. Ketika lampu rumah akhirnya menyala, nenek menggenggam tangan Sinta sambil berkata, “Kamu membuat malam ini tidak terasa panjang.”', NULL),
-(197, 2, '"Burung dalam Sangkar"', 'Seekor burung kecil selalu bernyanyi di dalam sangkar milik seorang anak. Suatu hari, anak itu membuka pintu sangkar. Burung tersebut tidak langsung terbang. Ia berdiri di ambang pintu seolah ragu. Setelah beberapa saat, burung itu mengepakkan sayap dan terbang menuju pohon di halaman. Anak itu memandangnya sampai burung tersebut tidak terlihat lagi.', NULL),
-(198, 2, 'Puisi “Pagi Setelah Hujan”', 'Hujan telah pergi, meninggalkan kaca yang bening. Di ujung daun, cahaya menggantung, dan jalan basah memantulkan langit. Aku membuka jendela perlahan, menghirup udara yang baru, seolah hari memberiku kesempatan untuk memulai lagi.', NULL),
-(199, 2, '"Pilihan Naya"', 'Naya melihat dua temannya berselisih karena salah memahami sebuah pesan. Keduanya meminta Naya memilih pihak. Naya membaca kembali pesan tersebut dan menyadari bahwa kata-katanya memang dapat ditafsirkan berbeda. Ia mengajak kedua temannya berbicara langsung. Setelah mengetahui maksud sebenarnya, keduanya menyadari bahwa pertengkaran itu tidak perlu terjadi.', NULL),
-(200, 2, '"Kursi Kosong"', 'Sejak pagi, kursi di sebelah Arga tetap kosong. Biasanya, Rian selalu duduk di sana dan mengajaknya berbicara sebelum pelajaran dimulai. Hari itu Arga baru mengetahui bahwa Rian harus pindah mengikuti orang tuanya ke kota lain. Sepulang sekolah, Arga memandang kursi tersebut beberapa saat. Ia tersenyum kecil ketika menemukan secarik kertas di bawah meja: “Jangan berhenti bercerita. Suatu hari kita akan bertemu lagi.”
+(193, 2, '"Lampu di Rumah Nenek"', 'Malam itu listrik di kampung padam. Sinta membawa lampu kecil ke rumah neneknya yang tinggal sendirian. Nenek awalnya menolak karena tidak ingin merepotkan cucunya. Sinta tetap tinggal sampai listrik menyala kembali. Ketika lampu rumah akhirnya menyala, nenek menggenggam tangan Sinta sambil berkata, “Kamu membuat malam ini tidak terasa panjang.”', NULL),
+(194, 2, '"Burung dalam Sangkar"', 'Seekor burung kecil selalu bernyanyi di dalam sangkar milik seorang anak. Suatu hari, anak itu membuka pintu sangkar. Burung tersebut tidak langsung terbang. Ia berdiri di ambang pintu seolah ragu. Setelah beberapa saat, burung itu mengepakkan sayap dan terbang menuju pohon di halaman. Anak itu memandangnya sampai burung tersebut tidak terlihat lagi.', NULL),
+(195, 2, 'Puisi “Pagi Setelah Hujan”', 'Hujan telah pergi, meninggalkan kaca yang bening. Di ujung daun, cahaya menggantung, dan jalan basah memantulkan langit. Aku membuka jendela perlahan, menghirup udara yang baru, seolah hari memberiku kesempatan untuk memulai lagi.', NULL),
+(196, 2, '"Pilihan Naya"', 'Naya melihat dua temannya berselisih karena salah memahami sebuah pesan. Keduanya meminta Naya memilih pihak. Naya membaca kembali pesan tersebut dan menyadari bahwa kata-katanya memang dapat ditafsirkan berbeda. Ia mengajak kedua temannya berbicara langsung. Setelah mengetahui maksud sebenarnya, keduanya menyadari bahwa pertengkaran itu tidak perlu terjadi.', NULL),
+(197, 2, '"Kursi Kosong"', 'Sejak pagi, kursi di sebelah Arga tetap kosong. Biasanya, Rian selalu duduk di sana dan mengajaknya berbicara sebelum pelajaran dimulai. Hari itu Arga baru mengetahui bahwa Rian harus pindah mengikuti orang tuanya ke kota lain. Sepulang sekolah, Arga memandang kursi tersebut beberapa saat. Ia tersenyum kecil ketika menemukan secarik kertas di bawah meja: “Jangan berhenti bercerita. Suatu hari kita akan bertemu lagi.”
 
 "Pilihan Naya"
 
@@ -496,386 +503,388 @@ ON DUPLICATE KEY UPDATE
     `stimulus_image_url` = VALUES(`stimulus_image_url`);
 
 -- -----------------------------------------------------------------------------
--- 2. PEMBENIHAN BANK SOAL (QUESTION_BANKS - 361 Soal, ID 181..541)
+-- 2. PEMBENIHAN BANK SOAL LEVEL EXERCISES BAHASA INDONESIA (QUESTION_BANKS - 360 Soal, ID 181..540)
 -- -----------------------------------------------------------------------------
-INSERT INTO `question_banks` (`id`, `subject_id`, `sub_material_id`, `cognitive_level_id`, `stimulus_id`, `bank_type`, `question_format`, `question_text`, `stimulus_image_url`, `is_active`) VALUES
-(181, 2, 11, 1, 38, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Makna istilah \'algoritma\' pada teks tersebut adalah...', NULL, TRUE),
-(182, 2, 11, 1, 38, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata \'efisiensi\' bersinonim dengan kata...', NULL, TRUE),
-(183, 2, 11, 1, 39, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa makna kata \'limbah\' pada kalimat pertama?', NULL, TRUE),
-(184, 2, 11, 1, 39, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Makna kata \'terdegradasi\' sesuai konteks kalimat adalah...', NULL, TRUE),
-(185, 2, 11, 1, 40, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata \'imunitas\' memiliki arti...', NULL, TRUE),
-(186, 2, 11, 1, 40, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Arti kata \'proporsional\' pada kalimat terakhir adalah...', NULL, TRUE),
-(187, 2, 11, 1, 41, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Makna istilah "ekstrak" yang digunakan pada paragraf tersebut adalah...', NULL, TRUE),
-(188, 2, 11, 1, 41, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Istilah "khasiat" pada kalimat terakhir di teks tersebut bersinonim atau memiliki arti yang sama dengan kata...', NULL, TRUE),
-(189, 2, 11, 1, 42, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Istilah \'inflasi\' dalam teks memiliki arti...', NULL, TRUE),
-(190, 2, 11, 1, 42, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Frasa \'daya beli\' pada teks tersebut merujuk pada...', NULL, TRUE),
-(191, 2, 11, 1, 43, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Arti dari kata \'konstelasi\' adalah...', NULL, TRUE),
-(192, 2, 11, 1, 43, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata \'gravitasi\' dalam kalimat bermakna...', NULL, TRUE),
-(193, 2, 11, 1, 44, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Istilah \'harmoni\' dalam konteks musik bermakna...', NULL, TRUE),
-(194, 2, 11, 1, 44, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Makna kata \'maestro\' pada teks tersebut adalah...', NULL, TRUE),
-(195, 2, 11, 1, 45, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Makna kata \'siluet\' pada kalimat pertama adalah...', NULL, TRUE),
-(196, 2, 11, 1, 45, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata \'terkuak\' pada kalimat terakhir memiliki arti...', NULL, TRUE),
-(197, 2, 11, 1, 46, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Istilah \'erupsi\' berarti...', NULL, TRUE),
-(198, 2, 11, 1, 46, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Makna istilah \'mitigasi\' pada kalimat terakhir adalah...', NULL, TRUE),
-(199, 2, 11, 1, 47, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata \'stamina\' dalam kalimat tersebut merujuk pada...', NULL, TRUE),
-(200, 2, 11, 1, 47, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Istilah \'sportivitas\' mengandung makna...', NULL, TRUE),
-(201, 2, 11, 2, 48, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Di kota manakah Candi Borobudur berada berdasarkan teks?', NULL, TRUE),
-(202, 2, 11, 2, 48, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Pada abad ke berapakah Candi Borobudur dibangun?', NULL, TRUE),
-(203, 2, 11, 2, 48, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Siapa yang membangun Candi Borobudur menurut teks?', NULL, TRUE),
-(204, 2, 11, 2, 49, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Di provinsi manakah letak Gunung Bromo berdasarkan teks tersebut?', NULL, TRUE),
-(205, 2, 11, 2, 49, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kendaraan apa yang biasanya disewa oleh para pengunjung untuk berkeliling di lautan pasir?', NULL, TRUE),
-(206, 2, 11, 2, 49, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Siapakah nama suku asli yang mendiami wilayah sekitar Gunung Bromo?', NULL, TRUE),
-(207, 2, 11, 2, 50, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Fungsi utama akar hutan mangrove menurut teks adalah...', NULL, TRUE),
-(208, 2, 11, 2, 50, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bencana alam apa yang gelombangnya dapat dipecah oleh mangrove?', NULL, TRUE),
-(209, 2, 11, 2, 50, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Hewan apa saja yang menjadikan hutan mangrove sebagai habitatnya?', NULL, TRUE),
-(210, 2, 11, 2, 51, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang dimaksud dengan pemanasan global menurut teks?', NULL, TRUE),
-(211, 2, 11, 2, 51, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Salah satu penyebab utama pemanasan global adalah...', NULL, TRUE),
-(212, 2, 11, 2, 51, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berikut ini yang merupakan dampak pemanasan global sesuai teks, KECUALI...', NULL, TRUE),
-(213, 2, 11, 2, 52, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kebijakan apa yang sedang digalakkan oleh pemerintah kota berdasarkan teks?', NULL, TRUE),
-(214, 2, 11, 2, 52, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa tujuan utama dari kebijakan penggunaan tas kain tersebut?', NULL, TRUE),
-(215, 2, 11, 2, 52, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang terjadi jika pembeli tidak membawa tas sendiri di pasar swalayan saat ini?', NULL, TRUE),
-(216, 2, 11, 2, 53, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang terjadi pada warna kulit buah pisang ketika sudah matang?', NULL, TRUE),
-(217, 2, 11, 2, 53, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan teks, apa fungsi utama dari tingginya kandungan kalium pada buah pisang?', NULL, TRUE),
-(218, 2, 11, 2, 53, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bagian dari tanaman pisang yang sering dimanfaatkan sebagai pembungkus makanan adalah...', NULL, TRUE),
-(219, 2, 11, 2, 54, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa sarapan disebut sebagai waktu makan paling penting?', NULL, TRUE),
-(220, 2, 11, 2, 54, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa manfaat rutin sarapan bagi anak-anak sekolah?', NULL, TRUE),
-(221, 2, 11, 3, 55, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika proses pada teks di atas dibuat menjadi bagan alur, urutan yang tepat adalah...', NULL, TRUE),
-(222, 2, 11, 3, 55, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Tahapan yang menempati kotak kedua dalam kerangka proses siklus air tersebut adalah...', NULL, TRUE),
-(223, 2, 11, 3, 55, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kerangka gagasan pokok dari teks tersebut secara berurutan adalah...', NULL, TRUE),
-(224, 2, 11, 3, 56, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kerangka waktu berurutan peristiwa Kongres Pemuda II adalah...', NULL, TRUE),
-(225, 2, 11, 3, 56, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika disusun dalam bagan topik rapat, urutan yang tepat dari rapat pertama hingga ketiga adalah...', NULL, TRUE),
-(226, 2, 11, 3, 56, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Topik yang menempati urutan kerangka bagian tengah (rapat kedua) adalah...', NULL, TRUE),
-(227, 2, 11, 3, 57, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika instruksi di atas dibuat bagan langkah-langkah, tahapan pertama dan kedua secara berurutan adalah...', NULL, TRUE),
-(228, 2, 11, 3, 57, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan kerangka prosedur, apa langkah yang harus dilakukan setelah membalut telur dengan adonan?', NULL, TRUE),
-(229, 2, 11, 3, 57, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Langkah persiapan bahan (membuat adonan abu) berada pada urutan ke berapa dalam teks?', NULL, TRUE),
-(230, 2, 11, 3, 58, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bagan daur hidup kupu-kupu yang benar berdasarkan teks adalah...', NULL, TRUE),
-(231, 2, 11, 3, 58, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Dalam kerangka teks, informasi yang dijelaskan setelah fase larva (ulat) adalah...', NULL, TRUE),
-(232, 2, 11, 3, 59, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika dibuat kerangka waktu, fase di mana hewan tersebut \'berpuasa dan beristirahat\' berada pada tahap ke...', NULL, TRUE),
-(233, 2, 11, 3, 60, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kerangka spasial (keruangan) pembagian area TMII dari depan ke belakang adalah...', NULL, TRUE),
-(234, 2, 11, 3, 60, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika Anda menyusun bagan wisata, objek wisata apa yang berada di area tengah?', NULL, TRUE),
-(235, 2, 11, 3, 60, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bagian penutup dari kerangka deskripsi area TMII menjelaskan tentang...', NULL, TRUE),
-(236, 2, 11, 3, 61, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan teks, urutan menggosok tangan yang tepat setelah memakai sabun adalah...', NULL, TRUE),
-(237, 2, 11, 3, 61, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Dalam kerangka panduan, apa yang harus dilakukan sebelum membilas dengan air?', NULL, TRUE),
-(238, 2, 11, 3, 61, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Langkah paling akhir (penutup alur) dalam proses mencuci tangan tersebut adalah...', NULL, TRUE),
-(239, 2, 11, 3, 62, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Susunan tingkatan Candi Borobudur dari bawah ke atas adalah...', NULL, TRUE),
-(240, 2, 11, 3, 62, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika dibuat kerangka gagasan, makna tingkatan tengah (Rupadhatu) adalah...', NULL, TRUE),
-(241, 2, 12, 1, 63, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan yang paling tepat untuk menggambarkan keseluruhan isi teks adalah …', NULL, TRUE),
-(242, 2, 12, 1, 63, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Informasi manakah yang paling kuat mendukung kesimpulan bahwa manfaat kebun tidak hanya berasal dari keberadaan tanaman, tetapi juga dari cara kebun dikelola?', NULL, TRUE),
-(243, 2, 12, 1, 63, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Pilih semua pernyataan yang dapat disimpulkan secara tersirat dari teks.', NULL, TRUE),
-(244, 2, 12, 1, 63, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika sekolah mengabaikan jadwal perawatan setelah kebun diperluas, kesimpulan yang paling logis berdasarkan pengalaman pada teks adalah …', NULL, TRUE),
-(245, 2, 12, 1, 64, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan yang paling tepat tentang program membawa tumbler adalah …', NULL, TRUE),
-(246, 2, 12, 1, 64, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Gagasan tersirat yang dapat disimpulkan dari keputusan tidak langsung menghapus minuman kemasan adalah …', NULL, TRUE),
-(247, 2, 12, 1, 64, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Pernyataan yang dapat disimpulkan dari teks adalah …', NULL, TRUE),
-(248, 2, 12, 1, 64, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kesimpulan yang paling tepat mengenai rencana evaluasi setelah satu semester adalah …', NULL, TRUE),
-(249, 2, 12, 1, 65, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan utama yang paling tepat dari teks perpustakaan digital adalah …', NULL, TRUE),
-(250, 2, 12, 1, 65, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa peningkatan jumlah peminjaman belum dapat langsung disimpulkan sebagai tanda bahwa layanan sudah berhasil sepenuhnya?', NULL, TRUE),
-(251, 2, 12, 1, 65, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Kesimpulan yang dapat ditarik dari teks adalah …', NULL, TRUE),
-(252, 2, 12, 1, 65, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika pelatihan lanjutan dihentikan sementara, kesimpulan yang paling masuk akal adalah …', NULL, TRUE),
-(253, 2, 12, 1, 66, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan yang paling tepat tentang upaya mengurangi sisa makanan adalah …', NULL, TRUE),
-(254, 2, 12, 1, 66, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa gagasan tersirat yang menjelaskan mengapa porsi kecil dapat menjadi solusi?', NULL, TRUE),
-(255, 2, 12, 1, 66, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Pernyataan yang dapat disimpulkan adalah …', NULL, TRUE),
-(256, 2, 12, 1, 66, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika kantin kembali menyediakan hanya porsi besar, prediksi kesimpulan yang paling logis adalah …', NULL, TRUE),
-(257, 2, 12, 1, 67, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan paling tepat dari penggunaan lampu jalan tenaga surya dalam teks adalah …', NULL, TRUE),
-(258, 2, 12, 1, 67, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa pemerintah daerah belum langsung memasang lampu serupa di semua jalan?', NULL, TRUE),
-(259, 2, 12, 1, 67, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Kesimpulan yang dapat ditarik dari pengalaman pemasangan lampu adalah …', NULL, TRUE),
-(260, 2, 12, 1, 67, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika data menunjukkan biaya perawatan jauh lebih tinggi daripada perkiraan, kesimpulan yang paling mungkin diambil pemerintah adalah …', NULL, TRUE),
-(261, 2, 12, 2, 68, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa penurunan volume air embung menjadi lebih terkendali setelah kelompok tani membuat jadwal pengambilan air?', NULL, TRUE),
-(262, 2, 12, 2, 68, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa hubungan logis antara kapasitas embung yang terbatas dan aturan pembagian air?', NULL, TRUE),
-(263, 2, 12, 2, 68, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Pernyataan yang menjelaskan hubungan sebab-akibat dalam teks adalah …', NULL, TRUE),
-(264, 2, 12, 2, 68, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika petani kembali mengambil air tanpa perencanaan, hubungan yang paling mungkin terjadi adalah …', NULL, TRUE),
-(265, 2, 12, 2, 69, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa guru meminta prosedur pemasangan elektroda dan penggunaan alat ukur diperiksa kembali?', NULL, TRUE),
-(266, 2, 12, 2, 69, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa hubungan antara prosedur yang diseragamkan dan kesimpulan yang lebih hati-hati?', NULL, TRUE),
-(267, 2, 12, 2, 69, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Hubungan logis yang dapat dijelaskan dari teks adalah …', NULL, TRUE),
-(268, 2, 12, 2, 69, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa laporan siswa perlu memisahkan hasil pengamatan dari dugaan penyebab?', NULL, TRUE),
-(269, 2, 12, 2, 70, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa jumlah pesepeda meningkat setelah titik berkumpul dan aturan keselamatan dibuat?', NULL, TRUE),
-(270, 2, 12, 2, 70, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa hubungan antara hujan deras dan menurunnya jumlah pesepeda?', NULL, TRUE),
-(271, 2, 12, 2, 70, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Pilih pernyataan yang menjelaskan hubungan logis dalam teks.', NULL, TRUE),
-(272, 2, 12, 2, 70, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa sekolah tidak menganggap turunnya jumlah pesepeda saat hujan sebagai kegagalan program?', NULL, TRUE),
-(273, 2, 12, 2, 71, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa penyuluh meminta warga tidak langsung memasukkan ikan asing ke kolam budidaya?', NULL, TRUE),
-(274, 2, 12, 2, 71, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa hubungan antara pemeriksaan jenis ikan dan keputusan warga memisahkannya dari kolam utama?', NULL, TRUE),
-(275, 2, 12, 2, 71, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Hubungan logis yang sesuai dengan teks adalah …', NULL, TRUE),
-(276, 2, 12, 2, 71, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa warga tidak diminta langsung memusnahkan ikan tersebut?', NULL, TRUE),
-(277, 2, 12, 2, 72, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa peneliti mengubah cara pengambilan sampel setelah menemukan partikel pada air hujan?', NULL, TRUE),
-(278, 2, 12, 2, 72, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa hubungan antara metode identifikasi yang sesuai dan kesimpulan tentang mikroplastik?', NULL, TRUE),
-(279, 2, 12, 2, 72, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Pernyataan yang menjelaskan hubungan logis dalam teks adalah …', NULL, TRUE),
-(280, 2, 12, 2, 72, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa guru meminta siswa membedakan fakta, dugaan, dan pertanyaan yang belum terjawab?', NULL, TRUE),
-(281, 2, 12, 3, 73, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika hasil pengamatan berikutnya menunjukkan tanaman tetap tumbuh baik dengan penggunaan air yang wajar, tindakan yang paling mungkin dilakukan sekolah adalah …', NULL, TRUE),
-(282, 2, 12, 3, 73, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika data dari beberapa musim tetap menunjukkan suhu area taman lebih rendah, prediksi yang paling logis adalah …', NULL, TRUE),
-(283, 2, 12, 3, 73, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Prediksi yang didukung oleh informasi dalam teks adalah …', NULL, TRUE),
-(284, 2, 12, 3, 73, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika biaya perawatan ternyata terlalu tinggi meskipun suhu atap menurun, keputusan yang paling mungkin adalah …', NULL, TRUE),
-(285, 2, 12, 3, 74, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika jumlah pengguna bus tetap meningkat dan ketepatan waktu membaik, apa yang paling mungkin dipertimbangkan sekolah?', NULL, TRUE),
-(286, 2, 12, 3, 74, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika satu bus kembali mengalami kerusakan dan tidak tersedia kendaraan cadangan, kemungkinan dampak yang paling masuk akal adalah …', NULL, TRUE),
-(287, 2, 12, 3, 74, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Prediksi yang didukung teks adalah …', NULL, TRUE),
-(288, 2, 12, 3, 74, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika rute baru ternyata membuat waktu perjalanan lebih lama bagi sebagian besar siswa, tindakan yang paling mungkin dilakukan adalah …', NULL, TRUE),
-(289, 2, 12, 3, 75, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika catatan membaca singkat membuat siswa tetap membaca secara konsisten tanpa merasa terbebani, apa yang paling mungkin dilakukan sekolah?', NULL, TRUE),
-(290, 2, 12, 3, 75, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika hasil survei menunjukkan minat baca meningkat tetapi partisipasi dalam program menurun, langkah yang paling logis adalah …', NULL, TRUE),
-(291, 2, 12, 3, 75, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Prediksi yang masuk akal berdasarkan teks adalah …', NULL, TRUE),
-(292, 2, 12, 3, 75, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika catatan ringkas justru membuat siswa merasa terbebani, perubahan yang paling mungkin dilakukan sekolah adalah …', NULL, TRUE),
-(293, 2, 12, 3, 76, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika data menunjukkan penggunaan air hidroponik wajar, biaya listrik terjangkau, dan tanaman tetap sehat dalam jangka panjang, apa yang paling mungkin dilakukan sekolah?', NULL, TRUE),
-(294, 2, 12, 3, 76, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika kebutuhan perawatan ternyata terlalu tinggi, prediksi yang paling tepat adalah …', NULL, TRUE),
-(295, 2, 12, 3, 76, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Prediksi yang didukung oleh teks adalah …', NULL, TRUE),
-(296, 2, 12, 3, 76, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika kebocoran pipa muncul kembali setelah beberapa bulan, tindakan yang paling mungkin dilakukan tim adalah …', NULL, TRUE),
-(297, 2, 12, 3, 77, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika pencatatan rutin menunjukkan pola kenaikan air yang serupa di titik lain, apa yang paling mungkin dilakukan kelurahan?', NULL, TRUE),
-(298, 2, 12, 3, 77, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika saluran kembali tersumbat sebelum hujan berikutnya, peristiwa yang paling mungkin terjadi berdasarkan pola dalam teks adalah …', NULL, TRUE),
-(299, 2, 12, 3, 77, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Prediksi yang didukung oleh teks adalah …', NULL, TRUE),
-(300, 2, 12, 3, 77, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika pencatatan dilakukan tidak konsisten, dampak yang paling mungkin terhadap evaluasi kelurahan adalah …', NULL, TRUE),
-(301, 2, 13, 1, 78, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah tindakan dalam kehidupan sehari-hari yang paling relevan dengan isi teks di atas?', NULL, TRUE),
-(302, 2, 13, 1, 79, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan wacana tersebut, manakah perilaku masyarakat perkotaan yang mencerminkan penerapan isi teks? (Pilih semua jawaban yang benar)', NULL, TRUE),
-(303, 2, 13, 1, 80, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Sikap seorang siswa yang relevan dengan pesan teks tersebut adalah ...', NULL, TRUE),
-(304, 2, 13, 1, 81, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Peristiwa dalam kehidupan sehari-hari yang relevan dengan upaya penyelesaian masalah pada teks adalah ...', NULL, TRUE),
-(305, 2, 13, 1, 82, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah kejadian sehari-hari yang relevan dengan isi teks di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
-(306, 2, 13, 1, 83, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kebiasaan sehari-hari yang paling tepat diubah berdasarkan informasi tersebut adalah ...', NULL, TRUE),
-(307, 2, 13, 1, 84, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah perilaku di lingkungan sekolah yang relevan dengan prinsip efisiensi air dalam teks?', NULL, TRUE),
-(308, 2, 13, 1, 85, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah tindakan yang relevan dengan informasi tersebut? (Pilih semua jawaban yang benar)', NULL, TRUE),
-(309, 2, 13, 1, 86, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah kegiatan siswa di luar jam sekolah yang sesuai dengan rekomendasi teks?', NULL, TRUE),
-(310, 2, 13, 1, 87, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Tindakan di rumah yang paling mendukung penerapan sistem dalam teks adalah ...', NULL, TRUE),
-(311, 2, 13, 1, 88, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah kebiasaan masyarakat yang sesuai dengan ajakan teks di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
-(312, 2, 13, 1, 89, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Tindakan yang paling relevan dilakukan saat menerima pesan berantai di grup media sosial adalah ...', NULL, TRUE),
-(313, 2, 13, 1, 90, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah aktivitas warga desa yang sangat sesuai dengan teks tersebut?', NULL, TRUE),
-(314, 2, 13, 1, 91, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah kegiatan masyarakat yang relevan untuk menanggulangi bahaya tersebut? (Pilih semua jawaban yang benar)', NULL, TRUE),
-(315, 2, 13, 1, 92, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Langkah nyata yang paling sesuai dengan teks di atas dalam kehidupan rumah tangga adalah ...', NULL, TRUE),
-(316, 2, 13, 1, 93, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kebiasaan sekolah yang paling relevan dengan pesan kesehatan wacana tersebut adalah ...', NULL, TRUE),
-(317, 2, 13, 1, 94, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah penerapan di sekolah yang mendukung gerakan paperless tersebut? (Pilih semua jawaban yang benar)', NULL, TRUE),
-(318, 2, 13, 1, 95, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perilaku remaja yang menunjukkan kepedulian terhadap isu dalam teks adalah ...', NULL, TRUE),
-(319, 2, 13, 1, 96, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah menu sarapan di rumah yang relevan dengan ide diversifikasi pangan tersebut?', NULL, TRUE),
-(320, 2, 13, 1, 97, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Aktivitas akhir pekan yang relevan dengan isi wacana di atas adalah ... (Pilih semua jawaban yang benar)', NULL, TRUE),
-(321, 2, 13, 2, 98, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan perbandingan kedua teks, kesamaan informasi yang paling akurat adalah ...', NULL, TRUE),
-(322, 2, 13, 2, 99, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah pernyataan yang sesuai dengan perbandingan kedua teks di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
-(323, 2, 13, 2, 100, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah evaluasi yang paling tepat terkait ketidaksesuaian fasilitas di taman tersebut?', NULL, TRUE),
-(324, 2, 13, 2, 101, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Penggunaan konjungsi antarparagraf/antarkalimat penekanan dalam teks di atas sudah sesuai karena ...', NULL, TRUE),
-(325, 2, 13, 2, 102, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah kesimpulan analisis kesesuaian isi kedua teks di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
-(326, 2, 13, 2, 103, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah makna denotatif yang paling tepat untuk istilah teknis "emisi" dalam teks informasi tersebut?', NULL, TRUE),
-(327, 2, 13, 2, 104, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bagaimanakah tingkat keakuratan informasi antara Teks A dan Teks B?', NULL, TRUE),
-(328, 2, 13, 2, 105, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah unsur kebahasaan yang sesuai dengan ciri teks informasi di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
-(329, 2, 13, 2, 106, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Penilaian yang tepat terhadap kesesuaian judul wacana jika judul yang diberikan adalah "Cara Merawat Panel Surya di Rumah" adalah ...', NULL, TRUE),
-(330, 2, 13, 2, 107, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bagaimanakah kesesuaian fungsi konjungsi antarkalimat "Akan tetapi" pada kalimat (2)?', NULL, TRUE),
-(331, 2, 13, 2, 108, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah pernyataan kesesuaian fakta yang benar berdasarkan kedua teks di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
-(332, 2, 13, 2, 109, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah ilustrasi pelaksanaan yang paling sesuai dengan penjelasan metode dalam teks?', NULL, TRUE),
-(333, 2, 13, 2, 110, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Keakuratan informasi tersebut didukung oleh argumen bahwa ...', NULL, TRUE),
-(334, 2, 13, 2, 111, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah poin kesesuaian antara Berita A dan Berita B? (Pilih semua jawaban yang benar)', NULL, TRUE),
-(335, 2, 13, 2, 112, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah pernyataan yang tidak sesuai dengan isi wacana di atas?', NULL, TRUE),
-(336, 2, 13, 2, 113, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Penggunaan kata hubung "Sebaliknya" dalam wacana di atas sudah tepat karena berfungsi ...', NULL, TRUE),
-(337, 2, 13, 2, 114, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah pernyataan kesesuaian hubungan antar teks yang benar? (Pilih semua jawaban yang benar)', NULL, TRUE),
-(338, 2, 13, 2, 115, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah istilah teknis dan definisinya yang sesuai berdasarkan teks di atas?', NULL, TRUE),
-(339, 2, 13, 2, 116, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah informasi yang paling akurat sesuai wacana tersebut?', NULL, TRUE),
-(340, 2, 13, 2, 117, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah bentuk kesesuaian antara Teks A dan Teks B? (Pilih semua jawaban yang benar)', NULL, TRUE),
-(341, 2, 13, 3, 118, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Respons emosional yang paling dominan muncul pada diri pembaca setelah membaca fakta dalam teks informasi tersebut adalah ...', NULL, TRUE),
-(342, 2, 13, 3, 119, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah respons emosional dan afektif pembaca yang sesuai saat membaca informasi di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
-(343, 2, 13, 3, 120, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perasaan yang terunggah pada pembaca saat mengapresiasi berita musibah dalam teks informasi tersebut adalah ...', NULL, TRUE),
-(344, 2, 13, 3, 121, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bagaimanakah respons emosional yang tepat dari pembaca terhadap kabar berita tersebut?', NULL, TRUE),
-(345, 2, 13, 3, 122, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah respons emosional dan kepedulian yang muncul pada pembaca melihat fenomena dalam teks informasi tersebut? (Pilih semua jawaban yang benar)', NULL, TRUE),
-(346, 2, 13, 3, 123, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Dampak emosional yang dirasakan pembaca saat memahami konsekuensi dari teks informasi di atas adalah ...', NULL, TRUE),
-(347, 2, 13, 3, 124, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kesan emosional positif yang didapatkan pembaca dari wacana keberhasilan tersebut adalah ...', NULL, TRUE),
-(348, 2, 13, 3, 125, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah bentuk respons afektif pembaca yang tepat dalam menyikapi fenomena kebahasaan teks di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
-(349, 2, 13, 3, 126, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Respons emosional yang paling tepat saat menyadari fakta kesehatan pada teks informasi tersebut adalah ...', NULL, TRUE),
-(350, 2, 13, 3, 127, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apresiasi emosional dan afektif yang dirasakan pembaca atas pencapaian program tersebut adalah ...', NULL, TRUE),
-(351, 2, 13, 3, 128, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah respons empati pembaca yang sesuai dengan situasi wacana di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
-(352, 2, 13, 3, 129, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bagaimana respons afektif pembaca terhadap informasi karya inovasi ini?', NULL, TRUE),
-(353, 2, 13, 3, 130, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Sikap afektif dan emosional yang wajar dirasakan pembaca terhadap bahaya penyebaran hoaks tersebut adalah ...', NULL, TRUE),
-(354, 2, 13, 3, 131, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah bentuk perasaan dan apresiasi pembaca terhadap berita pemulihan lingkungan tersebut? (Pilih semua jawaban mengenai keberhasilan)', NULL, TRUE),
-(355, 2, 13, 3, 132, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Respons emosional yang muncul dalam diri pembaca melihat perjuangan para atlet tersebut adalah ...', NULL, TRUE),
-(356, 2, 13, 3, 133, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Tanggapan afektif pembaca terkait kontradiksi fakta pada teks informasi tersebut adalah ...', NULL, TRUE),
-(357, 2, 13, 3, 134, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah respons afektif yang tepat dari pembaca terhadap keberadaan dapur komunitas? (Pilih semua jawaban yang benar)', NULL, TRUE),
-(358, 2, 13, 3, 135, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kesan afektif pembaca terhadap penggunaan kebahasaan pada artikel berita tersebut adalah ...', NULL, TRUE),
-(359, 2, 13, 3, 136, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perasaan yang paling dominan dirasakan pembaca terhadap aksi komunitas tersebut adalah ...', NULL, TRUE),
-(360, 2, 13, 3, 137, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah respons emosional dan penolakan yang muncul pada pembaca melihat kenyataan wacana di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
-(361, 2, 14, 1, 138, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Media tanam pada paragraf kedua adalah ...', NULL, TRUE),
-(362, 2, 14, 1, 138, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Tanaman yang dijadikan contoh dalam teks tersebut adalah ...', NULL, TRUE),
-(363, 2, 14, 1, 138, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata pemanenan pada paragraf keempat bermakna ...', NULL, TRUE),
-(364, 2, 14, 1, 139, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Latar tempat pada awal cerita adalah ...', NULL, TRUE),
-(365, 2, 14, 1, 139, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Kata atau frasa yang menunjukkan bahwa sepeda Raka sudah lama dipakai adalah ... Pilihlah semua jawaban yang benar!', NULL, TRUE),
-(366, 2, 14, 1, 139, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata kusam pada paragraf kedua bermakna ...', NULL, TRUE),
-(367, 2, 14, 1, 140, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Stup pada paragraf kedua adalah ...', NULL, TRUE),
-(368, 2, 14, 1, 140, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pernyataan yang sesuai dengan penggunaan istilah propolis dalam teks adalah ... Pilihlah semua jawaban yang benar!', NULL, TRUE),
-(369, 2, 14, 1, 140, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata penyerbukan pada paragraf keempat bermakna ...', NULL, TRUE),
-(370, 2, 14, 1, 141, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata cakrawala pada paragraf pertama bermakna ...', NULL, TRUE),
-(371, 2, 14, 1, 141, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Latar tempat yang disebutkan langsung dalam cerita adalah ... Pilihlah semua jawaban yang benar!', NULL, TRUE),
-(372, 2, 14, 1, 141, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata lirih pada paragraf kelima bermakna ...', NULL, TRUE),
-(373, 2, 14, 1, 142, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Istilah ekosistem pada paragraf pertama paling tepat bermakna ...', NULL, TRUE),
-(374, 2, 14, 1, 142, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pernyataan yang sesuai dengan penggunaan istilah pemutihan karang dalam teks adalah ... Pilihlah semua jawaban yang benar!', NULL, TRUE),
-(375, 2, 14, 1, 142, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Frasa saling menguntungkan pada paragraf kedua menunjukkan hubungan antara karang dan alga yang ...', NULL, TRUE),
-(376, 2, 14, 1, 143, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata merantau pada paragraf kedua bermakna ...', NULL, TRUE),
-(377, 2, 14, 1, 143, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Ungkapan yang menggunakan makna kias dalam cerita adalah ... Pilihlah semua jawaban yang benar!', NULL, TRUE),
-(378, 2, 14, 1, 143, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata menepi pada kalimat "awan kelabu perlahan menepi" bermakna ...', NULL, TRUE),
-(379, 2, 14, 1, 144, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Istilah konversi energi pada paragraf kedua bermakna ...', NULL, TRUE),
-(380, 2, 14, 1, 144, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pernyataan yang sesuai dengan penggunaan istilah energi terbarukan dalam teks adalah ... Pilihlah semua jawaban yang benar!', NULL, TRUE),
-(381, 2, 14, 2, 145, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang dibawa Kakek Jaya saat menemui Bima di beranda?', NULL, TRUE),
-(382, 2, 14, 2, 145, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa Bima merasa murung pada sore itu?', NULL, TRUE),
-(383, 2, 14, 2, 145, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang terjadi pada layang-layang pertama yang dibuat Bima dan Kakek?', NULL, TRUE),
-(384, 2, 14, 2, 145, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pilihlah semua bahan atau alat yang dipakai Bima dan Kakek untuk membuat layang-layang! (Jawaban benar lebih dari satu)', NULL, TRUE),
-(385, 2, 14, 2, 145, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan benar atau salah setiap pernyataan berikut berdasarkan Teks 1!', NULL, TRUE),
-(386, 2, 14, 2, 146, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa hadiah yang dibawa Laras untuk Bu Ningsih?', NULL, TRUE),
-(387, 2, 14, 2, 146, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa Laras menyembunyikan kotaknya di dalam tas?', NULL, TRUE),
-(388, 2, 14, 2, 146, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang dibawa Maya untuk Bu Ningsih?', NULL, TRUE),
-(389, 2, 14, 2, 146, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang dibawa Ari saat mengikuti ayahnya ke pantai?', NULL, TRUE),
-(390, 2, 14, 2, 146, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kapan Ari dan ayahnya berangkat ke pantai?', NULL, TRUE),
-(391, 2, 14, 2, 147, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang diminta Pak Darto kepada Ari ketika ombak besar menghantam perahu?', NULL, TRUE),
-(392, 2, 14, 2, 147, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang dilakukan Ari dan ayahnya agar jaring terlepas dari karang?', NULL, TRUE),
-(393, 2, 14, 2, 147, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan benar atau salah setiap pernyataan berikut berdasarkan Teks 3!', NULL, TRUE),
-(394, 2, 14, 2, 147, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Siapa yang menjaga perpustakaan desa dalam Teks 4?', NULL, TRUE),
-(395, 2, 14, 2, 147, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa Dimas tidak menemukan buku tentang planet di rak?', NULL, TRUE),
-(396, 2, 14, 2, 147, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang dibaca Dimas setelah tahu bukunya sedang dipinjam?', NULL, TRUE),
-(397, 2, 14, 2, 147, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pilihlah semua benda yang dipasang Bu Wati di sudut baca kecil! (Jawaban benar lebih dari satu)', NULL, TRUE),
-(398, 2, 14, 2, 147, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Planet berwarna biru yang ditunjuk Tika bernama ...', NULL, TRUE),
-(399, 2, 14, 2, 146, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa hadiah yang dibawa Yoga untuk Bu Ningsih pada hari ulang tahunnya?', NULL, TRUE),
-(400, 2, 14, 2, 146, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bagaimana respons Bu Ningsih saat menerima hadiah bros bunga matahari dari Laras?', NULL, TRUE),
-(401, 2, 14, 3, 148, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Ide pokok paragraf 1 Teks 5 adalah ...', NULL, TRUE),
-(402, 2, 14, 3, 148, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Urutan peristiwa yang benar dalam Teks 5 adalah ...', NULL, TRUE),
-(403, 2, 14, 3, 148, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perhatikan kerangka Teks 5 berikut.
+INSERT INTO `question_banks` (
+    `id`, `subject_id`, `sub_material_id`, `cognitive_level_id`, `stimulus_id`,
+    `bank_type`, `question_format`, `question_text`, `question_image_url`, `is_active`
+) VALUES
+(181, 2, 11, 1, 35, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Makna istilah \'algoritma\' pada teks tersebut adalah...', NULL, TRUE),
+(182, 2, 11, 1, 35, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata \'efisiensi\' bersinonim dengan kata...', NULL, TRUE),
+(183, 2, 11, 1, 36, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa makna kata \'limbah\' pada kalimat pertama?', NULL, TRUE),
+(184, 2, 11, 1, 36, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Makna kata \'terdegradasi\' sesuai konteks kalimat adalah...', NULL, TRUE),
+(185, 2, 11, 1, 37, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata \'imunitas\' memiliki arti...', NULL, TRUE),
+(186, 2, 11, 1, 37, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Arti kata \'proporsional\' pada kalimat terakhir adalah...', NULL, TRUE),
+(187, 2, 11, 1, 38, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Makna istilah "ekstrak" yang digunakan pada paragraf tersebut adalah...', NULL, TRUE),
+(188, 2, 11, 1, 38, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Istilah "khasiat" pada kalimat terakhir di teks tersebut bersinonim atau memiliki arti yang sama dengan kata...', NULL, TRUE),
+(189, 2, 11, 1, 39, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Istilah \'inflasi\' dalam teks memiliki arti...', NULL, TRUE),
+(190, 2, 11, 1, 39, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Frasa \'daya beli\' pada teks tersebut merujuk pada...', NULL, TRUE),
+(191, 2, 11, 1, 40, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Arti dari kata \'konstelasi\' adalah...', NULL, TRUE),
+(192, 2, 11, 1, 40, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata \'gravitasi\' dalam kalimat bermakna...', NULL, TRUE),
+(193, 2, 11, 1, 41, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Istilah \'harmoni\' dalam konteks musik bermakna...', NULL, TRUE),
+(194, 2, 11, 1, 41, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Makna kata \'maestro\' pada teks tersebut adalah...', NULL, TRUE),
+(195, 2, 11, 1, 42, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Makna kata \'siluet\' pada kalimat pertama adalah...', NULL, TRUE),
+(196, 2, 11, 1, 42, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata \'terkuak\' pada kalimat terakhir memiliki arti...', NULL, TRUE),
+(197, 2, 11, 1, 43, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Istilah \'erupsi\' berarti...', NULL, TRUE),
+(198, 2, 11, 1, 43, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Makna istilah \'mitigasi\' pada kalimat terakhir adalah...', NULL, TRUE),
+(199, 2, 11, 1, 44, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata \'stamina\' dalam kalimat tersebut merujuk pada...', NULL, TRUE),
+(200, 2, 11, 1, 44, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Istilah \'sportivitas\' mengandung makna...', NULL, TRUE),
+(201, 2, 11, 2, 45, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Di kota manakah Candi Borobudur berada berdasarkan teks?', NULL, TRUE),
+(202, 2, 11, 2, 45, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Pada abad ke berapakah Candi Borobudur dibangun?', NULL, TRUE),
+(203, 2, 11, 2, 45, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Siapa yang membangun Candi Borobudur menurut teks?', NULL, TRUE),
+(204, 2, 11, 2, 46, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Di provinsi manakah letak Gunung Bromo berdasarkan teks tersebut?', NULL, TRUE),
+(205, 2, 11, 2, 46, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kendaraan apa yang biasanya disewa oleh para pengunjung untuk berkeliling di lautan pasir?', NULL, TRUE),
+(206, 2, 11, 2, 46, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Siapakah nama suku asli yang mendiami wilayah sekitar Gunung Bromo?', NULL, TRUE),
+(207, 2, 11, 2, 47, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Fungsi utama akar hutan mangrove menurut teks adalah...', NULL, TRUE),
+(208, 2, 11, 2, 47, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bencana alam apa yang gelombangnya dapat dipecah oleh mangrove?', NULL, TRUE),
+(209, 2, 11, 2, 47, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Hewan apa saja yang menjadikan hutan mangrove sebagai habitatnya?', NULL, TRUE),
+(210, 2, 11, 2, 48, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang dimaksud dengan pemanasan global menurut teks?', NULL, TRUE),
+(211, 2, 11, 2, 48, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Salah satu penyebab utama pemanasan global adalah...', NULL, TRUE),
+(212, 2, 11, 2, 48, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berikut ini yang merupakan dampak pemanasan global sesuai teks, KECUALI...', NULL, TRUE),
+(213, 2, 11, 2, 49, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kebijakan apa yang sedang digalakkan oleh pemerintah kota berdasarkan teks?', NULL, TRUE),
+(214, 2, 11, 2, 49, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa tujuan utama dari kebijakan penggunaan tas kain tersebut?', NULL, TRUE),
+(215, 2, 11, 2, 49, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang terjadi jika pembeli tidak membawa tas sendiri di pasar swalayan saat ini?', NULL, TRUE),
+(216, 2, 11, 2, 50, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang terjadi pada warna kulit buah pisang ketika sudah matang?', NULL, TRUE),
+(217, 2, 11, 2, 50, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan teks, apa fungsi utama dari tingginya kandungan kalium pada buah pisang?', NULL, TRUE),
+(218, 2, 11, 2, 50, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bagian dari tanaman pisang yang sering dimanfaatkan sebagai pembungkus makanan adalah...', NULL, TRUE),
+(219, 2, 11, 2, 51, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa sarapan disebut sebagai waktu makan paling penting?', NULL, TRUE),
+(220, 2, 11, 2, 51, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa manfaat rutin sarapan bagi anak-anak sekolah?', NULL, TRUE),
+(221, 2, 11, 3, 52, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika proses pada teks di atas dibuat menjadi bagan alur, urutan yang tepat adalah...', NULL, TRUE),
+(222, 2, 11, 3, 52, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Tahapan yang menempati kotak kedua dalam kerangka proses siklus air tersebut adalah...', NULL, TRUE),
+(223, 2, 11, 3, 52, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kerangka gagasan pokok dari teks tersebut secara berurutan adalah...', NULL, TRUE),
+(224, 2, 11, 3, 53, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kerangka waktu berurutan peristiwa Kongres Pemuda II adalah...', NULL, TRUE),
+(225, 2, 11, 3, 53, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika disusun dalam bagan topik rapat, urutan yang tepat dari rapat pertama hingga ketiga adalah...', NULL, TRUE),
+(226, 2, 11, 3, 53, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Topik yang menempati urutan kerangka bagian tengah (rapat kedua) adalah...', NULL, TRUE),
+(227, 2, 11, 3, 54, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika instruksi di atas dibuat bagan langkah-langkah, tahapan pertama dan kedua secara berurutan adalah...', NULL, TRUE),
+(228, 2, 11, 3, 54, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan kerangka prosedur, apa langkah yang harus dilakukan setelah membalut telur dengan adonan?', NULL, TRUE),
+(229, 2, 11, 3, 54, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Langkah persiapan bahan (membuat adonan abu) berada pada urutan ke berapa dalam teks?', NULL, TRUE),
+(230, 2, 11, 3, 55, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bagan daur hidup kupu-kupu yang benar berdasarkan teks adalah...', NULL, TRUE),
+(231, 2, 11, 3, 55, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Dalam kerangka teks, informasi yang dijelaskan setelah fase larva (ulat) adalah...', NULL, TRUE),
+(232, 2, 11, 3, 56, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika dibuat kerangka waktu, fase di mana hewan tersebut \'berpuasa dan beristirahat\' berada pada tahap ke...', NULL, TRUE),
+(233, 2, 11, 3, 57, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kerangka spasial (keruangan) pembagian area TMII dari depan ke belakang adalah...', NULL, TRUE),
+(234, 2, 11, 3, 57, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika Anda menyusun bagan wisata, objek wisata apa yang berada di area tengah?', NULL, TRUE),
+(235, 2, 11, 3, 57, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bagian penutup dari kerangka deskripsi area TMII menjelaskan tentang...', NULL, TRUE),
+(236, 2, 11, 3, 58, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan teks, urutan menggosok tangan yang tepat setelah memakai sabun adalah...', NULL, TRUE),
+(237, 2, 11, 3, 58, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Dalam kerangka panduan, apa yang harus dilakukan sebelum membilas dengan air?', NULL, TRUE),
+(238, 2, 11, 3, 58, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Langkah paling akhir (penutup alur) dalam proses mencuci tangan tersebut adalah...', NULL, TRUE),
+(239, 2, 11, 3, 59, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Susunan tingkatan Candi Borobudur dari bawah ke atas adalah...', NULL, TRUE),
+(240, 2, 11, 3, 59, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika dibuat kerangka gagasan, makna tingkatan tengah (Rupadhatu) adalah...', NULL, TRUE),
+(241, 2, 12, 1, 60, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan yang paling tepat untuk menggambarkan keseluruhan isi teks adalah …', NULL, TRUE),
+(242, 2, 12, 1, 60, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Informasi manakah yang paling kuat mendukung kesimpulan bahwa manfaat kebun tidak hanya berasal dari keberadaan tanaman, tetapi juga dari cara kebun dikelola?', NULL, TRUE),
+(243, 2, 12, 1, 60, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Pilih semua pernyataan yang dapat disimpulkan secara tersirat dari teks.', NULL, TRUE),
+(244, 2, 12, 1, 60, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika sekolah mengabaikan jadwal perawatan setelah kebun diperluas, kesimpulan yang paling logis berdasarkan pengalaman pada teks adalah …', NULL, TRUE),
+(245, 2, 12, 1, 61, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan yang paling tepat tentang program membawa tumbler adalah …', NULL, TRUE),
+(246, 2, 12, 1, 61, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Gagasan tersirat yang dapat disimpulkan dari keputusan tidak langsung menghapus minuman kemasan adalah …', NULL, TRUE),
+(247, 2, 12, 1, 61, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Pernyataan yang dapat disimpulkan dari teks adalah …', NULL, TRUE),
+(248, 2, 12, 1, 61, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kesimpulan yang paling tepat mengenai rencana evaluasi setelah satu semester adalah …', NULL, TRUE),
+(249, 2, 12, 1, 62, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan utama yang paling tepat dari teks perpustakaan digital adalah …', NULL, TRUE),
+(250, 2, 12, 1, 62, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa peningkatan jumlah peminjaman belum dapat langsung disimpulkan sebagai tanda bahwa layanan sudah berhasil sepenuhnya?', NULL, TRUE),
+(251, 2, 12, 1, 62, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Kesimpulan yang dapat ditarik dari teks adalah …', NULL, TRUE),
+(252, 2, 12, 1, 62, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika pelatihan lanjutan dihentikan sementara, kesimpulan yang paling masuk akal adalah …', NULL, TRUE),
+(253, 2, 12, 1, 63, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan yang paling tepat tentang upaya mengurangi sisa makanan adalah …', NULL, TRUE),
+(254, 2, 12, 1, 63, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa gagasan tersirat yang menjelaskan mengapa porsi kecil dapat menjadi solusi?', NULL, TRUE),
+(255, 2, 12, 1, 63, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Pernyataan yang dapat disimpulkan adalah …', NULL, TRUE),
+(256, 2, 12, 1, 63, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika kantin kembali menyediakan hanya porsi besar, prediksi kesimpulan yang paling logis adalah …', NULL, TRUE),
+(257, 2, 12, 1, 64, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan paling tepat dari penggunaan lampu jalan tenaga surya dalam teks adalah …', NULL, TRUE),
+(258, 2, 12, 1, 64, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa pemerintah daerah belum langsung memasang lampu serupa di semua jalan?', NULL, TRUE),
+(259, 2, 12, 1, 64, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Kesimpulan yang dapat ditarik dari pengalaman pemasangan lampu adalah …', NULL, TRUE),
+(260, 2, 12, 1, 64, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika data menunjukkan biaya perawatan jauh lebih tinggi daripada perkiraan, kesimpulan yang paling mungkin diambil pemerintah adalah …', NULL, TRUE),
+(261, 2, 12, 2, 65, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa penurunan volume air embung menjadi lebih terkendali setelah kelompok tani membuat jadwal pengambilan air?', NULL, TRUE),
+(262, 2, 12, 2, 65, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa hubungan logis antara kapasitas embung yang terbatas dan aturan pembagian air?', NULL, TRUE),
+(263, 2, 12, 2, 65, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Pernyataan yang menjelaskan hubungan sebab-akibat dalam teks adalah …', NULL, TRUE),
+(264, 2, 12, 2, 65, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika petani kembali mengambil air tanpa perencanaan, hubungan yang paling mungkin terjadi adalah …', NULL, TRUE),
+(265, 2, 12, 2, 66, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa guru meminta prosedur pemasangan elektroda dan penggunaan alat ukur diperiksa kembali?', NULL, TRUE),
+(266, 2, 12, 2, 66, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa hubungan antara prosedur yang diseragamkan dan kesimpulan yang lebih hati-hati?', NULL, TRUE),
+(267, 2, 12, 2, 66, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Hubungan logis yang dapat dijelaskan dari teks adalah …', NULL, TRUE),
+(268, 2, 12, 2, 66, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa laporan siswa perlu memisahkan hasil pengamatan dari dugaan penyebab?', NULL, TRUE),
+(269, 2, 12, 2, 67, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa jumlah pesepeda meningkat setelah titik berkumpul dan aturan keselamatan dibuat?', NULL, TRUE),
+(270, 2, 12, 2, 67, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa hubungan antara hujan deras dan menurunnya jumlah pesepeda?', NULL, TRUE),
+(271, 2, 12, 2, 67, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Pilih pernyataan yang menjelaskan hubungan logis dalam teks.', NULL, TRUE),
+(272, 2, 12, 2, 67, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa sekolah tidak menganggap turunnya jumlah pesepeda saat hujan sebagai kegagalan program?', NULL, TRUE),
+(273, 2, 12, 2, 68, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa penyuluh meminta warga tidak langsung memasukkan ikan asing ke kolam budidaya?', NULL, TRUE),
+(274, 2, 12, 2, 68, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa hubungan antara pemeriksaan jenis ikan dan keputusan warga memisahkannya dari kolam utama?', NULL, TRUE),
+(275, 2, 12, 2, 68, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Hubungan logis yang sesuai dengan teks adalah …', NULL, TRUE),
+(276, 2, 12, 2, 68, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa warga tidak diminta langsung memusnahkan ikan tersebut?', NULL, TRUE),
+(277, 2, 12, 2, 69, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa peneliti mengubah cara pengambilan sampel setelah menemukan partikel pada air hujan?', NULL, TRUE),
+(278, 2, 12, 2, 69, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa hubungan antara metode identifikasi yang sesuai dan kesimpulan tentang mikroplastik?', NULL, TRUE),
+(279, 2, 12, 2, 69, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Pernyataan yang menjelaskan hubungan logis dalam teks adalah …', NULL, TRUE),
+(280, 2, 12, 2, 69, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa guru meminta siswa membedakan fakta, dugaan, dan pertanyaan yang belum terjawab?', NULL, TRUE),
+(281, 2, 12, 3, 70, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika hasil pengamatan berikutnya menunjukkan tanaman tetap tumbuh baik dengan penggunaan air yang wajar, tindakan yang paling mungkin dilakukan sekolah adalah …', NULL, TRUE),
+(282, 2, 12, 3, 70, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika data dari beberapa musim tetap menunjukkan suhu area taman lebih rendah, prediksi yang paling logis adalah …', NULL, TRUE),
+(283, 2, 12, 3, 70, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Prediksi yang didukung oleh informasi dalam teks adalah …', NULL, TRUE),
+(284, 2, 12, 3, 70, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika biaya perawatan ternyata terlalu tinggi meskipun suhu atap menurun, keputusan yang paling mungkin adalah …', NULL, TRUE),
+(285, 2, 12, 3, 71, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika jumlah pengguna bus tetap meningkat dan ketepatan waktu membaik, apa yang paling mungkin dipertimbangkan sekolah?', NULL, TRUE),
+(286, 2, 12, 3, 71, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika satu bus kembali mengalami kerusakan dan tidak tersedia kendaraan cadangan, kemungkinan dampak yang paling masuk akal adalah …', NULL, TRUE),
+(287, 2, 12, 3, 71, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Prediksi yang didukung teks adalah …', NULL, TRUE),
+(288, 2, 12, 3, 71, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika rute baru ternyata membuat waktu perjalanan lebih lama bagi sebagian besar siswa, tindakan yang paling mungkin dilakukan adalah …', NULL, TRUE),
+(289, 2, 12, 3, 72, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika catatan membaca singkat membuat siswa tetap membaca secara konsisten tanpa merasa terbebani, apa yang paling mungkin dilakukan sekolah?', NULL, TRUE),
+(290, 2, 12, 3, 72, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika hasil survei menunjukkan minat baca meningkat tetapi partisipasi dalam program menurun, langkah yang paling logis adalah …', NULL, TRUE),
+(291, 2, 12, 3, 72, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Prediksi yang masuk akal berdasarkan teks adalah …', NULL, TRUE),
+(292, 2, 12, 3, 72, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika catatan ringkas justru membuat siswa merasa terbebani, perubahan yang paling mungkin dilakukan sekolah adalah …', NULL, TRUE),
+(293, 2, 12, 3, 73, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika data menunjukkan penggunaan air hidroponik wajar, biaya listrik terjangkau, dan tanaman tetap sehat dalam jangka panjang, apa yang paling mungkin dilakukan sekolah?', NULL, TRUE),
+(294, 2, 12, 3, 73, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika kebutuhan perawatan ternyata terlalu tinggi, prediksi yang paling tepat adalah …', NULL, TRUE),
+(295, 2, 12, 3, 73, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Prediksi yang didukung oleh teks adalah …', NULL, TRUE),
+(296, 2, 12, 3, 73, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika kebocoran pipa muncul kembali setelah beberapa bulan, tindakan yang paling mungkin dilakukan tim adalah …', NULL, TRUE),
+(297, 2, 12, 3, 74, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika pencatatan rutin menunjukkan pola kenaikan air yang serupa di titik lain, apa yang paling mungkin dilakukan kelurahan?', NULL, TRUE),
+(298, 2, 12, 3, 74, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika saluran kembali tersumbat sebelum hujan berikutnya, peristiwa yang paling mungkin terjadi berdasarkan pola dalam teks adalah …', NULL, TRUE),
+(299, 2, 12, 3, 74, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'PGK MCMA. Prediksi yang didukung oleh teks adalah …', NULL, TRUE),
+(300, 2, 12, 3, 74, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika pencatatan dilakukan tidak konsisten, dampak yang paling mungkin terhadap evaluasi kelurahan adalah …', NULL, TRUE),
+(301, 2, 13, 1, 75, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah tindakan dalam kehidupan sehari-hari yang paling relevan dengan isi teks di atas?', NULL, TRUE),
+(302, 2, 13, 1, 76, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan wacana tersebut, manakah perilaku masyarakat perkotaan yang mencerminkan penerapan isi teks? (Pilih semua jawaban yang benar)', NULL, TRUE),
+(303, 2, 13, 1, 77, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Sikap seorang siswa yang relevan dengan pesan teks tersebut adalah ...', NULL, TRUE),
+(304, 2, 13, 1, 78, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Peristiwa dalam kehidupan sehari-hari yang relevan dengan upaya penyelesaian masalah pada teks adalah ...', NULL, TRUE),
+(305, 2, 13, 1, 79, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah kejadian sehari-hari yang relevan dengan isi teks di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
+(306, 2, 13, 1, 80, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kebiasaan sehari-hari yang paling tepat diubah berdasarkan informasi tersebut adalah ...', NULL, TRUE),
+(307, 2, 13, 1, 81, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah perilaku di lingkungan sekolah yang relevan dengan prinsip efisiensi air dalam teks?', NULL, TRUE),
+(308, 2, 13, 1, 82, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah tindakan yang relevan dengan informasi tersebut? (Pilih semua jawaban yang benar)', NULL, TRUE),
+(309, 2, 13, 1, 83, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah kegiatan siswa di luar jam sekolah yang sesuai dengan rekomendasi teks?', NULL, TRUE),
+(310, 2, 13, 1, 84, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Tindakan di rumah yang paling mendukung penerapan sistem dalam teks adalah ...', NULL, TRUE),
+(311, 2, 13, 1, 85, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah kebiasaan masyarakat yang sesuai dengan ajakan teks di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
+(312, 2, 13, 1, 86, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Tindakan yang paling relevan dilakukan saat menerima pesan berantai di grup media sosial adalah ...', NULL, TRUE),
+(313, 2, 13, 1, 87, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah aktivitas warga desa yang sangat sesuai dengan teks tersebut?', NULL, TRUE),
+(314, 2, 13, 1, 88, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah kegiatan masyarakat yang relevan untuk menanggulangi bahaya tersebut? (Pilih semua jawaban yang benar)', NULL, TRUE),
+(315, 2, 13, 1, 89, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Langkah nyata yang paling sesuai dengan teks di atas dalam kehidupan rumah tangga adalah ...', NULL, TRUE),
+(316, 2, 13, 1, 90, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kebiasaan sekolah yang paling relevan dengan pesan kesehatan wacana tersebut adalah ...', NULL, TRUE),
+(317, 2, 13, 1, 91, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah penerapan di sekolah yang mendukung gerakan paperless tersebut? (Pilih semua jawaban yang benar)', NULL, TRUE),
+(318, 2, 13, 1, 92, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perilaku remaja yang menunjukkan kepedulian terhadap isu dalam teks adalah ...', NULL, TRUE),
+(319, 2, 13, 1, 93, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah menu sarapan di rumah yang relevan dengan ide diversifikasi pangan tersebut?', NULL, TRUE),
+(320, 2, 13, 1, 94, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Aktivitas akhir pekan yang relevan dengan isi wacana di atas adalah ... (Pilih semua jawaban yang benar)', NULL, TRUE),
+(321, 2, 13, 2, 95, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan perbandingan kedua teks, kesamaan informasi yang paling akurat adalah ...', NULL, TRUE),
+(322, 2, 13, 2, 96, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah pernyataan yang sesuai dengan perbandingan kedua teks di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
+(323, 2, 13, 2, 97, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah evaluasi yang paling tepat terkait ketidaksesuaian fasilitas di taman tersebut?', NULL, TRUE),
+(324, 2, 13, 2, 98, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Penggunaan konjungsi antarparagraf/antarkalimat penekanan dalam teks di atas sudah sesuai karena ...', NULL, TRUE),
+(325, 2, 13, 2, 99, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah kesimpulan analisis kesesuaian isi kedua teks di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
+(326, 2, 13, 2, 100, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah makna denotatif yang paling tepat untuk istilah teknis "emisi" dalam teks informasi tersebut?', NULL, TRUE),
+(327, 2, 13, 2, 101, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bagaimanakah tingkat keakuratan informasi antara Teks A dan Teks B?', NULL, TRUE),
+(328, 2, 13, 2, 102, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah unsur kebahasaan yang sesuai dengan ciri teks informasi di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
+(329, 2, 13, 2, 103, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Penilaian yang tepat terhadap kesesuaian judul wacana jika judul yang diberikan adalah "Cara Merawat Panel Surya di Rumah" adalah ...', NULL, TRUE),
+(330, 2, 13, 2, 104, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bagaimanakah kesesuaian fungsi konjungsi antarkalimat "Akan tetapi" pada kalimat (2)?', NULL, TRUE),
+(331, 2, 13, 2, 105, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah pernyataan kesesuaian fakta yang benar berdasarkan kedua teks di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
+(332, 2, 13, 2, 106, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah ilustrasi pelaksanaan yang paling sesuai dengan penjelasan metode dalam teks?', NULL, TRUE),
+(333, 2, 13, 2, 107, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Keakuratan informasi tersebut didukung oleh argumen bahwa ...', NULL, TRUE),
+(334, 2, 13, 2, 108, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah poin kesesuaian antara Berita A dan Berita B? (Pilih semua jawaban yang benar)', NULL, TRUE),
+(335, 2, 13, 2, 109, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah pernyataan yang tidak sesuai dengan isi wacana di atas?', NULL, TRUE),
+(336, 2, 13, 2, 110, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Penggunaan kata hubung "Sebaliknya" dalam wacana di atas sudah tepat karena berfungsi ...', NULL, TRUE),
+(337, 2, 13, 2, 111, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah pernyataan kesesuaian hubungan antar teks yang benar? (Pilih semua jawaban yang benar)', NULL, TRUE),
+(338, 2, 13, 2, 112, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah istilah teknis dan definisinya yang sesuai berdasarkan teks di atas?', NULL, TRUE),
+(339, 2, 13, 2, 113, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Manakah informasi yang paling akurat sesuai wacana tersebut?', NULL, TRUE),
+(340, 2, 13, 2, 114, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah bentuk kesesuaian antara Teks A dan Teks B? (Pilih semua jawaban yang benar)', NULL, TRUE),
+(341, 2, 13, 3, 115, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Respons emosional yang paling dominan muncul pada diri pembaca setelah membaca fakta dalam teks informasi tersebut adalah ...', NULL, TRUE),
+(342, 2, 13, 3, 116, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah respons emosional dan afektif pembaca yang sesuai saat membaca informasi di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
+(343, 2, 13, 3, 117, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perasaan yang terunggah pada pembaca saat mengapresiasi berita musibah dalam teks informasi tersebut adalah ...', NULL, TRUE),
+(344, 2, 13, 3, 118, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bagaimanakah respons emosional yang tepat dari pembaca terhadap kabar berita tersebut?', NULL, TRUE),
+(345, 2, 13, 3, 119, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah respons emosional dan kepedulian yang muncul pada pembaca melihat fenomena dalam teks informasi tersebut? (Pilih semua jawaban yang benar)', NULL, TRUE),
+(346, 2, 13, 3, 120, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Dampak emosional yang dirasakan pembaca saat memahami konsekuensi dari teks informasi di atas adalah ...', NULL, TRUE),
+(347, 2, 13, 3, 121, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kesan emosional positif yang didapatkan pembaca dari wacana keberhasilan tersebut adalah ...', NULL, TRUE),
+(348, 2, 13, 3, 122, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah bentuk respons afektif pembaca yang tepat dalam menyikapi fenomena kebahasaan teks di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
+(349, 2, 13, 3, 123, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Respons emosional yang paling tepat saat menyadari fakta kesehatan pada teks informasi tersebut adalah ...', NULL, TRUE),
+(350, 2, 13, 3, 124, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apresiasi emosional dan afektif yang dirasakan pembaca atas pencapaian program tersebut adalah ...', NULL, TRUE),
+(351, 2, 13, 3, 125, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah respons empati pembaca yang sesuai dengan situasi wacana di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
+(352, 2, 13, 3, 126, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bagaimana respons afektif pembaca terhadap informasi karya inovasi ini?', NULL, TRUE),
+(353, 2, 13, 3, 127, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Sikap afektif dan emosional yang wajar dirasakan pembaca terhadap bahaya penyebaran hoaks tersebut adalah ...', NULL, TRUE),
+(354, 2, 13, 3, 128, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah bentuk perasaan dan apresiasi pembaca terhadap berita pemulihan lingkungan tersebut? (Pilih semua jawaban mengenai keberhasilan)', NULL, TRUE),
+(355, 2, 13, 3, 129, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Respons emosional yang muncul dalam diri pembaca melihat perjuangan para atlet tersebut adalah ...', NULL, TRUE),
+(356, 2, 13, 3, 130, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Tanggapan afektif pembaca terkait kontradiksi fakta pada teks informasi tersebut adalah ...', NULL, TRUE),
+(357, 2, 13, 3, 131, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah respons afektif yang tepat dari pembaca terhadap keberadaan dapur komunitas? (Pilih semua jawaban yang benar)', NULL, TRUE),
+(358, 2, 13, 3, 132, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kesan afektif pembaca terhadap penggunaan kebahasaan pada artikel berita tersebut adalah ...', NULL, TRUE),
+(359, 2, 13, 3, 133, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perasaan yang paling dominan dirasakan pembaca terhadap aksi komunitas tersebut adalah ...', NULL, TRUE),
+(360, 2, 13, 3, 134, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Manakah respons emosional dan penolakan yang muncul pada pembaca melihat kenyataan wacana di atas? (Pilih semua jawaban yang benar)', NULL, TRUE),
+(361, 2, 14, 1, 135, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Media tanam pada paragraf kedua adalah ...', NULL, TRUE),
+(362, 2, 14, 1, 135, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Tanaman yang dijadikan contoh dalam teks tersebut adalah ...', NULL, TRUE),
+(363, 2, 14, 1, 135, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata pemanenan pada paragraf keempat bermakna ...', NULL, TRUE),
+(364, 2, 14, 1, 136, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Latar tempat pada awal cerita adalah ...', NULL, TRUE),
+(365, 2, 14, 1, 136, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Kata atau frasa yang menunjukkan bahwa sepeda Raka sudah lama dipakai adalah ... Pilihlah semua jawaban yang benar!', NULL, TRUE),
+(366, 2, 14, 1, 136, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata kusam pada paragraf kedua bermakna ...', NULL, TRUE),
+(367, 2, 14, 1, 137, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Stup pada paragraf kedua adalah ...', NULL, TRUE),
+(368, 2, 14, 1, 137, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pernyataan yang sesuai dengan penggunaan istilah propolis dalam teks adalah ... Pilihlah semua jawaban yang benar!', NULL, TRUE),
+(369, 2, 14, 1, 137, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata penyerbukan pada paragraf keempat bermakna ...', NULL, TRUE),
+(370, 2, 14, 1, 138, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata cakrawala pada paragraf pertama bermakna ...', NULL, TRUE),
+(371, 2, 14, 1, 138, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Latar tempat yang disebutkan langsung dalam cerita adalah ... Pilihlah semua jawaban yang benar!', NULL, TRUE),
+(372, 2, 14, 1, 138, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata lirih pada paragraf kelima bermakna ...', NULL, TRUE),
+(373, 2, 14, 1, 139, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Istilah ekosistem pada paragraf pertama paling tepat bermakna ...', NULL, TRUE),
+(374, 2, 14, 1, 139, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pernyataan yang sesuai dengan penggunaan istilah pemutihan karang dalam teks adalah ... Pilihlah semua jawaban yang benar!', NULL, TRUE),
+(375, 2, 14, 1, 139, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Frasa saling menguntungkan pada paragraf kedua menunjukkan hubungan antara karang dan alga yang ...', NULL, TRUE),
+(376, 2, 14, 1, 140, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata merantau pada paragraf kedua bermakna ...', NULL, TRUE),
+(377, 2, 14, 1, 140, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Ungkapan yang menggunakan makna kias dalam cerita adalah ... Pilihlah semua jawaban yang benar!', NULL, TRUE),
+(378, 2, 14, 1, 140, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kata menepi pada kalimat "awan kelabu perlahan menepi" bermakna ...', NULL, TRUE),
+(379, 2, 14, 1, 141, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Istilah konversi energi pada paragraf kedua bermakna ...', NULL, TRUE),
+(380, 2, 14, 1, 141, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pernyataan yang sesuai dengan penggunaan istilah energi terbarukan dalam teks adalah ... Pilihlah semua jawaban yang benar!', NULL, TRUE),
+(381, 2, 14, 2, 142, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang dibawa Kakek Jaya saat menemui Bima di beranda?', NULL, TRUE),
+(382, 2, 14, 2, 142, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa Bima merasa murung pada sore itu?', NULL, TRUE),
+(383, 2, 14, 2, 142, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang terjadi pada layang-layang pertama yang dibuat Bima dan Kakek?', NULL, TRUE),
+(384, 2, 14, 2, 142, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pilihlah semua bahan atau alat yang dipakai Bima dan Kakek untuk membuat layang-layang! (Jawaban benar lebih dari satu)', NULL, TRUE),
+(385, 2, 14, 2, 142, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan benar atau salah setiap pernyataan berikut berdasarkan Teks 1!', NULL, TRUE),
+(386, 2, 14, 2, 143, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa hadiah yang dibawa Laras untuk Bu Ningsih?', NULL, TRUE),
+(387, 2, 14, 2, 143, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa Laras menyembunyikan kotaknya di dalam tas?', NULL, TRUE),
+(388, 2, 14, 2, 143, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang dibawa Maya untuk Bu Ningsih?', NULL, TRUE),
+(389, 2, 14, 2, 143, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang dibawa Ari saat mengikuti ayahnya ke pantai?', NULL, TRUE),
+(390, 2, 14, 2, 143, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kapan Ari dan ayahnya berangkat ke pantai?', NULL, TRUE),
+(391, 2, 14, 2, 144, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang diminta Pak Darto kepada Ari ketika ombak besar menghantam perahu?', NULL, TRUE),
+(392, 2, 14, 2, 144, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang dilakukan Ari dan ayahnya agar jaring terlepas dari karang?', NULL, TRUE),
+(393, 2, 14, 2, 144, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan benar atau salah setiap pernyataan berikut berdasarkan Teks 3!', NULL, TRUE),
+(394, 2, 14, 2, 144, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Siapa yang menjaga perpustakaan desa dalam Teks 4?', NULL, TRUE),
+(395, 2, 14, 2, 144, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Mengapa Dimas tidak menemukan buku tentang planet di rak?', NULL, TRUE),
+(396, 2, 14, 2, 144, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa yang dibaca Dimas setelah tahu bukunya sedang dipinjam?', NULL, TRUE),
+(397, 2, 14, 2, 144, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pilihlah semua benda yang dipasang Bu Wati di sudut baca kecil! (Jawaban benar lebih dari satu)', NULL, TRUE),
+(398, 2, 14, 2, 144, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Planet berwarna biru yang ditunjuk Tika bernama ...', NULL, TRUE),
+(399, 2, 14, 2, 143, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Apa hadiah yang dibawa Yoga untuk Bu Ningsih pada hari ulang tahunnya?', NULL, TRUE),
+(400, 2, 14, 2, 143, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bagaimana respons Bu Ningsih saat menerima hadiah bros bunga matahari dari Laras?', NULL, TRUE),
+(401, 2, 14, 3, 145, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Ide pokok paragraf 1 Teks 5 adalah ...', NULL, TRUE),
+(402, 2, 14, 3, 145, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Urutan peristiwa yang benar dalam Teks 5 adalah ...', NULL, TRUE),
+(403, 2, 14, 3, 145, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perhatikan kerangka Teks 5 berikut.
 Paragraf 1: Wulan dan ibu di pasar
 Paragraf 2: Wulan menemukan anak kucing
 Paragraf 3: ...
 Paragraf 4: Pemilik kucing muncul
 Paragraf 5: Nenek memberi kue dan pelajaran bagi Wulan
 Bagian yang tepat untuk melengkapi paragraf 3 adalah ...', NULL, TRUE),
-(404, 2, 14, 3, 148, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pilihlah semua kejadian yang terdapat pada paragraf 4! (Jawaban benar lebih dari satu)', NULL, TRUE),
-(405, 2, 14, 3, 148, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan benar atau salah setiap pernyataan tentang isi paragraf Teks 5 berikut!', NULL, TRUE),
-(406, 2, 14, 3, 149, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perhatikan kerangka Teks 6 berikut.
+(404, 2, 14, 3, 145, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pilihlah semua kejadian yang terdapat pada paragraf 4! (Jawaban benar lebih dari satu)', NULL, TRUE),
+(405, 2, 14, 3, 145, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan benar atau salah setiap pernyataan tentang isi paragraf Teks 5 berikut!', NULL, TRUE),
+(406, 2, 14, 3, 146, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perhatikan kerangka Teks 6 berikut.
 I. Kiki menabung untuk membelikan sepeda ayah (paragraf 1)
 II. ... (paragraf 2)
 III. Uang Kiki kurang dan pemilik toko membantu (paragraf 3)
 IV. Ayah menerima sepeda (paragraf 4)
 Bagian II yang tepat adalah ...', NULL, TRUE),
-(407, 2, 14, 3, 149, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Urutan peristiwa pada paragraf 3 yang benar adalah ...', NULL, TRUE),
-(408, 2, 14, 3, 149, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Masalah atau konflik yang dihadapi Kiki mulai muncul pada paragraf ...', NULL, TRUE),
-(409, 2, 14, 3, 149, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan benar atau salah setiap pernyataan tentang isi paragraf Teks 6 berikut!', NULL, TRUE),
-(410, 2, 14, 3, 150, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Ide pokok paragraf 2 Teks 7 adalah ...', NULL, TRUE),
-(411, 2, 14, 3, 150, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Urutan peristiwa yang benar dalam Teks 7 adalah ...', NULL, TRUE),
-(412, 2, 14, 3, 150, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Penyelesaian cerita dalam Teks 7 terdapat pada paragraf ...', NULL, TRUE),
-(413, 2, 14, 3, 150, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pilihlah semua peristiwa yang terjadi setelah Sinta memejamkan mata dan membayangkan kebun nenek! (Jawaban benar lebih dari satu)', NULL, TRUE),
-(414, 2, 14, 3, 150, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan benar atau salah setiap pernyataan tentang isi paragraf Teks 7 berikut!', NULL, TRUE),
-(415, 2, 14, 3, 151, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Ide pokok paragraf 1 Teks 8 adalah ...', NULL, TRUE),
-(416, 2, 14, 3, 151, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Urutan peristiwa yang benar dalam Teks 8 adalah ...', NULL, TRUE),
-(417, 2, 14, 3, 151, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perhatikan alur Teks 8 berikut.
+(407, 2, 14, 3, 146, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Urutan peristiwa pada paragraf 3 yang benar adalah ...', NULL, TRUE),
+(408, 2, 14, 3, 146, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Masalah atau konflik yang dihadapi Kiki mulai muncul pada paragraf ...', NULL, TRUE),
+(409, 2, 14, 3, 146, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan benar atau salah setiap pernyataan tentang isi paragraf Teks 6 berikut!', NULL, TRUE),
+(410, 2, 14, 3, 147, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Ide pokok paragraf 2 Teks 7 adalah ...', NULL, TRUE),
+(411, 2, 14, 3, 147, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Urutan peristiwa yang benar dalam Teks 7 adalah ...', NULL, TRUE),
+(412, 2, 14, 3, 147, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Penyelesaian cerita dalam Teks 7 terdapat pada paragraf ...', NULL, TRUE),
+(413, 2, 14, 3, 147, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pilihlah semua peristiwa yang terjadi setelah Sinta memejamkan mata dan membayangkan kebun nenek! (Jawaban benar lebih dari satu)', NULL, TRUE),
+(414, 2, 14, 3, 147, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan benar atau salah setiap pernyataan tentang isi paragraf Teks 7 berikut!', NULL, TRUE),
+(415, 2, 14, 3, 148, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Ide pokok paragraf 1 Teks 8 adalah ...', NULL, TRUE),
+(416, 2, 14, 3, 148, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Urutan peristiwa yang benar dalam Teks 8 adalah ...', NULL, TRUE),
+(417, 2, 14, 3, 148, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perhatikan alur Teks 8 berikut.
 Paragraf 1: Awal (hujan dan warga berkumpul)
 Paragraf 2: Munculnya masalah (adik Rafi hilang)
 Paragraf 3: ...
 Paragraf 4: Penyelesaian
 Bagian yang tepat untuk paragraf 3 adalah ...', NULL, TRUE),
-(418, 2, 14, 3, 151, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Ide pokok paragraf 4 Teks 8 adalah ...', NULL, TRUE),
-(419, 2, 14, 3, 151, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pilihlah semua kegiatan warga di balai desa yang disebutkan pada paragraf 2! (Jawaban benar lebih dari satu)', NULL, TRUE),
-(420, 2, 14, 3, 149, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Ide pokok paragraf 2 Teks 6 adalah ...', NULL, TRUE),
-(421, 2, 15, 1, 152, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan paragraf pertama, simpulan yang tepat mengenai perasaan Laras terhadap sepedanya adalah ….', NULL, TRUE),
-(422, 2, 15, 1, 152, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan cerita di atas, tentukan nilai-nilai karakter dan pesan moral yang dapat disimpulkan dari tindakan tokoh! (Pilihlah jawaban yang benar! jawaban benar lebih dari satu])', NULL, TRUE),
-(423, 2, 15, 1, 152, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran simpulan-simpulan berikut berdasarkan isi cerita \'Sepeda Biru Milik Laras\'!', NULL, TRUE),
-(424, 2, 15, 1, 153, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan rincian kejadian pada awal cerita, simpulan suasana yang terbangun di dermaga adalah ….', NULL, TRUE),
-(425, 2, 15, 1, 153, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan teks di atas, simpulan yang tepat mengenai ikatan sosial masyarakat nelayan di dermaga adalah …. (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
-(426, 2, 15, 1, 153, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran simpulan-simpulan berikut berdasarkan isi cerita \'Pulang Sebelum Badai\'!', NULL, TRUE),
-(427, 2, 15, 1, 154, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan cerita tersebut, simpulan mengenai konflik batin utama yang dialami tokoh Dimas adalah pergulatan antara ….', NULL, TRUE),
-(428, 2, 15, 1, 154, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan tindakan tokoh Dimas dalam teks di atas, simpulan watak dan nilai budi pekerti yang tepat adalah …. (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
-(429, 2, 15, 1, 154, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran simpulan-simpulan berikut berdasarkan teks \'Dompet di Bangku Halte\'!', NULL, TRUE),
-(430, 2, 15, 1, 155, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan watak tokoh Pak Sarman yang paling menonjol berdasarkan penolakannya terhadap tawaran pria berjas adalah ….', NULL, TRUE),
-(431, 2, 15, 1, 155, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan isi teks cerita di atas, simpulan mengenai kondisi latar sosial dan pesan cerita yang tepat adalah …. (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
-(432, 2, 15, 1, 155, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran simpulan-simpulan berikut berdasarkan teks \'Ladang Terakhir Pak Sarman\'!', NULL, TRUE),
-(433, 2, 15, 1, 156, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan yang paling tepat mengenai karakter dan metode mendidik Bu Wening selama mengajar adalah ….', NULL, TRUE),
-(434, 2, 15, 1, 156, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan teks di atas, simpulan mengenai makna simbolis pemberian penghapus aus dan dinamika kelas adalah …. (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
-(435, 2, 15, 1, 156, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran simpulan-simpulan berikut berdasarkan teks \'Pelajaran Terakhir Bu Wening\'!', NULL, TRUE),
-(436, 2, 15, 1, 157, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan ide pokok yang mendasari percakapan antara Kakek Wiryo dan Ardi pada paragraf ketiga adalah ….', NULL, TRUE),
-(437, 2, 15, 1, 157, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan nilai kehidupan yang dapat dipetik pembaca dari renungan tokoh Ardi di akhir cerita adalah ….', NULL, TRUE),
-(438, 2, 15, 1, 157, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan sikap Kakek Wiryo terhadap jam saku dan cucunya, simpulan watak tokoh kakek yang paling tepat adalah ….', NULL, TRUE),
-(439, 2, 15, 1, 158, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan latar suasana yang terbangun ketika warga desa bahu-membahu menancapkan tiang jembatan adalah ….', NULL, TRUE),
-(440, 2, 15, 1, 158, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan pesan amanat utama yang ingin disampaikan oleh pengarang melalui cerita tersebut adalah ….', NULL, TRUE),
-(441, 2, 15, 2, 159, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan teks di atas, peristiwa yang menjelaskan penyebab layang-layang Arman mendadak meliuk-liuk lalu jatuh di atas genting rumah Pak Kades adalah ….', NULL, TRUE),
-(442, 2, 15, 2, 159, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan teks \'Layang-Layang Arman\', tentukan penjelasan yang tepat mengenai gaya bahasa (ungkapan dan citraan) yang digunakan pengarang! (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
-(443, 2, 15, 2, 159, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran penjelasan kelogisan hubungan peristiwa berikut berdasarkan isi teks \'Layang-Layang Arman\'!', NULL, TRUE),
-(444, 2, 15, 2, 160, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Penjelasan yang paling logis mendasari penolakan Bu Tini terhadap saran suaminya untuk mengurangi porsi nasi adalah ….', NULL, TRUE),
-(445, 2, 15, 2, 160, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan teks \'Warung Bu Tini\', tentukan penjelasan sebab-akibat dan bahasa yang tepat! (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
-(446, 2, 15, 2, 160, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran penjelasan hubungan antargagasan berikut berdasarkan teks \'Warung Bu Tini\'!', NULL, TRUE),
-(447, 2, 15, 2, 161, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Penjelasan yang tepat mengapa Sinta mengurungkan amarahnya ketika Farhan datang terlambat ke rumahnya adalah ….', NULL, TRUE),
-(448, 2, 15, 2, 161, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan cerita di atas, tentukan penjelasan kelogisan hubungan antarperistiwa yang mengantarkan kelompok Sinta memperoleh nilai tertinggi! (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
-(449, 2, 15, 2, 161, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran penjelasan mengenai watak dan bahasa berikut berdasarkan teks \'Tugas Kelompok Sinta\'!', NULL, TRUE),
-(450, 2, 15, 2, 162, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Penjelasan makna kias yang paling tepat dari kalimat "Suara itu mengalir pelan melewati sawah dan menyentuh atap-atap rumah" adalah ….', NULL, TRUE),
-(451, 2, 15, 2, 162, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan teks \'Seruling Kakek\', tentukan penjelasan penggunaan bahasa kias dan citraan yang sesuai! (Pilihlah dua jawaban yang benar dengan memberi tanda centang [✓])', NULL, TRUE),
-(452, 2, 15, 2, 162, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran penjelasan kelogisan peristiwa berikut berdasarkan teks \'Seruling Kakek\'!', NULL, TRUE),
-(453, 2, 15, 2, 163, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Penjelasan penyebab Bu Ratmi tertegun menutup mulutnya dan meneteskan air mata saat membaca surat tua tersebut adalah ….', NULL, TRUE),
-(454, 2, 15, 2, 163, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan cerita \'Surat untuk Bu Ratmi\', tentukan penjelasan penggunaan bahasa dan peristiwa yang tepat! (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
-(455, 2, 15, 2, 163, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran penjelasan kelogisan cerita berikut berdasarkan teks \'Surat untuk Bu Ratmi\'!', NULL, TRUE),
-(456, 2, 15, 2, 164, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan teks di atas, penjelasan sebab-akibat yang logis atas karamnya perahu kertas milik tokoh Fajar adalah ….', NULL, TRUE),
-(457, 2, 15, 2, 164, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Makna ungkapan "Matanya berawan mendung" pada tokoh Fajar setelah perahunya karam menjelaskan bahwa tokoh sedang ….', NULL, TRUE),
-(458, 2, 15, 2, 164, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kalimat pembuka cerita "Gerimis deras menderu di atas seng atap rumah Gani" secara dominan memanfaatkan citraan ….', NULL, TRUE),
-(459, 2, 15, 2, 165, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Penjelasan kelogisan sikap Pak Johan memberikan sepotong roti hangat kepada Raka di akhir cerita adalah sebagai ….', NULL, TRUE),
-(460, 2, 15, 2, 165, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kalimat "Rasa legit cokelat lumer di lidah Raka, menghadirkan kehangatan luar biasa..." menggunakan perpaduan citraan ….', NULL, TRUE),
-(461, 2, 15, 3, 166, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan rincian situasi di lapangan dan pergerakan pemain, tindakan Rio selanjutnya yang paling mungkin terjadi adalah ….', NULL, TRUE),
-(462, 2, 15, 3, 166, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Jika operan bola Rio berhasil sampai tepat di kaki Ilham, prediksi dampak yang paling logis terhadap jalannya pertandingan dan kondisi tim adalah …. (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
-(463, 2, 15, 3, 166, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran prediksi-prediksi berikut berdasarkan akhir cerita \'Tendangan Penentu\'!', NULL, TRUE),
-(464, 2, 15, 3, 167, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan perubahan sikap teman-teman Bimo pada paragraf terakhir, prediksi tindakan mereka selanjutnya terhadap tanaman di sekolah adalah ….', NULL, TRUE),
-(465, 2, 15, 3, 167, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan ketekunan Bimo dan kondisi kemarau, prediksi keadaan bibit mangga dan lingkungan sekolah pada akhir musim kemarau adalah …. (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
-(466, 2, 15, 3, 167, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran prediksi-prediksi berikut berdasarkan teks \'Pohon Mangga di Halaman\'!', NULL, TRUE),
-(467, 2, 15, 3, 168, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan respons fisik dan situasi percakapan di akhir teks, reaksi Tomi selanjutnya yang paling mungkin terjadi adalah ….', NULL, TRUE),
-(468, 2, 15, 3, 168, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan interaksi tersebut, prediksi perkembangan hubungan sosial antara Tomi dan Nadia di masa mendatang adalah …. (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
-(469, 2, 15, 3, 168, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran prediksi-prediksi berikut berdasarkan teks \'Kotak Bekal Nadia\'!', NULL, TRUE),
-(470, 2, 15, 3, 169, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan arah gerak anak-anak dan kondisi cuaca di luar, tindakan ketiga anak itu selanjutnya yang paling mungkin adalah ….', NULL, TRUE),
-(471, 2, 15, 3, 169, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Jika anak-anak menceritakan fakta sebenarnya kepada warga kampung, prediksi tanggapan masyarakat dan kondisi gudang tua adalah …. (Pilihlah dua jawaban yang benar dengan memberi tanda centang [Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
-(472, 2, 15, 3, 169, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran prediksi-prediksi berikut berdasarkan teks \'Suara dari Gudang Tua\'!', NULL, TRUE),
-(473, 2, 15, 3, 170, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan tindakan Elsa memejamkan mata dan mengingat ibunya di barisan depan, tindakan Elsa selanjutnya yang paling mungkin adalah ….', NULL, TRUE),
-(474, 2, 15, 3, 170, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan bekal latihan intensif selama tiga bulan, prediksi jalannya penampilan dan akhir pentas seni Elsa adalah …. (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
-(475, 2, 15, 3, 170, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran prediksi psikologis tokoh berikut berdasarkan teks \'Panggung Pertama Elsa\'!', NULL, TRUE),
-(476, 2, 15, 3, 171, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan kepepetan waktu dan prinsip sportivitas yang disampaikan Riki, keputusan Pandu selanjutnya yang paling mungkin adalah ….', NULL, TRUE),
-(477, 2, 15, 3, 172, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Prediksi pengaruh tindakan luhur Riki terhadap performa dan mental bertanding Pandu di babak final adalah ….', NULL, TRUE),
-(478, 2, 15, 3, 172, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Prediksi dinamika relasi persahabatan antara Pandu dan Riki setelah ajang kejuaraan atletik berakhir adalah ….', NULL, TRUE),
-(479, 2, 15, 3, 173, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan tanda-tanda alam dan prinsip pesan almarhum ayahnya, tindakan Hendra selanjutnya yang paling mungkin terjadi adalah ….', NULL, TRUE),
-(480, 2, 15, 3, 173, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Prediksi tanggapan sesepuh nelayan dan keluarga saat menyambut kepulangan Hendra di pangkalan pendaratan ikan adalah ….', NULL, TRUE),
-(481, 2, 16, 1, 174, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan Teks "Pesan yang Belum Selesai", tindakan Raka yang paling relevan diterapkan dalam kehidupan sehari-hari adalah ....', NULL, TRUE),
-(482, 2, 16, 1, 174, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Peristiwa dalam Teks "Pesan yang Belum Selesai" paling relevan dengan situasi ....', NULL, TRUE),
-(483, 2, 16, 1, 174, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tindakan berikut yang sesuai dengan nilai yang ditunjukkan Raka dalam Teks "Pesan yang Belum Selesai" adalah ....', NULL, TRUE),
-(484, 2, 16, 1, 175, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika masalah seperti dalam Teks "Poster Lomba" terjadi dalam tugas kelompok, tindakan yang paling relevan adalah ....', NULL, TRUE),
-(485, 2, 16, 1, 175, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Nilai utama dari Teks "Poster Lomba" yang paling relevan dengan kehidupan siswa adalah ....', NULL, TRUE),
-(486, 2, 16, 1, 175, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Nilai utama dari Teks "Poster Lomba" yang paling relevan dengan kehidupan siswa adalah ....', NULL, TRUE),
-(487, 2, 16, 1, 175, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Perilaku yang dapat diterapkan siswa berdasarkan Teks "Poster Lomba" adalah ....', NULL, TRUE),
-(488, 2, 16, 1, 176, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Peristiwa Danu dalam Teks "Suara dari Belakang Kelas" relevan dengan kehidupan sehari-hari karena ....', NULL, TRUE),
-(489, 2, 16, 1, 176, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Sikap Danu yang paling tepat diterapkan ketika seorang siswa melakukan kesalahan adalah ....', NULL, TRUE),
-(490, 2, 16, 1, 177, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Sikap yang sesuai dengan nilai Teks "Suara dari Belakang Kelas" dalam kehidupan sekolah adalah ....', NULL, TRUE),
-(491, 2, 16, 1, 178, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Tindakan Lani dalam Teks "Bangku Taman" dapat diterapkan di sekolah dengan cara ....', NULL, TRUE),
-(492, 2, 16, 1, 179, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Tulisan “Gunakan dan Jaga Bersama” pada Teks "Bangku Taman" paling relevan dengan kebiasaan ....', NULL, TRUE),
-(493, 2, 16, 1, 179, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tindakan berikut yang sesuai dengan nilai Teks "Bangku Taman" adalah ....', NULL, TRUE),
-(494, 2, 16, 1, 180, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Keputusan Bima dalam Teks "Dompet di Lapangan" paling relevan diterapkan ketika seseorang ....', NULL, TRUE),
-(495, 2, 16, 1, 180, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika seorang siswa menemukan telepon genggam di kelas, tindakan yang paling sesuai dengan Teks "Dompet di Lapangan" adalah ....', NULL, TRUE),
-(496, 2, 16, 1, 180, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Nilai Teks "Dompet di Lapangan" dapat diterapkan dalam kehidupan sehari-hari melalui tindakan ....', NULL, TRUE),
-(497, 2, 16, 1, 180, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Alasan Bima menolak saran teman-temannya menunjukkan bahwa dalam kehidupan sehari-hari ....', NULL, TRUE),
-(498, 2, 16, 1, 180, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Dampak positif tindakan Bima yang paling mungkin terjadi dalam kehidupan nyata adalah ....', NULL, TRUE),
-(499, 2, 16, 1, 180, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika nilai dalam Teks "Pesan yang Belum Selesai" diterapkan secara luas dalam masyarakat, kemungkinan yang terjadi adalah ....', NULL, TRUE),
-(500, 2, 16, 1, 181, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Perilaku berikut mencerminkan nilai dari beberapa teks Di atas adalah ....', NULL, TRUE),
-(501, 2, 16, 1, 182, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Situasi berikut yang paling tepat menunjukkan penerapan nilai Teks "Pesan yang Belum Selesai" dan Teks "bangku taman" adalah ....', NULL, TRUE),
-(502, 2, 16, 2, 183, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Persamaan watak tokoh utama dalam P1 adalah ....', NULL, TRUE),
-(503, 2, 16, 2, 183, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Pernyataan yang paling tepat tentang alur P1 adalah ....', NULL, TRUE),
-(504, 2, 16, 2, 183, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pernyataan yang benar berdasarkan pasangan teks P1 adalah ....', NULL, TRUE),
-(505, 2, 16, 2, 184, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Persamaan tindakan tokoh dalam kedua teks P2 adalah ....', NULL, TRUE),
-(506, 2, 16, 2, 184, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perbedaan latar waktu kedua teks P2 adalah ....', NULL, TRUE),
-(507, 2, 16, 2, 184, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pernyataan yang didukung kedua teks P2 adalah ....', NULL, TRUE),
-(508, 2, 16, 2, 185, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Persamaan konflik masing masing teks P3 adalah ....', NULL, TRUE),
-(509, 2, 16, 2, 185, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan yang paling akurat berdasarkan pasangan P3 adalah ....', NULL, TRUE),
-(510, 2, 16, 2, 185, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pernyataan yang benar berdasarkan pasangan P3 adalah ....', NULL, TRUE),
-(511, 2, 16, 2, 186, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perbedaan cara tokoh menghadapi masalah dalam pasangan P4 adalah ....', NULL, TRUE),
-(512, 2, 16, 2, 186, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Pernyataan yang tepat tentang latar pasangan P4 adalah ....', NULL, TRUE),
-(513, 2, 16, 2, 186, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Persamaan sikap tokoh dalam pasangan P4 adalah ....', NULL, TRUE),
-(514, 2, 16, 2, 187, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perbedaan suasana P5 yang paling tepat adalah ....', NULL, TRUE),
-(515, 2, 16, 2, 187, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Diksi “berat” dalam Teks I paling tepat dimaknai sebagai ....', NULL, TRUE),
-(516, 2, 16, 2, 187, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pernyataan yang tepat berdasarkan Pasangan P5 adalah ....', NULL, TRUE),
-(517, 2, 16, 2, 187, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Sudut pandang kedua teks puisi Pasangan P5 dapat disebut ....', NULL, TRUE),
-(518, 2, 16, 2, 188, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perbedaan penyelesaian konflik P1 yang paling tepat adalah ....', NULL, TRUE),
-(519, 2, 16, 2, 189, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pernyataan yang menunjukkan perbedaan P2 dan P4 adalah ....', NULL, TRUE),
-(520, 2, 16, 2, 190, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan yang paling tepat dari perbandingan P3 dan P4 adalah ....', NULL, TRUE),
-(521, 2, 16, 2, 191, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pernyataan yang paling akurat berdasarkan seluruh pasangan teks adalah ....', NULL, TRUE),
-(522, 2, 16, 3, 192, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Respons emosional yang paling sesuai setelah membaca "Kursi Kosong" adalah ....', NULL, TRUE),
-(523, 2, 16, 3, 193, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perasaan Arga terhadap kepergian Rian dapat disimpulkan sebagai ....', NULL, TRUE),
-(524, 2, 16, 3, 194, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'membaca Teks "Kursi Kosong" adalah ....', NULL, TRUE),
-(525, 2, 16, 3, 193, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bagian yang paling kuat menimbulkan rasa haru dalam Teks "Kursi Kosong" adalah ....', NULL, TRUE),
-(526, 2, 16, 3, 195, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Teks "Lampu di Rumah Nenek" adalah ....', NULL, TRUE),
-(527, 2, 16, 3, 196, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kalimat “Kamu membuat malam ini tidak terasa panjang” menunjukkan bahwa nenek ....', NULL, TRUE),
-(528, 2, 16, 3, 196, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Respons emosional yang didukung oleh Teks "Lampu di Rumah Nenek" adalah ....', NULL, TRUE),
-(529, 2, 16, 3, 197, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perasaan yang paling mungkin muncul ketika burung dalam Teks "Burung dalam Sangkar" akhirnya terbang adalah ....', NULL, TRUE),
-(530, 2, 16, 3, 197, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Keraguan burung sebelum terbang dapat menimbulkan respons pembaca berupa ....', NULL, TRUE),
-(531, 2, 16, 3, 197, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Respons yang sesuai terhadap akhir Teks "Burung dalam Sangkar" adalah ....', NULL, TRUE),
-(532, 2, 16, 3, 198, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Suasana emosional dominan dalam Teks Puisi “Pagi Setelah Hujan” adalah ....', NULL, TRUE),
-(533, 2, 16, 3, 198, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Respons emosional paling tepat terhadap larik “seolah hari memberiku kesempatan / untuk memulai lagi” adalah ....', NULL, TRUE),
-(534, 2, 16, 3, 198, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Diksi yang mendukung respons tenang dan penuh harapan dalam Teks Puisi “Pagi Setelah Hujan” adalah ....', NULL, TRUE),
-(535, 2, 16, 3, 198, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perubahan suasana dalam Teks Puisi “Pagi Setelah Hujan” dapat membuat pembaca merasa ....', NULL, TRUE),
-(536, 2, 16, 3, 199, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Respons emosional yang paling tepat terhadap keputusan Naya dalam Teks "Pilihan Naya" adalah ....', NULL, TRUE),
-(537, 2, 16, 3, 199, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Setelah membaca Teks "Pilihan Naya", pembaca paling mungkin merasa ....', NULL, TRUE),
-(538, 2, 16, 3, 199, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Respons emosional yang sesuai terhadap Teks "Pilihan Naya" adalah ....', NULL, TRUE),
-(539, 2, 16, 3, 199, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Unsur yang paling kuat membangun rasa lega pada akhir Teks "Pilihan Naya" adalah ....', NULL, TRUE),
-(540, 2, 16, 3, 200, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Jika Teks "Kursi Kosong" dan Teks "Pilihan Naya" dibandingkan, respons emosional yang tepat adalah ....', NULL, TRUE),
-(541, 2, 16, 3, 200, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan keseluruhan Teks "Kursi Kosong"–Teks "Pilihan Naya", simpulan respons emosional yang paling tepat adalah ....', NULL, TRUE)
+(418, 2, 14, 3, 148, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Ide pokok paragraf 4 Teks 8 adalah ...', NULL, TRUE),
+(419, 2, 14, 3, 148, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pilihlah semua kegiatan warga di balai desa yang disebutkan pada paragraf 2! (Jawaban benar lebih dari satu)', NULL, TRUE),
+(420, 2, 14, 3, 146, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Ide pokok paragraf 2 Teks 6 adalah ...', NULL, TRUE),
+(421, 2, 15, 1, 149, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan paragraf pertama, simpulan yang tepat mengenai perasaan Laras terhadap sepedanya adalah ….', NULL, TRUE),
+(422, 2, 15, 1, 149, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan cerita di atas, tentukan nilai-nilai karakter dan pesan moral yang dapat disimpulkan dari tindakan tokoh! (Pilihlah jawaban yang benar! jawaban benar lebih dari satu])', NULL, TRUE),
+(423, 2, 15, 1, 149, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran simpulan-simpulan berikut berdasarkan isi cerita \'Sepeda Biru Milik Laras\'!', NULL, TRUE),
+(424, 2, 15, 1, 150, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan rincian kejadian pada awal cerita, simpulan suasana yang terbangun di dermaga adalah ….', NULL, TRUE),
+(425, 2, 15, 1, 150, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan teks di atas, simpulan yang tepat mengenai ikatan sosial masyarakat nelayan di dermaga adalah …. (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
+(426, 2, 15, 1, 150, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran simpulan-simpulan berikut berdasarkan isi cerita \'Pulang Sebelum Badai\'!', NULL, TRUE),
+(427, 2, 15, 1, 151, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan cerita tersebut, simpulan mengenai konflik batin utama yang dialami tokoh Dimas adalah pergulatan antara ….', NULL, TRUE),
+(428, 2, 15, 1, 151, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan tindakan tokoh Dimas dalam teks di atas, simpulan watak dan nilai budi pekerti yang tepat adalah …. (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
+(429, 2, 15, 1, 151, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran simpulan-simpulan berikut berdasarkan teks \'Dompet di Bangku Halte\'!', NULL, TRUE),
+(430, 2, 15, 1, 152, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan watak tokoh Pak Sarman yang paling menonjol berdasarkan penolakannya terhadap tawaran pria berjas adalah ….', NULL, TRUE),
+(431, 2, 15, 1, 152, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan isi teks cerita di atas, simpulan mengenai kondisi latar sosial dan pesan cerita yang tepat adalah …. (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
+(432, 2, 15, 1, 152, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran simpulan-simpulan berikut berdasarkan teks \'Ladang Terakhir Pak Sarman\'!', NULL, TRUE),
+(433, 2, 15, 1, 153, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan yang paling tepat mengenai karakter dan metode mendidik Bu Wening selama mengajar adalah ….', NULL, TRUE),
+(434, 2, 15, 1, 153, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan teks di atas, simpulan mengenai makna simbolis pemberian penghapus aus dan dinamika kelas adalah …. (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
+(435, 2, 15, 1, 153, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran simpulan-simpulan berikut berdasarkan teks \'Pelajaran Terakhir Bu Wening\'!', NULL, TRUE),
+(436, 2, 15, 1, 154, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan ide pokok yang mendasari percakapan antara Kakek Wiryo dan Ardi pada paragraf ketiga adalah ….', NULL, TRUE),
+(437, 2, 15, 1, 154, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan nilai kehidupan yang dapat dipetik pembaca dari renungan tokoh Ardi di akhir cerita adalah ….', NULL, TRUE),
+(438, 2, 15, 1, 154, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan sikap Kakek Wiryo terhadap jam saku dan cucunya, simpulan watak tokoh kakek yang paling tepat adalah ….', NULL, TRUE),
+(439, 2, 15, 1, 155, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan latar suasana yang terbangun ketika warga desa bahu-membahu menancapkan tiang jembatan adalah ….', NULL, TRUE),
+(440, 2, 15, 1, 155, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan pesan amanat utama yang ingin disampaikan oleh pengarang melalui cerita tersebut adalah ….', NULL, TRUE),
+(441, 2, 15, 2, 156, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan teks di atas, peristiwa yang menjelaskan penyebab layang-layang Arman mendadak meliuk-liuk lalu jatuh di atas genting rumah Pak Kades adalah ….', NULL, TRUE),
+(442, 2, 15, 2, 156, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan teks \'Layang-Layang Arman\', tentukan penjelasan yang tepat mengenai gaya bahasa (ungkapan dan citraan) yang digunakan pengarang! (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
+(443, 2, 15, 2, 156, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran penjelasan kelogisan hubungan peristiwa berikut berdasarkan isi teks \'Layang-Layang Arman\'!', NULL, TRUE),
+(444, 2, 15, 2, 157, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Penjelasan yang paling logis mendasari penolakan Bu Tini terhadap saran suaminya untuk mengurangi porsi nasi adalah ….', NULL, TRUE),
+(445, 2, 15, 2, 157, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan teks \'Warung Bu Tini\', tentukan penjelasan sebab-akibat dan bahasa yang tepat! (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
+(446, 2, 15, 2, 157, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran penjelasan hubungan antargagasan berikut berdasarkan teks \'Warung Bu Tini\'!', NULL, TRUE),
+(447, 2, 15, 2, 158, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Penjelasan yang tepat mengapa Sinta mengurungkan amarahnya ketika Farhan datang terlambat ke rumahnya adalah ….', NULL, TRUE),
+(448, 2, 15, 2, 158, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan cerita di atas, tentukan penjelasan kelogisan hubungan antarperistiwa yang mengantarkan kelompok Sinta memperoleh nilai tertinggi! (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
+(449, 2, 15, 2, 158, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran penjelasan mengenai watak dan bahasa berikut berdasarkan teks \'Tugas Kelompok Sinta\'!', NULL, TRUE),
+(450, 2, 15, 2, 159, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Penjelasan makna kias yang paling tepat dari kalimat "Suara itu mengalir pelan melewati sawah dan menyentuh atap-atap rumah" adalah ….', NULL, TRUE),
+(451, 2, 15, 2, 159, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan teks \'Seruling Kakek\', tentukan penjelasan penggunaan bahasa kias dan citraan yang sesuai! (Pilihlah dua jawaban yang benar dengan memberi tanda centang [✓])', NULL, TRUE),
+(452, 2, 15, 2, 159, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran penjelasan kelogisan peristiwa berikut berdasarkan teks \'Seruling Kakek\'!', NULL, TRUE),
+(453, 2, 15, 2, 160, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Penjelasan penyebab Bu Ratmi tertegun menutup mulutnya dan meneteskan air mata saat membaca surat tua tersebut adalah ….', NULL, TRUE),
+(454, 2, 15, 2, 160, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan cerita \'Surat untuk Bu Ratmi\', tentukan penjelasan penggunaan bahasa dan peristiwa yang tepat! (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
+(455, 2, 15, 2, 160, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran penjelasan kelogisan cerita berikut berdasarkan teks \'Surat untuk Bu Ratmi\'!', NULL, TRUE),
+(456, 2, 15, 2, 161, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan teks di atas, penjelasan sebab-akibat yang logis atas karamnya perahu kertas milik tokoh Fajar adalah ….', NULL, TRUE),
+(457, 2, 15, 2, 161, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Makna ungkapan "Matanya berawan mendung" pada tokoh Fajar setelah perahunya karam menjelaskan bahwa tokoh sedang ….', NULL, TRUE),
+(458, 2, 15, 2, 161, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kalimat pembuka cerita "Gerimis deras menderu di atas seng atap rumah Gani" secara dominan memanfaatkan citraan ….', NULL, TRUE),
+(459, 2, 15, 2, 162, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Penjelasan kelogisan sikap Pak Johan memberikan sepotong roti hangat kepada Raka di akhir cerita adalah sebagai ….', NULL, TRUE),
+(460, 2, 15, 2, 162, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kalimat "Rasa legit cokelat lumer di lidah Raka, menghadirkan kehangatan luar biasa..." menggunakan perpaduan citraan ….', NULL, TRUE),
+(461, 2, 15, 3, 163, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan rincian situasi di lapangan dan pergerakan pemain, tindakan Rio selanjutnya yang paling mungkin terjadi adalah ….', NULL, TRUE),
+(462, 2, 15, 3, 163, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Jika operan bola Rio berhasil sampai tepat di kaki Ilham, prediksi dampak yang paling logis terhadap jalannya pertandingan dan kondisi tim adalah …. (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
+(463, 2, 15, 3, 163, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran prediksi-prediksi berikut berdasarkan akhir cerita \'Tendangan Penentu\'!', NULL, TRUE),
+(464, 2, 15, 3, 164, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan perubahan sikap teman-teman Bimo pada paragraf terakhir, prediksi tindakan mereka selanjutnya terhadap tanaman di sekolah adalah ….', NULL, TRUE),
+(465, 2, 15, 3, 164, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan ketekunan Bimo dan kondisi kemarau, prediksi keadaan bibit mangga dan lingkungan sekolah pada akhir musim kemarau adalah …. (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
+(466, 2, 15, 3, 164, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran prediksi-prediksi berikut berdasarkan teks \'Pohon Mangga di Halaman\'!', NULL, TRUE),
+(467, 2, 15, 3, 165, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan respons fisik dan situasi percakapan di akhir teks, reaksi Tomi selanjutnya yang paling mungkin terjadi adalah ….', NULL, TRUE),
+(468, 2, 15, 3, 165, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan interaksi tersebut, prediksi perkembangan hubungan sosial antara Tomi dan Nadia di masa mendatang adalah …. (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
+(469, 2, 15, 3, 165, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran prediksi-prediksi berikut berdasarkan teks \'Kotak Bekal Nadia\'!', NULL, TRUE),
+(470, 2, 15, 3, 166, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan arah gerak anak-anak dan kondisi cuaca di luar, tindakan ketiga anak itu selanjutnya yang paling mungkin adalah ….', NULL, TRUE),
+(471, 2, 15, 3, 166, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Jika anak-anak menceritakan fakta sebenarnya kepada warga kampung, prediksi tanggapan masyarakat dan kondisi gudang tua adalah …. (Pilihlah dua jawaban yang benar dengan memberi tanda centang [Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
+(472, 2, 15, 3, 166, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran prediksi-prediksi berikut berdasarkan teks \'Suara dari Gudang Tua\'!', NULL, TRUE),
+(473, 2, 15, 3, 167, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan tindakan Elsa memejamkan mata dan mengingat ibunya di barisan depan, tindakan Elsa selanjutnya yang paling mungkin adalah ….', NULL, TRUE),
+(474, 2, 15, 3, 167, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Berdasarkan bekal latihan intensif selama tiga bulan, prediksi jalannya penampilan dan akhir pentas seni Elsa adalah …. (Pilihlah jawaban yang benar! jawaban benar lebih dari satu)', NULL, TRUE),
+(475, 2, 15, 3, 167, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tentukan kebenaran prediksi psikologis tokoh berikut berdasarkan teks \'Panggung Pertama Elsa\'!', NULL, TRUE),
+(476, 2, 15, 3, 168, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan kepepetan waktu dan prinsip sportivitas yang disampaikan Riki, keputusan Pandu selanjutnya yang paling mungkin adalah ….', NULL, TRUE),
+(477, 2, 15, 3, 169, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Prediksi pengaruh tindakan luhur Riki terhadap performa dan mental bertanding Pandu di babak final adalah ….', NULL, TRUE),
+(478, 2, 15, 3, 169, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Prediksi dinamika relasi persahabatan antara Pandu dan Riki setelah ajang kejuaraan atletik berakhir adalah ….', NULL, TRUE),
+(479, 2, 15, 3, 170, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan tanda-tanda alam dan prinsip pesan almarhum ayahnya, tindakan Hendra selanjutnya yang paling mungkin terjadi adalah ….', NULL, TRUE),
+(480, 2, 15, 3, 170, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Prediksi tanggapan sesepuh nelayan dan keluarga saat menyambut kepulangan Hendra di pangkalan pendaratan ikan adalah ….', NULL, TRUE),
+(481, 2, 16, 1, 171, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan Teks "Pesan yang Belum Selesai", tindakan Raka yang paling relevan diterapkan dalam kehidupan sehari-hari adalah ....', NULL, TRUE),
+(482, 2, 16, 1, 171, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Peristiwa dalam Teks "Pesan yang Belum Selesai" paling relevan dengan situasi ....', NULL, TRUE),
+(483, 2, 16, 1, 171, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tindakan berikut yang sesuai dengan nilai yang ditunjukkan Raka dalam Teks "Pesan yang Belum Selesai" adalah ....', NULL, TRUE),
+(484, 2, 16, 1, 172, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika masalah seperti dalam Teks "Poster Lomba" terjadi dalam tugas kelompok, tindakan yang paling relevan adalah ....', NULL, TRUE),
+(485, 2, 16, 1, 172, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Nilai utama dari Teks "Poster Lomba" yang paling relevan dengan kehidupan siswa adalah ....', NULL, TRUE),
+(486, 2, 16, 1, 172, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Perilaku yang dapat diterapkan siswa berdasarkan Teks "Poster Lomba" adalah ....', NULL, TRUE),
+(487, 2, 16, 1, 173, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Peristiwa Danu dalam Teks "Suara dari Belakang Kelas" relevan dengan kehidupan sehari-hari karena ....', NULL, TRUE),
+(488, 2, 16, 1, 173, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Sikap Danu yang paling tepat diterapkan ketika seorang siswa melakukan kesalahan adalah ....', NULL, TRUE),
+(489, 2, 16, 1, 174, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Sikap yang sesuai dengan nilai Teks "Suara dari Belakang Kelas" dalam kehidupan sekolah adalah ....', NULL, TRUE),
+(490, 2, 16, 1, 175, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Tindakan Lani dalam Teks "Bangku Taman" dapat diterapkan di sekolah dengan cara ....', NULL, TRUE),
+(491, 2, 16, 1, 176, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Tulisan “Gunakan dan Jaga Bersama” pada Teks "Bangku Taman" paling relevan dengan kebiasaan ....', NULL, TRUE),
+(492, 2, 16, 1, 176, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Tindakan berikut yang sesuai dengan nilai Teks "Bangku Taman" adalah ....', NULL, TRUE),
+(493, 2, 16, 1, 177, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Keputusan Bima dalam Teks "Dompet di Lapangan" paling relevan diterapkan ketika seseorang ....', NULL, TRUE),
+(494, 2, 16, 1, 177, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika seorang siswa menemukan telepon genggam di kelas, tindakan yang paling sesuai dengan Teks "Dompet di Lapangan" adalah ....', NULL, TRUE),
+(495, 2, 16, 1, 177, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Nilai Teks "Dompet di Lapangan" dapat diterapkan dalam kehidupan sehari-hari melalui tindakan ....', NULL, TRUE),
+(496, 2, 16, 1, 177, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Alasan Bima menolak saran teman-temannya menunjukkan bahwa dalam kehidupan sehari-hari ....', NULL, TRUE),
+(497, 2, 16, 1, 177, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Dampak positif tindakan Bima yang paling mungkin terjadi dalam kehidupan nyata adalah ....', NULL, TRUE),
+(498, 2, 16, 1, 177, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Jika nilai dalam Teks "Pesan yang Belum Selesai" diterapkan secara luas dalam masyarakat, kemungkinan yang terjadi adalah ....', NULL, TRUE),
+(499, 2, 16, 1, 178, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Perilaku berikut mencerminkan nilai dari beberapa teks Di atas adalah ....', NULL, TRUE),
+(500, 2, 16, 1, 179, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Situasi berikut yang paling tepat menunjukkan penerapan nilai Teks "Pesan yang Belum Selesai" dan Teks "bangku taman" adalah ....', NULL, TRUE),
+(501, 2, 16, 2, 180, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Persamaan watak tokoh utama dalam P1 adalah ....', NULL, TRUE),
+(502, 2, 16, 2, 180, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Pernyataan yang paling tepat tentang alur P1 adalah ....', NULL, TRUE),
+(503, 2, 16, 2, 180, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pernyataan yang benar berdasarkan pasangan teks P1 adalah ....', NULL, TRUE),
+(504, 2, 16, 2, 181, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Persamaan tindakan tokoh dalam kedua teks P2 adalah ....', NULL, TRUE),
+(505, 2, 16, 2, 181, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perbedaan latar waktu kedua teks P2 adalah ....', NULL, TRUE),
+(506, 2, 16, 2, 181, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pernyataan yang didukung kedua teks P2 adalah ....', NULL, TRUE),
+(507, 2, 16, 2, 182, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Persamaan konflik masing masing teks P3 adalah ....', NULL, TRUE),
+(508, 2, 16, 2, 182, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan yang paling akurat berdasarkan pasangan P3 adalah ....', NULL, TRUE),
+(509, 2, 16, 2, 182, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pernyataan yang benar berdasarkan pasangan P3 adalah ....', NULL, TRUE),
+(510, 2, 16, 2, 183, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perbedaan cara tokoh menghadapi masalah dalam pasangan P4 adalah ....', NULL, TRUE),
+(511, 2, 16, 2, 183, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Pernyataan yang tepat tentang latar pasangan P4 adalah ....', NULL, TRUE),
+(512, 2, 16, 2, 183, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Persamaan sikap tokoh dalam pasangan P4 adalah ....', NULL, TRUE),
+(513, 2, 16, 2, 184, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perbedaan suasana P5 yang paling tepat adalah ....', NULL, TRUE),
+(514, 2, 16, 2, 184, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Diksi “berat” dalam Teks I paling tepat dimaknai sebagai ....', NULL, TRUE),
+(515, 2, 16, 2, 184, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pernyataan yang tepat berdasarkan Pasangan P5 adalah ....', NULL, TRUE),
+(516, 2, 16, 2, 184, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Sudut pandang kedua teks puisi Pasangan P5 dapat disebut ....', NULL, TRUE),
+(517, 2, 16, 2, 185, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perbedaan penyelesaian konflik P1 yang paling tepat adalah ....', NULL, TRUE),
+(518, 2, 16, 2, 186, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pernyataan yang menunjukkan perbedaan P2 dan P4 adalah ....', NULL, TRUE),
+(519, 2, 16, 2, 187, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Simpulan yang paling tepat dari perbandingan P3 dan P4 adalah ....', NULL, TRUE),
+(520, 2, 16, 2, 188, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pernyataan yang paling akurat berdasarkan seluruh pasangan teks adalah ....', NULL, TRUE),
+(521, 2, 16, 3, 189, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Respons emosional yang paling sesuai setelah membaca "Kursi Kosong" adalah ....', NULL, TRUE),
+(522, 2, 16, 3, 190, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perasaan Arga terhadap kepergian Rian dapat disimpulkan sebagai ....', NULL, TRUE),
+(523, 2, 16, 3, 191, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'membaca Teks "Kursi Kosong" adalah ....', NULL, TRUE),
+(524, 2, 16, 3, 190, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Bagian yang paling kuat menimbulkan rasa haru dalam Teks "Kursi Kosong" adalah ....', NULL, TRUE),
+(525, 2, 16, 3, 192, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Teks "Lampu di Rumah Nenek" adalah ....', NULL, TRUE),
+(526, 2, 16, 3, 193, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kalimat “Kamu membuat malam ini tidak terasa panjang” menunjukkan bahwa nenek ....', NULL, TRUE),
+(527, 2, 16, 3, 193, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Respons emosional yang didukung oleh Teks "Lampu di Rumah Nenek" adalah ....', NULL, TRUE),
+(528, 2, 16, 3, 194, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perasaan yang paling mungkin muncul ketika burung dalam Teks "Burung dalam Sangkar" akhirnya terbang adalah ....', NULL, TRUE),
+(529, 2, 16, 3, 194, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Keraguan burung sebelum terbang dapat menimbulkan respons pembaca berupa ....', NULL, TRUE),
+(530, 2, 16, 3, 194, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Respons yang sesuai terhadap akhir Teks "Burung dalam Sangkar" adalah ....', NULL, TRUE),
+(531, 2, 16, 3, 195, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Suasana emosional dominan dalam Teks Puisi “Pagi Setelah Hujan” adalah ....', NULL, TRUE),
+(532, 2, 16, 3, 195, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Respons emosional paling tepat terhadap larik “seolah hari memberiku kesempatan / untuk memulai lagi” adalah ....', NULL, TRUE),
+(533, 2, 16, 3, 195, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Diksi yang mendukung respons tenang dan penuh harapan dalam Teks Puisi “Pagi Setelah Hujan” adalah ....', NULL, TRUE),
+(534, 2, 16, 3, 195, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Perubahan suasana dalam Teks Puisi “Pagi Setelah Hujan” dapat membuat pembaca merasa ....', NULL, TRUE),
+(535, 2, 16, 3, 196, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Respons emosional yang paling tepat terhadap keputusan Naya dalam Teks "Pilihan Naya" adalah ....', NULL, TRUE),
+(536, 2, 16, 3, 196, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Setelah membaca Teks "Pilihan Naya", pembaca paling mungkin merasa ....', NULL, TRUE),
+(537, 2, 16, 3, 196, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Respons emosional yang sesuai terhadap Teks "Pilihan Naya" adalah ....', NULL, TRUE),
+(538, 2, 16, 3, 196, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Unsur yang paling kuat membangun rasa lega pada akhir Teks "Pilihan Naya" adalah ....', NULL, TRUE),
+(539, 2, 16, 3, 197, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Jika Teks "Kursi Kosong" dan Teks "Pilihan Naya" dibandingkan, respons emosional yang tepat adalah ....', NULL, TRUE),
+(540, 2, 16, 3, 197, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Berdasarkan keseluruhan Teks "Kursi Kosong"–Teks "Pilihan Naya", simpulan respons emosional yang paling tepat adalah ....', NULL, TRUE)
 ON DUPLICATE KEY UPDATE 
     `subject_id` = VALUES(`subject_id`), 
     `sub_material_id` = VALUES(`sub_material_id`), 
@@ -884,11 +893,11 @@ ON DUPLICATE KEY UPDATE
     `bank_type` = VALUES(`bank_type`), 
     `question_format` = VALUES(`question_format`), 
     `question_text` = VALUES(`question_text`), 
-    `stimulus_image_url` = VALUES(`stimulus_image_url`), 
+    `question_image_url` = VALUES(`question_image_url`), 
     `is_active` = VALUES(`is_active`);
 
 -- -----------------------------------------------------------------------------
--- 3. PEMBENIHAN PILIHAN JAWABAN (QUESTION_OPTIONS - 1424 Opsi, ID 721..2144)
+-- 3. PEMBENIHAN PILIHAN OPSI JAWABAN (QUESTION_OPTIONS - 1420 Opsi, ID 721..2140)
 -- -----------------------------------------------------------------------------
 INSERT INTO `question_options` (`id`, `question_id`, `option_label`, `option_text`, `is_correct`) VALUES
 (721, 181, 'A', 'Perangkat keras pada komputer', FALSE),
@@ -2108,230 +2117,226 @@ E. Wulan menemukan anak kucing di bawah meja', FALSE),
 (1918, 485, 'B', 'kerja sama untuk mencapai hasil bersama', TRUE),
 (1919, 485, 'C', 'kebebasan mengabaikan pembagian tugas', FALSE),
 (1920, 485, 'D', 'keberanian mempertahankan pendapat sendiri', FALSE),
-(1921, 486, 'A', 'persaingan untuk menunjukkan kemampuan', FALSE),
-(1922, 486, 'B', 'kerja sama untuk mencapai hasil bersama', TRUE),
-(1923, 486, 'C', 'kebebasan mengabaikan pembagian tugas', FALSE),
-(1924, 486, 'D', 'keberanian mempertahankan pendapat sendiri', FALSE),
-(1925, 487, 'A', 'mendiskusikan pembagian pekerjaan', TRUE),
-(1926, 487, 'B', 'mengambil seluruh pekerjaan karena merasa paling mampu', FALSE),
-(1927, 487, 'C', 'menghargai kontribusi anggota kelompok', TRUE),
-(1928, 487, 'D', 'menyelesaikan tugas tanpa mempertimbangkan anggota lain', FALSE),
-(1929, 488, 'A', 'setiap siswa selalu berhasil dalam presentasi', FALSE),
-(1930, 488, 'B', 'kesalahan dapat terjadi ketika seseorang sedang belajar', TRUE),
-(1931, 488, 'C', 'kesalahan harus selalu ditertawakan agar tidak terulang', FALSE),
-(1932, 488, 'D', 'siswa sebaiknya tidak menerima masukan dari teman', FALSE),
-(1933, 489, 'A', 'menghindari siswa tersebut', FALSE),
-(1934, 489, 'B', 'mempermalukannya di depan kelas', FALSE),
-(1935, 489, 'C', 'memberikan kesempatan untuk memperbaiki kesalahan', TRUE),
-(1936, 489, 'D', 'membiarkan kesalahan tanpa memberikan masukan', FALSE),
-(1937, 490, 'A', 'meminta maaf setelah mengejek teman', TRUE),
-(1938, 490, 'B', 'menolak semua kritik agar tidak malu', FALSE),
-(1939, 490, 'C', 'menerima masukan untuk memperbaiki kesalahan', TRUE),
-(1940, 490, 'D', 'menjadikan kesalahan teman sebagai bahan candaan', FALSE),
-(1941, 491, 'A', 'membalas coretan dengan membuat coretan baru', FALSE),
-(1942, 491, 'B', 'melaporkan kerusakan dan ikut menjaga fasilitas', TRUE),
-(1943, 491, 'C', 'membiarkan fasilitas rusak karena bukan milik pribadi', FALSE),
-(1944, 491, 'D', 'meminta petugas sekolah menyelesaikan semua masalah', FALSE),
-(1945, 492, 'A', 'menjaga barang milik sendiri saja', FALSE),
-(1946, 492, 'B', 'menggunakan fasilitas umum secara bertanggung jawab', TRUE),
-(1947, 492, 'C', 'menghindari fasilitas sekolah agar tidak rusak', FALSE),
-(1948, 492, 'D', 'menyerahkan seluruh tanggung jawab kepada petugas', FALSE),
-(1949, 493, 'A', 'melaporkan kerusakan fasilitas', TRUE),
-(1950, 493, 'B', 'mencoret fasilitas untuk membalas tindakan orang lain', FALSE),
-(1951, 493, 'C', 'ikut membersihkan lingkungan sekolah', TRUE),
-(1952, 493, 'D', 'membiarkan kerusakan karena bukan tanggung jawab pribadi', FALSE),
-(1953, 494, 'A', 'menemukan barang milik orang lain', TRUE),
-(1954, 494, 'B', 'mendapatkan hadiah dari teman', FALSE),
-(1955, 494, 'C', 'kehilangan barang pribadi', FALSE),
-(1956, 494, 'D', 'menerima uang saku dari orang tua.', FALSE),
-(1957, 495, 'A', 'menggunakan telepon tersebut sementara', FALSE),
-(1958, 495, 'B', 'menyimpannya sampai pemilik mencari sendiri', FALSE),
-(1959, 495, 'C', 'menyerahkannya kepada guru atau pihak sekolah', TRUE),
-(1960, 495, 'D', 'menghapus data agar tidak diketahui pemilik', FALSE),
-(1961, 496, 'A', 'mengembalikan barang yang bukan milik sendiri', TRUE),
-(1962, 496, 'B', 'menggunakan barang temuan sebelum mengembalikannya', FALSE),
-(1963, 496, 'C', 'menyerahkan barang kepada pihak yang dapat membantu menemukan pemilik', TRUE),
-(1964, 496, 'D', 'mengambil uang dalam barang temuan jika tidak ada yang melihat', FALSE),
-(1965, 497, 'A', 'pendapat teman selalu harus ditolak', FALSE),
-(1966, 497, 'B', 'keputusan perlu mempertimbangkan benar dan salah', TRUE),
-(1967, 497, 'C', 'uang merupakan hal yang tidak penting', FALSE),
-(1968, 497, 'D', 'siswa tidak boleh mempercayai temannya', FALSE),
-(1969, 498, 'A', 'pemilik barang merasa lebih khawatir', FALSE),
-(1970, 498, 'B', 'pemilik barang dapat memperoleh kembali barangnya', TRUE),
-(1971, 498, 'C', 'teman Bima mendapat uang tambahan', FALSE),
-(1972, 498, 'D', 'guru tidak perlu mengetahui barang temuan', FALSE),
-(1973, 499, 'A', 'informasi semakin cepat menyebar tanpa pemeriksaan', FALSE),
-(1974, 499, 'B', 'masyarakat lebih berhati-hati menerima informasi', TRUE),
-(1975, 499, 'C', 'semua informasi dianggap salah', FALSE),
-(1976, 499, 'D', 'masyarakat berhenti menggunakan media digital', FALSE),
-(1977, 500, 'A', 'memeriksa informasi sebelum membagikannya', TRUE),
-(1978, 500, 'B', 'menyelesaikan tugas bersama melalui pembagian pekerjaan', TRUE),
-(1979, 500, 'C', 'menertawakan teman yang melakukan kesalahan', FALSE),
-(1980, 500, 'D', 'mengambil barang temuan karena tidak diketahui pemiliknya', FALSE),
-(1981, 501, 'A', 'mengecek pengumuman sekolah sebelum meneruskannya', TRUE),
-(1982, 501, 'B', 'Bersikap acuh karena takut terlibat', FALSE),
-(1983, 501, 'C', 'mempermalukan teman yang salah menjawab', FALSE),
-(1984, 501, 'D', 'melaporkan fasilitas sekolah yang rusak', TRUE),
-(1985, 502, 'A', 'keduanya mudah membuang barang lama', FALSE),
-(1986, 502, 'B', 'keduanya berusaha memanfaatkan barang yang masih dapat digunakan', TRUE),
-(1987, 502, 'C', 'keduanya lebih menyukai barang baru', FALSE),
-(1988, 502, 'D', 'keduanya menggunakan barang lama untuk dijual', FALSE),
-(1989, 503, 'A', 'kedua teks dimulai dengan konflik besar dan berakhir tragis', FALSE),
-(1990, 503, 'B', 'kedua teks menunjukkan masalah kecil yang diselesaikan melalui tindakan', TRUE),
-(1991, 503, 'C', 'Teks I berakhir tanpa penyelesaian, sedangkan Teks II selesai', FALSE),
-(1992, 503, 'D', 'Teks I menggunakan alur mundur, sedangkan Teks II alur campuran', FALSE),
-(1993, 504, 'A', 'Nara memperbaiki sepeda sebelum menggunakannya.', TRUE),
-(1994, 504, 'B', 'Reno membuang sepatu yang rusak.', FALSE),
-(1995, 504, 'C', 'Kedua tokoh memperoleh bantuan dalam memperbaiki barang.', TRUE),
-(1996, 504, 'D', 'Kedua barang masih memiliki bagian yang dapat digunakan.', FALSE),
-(1997, 505, 'A', 'menghindari saluran air yang tersumbat', FALSE),
-(1998, 505, 'B', 'membersihkan saluran air yang dipenuhi daun', TRUE),
-(1999, 505, 'C', 'menunggu orang lain membersihkan selokan', FALSE),
-(2000, 505, 'D', 'memindahkan genangan ke halaman tetangga', FALSE),
-(2001, 506, 'A', 'Teks I berlangsung sore, sedangkan Teks II pagi', TRUE),
-(2002, 506, 'B', 'Teks I berlangsung pagi, sedangkan Teks II sore', FALSE),
-(2003, 506, 'C', 'keduanya berlangsung pada malam hari', FALSE),
-(2004, 506, 'D', 'keduanya berlangsung pada siang hari', FALSE),
-(2005, 507, 'A', 'cuaca memengaruhi keadaan lingkungan', TRUE),
-(2006, 507, 'B', 'tokoh menemukan daun di saluran air', TRUE),
-(2007, 507, 'C', 'kedua tokoh memilih membiarkan saluran tersumbat', FALSE),
-(2008, 507, 'D', 'kedua tokoh pergi bermain setelah membersihkan saluran', FALSE),
-(2009, 508, 'A', 'tokoh kehilangan barang berharga', FALSE),
-(2010, 508, 'B', 'tokoh menghadapi hasil pekerjaan yang tidak sesuai rencana', TRUE),
-(2011, 508, 'C', 'tokoh berselisih dengan keluarganya', FALSE),
-(2012, 508, 'D', 'tokoh harus memilih antara sekolah dan rumah', FALSE),
-(2013, 509, 'A', 'kesalahan selalu membuat seseorang gagal', FALSE),
-(2014, 509, 'B', 'masalah dalam proses berkarya dapat menghasilkan solusi baru', TRUE),
-(2015, 509, 'C', 'karya yang baik harus dibuat tanpa kesalahan', FALSE),
-(2016, 509, 'D', 'seseorang harus membuang karya ketika terjadi kesalahan', FALSE),
-(2017, 510, 'A', 'keduanya berhenti berkarya setelah mengalami masalah.', FALSE),
-(2018, 510, 'B', 'Fajar langsung menghapus seluruh ceritanya.', FALSE),
-(2019, 510, 'C', 'keduanya meninjau kembali karya sebelum mengambil keputusan.', TRUE),
-(2020, 510, 'D', 'keduanya menemukan solusi terhadap masalahnya.', TRUE),
-(2021, 511, 'A', 'Dara mencari jalan lain, sedangkan Bayu tetap berjalan tetapi lebih berhati-hati', TRUE),
-(2022, 511, 'B', 'Dara mengabaikan bahaya, sedangkan Bayu berlari', FALSE),
-(2023, 511, 'C', 'Dara meminta bantuan, sedangkan Bayu memperbaiki jalan', FALSE),
-(2024, 511, 'D', 'keduanya tetap menggunakan jalan yang berbahaya', FALSE),
-(2025, 512, 'A', 'kedua tokoh menghadapi kondisi jalan yang berpotensi membahayakan', TRUE),
-(2026, 512, 'B', 'kedua tokoh berada di dalam sekolah', FALSE),
-(2027, 512, 'C', 'hanya Dara yang menghadapi masalah keselamatan', FALSE),
-(2028, 512, 'D', 'hanya Bayu yang menghindari risiko', FALSE),
-(2029, 513, 'A', 'mempertimbangkan keselamatan', TRUE),
-(2030, 513, 'B', 'memaksakan diri menghadapi kondisi berbahaya', FALSE),
-(2031, 513, 'C', 'memilih cara yang lebih aman', TRUE),
-(2032, 513, 'D', 'mengabaikan kondisi lingkungan E. menyesuaikan tindakan dengan keadaan', FALSE),
-(2033, 514, 'A', 'Teks I menunjukkan kerinduan, sedangkan Teks II menunjukkan keceriaan dan harapan', TRUE),
-(2034, 514, 'B', 'Teks I menunjukkan kemarahan, sedangkan Teks II menunjukkan ketakutan', FALSE),
-(2035, 514, 'C', 'keduanya menunjukkan kesedihan yang mendalam', FALSE),
-(2036, 514, 'D', 'keduanya menunjukkan suasana menegangkan', FALSE),
-(2037, 515, 'A', 'surat tersebut memiliki banyak halaman', FALSE),
-(2038, 515, 'B', 'penulis merasa sulit mengungkapkan rasa rindu', TRUE),
-(2039, 515, 'C', 'surat tersebut sulit dibawa', FALSE),
-(2040, 515, 'D', 'penulis tidak mengetahui cara menulis surat', FALSE),
-(2041, 516, 'A', 'Teks I menggunakan kata yang menunjukkan kerinduan.', TRUE),
-(2042, 516, 'B', 'Teks II menggunakan kata yang menunjukkan harapan.', TRUE),
-(2043, 516, 'C', 'Kedua teks memiliki suasana emosional yang sama.', FALSE),
-(2044, 516, 'D', 'Teks I menggambarkan perasaan yang lebih berat.', TRUE),
-(2045, 517, 'A', 'orang pertama karena menggunakan kata “aku”', TRUE),
-(2046, 517, 'B', 'orang kedua karena menggunakan kata “kamu”', FALSE),
-(2047, 517, 'C', 'orang ketiga karena menggunakan nama tokoh', FALSE),
-(2048, 517, 'D', 'campuran karena menggunakan “aku” dan “dia”', FALSE),
-(2049, 518, 'A', 'Nara memperbaiki sepeda sendiri, sedangkan Reno dibantu ayahnya', TRUE),
-(2050, 518, 'B', 'Nara membuang sepeda, sedangkan Reno membeli sepatu baru', FALSE),
-(2051, 518, 'C', 'keduanya menjual barang lama', FALSE),
-(2052, 518, 'D', 'keduanya tidak menggunakan barang lama', FALSE),
-(2053, 519, 'A', 'tokoh dalam semua teks memilih mengabaikan masalah', FALSE),
-(2054, 519, 'B', 'P4 menampilkan tindakan menghindari atau mengurangi risiko.', TRUE),
-(2055, 519, 'C', 'kedua pasangan teks sama-sama berlatar hujan secara eksplisit.', FALSE),
-(2056, 519, 'D', 'P2 berfokus pada saluran air, sedangkan P4 berfokus pada jalan.', TRUE),
-(2057, 520, 'A', 'semua masalah harus dihadapi dengan cara yang sama', FALSE),
-(2058, 520, 'B', 'tindakan tokoh disesuaikan dengan jenis masalah yang dihadapi', TRUE),
-(2059, 520, 'C', 'tokoh dalam kedua pasangan selalu menghindari masalah', FALSE),
-(2060, 520, 'D', 'masalah dalam cerita tidak membutuhkan keputusan', FALSE),
-(2061, 521, 'A', 'tokoh-tokoh dalam teks menunjukkan kemampuan mengambil keputusan.', TRUE),
-(2062, 521, 'B', 'semua masalah diselesaikan dengan meminta bantuan orang lain.', FALSE),
-(2063, 521, 'C', 'beberapa tokoh memperbaiki atau memanfaatkan kembali sesuatu.', TRUE),
-(2064, 521, 'D', 'semua teks menggunakan suasana yang sama.', FALSE),
-(2065, 522, 'A', 'geli karena Arga kehilangan teman', FALSE),
-(2066, 522, 'B', 'haru karena persahabatan Arga dan Rian tetap bermakna', TRUE),
-(2067, 522, 'C', 'marah karena Rian tidak membawa Arga pergi', FALSE),
-(2068, 522, 'D', 'takut karena kursi Arga kosong', FALSE),
-(2069, 523, 'A', 'tidak peduli', FALSE),
-(2070, 523, 'B', 'sedih tetapi tetap memiliki harapan', TRUE),
-(2071, 523, 'C', 'marah dan kecewa', FALSE),
-(2072, 523, 'D', 'takut dan bingung', FALSE),
-(2073, 524, 'A', 'merasa takut terhadap Rian', FALSE),
-(2074, 524, 'B', 'merasa terharu', TRUE),
-(2075, 524, 'C', 'merasa geli karena peristiwa lucu', FALSE),
-(2076, 524, 'D', 'merasa hangat karena persahabatan', TRUE),
-(2077, 525, 'A', 'Arga datang ke sekolah sejak pagi', FALSE),
-(2078, 525, 'B', 'Rian biasanya mengajak Arga berbicara', FALSE),
-(2079, 525, 'C', 'Arga menemukan pesan bahwa mereka akan bertemu lagi', TRUE),
-(2080, 525, 'D', 'kursi berada di sebelah Arga', FALSE),
-(2081, 526, 'A', 'kagum karena Sinta menunjukkan kepedulian', TRUE),
-(2082, 526, 'B', 'takut karena listrik padam', FALSE),
-(2083, 526, 'C', 'kecewa karena nenek tinggal sendiri', FALSE),
-(2084, 526, 'D', 'marah karena Sinta datang malam hari', FALSE),
-(2085, 527, 'A', 'merasa terganggu oleh Sinta', FALSE),
-(2086, 527, 'B', 'merasa terbantu dan ditemani', TRUE),
-(2087, 527, 'C', 'merasa takut kepada Sinta', FALSE),
-(2088, 527, 'D', 'ingin Sinta segera pulang', FALSE),
-(2089, 528, 'A', 'merasa hangat melihat kepedulian Sinta', TRUE),
-(2090, 528, 'B', 'merasa tersentuh oleh hubungan cucu dan nenek', TRUE),
-(2091, 528, 'C', 'merasa geli terhadap keadaan nenek', FALSE),
-(2092, 528, 'D', 'merasa kagum terhadap kesediaan Sinta menemani nenek E. merasa marah karena listrik padam', TRUE),
-(2093, 529, 'A', 'lega karena burung memperoleh kebebasan', TRUE),
-(2094, 529, 'B', 'takut karena burung meninggalkan anak', FALSE),
-(2095, 529, 'C', 'marah karena sangkar menjadi kosong', FALSE),
-(2096, 529, 'D', 'bosan karena cerita berakhir', FALSE),
-(2097, 530, 'A', 'rasa ingin memahami keputusan burung', TRUE),
-(2098, 530, 'B', 'rasa benci kepada burung', FALSE),
-(2099, 530, 'C', 'rasa geli terhadap anak', FALSE),
-(2100, 530, 'D', 'rasa marah kepada pohon', FALSE),
-(2101, 531, 'A', 'merasa lega karena burung bebas', TRUE),
-(2102, 531, 'B', 'merasa kecewa karena anak mengejar burung', FALSE),
-(2103, 531, 'C', 'merasa kagum terhadap pilihan kebebasan', TRUE),
-(2104, 531, 'D', 'merasa takut karena burung berada di pohon', FALSE),
-(2105, 532, 'A', 'muram dan penuh ketakutan', FALSE),
-(2106, 532, 'B', 'tenang dan penuh harapan', TRUE),
-(2107, 532, 'C', 'tegang dan penuh kemarahan', FALSE),
-(2108, 532, 'D', 'lucu dan menghibur', FALSE),
-(2109, 533, 'A', 'optimistis', TRUE),
-(2110, 533, 'B', 'putus asa', FALSE),
-(2111, 533, 'C', 'marah', FALSE),
-(2112, 533, 'D', 'takut', FALSE),
-(2113, 534, 'A', '“pergi”', FALSE),
-(2114, 534, 'B', '“cahaya”', TRUE),
-(2115, 534, 'C', '“perlahan”', FALSE),
-(2116, 534, 'D', '“kesempatan”', TRUE),
-(2117, 535, 'A', 'dari tegang menuju lega', TRUE),
-(2118, 535, 'B', 'dari sedih menuju marah', FALSE),
-(2119, 535, 'C', 'dari bahagia menuju takut', FALSE),
-(2120, 535, 'D', 'dari marah menuju kecewa', FALSE),
-(2121, 536, 'A', 'kagum karena Naya berusaha menyelesaikan konflik secara adil', TRUE),
-(2122, 536, 'B', 'marah karena Naya tidak memilih salah satu teman', FALSE),
-(2123, 536, 'C', 'takut karena Naya membaca pesan', FALSE),
-(2124, 536, 'D', 'geli karena kedua temannya bertengkar', FALSE),
-(2125, 537, 'A', 'puas karena konflik dapat diselesaikan melalui komunikasi', TRUE),
-(2126, 537, 'B', 'kecewa karena konflik semakin besar', FALSE),
-(2127, 537, 'C', 'takut karena Naya kehilangan teman', FALSE),
-(2128, 537, 'D', 'sedih karena tidak ada penyelesaian', FALSE),
-(2129, 538, 'A', 'lega karena kesalahpahaman terselesaikan', TRUE),
-(2130, 538, 'B', 'kecewa karena Naya memperkeruh masalah', FALSE),
-(2131, 538, 'C', 'menghargai keputusan Naya untuk mempertemukan kedua pihak', TRUE),
-(2132, 538, 'D', 'takut karena pesan tidak dapat dipahami', FALSE),
-(2133, 539, 'A', 'kedua teman meminta Naya memilih pihak', FALSE),
-(2134, 539, 'B', 'pesan dapat ditafsirkan berbeda', FALSE),
-(2135, 539, 'C', 'kedua teman menyadari pertengkaran mereka tidak perlu terjadi', TRUE),
-(2136, 539, 'D', 'Naya membaca pesan tersebut', FALSE),
-(2137, 540, 'A', 'kedua teks tidak memiliki unsur emosional.', FALSE),
-(2138, 540, 'B', 'Teks "Pilihan Naya" dapat menimbulkan rasa lega karena konflik selesai.', TRUE),
-(2139, 540, 'C', 'kedua teks sama-sama berakhir dengan ketakutan.', FALSE),
-(2140, 540, 'D', 'kedua teks dapat menimbulkan penghargaan terhadap hubungan antarmanusia.', TRUE),
-(2141, 541, 'A', 'teks-teks tersebut cenderung membangun emosi melalui hubungan, kepedulian, kebebasan, harapan, dan penyelesaian masalah', TRUE),
-(2142, 541, 'B', 'teks-teks tersebut hanya bertujuan menimbulkan rasa takut', FALSE),
-(2143, 541, 'C', 'seluruh tokoh mengalami konflik tanpa penyelesaian', FALSE),
-(2144, 541, 'D', 'semua teks memiliki suasana sedih yang sama', FALSE)
+(1921, 486, 'A', 'mendiskusikan pembagian pekerjaan', TRUE),
+(1922, 486, 'B', 'mengambil seluruh pekerjaan karena merasa paling mampu', FALSE),
+(1923, 486, 'C', 'menghargai kontribusi anggota kelompok', TRUE),
+(1924, 486, 'D', 'menyelesaikan tugas tanpa mempertimbangkan anggota lain', FALSE),
+(1925, 487, 'A', 'setiap siswa selalu berhasil dalam presentasi', FALSE),
+(1926, 487, 'B', 'kesalahan dapat terjadi ketika seseorang sedang belajar', TRUE),
+(1927, 487, 'C', 'kesalahan harus selalu ditertawakan agar tidak terulang', FALSE),
+(1928, 487, 'D', 'siswa sebaiknya tidak menerima masukan dari teman', FALSE),
+(1929, 488, 'A', 'menghindari siswa tersebut', FALSE),
+(1930, 488, 'B', 'mempermalukannya di depan kelas', FALSE),
+(1931, 488, 'C', 'memberikan kesempatan untuk memperbaiki kesalahan', TRUE),
+(1932, 488, 'D', 'membiarkan kesalahan tanpa memberikan masukan', FALSE),
+(1933, 489, 'A', 'meminta maaf setelah mengejek teman', TRUE),
+(1934, 489, 'B', 'menolak semua kritik agar tidak malu', FALSE),
+(1935, 489, 'C', 'menerima masukan untuk memperbaiki kesalahan', TRUE),
+(1936, 489, 'D', 'menjadikan kesalahan teman sebagai bahan candaan', FALSE),
+(1937, 490, 'A', 'membalas coretan dengan membuat coretan baru', FALSE),
+(1938, 490, 'B', 'melaporkan kerusakan dan ikut menjaga fasilitas', TRUE),
+(1939, 490, 'C', 'membiarkan fasilitas rusak karena bukan milik pribadi', FALSE),
+(1940, 490, 'D', 'meminta petugas sekolah menyelesaikan semua masalah', FALSE),
+(1941, 491, 'A', 'menjaga barang milik sendiri saja', FALSE),
+(1942, 491, 'B', 'menggunakan fasilitas umum secara bertanggung jawab', TRUE),
+(1943, 491, 'C', 'menghindari fasilitas sekolah agar tidak rusak', FALSE),
+(1944, 491, 'D', 'menyerahkan seluruh tanggung jawab kepada petugas', FALSE),
+(1945, 492, 'A', 'melaporkan kerusakan fasilitas', TRUE),
+(1946, 492, 'B', 'mencoret fasilitas untuk membalas tindakan orang lain', FALSE),
+(1947, 492, 'C', 'ikut membersihkan lingkungan sekolah', TRUE),
+(1948, 492, 'D', 'membiarkan kerusakan karena bukan tanggung jawab pribadi', FALSE),
+(1949, 493, 'A', 'menemukan barang milik orang lain', TRUE),
+(1950, 493, 'B', 'mendapatkan hadiah dari teman', FALSE),
+(1951, 493, 'C', 'kehilangan barang pribadi', FALSE),
+(1952, 493, 'D', 'menerima uang saku dari orang tua.', FALSE),
+(1953, 494, 'A', 'menggunakan telepon tersebut sementara', FALSE),
+(1954, 494, 'B', 'menyimpannya sampai pemilik mencari sendiri', FALSE),
+(1955, 494, 'C', 'menyerahkannya kepada guru atau pihak sekolah', TRUE),
+(1956, 494, 'D', 'menghapus data agar tidak diketahui pemilik', FALSE),
+(1957, 495, 'A', 'mengembalikan barang yang bukan milik sendiri', TRUE),
+(1958, 495, 'B', 'menggunakan barang temuan sebelum mengembalikannya', FALSE),
+(1959, 495, 'C', 'menyerahkan barang kepada pihak yang dapat membantu menemukan pemilik', TRUE),
+(1960, 495, 'D', 'mengambil uang dalam barang temuan jika tidak ada yang melihat', FALSE),
+(1961, 496, 'A', 'pendapat teman selalu harus ditolak', FALSE),
+(1962, 496, 'B', 'keputusan perlu mempertimbangkan benar dan salah', TRUE),
+(1963, 496, 'C', 'uang merupakan hal yang tidak penting', FALSE),
+(1964, 496, 'D', 'siswa tidak boleh mempercayai temannya', FALSE),
+(1965, 497, 'A', 'pemilik barang merasa lebih khawatir', FALSE),
+(1966, 497, 'B', 'pemilik barang dapat memperoleh kembali barangnya', TRUE),
+(1967, 497, 'C', 'teman Bima mendapat uang tambahan', FALSE),
+(1968, 497, 'D', 'guru tidak perlu mengetahui barang temuan', FALSE),
+(1969, 498, 'A', 'informasi semakin cepat menyebar tanpa pemeriksaan', FALSE),
+(1970, 498, 'B', 'masyarakat lebih berhati-hati menerima informasi', TRUE),
+(1971, 498, 'C', 'semua informasi dianggap salah', FALSE),
+(1972, 498, 'D', 'masyarakat berhenti menggunakan media digital', FALSE),
+(1973, 499, 'A', 'memeriksa informasi sebelum membagikannya', TRUE),
+(1974, 499, 'B', 'menyelesaikan tugas bersama melalui pembagian pekerjaan', TRUE),
+(1975, 499, 'C', 'menertawakan teman yang melakukan kesalahan', FALSE),
+(1976, 499, 'D', 'mengambil barang temuan karena tidak diketahui pemiliknya', FALSE),
+(1977, 500, 'A', 'mengecek pengumuman sekolah sebelum meneruskannya', TRUE),
+(1978, 500, 'B', 'Bersikap acuh karena takut terlibat', FALSE),
+(1979, 500, 'C', 'mempermalukan teman yang salah menjawab', FALSE),
+(1980, 500, 'D', 'melaporkan fasilitas sekolah yang rusak', TRUE),
+(1981, 501, 'A', 'keduanya mudah membuang barang lama', FALSE),
+(1982, 501, 'B', 'keduanya berusaha memanfaatkan barang yang masih dapat digunakan', TRUE),
+(1983, 501, 'C', 'keduanya lebih menyukai barang baru', FALSE),
+(1984, 501, 'D', 'keduanya menggunakan barang lama untuk dijual', FALSE),
+(1985, 502, 'A', 'kedua teks dimulai dengan konflik besar dan berakhir tragis', FALSE),
+(1986, 502, 'B', 'kedua teks menunjukkan masalah kecil yang diselesaikan melalui tindakan', TRUE),
+(1987, 502, 'C', 'Teks I berakhir tanpa penyelesaian, sedangkan Teks II selesai', FALSE),
+(1988, 502, 'D', 'Teks I menggunakan alur mundur, sedangkan Teks II alur campuran', FALSE),
+(1989, 503, 'A', 'Nara memperbaiki sepeda sebelum menggunakannya.', TRUE),
+(1990, 503, 'B', 'Reno membuang sepatu yang rusak.', FALSE),
+(1991, 503, 'C', 'Kedua tokoh memperoleh bantuan dalam memperbaiki barang.', TRUE),
+(1992, 503, 'D', 'Kedua barang masih memiliki bagian yang dapat digunakan.', FALSE),
+(1993, 504, 'A', 'menghindari saluran air yang tersumbat', FALSE),
+(1994, 504, 'B', 'membersihkan saluran air yang dipenuhi daun', TRUE),
+(1995, 504, 'C', 'menunggu orang lain membersihkan selokan', FALSE),
+(1996, 504, 'D', 'memindahkan genangan ke halaman tetangga', FALSE),
+(1997, 505, 'A', 'Teks I berlangsung sore, sedangkan Teks II pagi', TRUE),
+(1998, 505, 'B', 'Teks I berlangsung pagi, sedangkan Teks II sore', FALSE),
+(1999, 505, 'C', 'keduanya berlangsung pada malam hari', FALSE),
+(2000, 505, 'D', 'keduanya berlangsung pada siang hari', FALSE),
+(2001, 506, 'A', 'cuaca memengaruhi keadaan lingkungan', TRUE),
+(2002, 506, 'B', 'tokoh menemukan daun di saluran air', TRUE),
+(2003, 506, 'C', 'kedua tokoh memilih membiarkan saluran tersumbat', FALSE),
+(2004, 506, 'D', 'kedua tokoh pergi bermain setelah membersihkan saluran', FALSE),
+(2005, 507, 'A', 'tokoh kehilangan barang berharga', FALSE),
+(2006, 507, 'B', 'tokoh menghadapi hasil pekerjaan yang tidak sesuai rencana', TRUE),
+(2007, 507, 'C', 'tokoh berselisih dengan keluarganya', FALSE),
+(2008, 507, 'D', 'tokoh harus memilih antara sekolah dan rumah', FALSE),
+(2009, 508, 'A', 'kesalahan selalu membuat seseorang gagal', FALSE),
+(2010, 508, 'B', 'masalah dalam proses berkarya dapat menghasilkan solusi baru', TRUE),
+(2011, 508, 'C', 'karya yang baik harus dibuat tanpa kesalahan', FALSE),
+(2012, 508, 'D', 'seseorang harus membuang karya ketika terjadi kesalahan', FALSE),
+(2013, 509, 'A', 'keduanya berhenti berkarya setelah mengalami masalah.', FALSE),
+(2014, 509, 'B', 'Fajar langsung menghapus seluruh ceritanya.', FALSE),
+(2015, 509, 'C', 'keduanya meninjau kembali karya sebelum mengambil keputusan.', TRUE),
+(2016, 509, 'D', 'keduanya menemukan solusi terhadap masalahnya.', TRUE),
+(2017, 510, 'A', 'Dara mencari jalan lain, sedangkan Bayu tetap berjalan tetapi lebih berhati-hati', TRUE),
+(2018, 510, 'B', 'Dara mengabaikan bahaya, sedangkan Bayu berlari', FALSE),
+(2019, 510, 'C', 'Dara meminta bantuan, sedangkan Bayu memperbaiki jalan', FALSE),
+(2020, 510, 'D', 'keduanya tetap menggunakan jalan yang berbahaya', FALSE),
+(2021, 511, 'A', 'kedua tokoh menghadapi kondisi jalan yang berpotensi membahayakan', TRUE),
+(2022, 511, 'B', 'kedua tokoh berada di dalam sekolah', FALSE),
+(2023, 511, 'C', 'hanya Dara yang menghadapi masalah keselamatan', FALSE),
+(2024, 511, 'D', 'hanya Bayu yang menghindari risiko', FALSE),
+(2025, 512, 'A', 'mempertimbangkan keselamatan', TRUE),
+(2026, 512, 'B', 'memaksakan diri menghadapi kondisi berbahaya', FALSE),
+(2027, 512, 'C', 'memilih cara yang lebih aman', TRUE),
+(2028, 512, 'D', 'mengabaikan kondisi lingkungan E. menyesuaikan tindakan dengan keadaan', FALSE),
+(2029, 513, 'A', 'Teks I menunjukkan kerinduan, sedangkan Teks II menunjukkan keceriaan dan harapan', TRUE),
+(2030, 513, 'B', 'Teks I menunjukkan kemarahan, sedangkan Teks II menunjukkan ketakutan', FALSE),
+(2031, 513, 'C', 'keduanya menunjukkan kesedihan yang mendalam', FALSE),
+(2032, 513, 'D', 'keduanya menunjukkan suasana menegangkan', FALSE),
+(2033, 514, 'A', 'surat tersebut memiliki banyak halaman', FALSE),
+(2034, 514, 'B', 'penulis merasa sulit mengungkapkan rasa rindu', TRUE),
+(2035, 514, 'C', 'surat tersebut sulit dibawa', FALSE),
+(2036, 514, 'D', 'penulis tidak mengetahui cara menulis surat', FALSE),
+(2037, 515, 'A', 'Teks I menggunakan kata yang menunjukkan kerinduan.', TRUE),
+(2038, 515, 'B', 'Teks II menggunakan kata yang menunjukkan harapan.', TRUE),
+(2039, 515, 'C', 'Kedua teks memiliki suasana emosional yang sama.', FALSE),
+(2040, 515, 'D', 'Teks I menggambarkan perasaan yang lebih berat.', TRUE),
+(2041, 516, 'A', 'orang pertama karena menggunakan kata “aku”', TRUE),
+(2042, 516, 'B', 'orang kedua karena menggunakan kata “kamu”', FALSE),
+(2043, 516, 'C', 'orang ketiga karena menggunakan nama tokoh', FALSE),
+(2044, 516, 'D', 'campuran karena menggunakan “aku” dan “dia”', FALSE),
+(2045, 517, 'A', 'Nara memperbaiki sepeda sendiri, sedangkan Reno dibantu ayahnya', TRUE),
+(2046, 517, 'B', 'Nara membuang sepeda, sedangkan Reno membeli sepatu baru', FALSE),
+(2047, 517, 'C', 'keduanya menjual barang lama', FALSE),
+(2048, 517, 'D', 'keduanya tidak menggunakan barang lama', FALSE),
+(2049, 518, 'A', 'tokoh dalam semua teks memilih mengabaikan masalah', FALSE),
+(2050, 518, 'B', 'P4 menampilkan tindakan menghindari atau mengurangi risiko.', TRUE),
+(2051, 518, 'C', 'kedua pasangan teks sama-sama berlatar hujan secara eksplisit.', FALSE),
+(2052, 518, 'D', 'P2 berfokus pada saluran air, sedangkan P4 berfokus pada jalan.', TRUE),
+(2053, 519, 'A', 'semua masalah harus dihadapi dengan cara yang sama', FALSE),
+(2054, 519, 'B', 'tindakan tokoh disesuaikan dengan jenis masalah yang dihadapi', TRUE),
+(2055, 519, 'C', 'tokoh dalam kedua pasangan selalu menghindari masalah', FALSE),
+(2056, 519, 'D', 'masalah dalam cerita tidak membutuhkan keputusan', FALSE),
+(2057, 520, 'A', 'tokoh-tokoh dalam teks menunjukkan kemampuan mengambil keputusan.', TRUE),
+(2058, 520, 'B', 'semua masalah diselesaikan dengan meminta bantuan orang lain.', FALSE),
+(2059, 520, 'C', 'beberapa tokoh memperbaiki atau memanfaatkan kembali sesuatu.', TRUE),
+(2060, 520, 'D', 'semua teks menggunakan suasana yang sama.', FALSE),
+(2061, 521, 'A', 'geli karena Arga kehilangan teman', FALSE),
+(2062, 521, 'B', 'haru karena persahabatan Arga dan Rian tetap bermakna', TRUE),
+(2063, 521, 'C', 'marah karena Rian tidak membawa Arga pergi', FALSE),
+(2064, 521, 'D', 'takut karena kursi Arga kosong', FALSE),
+(2065, 522, 'A', 'tidak peduli', FALSE),
+(2066, 522, 'B', 'sedih tetapi tetap memiliki harapan', TRUE),
+(2067, 522, 'C', 'marah dan kecewa', FALSE),
+(2068, 522, 'D', 'takut dan bingung', FALSE),
+(2069, 523, 'A', 'merasa takut terhadap Rian', FALSE),
+(2070, 523, 'B', 'merasa terharu', TRUE),
+(2071, 523, 'C', 'merasa geli karena peristiwa lucu', FALSE),
+(2072, 523, 'D', 'merasa hangat karena persahabatan', TRUE),
+(2073, 524, 'A', 'Arga datang ke sekolah sejak pagi', FALSE),
+(2074, 524, 'B', 'Rian biasanya mengajak Arga berbicara', FALSE),
+(2075, 524, 'C', 'Arga menemukan pesan bahwa mereka akan bertemu lagi', TRUE),
+(2076, 524, 'D', 'kursi berada di sebelah Arga', FALSE),
+(2077, 525, 'A', 'kagum karena Sinta menunjukkan kepedulian', TRUE),
+(2078, 525, 'B', 'takut karena listrik padam', FALSE),
+(2079, 525, 'C', 'kecewa karena nenek tinggal sendiri', FALSE),
+(2080, 525, 'D', 'marah karena Sinta datang malam hari', FALSE),
+(2081, 526, 'A', 'merasa terganggu oleh Sinta', FALSE),
+(2082, 526, 'B', 'merasa terbantu dan ditemani', TRUE),
+(2083, 526, 'C', 'merasa takut kepada Sinta', FALSE),
+(2084, 526, 'D', 'ingin Sinta segera pulang', FALSE),
+(2085, 527, 'A', 'merasa hangat melihat kepedulian Sinta', TRUE),
+(2086, 527, 'B', 'merasa tersentuh oleh hubungan cucu dan nenek', TRUE),
+(2087, 527, 'C', 'merasa geli terhadap keadaan nenek', FALSE),
+(2088, 527, 'D', 'merasa kagum terhadap kesediaan Sinta menemani nenek E. merasa marah karena listrik padam', TRUE),
+(2089, 528, 'A', 'lega karena burung memperoleh kebebasan', TRUE),
+(2090, 528, 'B', 'takut karena burung meninggalkan anak', FALSE),
+(2091, 528, 'C', 'marah karena sangkar menjadi kosong', FALSE),
+(2092, 528, 'D', 'bosan karena cerita berakhir', FALSE),
+(2093, 529, 'A', 'rasa ingin memahami keputusan burung', TRUE),
+(2094, 529, 'B', 'rasa benci kepada burung', FALSE),
+(2095, 529, 'C', 'rasa geli terhadap anak', FALSE),
+(2096, 529, 'D', 'rasa marah kepada pohon', FALSE),
+(2097, 530, 'A', 'merasa lega karena burung bebas', TRUE),
+(2098, 530, 'B', 'merasa kecewa karena anak mengejar burung', FALSE),
+(2099, 530, 'C', 'merasa kagum terhadap pilihan kebebasan', TRUE),
+(2100, 530, 'D', 'merasa takut karena burung berada di pohon', FALSE),
+(2101, 531, 'A', 'muram dan penuh ketakutan', FALSE),
+(2102, 531, 'B', 'tenang dan penuh harapan', TRUE),
+(2103, 531, 'C', 'tegang dan penuh kemarahan', FALSE),
+(2104, 531, 'D', 'lucu dan menghibur', FALSE),
+(2105, 532, 'A', 'optimistis', TRUE),
+(2106, 532, 'B', 'putus asa', FALSE),
+(2107, 532, 'C', 'marah', FALSE),
+(2108, 532, 'D', 'takut', FALSE),
+(2109, 533, 'A', '“pergi”', FALSE),
+(2110, 533, 'B', '“cahaya”', TRUE),
+(2111, 533, 'C', '“perlahan”', FALSE),
+(2112, 533, 'D', '“kesempatan”', TRUE),
+(2113, 534, 'A', 'dari tegang menuju lega', TRUE),
+(2114, 534, 'B', 'dari sedih menuju marah', FALSE),
+(2115, 534, 'C', 'dari bahagia menuju takut', FALSE),
+(2116, 534, 'D', 'dari marah menuju kecewa', FALSE),
+(2117, 535, 'A', 'kagum karena Naya berusaha menyelesaikan konflik secara adil', TRUE),
+(2118, 535, 'B', 'marah karena Naya tidak memilih salah satu teman', FALSE),
+(2119, 535, 'C', 'takut karena Naya membaca pesan', FALSE),
+(2120, 535, 'D', 'geli karena kedua temannya bertengkar', FALSE),
+(2121, 536, 'A', 'puas karena konflik dapat diselesaikan melalui komunikasi', TRUE),
+(2122, 536, 'B', 'kecewa karena konflik semakin besar', FALSE),
+(2123, 536, 'C', 'takut karena Naya kehilangan teman', FALSE),
+(2124, 536, 'D', 'sedih karena tidak ada penyelesaian', FALSE),
+(2125, 537, 'A', 'lega karena kesalahpahaman terselesaikan', TRUE),
+(2126, 537, 'B', 'kecewa karena Naya memperkeruh masalah', FALSE),
+(2127, 537, 'C', 'menghargai keputusan Naya untuk mempertemukan kedua pihak', TRUE),
+(2128, 537, 'D', 'takut karena pesan tidak dapat dipahami', FALSE),
+(2129, 538, 'A', 'kedua teman meminta Naya memilih pihak', FALSE),
+(2130, 538, 'B', 'pesan dapat ditafsirkan berbeda', FALSE),
+(2131, 538, 'C', 'kedua teman menyadari pertengkaran mereka tidak perlu terjadi', TRUE),
+(2132, 538, 'D', 'Naya membaca pesan tersebut', FALSE),
+(2133, 539, 'A', 'kedua teks tidak memiliki unsur emosional.', FALSE),
+(2134, 539, 'B', 'Teks "Pilihan Naya" dapat menimbulkan rasa lega karena konflik selesai.', TRUE),
+(2135, 539, 'C', 'kedua teks sama-sama berakhir dengan ketakutan.', FALSE),
+(2136, 539, 'D', 'kedua teks dapat menimbulkan penghargaan terhadap hubungan antarmanusia.', TRUE),
+(2137, 540, 'A', 'teks-teks tersebut cenderung membangun emosi melalui hubungan, kepedulian, kebebasan, harapan, dan penyelesaian masalah', TRUE),
+(2138, 540, 'B', 'teks-teks tersebut hanya bertujuan menimbulkan rasa takut', FALSE),
+(2139, 540, 'C', 'seluruh tokoh mengalami konflik tanpa penyelesaian', FALSE),
+(2140, 540, 'D', 'semua teks memiliki suasana sedih yang sama', FALSE)
 ON DUPLICATE KEY UPDATE 
     `question_id` = VALUES(`question_id`), 
     `option_label` = VALUES(`option_label`), 
@@ -2339,7 +2344,7 @@ ON DUPLICATE KEY UPDATE
     `is_correct` = VALUES(`is_correct`);
 
 -- -----------------------------------------------------------------------------
--- 4. PEMBENIHAN PEMBAHASAN JAWABAN (QUESTION_EXPLANATIONS - 361 Pembahasan, ID 181..541)
+-- 4. PEMBENIHAN PEMBAHASAN JAWABAN PASCA-SESI (QUESTION_EXPLANATIONS - 360 Pembahasan, ID 181..540)
 -- -----------------------------------------------------------------------------
 INSERT INTO `question_explanations` (`id`, `question_id`, `explanation_text`, `reasoning_guide`, `reference_url`) VALUES
 (181, 181, 'Jawaban: BJawaban B benar karena algoritma dalam konteks teknologi berarti prosedur atau langkah-langkah logis yang digunakan untuk memecahkan masalah.', NULL, NULL),
@@ -2870,62 +2875,61 @@ Pembahasan: Bencana asap buatan manusia yang merugikan anak-anak secara emosiona
 (483, 483, 'A sesuai dengan tindakan Raka yang melakukan verifikasi. C sesuai karena Raka segera mengoreksi informasi yang sebelumnya kurang tepat. B dan D bertentangan dengan sikap kritis Raka.', NULL, NULL),
 (484, 484, 'Dalam Teks "Poster Lomba", Mira dan Sinta menyelesaikan pekerjaan dengan pembagian tugas. Cara tersebut dapat diterapkan pada tugas kelompok di sekolah. A, B, dan D tidak mencerminkan kerja sama yang ditunjukkan tokoh.', NULL, NULL),
 (485, 485, 'Bukti dalam teks adalah Mira dan Sinta membagi pekerjaan sehingga poster selesai tepat waktu. Nilai yang paling relevan adalah kerja sama.', NULL, NULL),
-(486, 486, 'Bukti dalam teks adalah Mira dan Sinta membagi pekerjaan sehingga poster selesai tepat waktu. Nilai yang paling relevan adalah kerja sama.', NULL, NULL),
-(487, 487, 'Kedua pilihan tersebut sesuai dengan kerja sama Mira dan Sinta. B dan D bertentangan dengan prinsip pembagian tugas yang dilakukan dalam teks.', NULL, NULL),
-(488, 488, 'Danu melakukan kesalahan dalam mengucapkan istilah, kemudian memperbaikinya. Peristiwa tersebut realistis dalam proses belajar.', NULL, NULL),
-(489, 489, 'Dalam Teks "Suara dari Belakang Kelas", Danu memperbaiki ucapannya setelah mendapat masukan guru. Peristiwa tersebut menunjukkan pentingnya kesempatan memperbaiki kesalahan.', NULL, NULL),
-(490, 490, 'Keduanya sesuai dengan perilaku tokoh. A mencerminkan teman Danu yang meminta maaf; C sesuai dengan Danu yang memperbaiki kesalahannya;', NULL, NULL),
-(491, 491, 'Lani mengusulkan pelaporan dan ikut menjaga taman. Hal tersebut menunjukkan tanggung jawab terhadap fasilitas bersama.', NULL, NULL),
-(492, 492, 'Tulisan tersebut menekankan tanggung jawab bersama terhadap fasilitas yang digunakan bersama.', NULL, NULL),
-(493, 493, 'A dan C sejalan dengan tindakan Lani dan teman-temannya. B dan D bertentangan dengan kepedulian terhadap fasilitas bersama.', NULL, NULL),
-(494, 494, 'Bima menemukan dompet milik orang lain dan mengembalikannya melalui guru. Situasi yang sepadan adalah ketika seseorang menemukan barang milik orang lain.', NULL, NULL),
-(495, 495, 'Bima menyerahkan dompet kepada guru piket. Situasi tersebut dapat diterapkan pada barang temuan lain.', NULL, NULL),
-(496, 496, 'Kedua tindakan tersebut sesuai dengan kejujuran dan tanggung jawab Bima. B dan D bertentangan dengan nilai tersebut.', NULL, NULL),
-(497, 497, 'Bima mempertimbangkan bahwa dompet tersebut bukan miliknya sehingga tidak mengambil uang di dalamnya.', NULL, NULL),
-(498, 498, 'Dalam Teks "Dompet di Lapangan", pemilik dompet datang dengan wajah lega. Hal ini menunjukkan dampak positif dari kejujuran Bima.', NULL, NULL),
-(499, 499, 'Raka memeriksa informasi sebelum menyebarkannya. Jika kebiasaan itu diterapkan, masyarakat akan lebih berhati-hati terhadap informasi.', NULL, NULL),
-(500, 500, 'A berasal dari Teks "Pesan yang Belum Selesai", dan B dari Teks "Poster Lomba". C bertentangan dengan Teks "Suara dari Belakang Kelas", sedangkan D bertentangan dengan Teks "Dompet di Lapangan".', NULL, NULL),
-(501, 501, 'A dan D, masing-masing sesuai dengan nilai utama Teks "Pesan yang Belum Selesai", dan Teks "Bangku Taman".', NULL, NULL),
+(486, 486, 'Kedua pilihan tersebut sesuai dengan kerja sama Mira dan Sinta. B dan D bertentangan dengan prinsip pembagian tugas yang dilakukan dalam teks.', NULL, NULL),
+(487, 487, 'Danu melakukan kesalahan dalam mengucapkan istilah, kemudian memperbaikinya. Peristiwa tersebut realistis dalam proses belajar.', NULL, NULL),
+(488, 488, 'Dalam Teks "Suara dari Belakang Kelas", Danu memperbaiki ucapannya setelah mendapat masukan guru. Peristiwa tersebut menunjukkan pentingnya kesempatan memperbaiki kesalahan.', NULL, NULL),
+(489, 489, 'Keduanya sesuai dengan perilaku tokoh. A mencerminkan teman Danu yang meminta maaf; C sesuai dengan Danu yang memperbaiki kesalahannya;', NULL, NULL),
+(490, 490, 'Lani mengusulkan pelaporan dan ikut menjaga taman. Hal tersebut menunjukkan tanggung jawab terhadap fasilitas bersama.', NULL, NULL),
+(491, 491, 'Tulisan tersebut menekankan tanggung jawab bersama terhadap fasilitas yang digunakan bersama.', NULL, NULL),
+(492, 492, 'A dan C sejalan dengan tindakan Lani dan teman-temannya. B dan D bertentangan dengan kepedulian terhadap fasilitas bersama.', NULL, NULL),
+(493, 493, 'Bima menemukan dompet milik orang lain dan mengembalikannya melalui guru. Situasi yang sepadan adalah ketika seseorang menemukan barang milik orang lain.', NULL, NULL),
+(494, 494, 'Bima menyerahkan dompet kepada guru piket. Situasi tersebut dapat diterapkan pada barang temuan lain.', NULL, NULL),
+(495, 495, 'Kedua tindakan tersebut sesuai dengan kejujuran dan tanggung jawab Bima. B dan D bertentangan dengan nilai tersebut.', NULL, NULL),
+(496, 496, 'Bima mempertimbangkan bahwa dompet tersebut bukan miliknya sehingga tidak mengambil uang di dalamnya.', NULL, NULL),
+(497, 497, 'Dalam Teks "Dompet di Lapangan", pemilik dompet datang dengan wajah lega. Hal ini menunjukkan dampak positif dari kejujuran Bima.', NULL, NULL),
+(498, 498, 'Raka memeriksa informasi sebelum menyebarkannya. Jika kebiasaan itu diterapkan, masyarakat akan lebih berhati-hati terhadap informasi.', NULL, NULL),
+(499, 499, 'A berasal dari Teks "Pesan yang Belum Selesai", dan B dari Teks "Poster Lomba". C bertentangan dengan Teks "Suara dari Belakang Kelas", sedangkan D bertentangan dengan Teks "Dompet di Lapangan".', NULL, NULL),
+(500, 500, 'A dan D, masing-masing sesuai dengan nilai utama Teks "Pesan yang Belum Selesai", dan Teks "Bangku Taman".', NULL, NULL),
+(501, 501, 'Kedua teks dimulai dengan penemuan barang lama, kemudian tokoh memperbaikinya dan menggunakannya kembali.', NULL, NULL),
 (502, 502, 'Kedua teks dimulai dengan penemuan barang lama, kemudian tokoh memperbaikinya dan menggunakannya kembali.', NULL, NULL),
-(503, 503, 'Kedua teks dimulai dengan penemuan barang lama, kemudian tokoh memperbaikinya dan menggunakannya kembali.', NULL, NULL),
-(504, 504, 'A benar berdasarkan tindakan Nara mengganti rantai. C benar karena Reno dibantu ayahnya dan konteks Nara juga menunjukkan proses perbaikan. D benar karena kedua barang masih dapat digunakan. B tidak didukung teks.', NULL, NULL),
-(505, 505, 'Sari membersihkan saluran yang tersumbat daun, sedangkan Dimas membersihkan selokan yang dipenuhi daun.', NULL, NULL),
-(506, 506, 'Teks I menyebut “sejak sore”, sedangkan Teks II menyebut “sejak pagi”.', NULL, NULL),
-(507, 507, 'Kedua teks menunjukkan kondisi cuaca, daun yang menyumbat saluran, dan tindakan tokoh membersihkannya. C tidak sesuai isi.', NULL, NULL),
-(508, 508, 'Rani menghadapi warna lukisan yang bercampur, sedangkan Fajar lupa memasukkan tokoh dalam cerita. Keduanya mengalami masalah dalam karya yang sedang dibuat.', NULL, NULL),
-(509, 509, 'Rani menemukan efek warna yang menarik, sedangkan Fajar menemukan cara memasukkan tokoh tanpa mengubah alur.', NULL, NULL),
-(510, 510, 'C terlihat ketika kedua tokoh melihat kembali hasil pekerjaan. D benar karena keduanya menemukan solusi. B dan E bertentangan dengan teks.', NULL, NULL),
-(511, 511, 'Dara memilih jalan lain ketika jembatan rusak. Bayu tetap melewati jalan tersebut dengan lebih lambat dan menggunakan pegangan.', NULL, NULL),
-(512, 512, 'Jembatan rusak dalam Teks I dan jalan licin dalam Teks II sama-sama mengandung risiko.', NULL, NULL),
-(513, 513, 'Dara memilih jalan alternatif, sedangkan Bayu memperlambat langkah dan menggunakan pegangan. Keduanya mempertimbangkan kondisi lingkungan dan keselamatan.', NULL, NULL),
-(514, 514, 'Kata “rindu” dan “berat” pada Teks I menunjukkan suasana haru/rindu. Teks II menggunakan “tersenyum”, “ringan”, dan “harapan” yang menunjukkan suasana positif.', NULL, NULL),
-(515, 515, 'Konteks “rindu ternyata tidak mudah ditulis” menunjukkan bahwa “berat” bersifat kiasan dan berkaitan dengan beban emosional.', NULL, NULL),
-(516, 516, '“Rindu” dan “berat” mendukung A dan D. “Harapan” dan “tersenyum” mendukung B. C tidak sesuai.', NULL, NULL),
-(517, 517, 'Kedua puisi menggunakan kata “aku” sebagai pihak yang mengalami atau menyampaikan perasaan.', NULL, NULL),
-(518, 518, 'Teks I menyebut Nara membersihkan dan mengganti rantai sepeda. Teks II secara eksplisit menyebut Reno dibantu ayahnya.', NULL, NULL),
-(519, 519, 'P2 berfokus pada saluran air dan kepedulian lingkungan. P4 berfokus pada keselamatan saat menghadapi jalan/jembatan bermasalah.', NULL, NULL),
-(520, 520, 'Dalam P3, tokoh mengolah kesalahan dalam karya menjadi solusi. Dalam P4, tokoh menyesuaikan tindakan demi keselamatan.', NULL, NULL),
-(521, 521, 'A didukung oleh keputusan para tokoh. C terlihat jelas pada P1 dan P3.', NULL, NULL),
-(522, 522, 'Arga merasa kehilangan Rian, tetapi menemukan pesan yang menunjukkan bahwa persahabatan mereka tetap berlanjut. Situasi tersebut menimbulkan rasa haru.', NULL, NULL),
-(523, 523, 'Arga memandangi "Kursi Kosong", menunjukkan kesedihan. Senyum kecil dan pesan Rian menunjukkan adanya harapan untuk bertemu kembali.', NULL, NULL),
-(524, 524, '"Kursi Kosong" dan kepergian Rian mendukung rasa kehilangan. Pesan Rian dapat menimbulkan keharuan dan rasa hangat terhadap persahabatan. C dan E tidak didukung teks.', NULL, NULL),
-(525, 525, 'Pesan tersebut menjadi penutup emosional yang memberikan harapan setelah perpisahan.', NULL, NULL),
-(526, 526, 'Sinta membawa lampu dan menemani nenek sampai listrik menyala. Tindakan tersebut wajar menimbulkan rasa kagum atau hangat.', NULL, NULL),
-(527, 527, 'Pernyataan nenek menunjukkan bahwa kehadiran Sinta membuatnya merasa lebih nyaman.', NULL, NULL),
-(528, 528, 'Ketiga respons tersebut sesuai dengan hubungan Sinta dan nenek. Listrik padam hanya menjadi latar konflik sehingga C dan E tidak menjadi respons utama terhadap unsur emosional teks.', NULL, NULL),
-(529, 529, 'Anak membuka sangkar dan membiarkan burung memilih. Kepergian burung menunjukkan kebebasan sehingga rasa lega merupakan respons yang didukung teks.', NULL, NULL),
-(530, 530, 'Burung berdiri di ambang pintu seolah ragu. Hal itu dapat membuat pembaca penasaran dan ingin memahami pilihannya', NULL, NULL),
-(531, 531, 'Anak membebaskan burung dan tidak mengejarnya. Hal tersebut mendukung rasa lega, tersentuh, dan kagum terhadap kebebasan.', NULL, NULL),
-(532, 532, 'Diksi “cahaya”, “bening”, “udara yang baru”, dan “kesempatan untuk memulai lagi” membangun suasana tenang dan penuh harapan.', NULL, NULL),
-(533, 533, 'Ungkapan “kesempatan untuk memulai lagi” menunjukkan harapan dan optimisme.', NULL, NULL),
-(534, 534, '“cahaya”, dan “kesempatan” mendukung suasana positif. “Pergi” sendiri merujuk pada hujan yang telah berlalu, sedangkan “perlahan” lebih menunjukkan cara tindakan dilakukan.', NULL, NULL),
-(535, 535, 'Hujan telah berakhir, kemudian muncul cahaya, udara baru, dan kesempatan memulai kembali. Perubahan tersebut paling tepat dibaca sebagai peralihan menuju rasa lega.', NULL, NULL),
-(536, 536, 'Naya tidak terburu-buru memilih pihak. Ia membaca pesan dan mempertemukan kedua teman sehingga masalah dapat diselesaikan.', NULL, NULL),
-(537, 537, 'Konflik berakhir setelah kedua tokoh mengetahui maksud sebenarnya. Penyelesaian tersebut mendukung rasa puas atau lega.', NULL, NULL),
-(538, 538, 'Naya membaca pesan, menyadari adanya kemungkinan tafsir berbeda, lalu mengajak kedua pihak berbicara. Hal ini mendukung A, dan C.', NULL, NULL),
-(539, 539, 'Kesadaran kedua teman bahwa konflik tidak perlu terjadi menjadi penyelesaian yang memberikan rasa lega.', NULL, NULL),
-(540, 540, 'Teks "Kursi Kosong" berpusat pada perpisahan Arga dan Rian sehingga menimbulkan keharuan. Teks "Pilihan Naya" berakhir dengan penyelesaian konflik sehingga menimbulkan kelegaan. Keduanya juga menampilkan nilai hubungan antarmanusia.', NULL, NULL),
-(541, 541, 'Teks "Kursi Kosong" menghadirkan haru dan harapan, Teks "Lampu di Rumah Nenek" kepedulian dan kehangatan, Teks "Burung dalam Sangkar" kebebasan, Teks Puisi “Pagi Setelah Hujan” harapan, dan Teks "Pilihan Naya" kelegaan setelah konflik terselesaikan. Jadi A paling mencakup keseluruhan bukti teks.', NULL, NULL)
+(503, 503, 'A benar berdasarkan tindakan Nara mengganti rantai. C benar karena Reno dibantu ayahnya dan konteks Nara juga menunjukkan proses perbaikan. D benar karena kedua barang masih dapat digunakan. B tidak didukung teks.', NULL, NULL),
+(504, 504, 'Sari membersihkan saluran yang tersumbat daun, sedangkan Dimas membersihkan selokan yang dipenuhi daun.', NULL, NULL),
+(505, 505, 'Teks I menyebut “sejak sore”, sedangkan Teks II menyebut “sejak pagi”.', NULL, NULL),
+(506, 506, 'Kedua teks menunjukkan kondisi cuaca, daun yang menyumbat saluran, dan tindakan tokoh membersihkannya. C tidak sesuai isi.', NULL, NULL),
+(507, 507, 'Rani menghadapi warna lukisan yang bercampur, sedangkan Fajar lupa memasukkan tokoh dalam cerita. Keduanya mengalami masalah dalam karya yang sedang dibuat.', NULL, NULL),
+(508, 508, 'Rani menemukan efek warna yang menarik, sedangkan Fajar menemukan cara memasukkan tokoh tanpa mengubah alur.', NULL, NULL),
+(509, 509, 'C terlihat ketika kedua tokoh melihat kembali hasil pekerjaan. D benar karena keduanya menemukan solusi. B dan E bertentangan dengan teks.', NULL, NULL),
+(510, 510, 'Dara memilih jalan lain ketika jembatan rusak. Bayu tetap melewati jalan tersebut dengan lebih lambat dan menggunakan pegangan.', NULL, NULL),
+(511, 511, 'Jembatan rusak dalam Teks I dan jalan licin dalam Teks II sama-sama mengandung risiko.', NULL, NULL),
+(512, 512, 'Dara memilih jalan alternatif, sedangkan Bayu memperlambat langkah dan menggunakan pegangan. Keduanya mempertimbangkan kondisi lingkungan dan keselamatan.', NULL, NULL),
+(513, 513, 'Kata “rindu” dan “berat” pada Teks I menunjukkan suasana haru/rindu. Teks II menggunakan “tersenyum”, “ringan”, dan “harapan” yang menunjukkan suasana positif.', NULL, NULL),
+(514, 514, 'Konteks “rindu ternyata tidak mudah ditulis” menunjukkan bahwa “berat” bersifat kiasan dan berkaitan dengan beban emosional.', NULL, NULL),
+(515, 515, '“Rindu” dan “berat” mendukung A dan D. “Harapan” dan “tersenyum” mendukung B. C tidak sesuai.', NULL, NULL),
+(516, 516, 'Kedua puisi menggunakan kata “aku” sebagai pihak yang mengalami atau menyampaikan perasaan.', NULL, NULL),
+(517, 517, 'Teks I menyebut Nara membersihkan dan mengganti rantai sepeda. Teks II secara eksplisit menyebut Reno dibantu ayahnya.', NULL, NULL),
+(518, 518, 'P2 berfokus pada saluran air dan kepedulian lingkungan. P4 berfokus pada keselamatan saat menghadapi jalan/jembatan bermasalah.', NULL, NULL),
+(519, 519, 'Dalam P3, tokoh mengolah kesalahan dalam karya menjadi solusi. Dalam P4, tokoh menyesuaikan tindakan demi keselamatan.', NULL, NULL),
+(520, 520, 'A didukung oleh keputusan para tokoh. C terlihat jelas pada P1 dan P3.', NULL, NULL),
+(521, 521, 'Arga merasa kehilangan Rian, tetapi menemukan pesan yang menunjukkan bahwa persahabatan mereka tetap berlanjut. Situasi tersebut menimbulkan rasa haru.', NULL, NULL),
+(522, 522, 'Arga memandangi "Kursi Kosong", menunjukkan kesedihan. Senyum kecil dan pesan Rian menunjukkan adanya harapan untuk bertemu kembali.', NULL, NULL),
+(523, 523, '"Kursi Kosong" dan kepergian Rian mendukung rasa kehilangan. Pesan Rian dapat menimbulkan keharuan dan rasa hangat terhadap persahabatan. C dan E tidak didukung teks.', NULL, NULL),
+(524, 524, 'Pesan tersebut menjadi penutup emosional yang memberikan harapan setelah perpisahan.', NULL, NULL),
+(525, 525, 'Sinta membawa lampu dan menemani nenek sampai listrik menyala. Tindakan tersebut wajar menimbulkan rasa kagum atau hangat.', NULL, NULL),
+(526, 526, 'Pernyataan nenek menunjukkan bahwa kehadiran Sinta membuatnya merasa lebih nyaman.', NULL, NULL),
+(527, 527, 'Ketiga respons tersebut sesuai dengan hubungan Sinta dan nenek. Listrik padam hanya menjadi latar konflik sehingga C dan E tidak menjadi respons utama terhadap unsur emosional teks.', NULL, NULL),
+(528, 528, 'Anak membuka sangkar dan membiarkan burung memilih. Kepergian burung menunjukkan kebebasan sehingga rasa lega merupakan respons yang didukung teks.', NULL, NULL),
+(529, 529, 'Burung berdiri di ambang pintu seolah ragu. Hal itu dapat membuat pembaca penasaran dan ingin memahami pilihannya', NULL, NULL),
+(530, 530, 'Anak membebaskan burung dan tidak mengejarnya. Hal tersebut mendukung rasa lega, tersentuh, dan kagum terhadap kebebasan.', NULL, NULL),
+(531, 531, 'Diksi “cahaya”, “bening”, “udara yang baru”, dan “kesempatan untuk memulai lagi” membangun suasana tenang dan penuh harapan.', NULL, NULL),
+(532, 532, 'Ungkapan “kesempatan untuk memulai lagi” menunjukkan harapan dan optimisme.', NULL, NULL),
+(533, 533, '“cahaya”, dan “kesempatan” mendukung suasana positif. “Pergi” sendiri merujuk pada hujan yang telah berlalu, sedangkan “perlahan” lebih menunjukkan cara tindakan dilakukan.', NULL, NULL),
+(534, 534, 'Hujan telah berakhir, kemudian muncul cahaya, udara baru, dan kesempatan memulai kembali. Perubahan tersebut paling tepat dibaca sebagai peralihan menuju rasa lega.', NULL, NULL),
+(535, 535, 'Naya tidak terburu-buru memilih pihak. Ia membaca pesan dan mempertemukan kedua teman sehingga masalah dapat diselesaikan.', NULL, NULL),
+(536, 536, 'Konflik berakhir setelah kedua tokoh mengetahui maksud sebenarnya. Penyelesaian tersebut mendukung rasa puas atau lega.', NULL, NULL),
+(537, 537, 'Naya membaca pesan, menyadari adanya kemungkinan tafsir berbeda, lalu mengajak kedua pihak berbicara. Hal ini mendukung A, dan C.', NULL, NULL),
+(538, 538, 'Kesadaran kedua teman bahwa konflik tidak perlu terjadi menjadi penyelesaian yang memberikan rasa lega.', NULL, NULL),
+(539, 539, 'Teks "Kursi Kosong" berpusat pada perpisahan Arga dan Rian sehingga menimbulkan keharuan. Teks "Pilihan Naya" berakhir dengan penyelesaian konflik sehingga menimbulkan kelegaan. Keduanya juga menampilkan nilai hubungan antarmanusia.', NULL, NULL),
+(540, 540, 'Teks "Kursi Kosong" menghadirkan haru dan harapan, Teks "Lampu di Rumah Nenek" kepedulian dan kehangatan, Teks "Burung dalam Sangkar" kebebasan, Teks Puisi “Pagi Setelah Hujan” harapan, dan Teks "Pilihan Naya" kelegaan setelah konflik terselesaikan. Jadi A paling mencakup keseluruhan bukti teks.', NULL, NULL)
 ON DUPLICATE KEY UPDATE 
     `question_id` = VALUES(`question_id`), 
     `explanation_text` = VALUES(`explanation_text`), 
@@ -2935,5 +2939,5 @@ ON DUPLICATE KEY UPDATE
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- =============================================================================
--- SELESAI: Pembenihan Bank Soal Latihan Bahasa Indonesia (361 Soal, 1424 Opsi) berhasil.
+-- SELESAI: Pembenihan Bank Soal Level Exercises Bahasa Indonesia 360 Butir Berhasil.
 -- =============================================================================
