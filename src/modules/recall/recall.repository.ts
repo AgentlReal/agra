@@ -110,7 +110,7 @@ export class RecallRepository {
                 qb.subject_id,
                 qb.question_text,
                 qb.question_format,
-                qb.stimulus_image_url,
+                qb.question_image_url AS stimulus_image_url,
                 qo.id AS option_id,
                 qo.option_label,
                 qo.option_text
