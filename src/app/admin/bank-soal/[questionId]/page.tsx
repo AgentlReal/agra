@@ -77,7 +77,9 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
     setMaterialName(q.materialName || q.material_name || '');
     setSubmaterialName(q.submaterialName || q.sub_material_name || '');
     setSubmaterialId(q.sub_material_id || q.subMaterialId || null);
-    setCognitiveLevel(String(q.cognitiveLevelId || q.cognitive_level_id || '1'));
+    const rawLevel = q.cognitiveLevelId || q.cognitive_level_id || '1';
+    const parsedLevel = String(rawLevel).replace('L', '');
+    setCognitiveLevel(['1', '2', '3'].includes(parsedLevel) ? parsedLevel : '1');
     setQuestionType(
       (q.questionFormat || q.question_format) === 'COMPLEX_CHOICE' ? 'PG_KOMPLEKS' : 'PG_TUNGGAL'
     );
@@ -151,14 +153,15 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
       if (complexKeys.length <= 1) return;
       setComplexKeys(complexKeys.filter((k) => k !== key));
     } else {
+      if (complexKeys.length >= 2) return; // Exactly 2 keys max
       setComplexKeys([...complexKeys, key]);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (questionType === 'PG_KOMPLEKS' && complexKeys.length < 2) {
-      setErrorMsg('Pilihan Ganda Kompleks harus memiliki minimal 2 kunci jawaban yang benar.');
+    if (questionType === 'PG_KOMPLEKS' && complexKeys.length !== 2) {
+      setErrorMsg('Pilihan Ganda Kompleks harus memiliki tepat 2 kunci jawaban yang benar.');
       return;
     }
 
@@ -268,9 +271,9 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
                     onChange={(e) => setBankType(e.target.value)}
                     className="mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white"
                   >
-                    <option value="RECALL">Bank Recall</option>
-                    <option value="LATIHAN">Bank Latihan</option>
-                    <option value="SIMULASI">Bank Simulasi</option>
+                    <option value="RECALL">Bank Recall Kemampuanmu</option>
+                    <option value="LEVEL_EXERCISE">Bank Latihan Level Kognitif</option>
+                    <option value="SIMULATION">Bank Simulasi TKA</option>
                   </select>
                 </div>
                 <div>
@@ -278,12 +281,20 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
                   <select
                     value={cognitiveLevel}
                     onChange={(e) => setCognitiveLevel(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white"
+                    disabled={bankType === 'RECALL'}
+                    className={`mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white ${
+                      bankType === 'RECALL' ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                   >
-                    <option value="L1">Level 1 (Pemahaman)</option>
-                    <option value="L2">Level 2 (Aplikasi)</option>
-                    <option value="L3">Level 3 (Penalaran)</option>
+                    <option value="1">Level 1 (Pemahaman)</option>
+                    <option value="2">Level 2 (Aplikasi)</option>
+                    <option value="3">Level 3 (Penalaran)</option>
                   </select>
+                  {bankType === 'RECALL' && (
+                    <span className="text-[10px] text-amber-400 mt-1 block">
+                      Tidak berlaku untuk Bank Recall (UCS-10)
+                    </span>
+                  )}
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-slate-300">Bentuk Soal</label>
@@ -377,6 +388,11 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
               <h3 className="text-sm font-bold text-white border-b border-slate-800 pb-2">
                 3. Pilihan Jawaban
               </h3>
+              <p className="text-[11px] text-slate-400">
+                {questionType === 'PG_TUNGGAL'
+                  ? 'Pilih satu radio button pada opsi yang menjadi kunci jawaban benar.'
+                  : 'Centang kotak checkbox pada 2 opsi yang menjadi kunci jawaban benar (tepat 2 kunci).'}
+              </p>
               <div className="space-y-3">
                 {options.map((opt) => (
                   <div key={opt.key} className="flex items-center gap-3">
@@ -406,8 +422,9 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
                         <input
                           type="checkbox"
                           checked={complexKeys.includes(opt.key)}
+                          disabled={!complexKeys.includes(opt.key) && complexKeys.length >= 2}
                           onChange={() => handleToggleComplexKey(opt.key)}
-                          className="text-purple-600 rounded"
+                          className="text-purple-600 rounded disabled:opacity-40 disabled:cursor-not-allowed"
                         />
                         <span>Kunci</span>
                       </label>

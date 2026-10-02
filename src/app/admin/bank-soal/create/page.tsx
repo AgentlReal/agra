@@ -21,14 +21,45 @@ import {
 import FormattedContent from '@/components/common/FormattedContent';
 import OptionRenderer from '@/components/common/OptionRenderer';
 
+interface SubMaterialOption {
+  id: number;
+  title: string;
+  material_title?: string;
+}
+
+const DEFAULT_SUBMATERIALS: Record<string, SubMaterialOption[]> = {
+  '1': [
+    { id: 1, title: 'Bilangan Real', material_title: 'Bilangan' },
+    { id: 2, title: 'Persamaan & Pertidaksamaan Linier', material_title: 'Aljabar' },
+    { id: 3, title: 'Bentuk Aljabar', material_title: 'Aljabar' },
+    { id: 4, title: 'Relasi dan Fungsi', material_title: 'Aljabar' },
+    { id: 5, title: 'Barisan dan Deret', material_title: 'Aljabar' },
+    { id: 6, title: 'Objek Geometri', material_title: 'Geometri & Pengukuran' },
+    { id: 7, title: 'Transformasi Geometri', material_title: 'Geometri & Pengukuran' },
+    { id: 8, title: 'Pengukuran', material_title: 'Geometri & Pengukuran' },
+    { id: 9, title: 'Data (Statistika)', material_title: 'Data & Peluang' },
+    { id: 10, title: 'Peluang (Probabilitas)', material_title: 'Data & Peluang' },
+  ],
+  '2': [
+    { id: 11, title: 'Pemahaman Tekstual (Teks Informasi)', material_title: 'Teks Informasi' },
+    { id: 12, title: 'Pemahaman Inferensial (Teks Informasi)', material_title: 'Teks Informasi' },
+    { id: 13, title: 'Evaluasi dan Apresiasi (Teks Informasi)', material_title: 'Teks Informasi' },
+    { id: 14, title: 'Pemahaman Tekstual (Teks Fiksi)', material_title: 'Teks Fiksi' },
+    { id: 15, title: 'Pemahaman Inferensial (Teks Fiksi)', material_title: 'Teks Fiksi' },
+    { id: 16, title: 'Evaluasi dan Apresiasi (Teks Fiksi)', material_title: 'Teks Fiksi' },
+  ],
+};
+
 export default function CreateQuestionPage() {
   const router = useRouter();
 
-  const [bankType, setBankType] = useState('LATIHAN');
+  const [bankType, setBankType] = useState('LEVEL_EXERCISE');
   const [subjectId, setSubjectId] = useState('1');
-  const [materialName, setMaterialName] = useState('');
-  const [submaterialName, setSubmaterialName] = useState('');
-  const [cognitiveLevel, setCognitiveLevel] = useState('L1');
+  const [submaterials, setSubmaterials] = useState<SubMaterialOption[]>(DEFAULT_SUBMATERIALS['1']);
+  const [submaterialId, setSubmaterialId] = useState('1');
+  const [materialName, setMaterialName] = useState('Bilangan');
+  const [submaterialName, setSubmaterialName] = useState('Bilangan Real');
+  const [cognitiveLevel, setCognitiveLevel] = useState('1');
   const [questionType, setQuestionType] = useState<'PG_TUNGGAL' | 'PG_KOMPLEKS'>('PG_TUNGGAL');
 
   const [stimulus, setStimulus] = useState('');
@@ -54,6 +85,26 @@ export default function CreateQuestionPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
+  // Sync submaterials when subject changes
+  React.useEffect(() => {
+    const list = DEFAULT_SUBMATERIALS[subjectId] || [];
+    setSubmaterials(list);
+    if (list.length > 0) {
+      setSubmaterialId(String(list[0].id));
+      setSubmaterialName(list[0].title);
+      setMaterialName(list[0].material_title || '');
+    }
+  }, [subjectId]);
+
+  const handleSubmaterialChange = (idStr: string) => {
+    setSubmaterialId(idStr);
+    const found = submaterials.find((s) => String(s.id) === idStr);
+    if (found) {
+      setSubmaterialName(found.title);
+      setMaterialName(found.material_title || '');
+    }
+  };
+
   const handleOptionChange = (key: string, text: string) => {
     setOptions(options.map((opt) => (opt.key === key ? { ...opt, text } : opt)));
   };
@@ -63,6 +114,7 @@ export default function CreateQuestionPage() {
       if (complexKeys.length <= 1) return; // at least 1 key
       setComplexKeys(complexKeys.filter((k) => k !== key));
     } else {
+      if (complexKeys.length >= 2) return; // exactly 2 keys max
       setComplexKeys([...complexKeys, key]);
     }
   };
@@ -99,8 +151,8 @@ export default function CreateQuestionPage() {
       setErrorMsg('Harap lengkapi seluruh alternatif pilihan jawaban A sampai D.');
       return;
     }
-    if (questionType === 'PG_KOMPLEKS' && complexKeys.length < 2) {
-      setErrorMsg('Pilihan Ganda Kompleks harus memiliki minimal 2 kunci jawaban yang benar.');
+    if (questionType === 'PG_KOMPLEKS' && complexKeys.length !== 2) {
+      setErrorMsg('Pilihan Ganda Kompleks harus memiliki tepat 2 kunci jawaban yang benar.');
       return;
     }
 
@@ -118,10 +170,13 @@ export default function CreateQuestionPage() {
           : singleKey === opt.key,
     }));
 
+    const isRecall = bankType === 'RECALL';
+
     const payload = {
       bank_type: bankType,
       subject_id: Number(subjectId),
-      cognitive_level_id: Number(cognitiveLevel),
+      sub_material_id: isRecall ? null : Number(submaterialId),
+      cognitive_level_id: isRecall ? null : Number(cognitiveLevel),
       question_format,
       question_text: questionText,
       options: formattedOptions,
@@ -132,6 +187,7 @@ export default function CreateQuestionPage() {
         ? {
             title: `Wacana - ${questionText.slice(0, 30)}`,
             stimulus_text: stimulus,
+            stimulus_image_url: imageUrl || null,
           }
         : null,
       stimulus_image_url: imageUrl || null,
@@ -139,9 +195,9 @@ export default function CreateQuestionPage() {
       // Backward-compatible properties
       bankType,
       subjectId: Number(subjectId),
-      materialName,
-      submaterialName,
-      cognitiveLevel,
+      materialName: isRecall ? '' : materialName,
+      submaterialName: isRecall ? '' : submaterialName,
+      cognitiveLevel: isRecall ? null : Number(cognitiveLevel),
       questionType,
       questionFormat: question_format,
       questionText,
@@ -178,7 +234,7 @@ export default function CreateQuestionPage() {
             Formulir Pembuatan Butir Soal Baru
           </h1>
           <p className="mt-1 text-xs text-slate-400">
-            Dukung bentuk soal Pilihan Ganda Tunggal dan Pilihan Ganda Kompleks (MCMA) dengan kunci jawaban jamak.
+            Dukung bentuk soal Pilihan Ganda Tunggal dan Pilihan Ganda Kompleks (MCMA) dengan 2 kunci jawaban benar.
           </p>
         </div>
 
@@ -212,8 +268,8 @@ export default function CreateQuestionPage() {
                   className="mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white focus:border-purple-500 focus:outline-none"
                 >
                   <option value="RECALL">Bank Recall Kemampuanmu</option>
-                  <option value="LATIHAN">Bank Latihan Level Kognitif</option>
-                  <option value="SIMULASI">Bank Simulasi TKA</option>
+                  <option value="LEVEL_EXERCISE">Bank Latihan Level Kognitif</option>
+                  <option value="SIMULATION">Bank Simulasi TKA</option>
                 </select>
               </div>
 
@@ -234,37 +290,54 @@ export default function CreateQuestionPage() {
                 <select
                   value={cognitiveLevel}
                   onChange={(e) => setCognitiveLevel(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white focus:border-purple-500 focus:outline-none"
+                  disabled={bankType === 'RECALL'}
+                  className={`mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white focus:border-purple-500 focus:outline-none ${
+                    bankType === 'RECALL' ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
                 >
-                  <option value="L1">Level 1 - Pemahaman (Recall)</option>
-                  <option value="L2">Level 2 - Aplikasi (Penerapan)</option>
-                  <option value="L3">Level 3 - Penalaran (HOTS)</option>
+                  <option value="1">Level 1 - Pemahaman (Knowing / Recall)</option>
+                  <option value="2">Level 2 - Aplikasi (Applying)</option>
+                  <option value="3">Level 3 - Penalaran (Reasoning / HOTS)</option>
                 </select>
+                {bankType === 'RECALL' && (
+                  <span className="text-[10px] text-amber-400 mt-1 block">
+                    Tidak berlaku untuk Bank Recall (UCS-10)
+                  </span>
+                )}
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300">Materi Pokok</label>
-                <input
-                  type="text"
-                  value={materialName}
-                  onChange={(e) => setMaterialName(e.target.value)}
-                  placeholder="Contoh: Aljabar"
-                  required
-                  className="mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:border-purple-500 focus:outline-none"
-                />
+                <label className="block text-xs font-semibold text-slate-300">Submateri Pokok</label>
+                <select
+                  value={submaterialId}
+                  onChange={(e) => handleSubmaterialChange(e.target.value)}
+                  disabled={bankType === 'RECALL'}
+                  className={`mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2 text-xs text-white focus:border-purple-500 focus:outline-none ${
+                    bankType === 'RECALL' ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  {submaterials.map((sm) => (
+                    <option key={sm.id} value={sm.id}>
+                      {sm.material_title ? `[${sm.material_title}] ` : ''}{sm.title}
+                    </option>
+                  ))}
+                </select>
+                {bankType === 'RECALL' && (
+                  <span className="text-[10px] text-amber-400 mt-1 block">
+                    Tidak berlaku untuk Bank Recall (UCS-10)
+                  </span>
+                )}
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300">Submateri</label>
+                <label className="block text-xs font-semibold text-slate-300">Materi Pokok (Terpilih)</label>
                 <input
                   type="text"
-                  value={submaterialName}
-                  onChange={(e) => setSubmaterialName(e.target.value)}
-                  placeholder="Contoh: PLSV"
-                  required
-                  className="mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:border-purple-500 focus:outline-none"
+                  value={bankType === 'RECALL' ? '-' : materialName}
+                  disabled
+                  className="mt-1 w-full rounded-xl border border-slate-800 bg-slate-900/50 px-3.5 py-2 text-xs text-slate-400 cursor-not-allowed"
                 />
               </div>
             </div>
@@ -386,7 +459,7 @@ export default function CreateQuestionPage() {
             <p className="text-[11px] text-slate-400">
               {questionType === 'PG_TUNGGAL'
                 ? 'Pilih satu radio button pada opsi yang menjadi kunci jawaban benar.'
-                : 'Centang kotak checkbox pada opsi-opsi yang menjadi kunci jawaban benar (minimal 2 centang).'}
+                : 'Centang kotak checkbox pada 2 opsi yang menjadi kunci jawaban benar (tepat 2 kunci).'}
             </p>
 
             <div className="space-y-3">
@@ -421,8 +494,9 @@ export default function CreateQuestionPage() {
                       <input
                         type="checkbox"
                         checked={complexKeys.includes(opt.key)}
+                        disabled={!complexKeys.includes(opt.key) && complexKeys.length >= 2}
                         onChange={() => handleToggleComplexKey(opt.key)}
-                        className="text-purple-600 rounded focus:ring-purple-500"
+                        className="text-purple-600 rounded focus:ring-purple-500 disabled:opacity-40 disabled:cursor-not-allowed"
                       />
                       <span className="text-[11px] font-semibold">Kunci</span>
                     </label>
