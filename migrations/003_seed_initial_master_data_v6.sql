@@ -42,7 +42,7 @@ ON DUPLICATE KEY UPDATE `tier_number` = VALUES(`tier_number`), `title` = VALUES(
 -- -----------------------------------------------------------------------------
 INSERT INTO `subjects` (`id`, `code`, `name`, `description`, `is_active`) VALUES
 (1, 'MAT', 'Matematika', 'Domain Asesmen Numerasi Fase D SMP/MTs (Bilangan, Aljabar, Geometri & Pengukuran, Data & Peluang)', TRUE),
-(2, 'BIN', 'Bahasa Indonesia', 'Domain Asesmen Literasi Membaca Fase D SMP/MTs (Teks Informasi dan Teks Sastra)', TRUE)
+(2, 'BIN', 'Bahasa Indonesia', 'Domain Asesmen Literasi Membaca Fase D SMP/MTs (Teks Informasi dan Teks Fiksi)', TRUE)
 ON DUPLICATE KEY UPDATE `code` = VALUES(`code`), `name` = VALUES(`name`), `description` = VALUES(`description`), `is_active` = VALUES(`is_active`);
 
 -- -----------------------------------------------------------------------------
@@ -63,7 +63,7 @@ INSERT INTO `materials` (`id`, `subject_id`, `prerequisite_material_id`, `title`
 (3, 1, 2, 'Geometri & Pengukuran', 3, TRUE),
 (4, 1, 3, 'Data & Peluang', 4, TRUE),
 (5, 2, NULL, 'Teks Informasi', 1, TRUE),
-(6, 2, 5, 'Teks Sastra', 2, TRUE)
+(6, 2, 5, 'Teks Fiksi', 2, TRUE)
 ON DUPLICATE KEY UPDATE `subject_id` = VALUES(`subject_id`), `prerequisite_material_id` = VALUES(`prerequisite_material_id`), `title` = VALUES(`title`), `order_index` = VALUES(`order_index`), `is_active` = VALUES(`is_active`);
 
 -- -----------------------------------------------------------------------------
@@ -93,10 +93,10 @@ INSERT INTO `sub_materials` (`id`, `material_id`, `prerequisite_sub_material_id`
 (12, 5, 11, 'B-02', 'Pemahaman Inferensial (Teks Informasi)', 2, 90.00, 250, TRUE),
 (13, 5, 12, 'B-03', 'Evaluasi dan Apresiasi (Teks Informasi)', 3, 90.00, 250, TRUE),
 
--- Bahasa Indonesia: Teks Sastra
-(14, 6, 13, 'B-04', 'Pemahaman Tekstual (Teks Sastra)', 1, 90.00, 250, TRUE),
-(15, 6, 14, 'B-05', 'Pemahaman Inferensial (Teks Sastra)', 2, 90.00, 250, TRUE),
-(16, 6, 15, 'B-06', 'Evaluasi dan Apresiasi (Teks Sastra)', 3, 90.00, 250, TRUE)
+-- Bahasa Indonesia: Teks Fiksi
+(14, 6, 13, 'B-04', 'Pemahaman Tekstual (Teks Fiksi)', 1, 90.00, 250, TRUE),
+(15, 6, 14, 'B-05', 'Pemahaman Inferensial (Teks Fiksi)', 2, 90.00, 250, TRUE),
+(16, 6, 15, 'B-06', 'Evaluasi dan Apresiasi (Teks Fiksi)', 3, 90.00, 250, TRUE)
 ON DUPLICATE KEY UPDATE `material_id` = VALUES(`material_id`), `prerequisite_sub_material_id` = VALUES(`prerequisite_sub_material_id`), `code` = VALUES(`code`), `title` = VALUES(`title`), `order_index` = VALUES(`order_index`), `passing_threshold` = VALUES(`passing_threshold`), `xp_reward` = VALUES(`xp_reward`), `is_active` = VALUES(`is_active`);
 
 SET FOREIGN_KEY_CHECKS = 1;
