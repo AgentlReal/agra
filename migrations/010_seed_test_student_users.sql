@@ -157,7 +157,7 @@ INSERT INTO `user_profiles` (
 -- Akun 3: Siswa Master (7.600 XP, Tier 5 Jawara TKA, Seluruh 16 Submateri Tuntas)
 (
     's0000000-0000-4000-a000-000000000003',
-    12, -- Jawara TKA
+    6,  -- Lemon Bright
     5,  -- Tier 5: Jawara TKA (Puncak 5000+ XP)
     7600,
     TRUE,
