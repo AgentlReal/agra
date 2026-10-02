@@ -14,8 +14,11 @@ import {
   ShieldCheck, 
   Edit3,
   Trash2,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Eye
 } from 'lucide-react';
+import FormattedContent from '@/components/common/FormattedContent';
+import OptionRenderer from '@/components/common/OptionRenderer';
 
 export default function EditQuestionPage({ params }: { params: Promise<{ questionId: string }> }) {
   const router = useRouter();
@@ -74,7 +77,9 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
     setMaterialName(q.materialName || q.material_name || '');
     setSubmaterialName(q.submaterialName || q.sub_material_name || '');
     setSubmaterialId(q.sub_material_id || q.subMaterialId || null);
-    setCognitiveLevel(String(q.cognitiveLevelId || q.cognitive_level_id || '1'));
+    const rawLevel = q.cognitiveLevelId || q.cognitive_level_id || '1';
+    const parsedLevel = String(rawLevel).replace('L', '');
+    setCognitiveLevel(['1', '2', '3'].includes(parsedLevel) ? parsedLevel : '1');
     setQuestionType(
       (q.questionFormat || q.question_format) === 'COMPLEX_CHOICE' ? 'PG_KOMPLEKS' : 'PG_TUNGGAL'
     );
@@ -84,6 +89,8 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
         : (q.stimulus?.stimulus_text || q.stimulusText || '')
     );
     setImageUrl(
+      q.question_image_url ||
+      q.questionImageUrl ||
       q.stimulus_image_url ||
       q.stimulusImageUrl ||
       (typeof q.stimulus === 'object' && (q.stimulus?.stimulus_image_url || q.stimulus?.image_url)) ||
@@ -146,14 +153,15 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
       if (complexKeys.length <= 1) return;
       setComplexKeys(complexKeys.filter((k) => k !== key));
     } else {
+      if (complexKeys.length >= 2) return; // Exactly 2 keys max
       setComplexKeys([...complexKeys, key]);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (questionType === 'PG_KOMPLEKS' && complexKeys.length < 2) {
-      setErrorMsg('Pilihan Ganda Kompleks harus memiliki minimal 2 kunci jawaban yang benar.');
+    if (questionType === 'PG_KOMPLEKS' && complexKeys.length !== 2) {
+      setErrorMsg('Pilihan Ganda Kompleks harus memiliki tepat 2 kunci jawaban yang benar.');
       return;
     }
 
@@ -197,6 +205,7 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
           }
         : null,
       stimulus_image_url: imageUrl || null,
+      question_image_url: imageUrl || null,
       sub_material_id: isRecall ? null : (submaterialId || 1),
       cognitive_level_id: isRecall ? null : (Number(cognitiveLevel) || 1),
     };
@@ -262,9 +271,9 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
                     onChange={(e) => setBankType(e.target.value)}
                     className="mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white"
                   >
-                    <option value="RECALL">Bank Recall</option>
-                    <option value="LATIHAN">Bank Latihan</option>
-                    <option value="SIMULASI">Bank Simulasi</option>
+                    <option value="RECALL">Bank Recall Kemampuanmu</option>
+                    <option value="LEVEL_EXERCISE">Bank Latihan Level Kognitif</option>
+                    <option value="SIMULATION">Bank Simulasi TKA</option>
                   </select>
                 </div>
                 <div>
@@ -272,12 +281,20 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
                   <select
                     value={cognitiveLevel}
                     onChange={(e) => setCognitiveLevel(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white"
+                    disabled={bankType === 'RECALL'}
+                    className={`mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white ${
+                      bankType === 'RECALL' ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
                   >
-                    <option value="L1">Level 1 (Pemahaman)</option>
-                    <option value="L2">Level 2 (Aplikasi)</option>
-                    <option value="L3">Level 3 (Penalaran)</option>
+                    <option value="1">Level 1 (Pemahaman)</option>
+                    <option value="2">Level 2 (Aplikasi)</option>
+                    <option value="3">Level 3 (Penalaran)</option>
                   </select>
+                  {bankType === 'RECALL' && (
+                    <span className="text-[10px] text-amber-400 mt-1 block">
+                      Tidak berlaku untuk Bank Recall (UCS-10)
+                    </span>
+                  )}
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-slate-300">Bentuk Soal</label>
@@ -371,6 +388,11 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
               <h3 className="text-sm font-bold text-white border-b border-slate-800 pb-2">
                 3. Pilihan Jawaban
               </h3>
+              <p className="text-[11px] text-slate-400">
+                {questionType === 'PG_TUNGGAL'
+                  ? 'Pilih satu radio button pada opsi yang menjadi kunci jawaban benar.'
+                  : 'Centang kotak checkbox pada 2 opsi yang menjadi kunci jawaban benar (tepat 2 kunci).'}
+              </p>
               <div className="space-y-3">
                 {options.map((opt) => (
                   <div key={opt.key} className="flex items-center gap-3">
@@ -400,8 +422,9 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
                         <input
                           type="checkbox"
                           checked={complexKeys.includes(opt.key)}
+                          disabled={!complexKeys.includes(opt.key) && complexKeys.length >= 2}
                           onChange={() => handleToggleComplexKey(opt.key)}
-                          className="text-purple-600 rounded"
+                          className="text-purple-600 rounded disabled:opacity-40 disabled:cursor-not-allowed"
                         />
                         <span>Kunci</span>
                       </label>
@@ -422,6 +445,103 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
                 required
                 className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2 text-xs text-white"
               />
+            </div>
+
+            {/* Section 5: Live Preview */}
+            <div className="rounded-2xl border border-indigo-500/30 bg-slate-900/90 p-6 space-y-4 shadow-xl">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-indigo-400" />
+                  5. Pratinjau Tampilan Siswa (Live LaTeX, Markdown & Gambar)
+                </h3>
+                <span className="rounded-full bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 text-[10px] font-semibold text-indigo-300">
+                  Pratinjau Otomatis
+                </span>
+              </div>
+
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Format yang didukung: rumus LaTeX inline (<code className="text-indigo-300 font-mono">$...$</code>), block math (<code className="text-indigo-300 font-mono">$$...$$</code>), markdown (<code className="text-indigo-300 font-mono">**tebal**</code>, <code className="text-indigo-300 font-mono">*miring*</code>), dan gambar pada opsi (<code className="text-indigo-300 font-mono">/assets/gambar.png</code> atau <code className="text-indigo-300 font-mono">![alt](url)</code>).
+              </p>
+
+              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-5 space-y-4">
+                {stimulus && (
+                  <div className="rounded-lg border border-slate-800/80 bg-slate-900/40 p-3 text-xs text-slate-300 border-l-4 border-l-purple-500">
+                    <p className="text-[10px] font-bold text-purple-400 uppercase tracking-wider mb-1">Stimulus / Narasi:</p>
+                    <FormattedContent content={stimulus} />
+                  </div>
+                )}
+
+                {imageUrl && (
+                  <div className="rounded-lg border border-slate-800/80 bg-slate-900/40 p-2 text-center">
+                    <img
+                      src={imageUrl}
+                      alt="Pratinjau Stimulus"
+                      className="max-h-48 w-auto mx-auto object-contain rounded"
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Pertanyaan:</p>
+                  {questionText ? (
+                    <div className="text-sm font-medium text-white leading-relaxed">
+                      <FormattedContent content={questionText} />
+                    </div>
+                  ) : (
+                    <p className="text-xs italic text-slate-500">Belum ada teks pokok soal...</p>
+                  )}
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Pilihan Jawaban:</p>
+                  <div className="space-y-2">
+                    {options.map((opt) => {
+                      const isKey = questionType === 'PG_TUNGGAL' 
+                        ? singleKey === opt.key 
+                        : complexKeys.includes(opt.key);
+                      return (
+                        <div
+                          key={opt.key}
+                          className={`flex items-start gap-3 p-3 rounded-xl border text-xs ${
+                            isKey
+                              ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-200'
+                              : 'border-slate-800 bg-slate-900/40 text-slate-300'
+                          }`}
+                        >
+                          <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[11px] font-bold ${
+                            isKey ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300'
+                          }`}>
+                            {opt.key}
+                          </span>
+                          <div className="flex-1 pt-0.5">
+                            {opt.text ? (
+                              <OptionRenderer text={opt.text} />
+                            ) : (
+                              <span className="italic text-slate-500 text-[11px]">(Belum diisi)</span>
+                            )}
+                          </div>
+                          {isKey && (
+                            <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider shrink-0 mt-0.5">
+                              (Kunci Jawaban)
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {explanation && (
+                  <div className="rounded-lg border border-indigo-500/30 bg-indigo-950/20 p-3.5 text-xs text-indigo-200">
+                    <p className="font-bold text-indigo-400 text-[10px] uppercase tracking-wider mb-1">
+                      Pratinjau Pembahasan:
+                    </p>
+                    <div className="leading-relaxed text-slate-300">
+                      <FormattedContent content={explanation} />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex justify-end gap-3 pt-4">

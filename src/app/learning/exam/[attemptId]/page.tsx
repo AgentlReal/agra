@@ -15,6 +15,8 @@ import {
   CircleDot,
   ZoomIn
 } from 'lucide-react';
+import FormattedContent from '@/components/common/FormattedContent';
+import OptionRenderer from '@/components/common/OptionRenderer';
 
 interface QuestionItem {
   id: string | number;
@@ -22,6 +24,7 @@ interface QuestionItem {
   stimulus?: string;
   stimulusImageUrl?: string | null;
   questionText: string;
+  questionImageUrl?: string | null;
   options: { id?: number; key: string; text: string }[];
   questionFormat: 'SINGLE_CHOICE' | 'COMPLEX_CHOICE';
   currentAnswer?: string[] | null;
@@ -61,6 +64,11 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
               q.imageUrl ||
               null;
 
+            const questionImageUrl =
+              q.question_image_url ||
+              q.questionImageUrl ||
+              null;
+
             const mappedOptions = (q.options || []).map((opt: any) => ({
               id: opt.id ?? opt.option_id,
               key: opt.option_label || opt.optionKey || opt.key,
@@ -91,6 +99,7 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
               stimulus: stimulusText,
               stimulusImageUrl,
               questionText: q.question_text || q.questionText || '',
+              questionImageUrl,
               options: mappedOptions,
               questionFormat,
               currentAnswer,
@@ -124,6 +133,7 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
       if (cur.includes(optionKey)) {
         nextAnswerKeys = cur.filter((k) => k !== optionKey);
       } else {
+        if (cur.length >= 2) return;
         nextAnswerKeys = [...cur, optionKey].sort();
       }
     } else {
@@ -262,7 +272,7 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
           {/* Stimulus */}
           {(currentQ.stimulus || currentQ.stimulusImageUrl) && (
             <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 text-xs text-slate-300 border-l-4 border-l-indigo-500 space-y-3">
-              {currentQ.stimulus && <div>{currentQ.stimulus}</div>}
+              {currentQ.stimulus && <FormattedContent content={currentQ.stimulus} />}
 
               {currentQ.stimulusImageUrl && (
                 <div className="relative group overflow-hidden rounded-xl border border-slate-800/80 bg-slate-950/60 p-2 text-center">
@@ -294,7 +304,7 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
               {currentQ.questionFormat === 'COMPLEX_CHOICE' ? (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-purple-400">
                   <CheckSquare className="h-3 w-3" />
-                  Pilihan Ganda Kompleks (Pilih &ge; 1)
+                  Pilihan Ganda Kompleks (Pilih 1 atau 2)
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-indigo-400">
@@ -304,20 +314,44 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
               )}
             </div>
 
-            <p className="text-sm sm:text-base font-medium text-white leading-relaxed">
-              {currentQ.questionText}
-            </p>
+            <div className="text-sm sm:text-base font-medium text-white leading-relaxed">
+              <FormattedContent content={currentQ.questionText} />
+            </div>
+
+            {currentQ.questionImageUrl && (
+              <div className="mt-4 relative group overflow-hidden rounded-xl border border-slate-800/80 bg-slate-950/60 p-2 text-center">
+                <img
+                  src={currentQ.questionImageUrl}
+                  alt="Ilustrasi pertanyaan"
+                  className="max-h-72 sm:max-h-96 w-auto mx-auto object-contain rounded-lg cursor-zoom-in hover:opacity-95 transition-opacity"
+                  onClick={() => setZoomImageUrl(currentQ.questionImageUrl || null)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setZoomImageUrl(currentQ.questionImageUrl || null)}
+                  className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-lg bg-slate-900/90 px-2.5 py-1 text-[11px] font-semibold text-slate-300 backdrop-blur-sm border border-slate-700 hover:text-white transition-colors"
+                >
+                  <ZoomIn className="h-3.5 w-3.5" />
+                  <span>Perbesar</span>
+                </button>
+              </div>
+            )}
 
             <div className="mt-6 space-y-3">
               {currentQ.options.map((opt) => {
-                const isSelected = (answers[currentIndex] || []).includes(opt.key);
+                const currentAnswers = answers[currentIndex] || [];
+                const isSelected = currentAnswers.includes(opt.key);
                 const isComplex = currentQ.questionFormat === 'COMPLEX_CHOICE';
+                const isMaxReached = isComplex && currentAnswers.length >= 2 && !isSelected;
                 return (
                   <button
                     key={opt.key}
+                    disabled={isMaxReached}
                     onClick={() => handleSelectOption(opt.key)}
                     className={`w-full flex items-start gap-3.5 p-4 rounded-xl border text-left transition-all ${
-                      isSelected
+                      isMaxReached
+                        ? 'opacity-60 cursor-not-allowed border-slate-800 bg-slate-950/40 text-slate-500'
+                        : isSelected
                         ? isComplex
                           ? 'border-purple-500 bg-purple-600/20 text-white ring-2 ring-purple-500/30'
                           : 'border-indigo-500 bg-indigo-600/20 text-white ring-2 ring-indigo-500/30'
@@ -337,7 +371,9 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
                     >
                       {isSelected && isComplex ? <Check className="h-4 w-4" /> : opt.key}
                     </div>
-                    <span className="text-xs sm:text-sm pt-0.5 leading-relaxed">{opt.text}</span>
+                    <div className="text-xs sm:text-sm pt-0.5 leading-relaxed flex-1">
+                      <OptionRenderer text={opt.text} onZoom={setZoomImageUrl} />
+                    </div>
                   </button>
                 );
               })}

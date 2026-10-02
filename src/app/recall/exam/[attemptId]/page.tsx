@@ -17,6 +17,8 @@ import {
   CircleDot,
   ZoomIn
 } from 'lucide-react';
+import FormattedContent from '@/components/common/FormattedContent';
+import OptionRenderer from '@/components/common/OptionRenderer';
 
 interface QuestionItem {
   id: string | number;
@@ -24,6 +26,7 @@ interface QuestionItem {
   subjectName: string;
   stimulus?: string;
   stimulusImageUrl?: string | null;
+  questionImageUrl?: string | null;
   questionText: string;
   options: { id?: number; key: string; text: string }[];
   questionFormat: 'SINGLE_CHOICE' | 'COMPLEX_CHOICE';
@@ -60,6 +63,11 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
               typeof q.stimulus === 'string'
                 ? q.stimulus
                 : (q.stimulus?.content_text || q.stimulusText || '');
+
+            const questionImageUrl =
+              q.question_image_url ||
+              q.questionImageUrl ||
+              null;
 
             const stimulusImageUrl =
               q.stimulus_image_url ||
@@ -98,6 +106,7 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
               subjectName: q.subjectName || (i < 15 ? 'Matematika SD' : 'Bahasa Indonesia SD'),
               stimulus: stimulusText,
               stimulusImageUrl,
+              questionImageUrl,
               questionText: q.question_text || q.questionText || '',
               options: mappedOptions,
               questionFormat,
@@ -136,6 +145,7 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
       if (cur.includes(optionKey)) {
         nextAnswerKeys = cur.filter((k) => k !== optionKey);
       } else {
+        if (cur.length >= 2) return; // Guard: batas maksimal 2 pilihan
         nextAnswerKeys = [...cur, optionKey].sort();
       }
     } else {
@@ -298,7 +308,7 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
               {currentQ.questionFormat === 'COMPLEX_CHOICE' ? (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-purple-400">
                   <CheckSquare className="h-3 w-3" />
-                  Pilihan Ganda Kompleks (Pilih &ge; 1)
+                  Pilihan Ganda Kompleks (Pilih 1 atau 2)
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-indigo-400">
@@ -329,7 +339,7 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
                   <p className="font-semibold text-indigo-400 mb-1 text-[11px] uppercase tracking-wider">
                     Teks Stimulus Soal:
                   </p>
-                  <div>{currentQ.stimulus}</div>
+                  <FormattedContent content={currentQ.stimulus} />
                 </div>
               )}
 
@@ -356,24 +366,39 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
 
           {/* Question Text */}
           <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 sm:p-6 backdrop-blur-md">
-            <p className="text-sm sm:text-base font-medium text-white leading-relaxed">
-              {currentQ.questionText}
-            </p>
+            {currentQ.questionImageUrl && (
+              <div className="relative group overflow-hidden rounded-xl border border-slate-800/80 bg-slate-950/60 p-2 text-center mb-4">
+                <img
+                  src={currentQ.questionImageUrl}
+                  alt="Gambar soal"
+                  className="max-h-64 sm:max-h-80 w-auto mx-auto object-contain rounded-lg cursor-zoom-in hover:opacity-95 transition-opacity"
+                  onClick={() => setZoomImageUrl(currentQ.questionImageUrl || null)}
+                />
+              </div>
+            )}
+            <div className="text-sm sm:text-base font-medium text-white leading-relaxed">
+              <FormattedContent content={currentQ.questionText} />
+            </div>
 
             {/* Options List */}
             <div className="mt-6 space-y-3">
               {currentQ.options.map((opt) => {
-                const isSelected = (answers[currentIndex] || []).includes(opt.key);
+                const currentAnswers = answers[currentIndex] || [];
+                const isSelected = currentAnswers.includes(opt.key);
                 const isComplex = currentQ.questionFormat === 'COMPLEX_CHOICE';
+                const isMaxReached = isComplex && currentAnswers.length >= 2 && !isSelected;
                 return (
                   <button
                     key={opt.key}
                     onClick={() => handleSelectOption(opt.key)}
+                    disabled={isMaxReached}
                     className={`w-full flex items-start gap-3.5 p-4 rounded-xl border text-left transition-all ${
                       isSelected
                         ? isComplex
                           ? 'border-purple-500 bg-purple-600/20 text-white ring-2 ring-purple-500/30'
                           : 'border-indigo-500 bg-indigo-600/20 text-white ring-2 ring-indigo-500/30'
+                        : isMaxReached
+                        ? 'border-slate-800/50 bg-slate-950/40 text-slate-500 opacity-60 cursor-not-allowed'
                         : 'border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-700 hover:bg-slate-900'
                     }`}
                   >
@@ -390,7 +415,9 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
                     >
                       {isSelected && isComplex ? <Check className="h-4 w-4" /> : opt.key}
                     </div>
-                    <span className="text-xs sm:text-sm pt-0.5 leading-relaxed">{opt.text}</span>
+                    <div className="text-xs sm:text-sm pt-0.5 leading-relaxed flex-1">
+                      <OptionRenderer text={opt.text} onZoom={setZoomImageUrl} />
+                    </div>
                   </button>
                 );
               })}

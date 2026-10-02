@@ -1,5 +1,6 @@
 import React from 'react';
-import { GraduationCap, Shield } from 'lucide-react';
+import { Shield } from 'lucide-react';
+import { AppLogo } from '@/components/common/AppLogo';
 
 export const Footer: React.FC = () => {
   return (
@@ -7,8 +8,8 @@ export const Footer: React.FC = () => {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600/30 text-indigo-400 border border-indigo-500/30">
-              <GraduationCap className="h-4 w-4" />
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-900 border border-slate-800 p-0.5">
+              <AppLogo size={18} />
             </div>
             <span className="text-sm font-semibold text-slate-300">
               AGRA Platform TKA SMP (Fase D)

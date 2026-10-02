@@ -16,6 +16,7 @@ import {
   ShieldCheck, 
   AlertCircle 
 } from 'lucide-react';
+import { AppLogo } from '@/components/common/AppLogo';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -88,8 +89,8 @@ export default function LoginPage() {
       <div data-theme="dark" className="relative flex flex-col justify-between overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 p-8 lg:w-1/2 lg:p-16 border-b lg:border-b-0 lg:border-r border-slate-800 text-white">
         <div className="relative z-10">
           <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-600 via-blue-600 to-cyan-500 shadow-xl shadow-indigo-500/20">
-              <GraduationCap className="h-7 w-7 text-white" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900/90 border border-slate-700/60 shadow-xl shadow-indigo-500/10 p-1.5">
+              <AppLogo size={36} />
             </div>
             <div>
               <h1 className="text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">

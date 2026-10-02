@@ -13,6 +13,7 @@ export interface User {
   email: string;
   role: UserRole;
   avatarUrl?: string;
+  avatarId?: number;
   grade?: number;
   totalXp?: number;
   currentStreak?: number;
@@ -58,6 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         name: authUser.name || authUser.username || '',
         username: authUser.username || authUser.email.split('@')[0],
         email: authUser.email,
+        avatarUrl: authUser.image || undefined,
         role,
       };
 
@@ -66,9 +68,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const profileRes = await api.profile.get();
           const profileData = profileRes.data || profileRes;
           initialUser.name = profileData.name || initialUser.name;
-          initialUser.avatarUrl = profileData.avatar?.imageUrl || profileData.avatarUrl;
+          initialUser.avatarUrl = profileData.avatar?.imageUrl || profileData.avatarUrl || initialUser.avatarUrl;
+          initialUser.avatarId = profileData.avatar?.id;
           initialUser.totalXp = profileData.totalXp ?? profileData.total_xp ?? 0;
           initialUser.currentStreak = profileData.currentStreak ?? profileData.current_streak ?? 0;
+          initialUser.grade = profileData.grade;
         } catch (profileErr: any) {
           if (profileErr.code === 'PROFILE_INCOMPLETE' || profileErr.status === 409) {
             initialUser.needsOnboarding = true;

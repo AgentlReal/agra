@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { api } from '@/lib/api-client';
-import { GraduationCap, ArrowRight, Check, Sparkles, Smile } from 'lucide-react';
+import { GraduationCap, ArrowRight, Check, Sparkles } from 'lucide-react';
+import { UserAvatar } from '@/components/common/UserAvatar';
 
 interface AvatarPreset {
   id: number;
@@ -25,10 +26,11 @@ export default function OnboardingPage() {
     api.profile
       .getAvatars()
       .then((res: any) => {
-        const list = Array.isArray(res) ? res : res.data || [];
+        const list = res?.data?.items || res?.items || (Array.isArray(res) ? res : res.data || []);
         if (Array.isArray(list) && list.length > 0) {
           setAvatars(list);
-          setSelectedAvatarId(list[0].id);
+          const active = list.find((a: any) => a.selected);
+          setSelectedAvatarId(active ? active.id : list[0].id);
         }
       })
       .catch((err) => {
@@ -47,7 +49,13 @@ export default function OnboardingPage() {
         avatarId: selectedAvatarId,
       });
 
-      updateUser({ grade: selectedGrade });
+      const chosenAvatar = avatars.find((a) => a.id === selectedAvatarId);
+      updateUser({ 
+        grade: selectedGrade,
+        avatarId: selectedAvatarId,
+        avatarUrl: chosenAvatar?.imageUrl || (chosenAvatar as any)?.image_url,
+        needsOnboarding: false,
+      });
       // Proceed to the Gatekeeper diagnostic test (Recall Kemampuanmu)
       router.push('/recall');
     } catch (err: any) {
@@ -66,7 +74,7 @@ export default function OnboardingPage() {
             Langkah Awal Penyiapan Profil
           </div>
           <h2 className="text-3xl font-extrabold tracking-tight text-white">
-            Hai, {user?.name || 'Siswa Hebat'}! 👋
+            Hai, {user?.name || user?.username || 'Siswa'}! 👋
           </h2>
           <p className="mt-2 text-sm text-slate-300">
             Pilih jenjang kelas dan avatar belajarmu sebelum memulai latihan adaptif TKA SMP.
@@ -110,27 +118,31 @@ export default function OnboardingPage() {
             <label className="block text-sm font-semibold text-slate-200 mb-3">
               2. Pilih Avatar Karakter Belajar
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {avatars.map((av) => (
                 <button
                   key={av.id}
                   type="button"
                   onClick={() => setSelectedAvatarId(av.id)}
-                  className={`relative flex flex-col items-center p-3 rounded-xl border transition-all text-center ${
+                  className={`relative flex flex-col items-center p-3 rounded-2xl border transition-all text-center cursor-pointer ${
                     selectedAvatarId === av.id
-                      ? 'border-indigo-500 bg-indigo-600/20 text-white ring-2 ring-indigo-500/40'
-                      : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:border-slate-700 hover:text-white'
+                      ? 'border-indigo-500 bg-indigo-600/20 text-white ring-2 ring-indigo-500/40 shadow-lg shadow-indigo-500/20'
+                      : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:border-slate-700 hover:bg-slate-900/80 hover:text-white'
                   }`}
                 >
                   {selectedAvatarId === av.id && (
-                    <div className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-500 text-white">
-                      <Check className="h-2.5 w-2.5" />
+                    <div className="absolute top-1.5 right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-indigo-500 text-white shadow-md z-10">
+                      <Check className="h-3 w-3" />
                     </div>
                   )}
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 mb-2">
-                    <Smile className="h-7 w-7" />
-                  </div>
-                  <span className="text-xs font-semibold leading-tight line-clamp-1">{av.name}</span>
+                  <UserAvatar
+                    src={av.imageUrl}
+                    name={av.name}
+                    size="lg"
+                    rounded="full"
+                    className={`mb-2 ${selectedAvatarId === av.id ? 'ring-2 ring-indigo-400' : ''}`}
+                  />
+                  <span className="text-xs font-semibold leading-tight line-clamp-1 mt-0.5">{av.name}</span>
                 </button>
               ))}
             </div>

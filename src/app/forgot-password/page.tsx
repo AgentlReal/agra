@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api-client';
-import { GraduationCap, Mail, ArrowLeft, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Mail, ArrowLeft, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
+import { AppLogo } from '@/components/common/AppLogo';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -33,8 +34,8 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
           <Link href="/" className="inline-flex items-center gap-2.5">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-indigo-600 to-cyan-500 shadow-lg shadow-indigo-500/20">
-              <GraduationCap className="h-6 w-6 text-white" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-900/90 border border-slate-700/60 shadow-lg shadow-indigo-500/10 p-1">
+              <AppLogo size={34} />
             </div>
             <span className="text-2xl font-bold tracking-tight text-white">AGRA</span>
           </Link>
@@ -54,14 +55,6 @@ export default function ForgotPasswordPage() {
               <p className="text-xs text-slate-300 leading-relaxed">
                 Kami telah mengirimkan tautan reset kata sandi ke <span className="font-semibold text-indigo-400">{email}</span>. Periksa kotak masuk dan folder spam Anda.
               </p>
-              <div className="pt-2">
-                <Link
-                  href="/reset-password?token=mock_token_sample"
-                  className="inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 underline"
-                >
-                  Simulasikan Buka Tautan Reset Password <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </div>
               <div className="pt-4 border-t border-slate-800">
                 <Link
                   href="/login"

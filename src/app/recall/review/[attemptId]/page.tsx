@@ -6,7 +6,6 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { api } from '@/lib/api-client';
 import { 
-  GraduationCap, 
   CheckCircle2, 
   XCircle, 
   ArrowLeft, 
@@ -17,6 +16,8 @@ import {
   ZoomIn,
   X
 } from 'lucide-react';
+import FormattedContent from '@/components/common/FormattedContent';
+import OptionRenderer from '@/components/common/OptionRenderer';
 
 interface ReviewQuestion {
   id: string | number;
@@ -25,11 +26,13 @@ interface ReviewQuestion {
   stimulus?: string;
   stimulusImageUrl?: string | null;
   questionText: string;
+  questionImageUrl?: string | null;
   options: { id?: number; key: string; text: string; isCorrect: boolean }[];
   questionFormat: 'SINGLE_CHOICE' | 'COMPLEX_CHOICE';
   studentAnswer: string;
   correctAnswer: string;
   isCorrect: boolean;
+  score?: number;
   explanation: string;
 }
 
@@ -61,6 +64,11 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
               q.imageUrl ||
               null;
 
+            const questionImageUrl =
+              q.question_image_url ||
+              q.questionImageUrl ||
+              null;
+
             const mappedOptions = (q.options || []).map((opt: any) => ({
               id: opt.id ?? opt.option_id,
               key: opt.option_label || opt.optionKey || opt.key,
@@ -90,6 +98,10 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
               correctAnswer = Array.isArray(q.correctAnswer) ? q.correctAnswer.join(', ') : q.correctAnswer;
             }
 
+            const rawScore = typeof q.score === 'number' ? q.score : typeof q.point === 'number' ? q.point : null;
+            const isCorrect = Boolean(q.is_correct ?? q.isCorrect);
+            const score = rawScore !== null ? rawScore : (isCorrect ? 1 : 0);
+
             return {
               id: q.session_question_id ?? q.id ?? i + 1,
               questionNumber: q.question_order ?? q.questionNumber ?? i + 1,
@@ -97,11 +109,13 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
               stimulus: stimulusText,
               stimulusImageUrl,
               questionText: q.question_text || q.questionText || '',
+              questionImageUrl,
               options: mappedOptions,
               questionFormat,
               studentAnswer,
               correctAnswer,
-              isCorrect: Boolean(q.is_correct ?? q.isCorrect),
+              isCorrect,
+              score,
               explanation: q.explanation_text || q.explanation || q.reasoning_guide || 'Pembahasan belum tersedia untuk butir soal ini.',
             };
           });
@@ -207,7 +221,9 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
                 <div
                   key={q.questionNumber}
                   className={`rounded-2xl border p-5 sm:p-6 backdrop-blur-md transition-all ${
-                    q.isCorrect
+                    q.score === 0.5
+                      ? 'border-amber-500/20 bg-slate-900/60'
+                      : q.isCorrect
                       ? 'border-emerald-500/20 bg-slate-900/60'
                       : 'border-rose-500/20 bg-slate-900/60'
                   }`}
@@ -222,7 +238,7 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
                       <span className="text-slate-600 hidden sm:inline">•</span>
                       {q.questionFormat === 'COMPLEX_CHOICE' ? (
                         <span className="inline-flex items-center gap-1 rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-purple-400">
-                          <CheckSquare className="h-3 w-3" /> Pilihan Ganda Kompleks
+                          <CheckSquare className="h-3 w-3" /> Pilihan Ganda Kompleks (Pilih 1 atau 2)
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-indigo-400">
@@ -232,9 +248,13 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
                     </div>
 
                     <div className="flex items-center gap-1.5">
-                      {q.isCorrect ? (
+                      {q.score === 0.5 ? (
+                        <span className="flex items-center gap-1 text-xs font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-2.5 py-0.5">
+                          <CheckCircle2 className="h-3.5 w-3.5" /> Benar Sebagian (+0.5)
+                        </span>
+                      ) : q.isCorrect ? (
                         <span className="flex items-center gap-1 text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-2.5 py-0.5">
-                          <CheckCircle2 className="h-3.5 w-3.5" /> Jawaban Tepat
+                          <CheckCircle2 className="h-3.5 w-3.5" /> Jawaban Tepat (+1)
                         </span>
                       ) : (
                         <span className="flex items-center gap-1 text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-full px-2.5 py-0.5">
@@ -247,7 +267,7 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
                   {/* Stimulus */}
                   {(q.stimulus || q.stimulusImageUrl) && (
                     <div className="mb-4 rounded-xl border border-slate-800 bg-slate-950/60 p-3.5 text-xs text-slate-300 space-y-2.5">
-                      {q.stimulus && <div>{q.stimulus}</div>}
+                      {q.stimulus && <FormattedContent content={q.stimulus} />}
 
                       {q.stimulusImageUrl && (
                         <div className="relative group overflow-hidden rounded-lg border border-slate-800 bg-slate-900/60 p-2 text-center">
@@ -271,9 +291,29 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
                   )}
 
                   {/* Question Text */}
-                  <p className="text-sm font-medium text-white mb-4 leading-relaxed">
-                    {q.questionText}
-                  </p>
+                  <div className="text-sm font-medium text-white mb-4 leading-relaxed">
+                    <FormattedContent content={q.questionText} />
+                  </div>
+
+                  {/* Question Image */}
+                  {q.questionImageUrl && (
+                    <div className="mb-4 relative group overflow-hidden rounded-lg border border-slate-800 bg-slate-900/60 p-2 text-center">
+                      <img
+                        src={q.questionImageUrl}
+                        alt="Ilustrasi pertanyaan"
+                        className="max-h-60 sm:max-h-72 w-auto mx-auto object-contain rounded cursor-zoom-in hover:opacity-95 transition-opacity"
+                        onClick={() => setZoomImageUrl(q.questionImageUrl || null)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setZoomImageUrl(q.questionImageUrl || null)}
+                        className="absolute bottom-2.5 right-2.5 flex items-center gap-1 rounded bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold text-slate-300 backdrop-blur-sm border border-slate-700 hover:text-white transition-colors"
+                      >
+                        <ZoomIn className="h-3 w-3" />
+                        <span>Perbesar</span>
+                      </button>
+                    </div>
+                  )}
 
                   {/* Options */}
                   <div className="space-y-2 mb-4">
@@ -305,7 +345,9 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
                           <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-slate-800 text-[11px] font-bold">
                             {opt.key}
                           </span>
-                          <span className="flex-1">{opt.text}</span>
+                          <div className="flex-1">
+                            <OptionRenderer text={opt.text} onZoom={setZoomImageUrl} />
+                          </div>
                           {isCorrectOpt && isStudentOpt && (
                             <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
                               (Kunci Benar • Jawaban Anda)
@@ -331,7 +373,9 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
                     <p className="font-bold text-indigo-400 flex items-center gap-1.5 mb-1 text-[11px] uppercase tracking-wider">
                       <BookOpen className="h-3.5 w-3.5" /> Pembahasan Konsep:
                     </p>
-                    <p className="leading-relaxed text-slate-300">{q.explanation}</p>
+                    <div className="leading-relaxed text-slate-300">
+                      <FormattedContent content={q.explanation} />
+                    </div>
                   </div>
                 </div>
               ))}

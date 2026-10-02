@@ -38,8 +38,10 @@ export default function LearningResultPage({ params }: { params: Promise<{ attem
   const score = result?.score ?? 0;
   const isPassed = Boolean(result?.isPassed ?? result?.is_passed);
   const correct = result?.correctAnswers ?? result?.correct_answers ?? 0;
+  const formattedCorrect = Number.isInteger(correct) ? correct : Number(correct).toFixed(1);
   const total = result?.totalQuestions ?? result?.total_questions ?? 10;
   const xp = result?.earnedXp ?? result?.xpEarned ?? result?.xp_earned ?? 0;
+  const levelName = result?.level_name || result?.levelName;
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-950">
@@ -81,7 +83,7 @@ export default function LearningResultPage({ params }: { params: Promise<{ attem
               </div>
 
               <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                Hasil Evaluasi Formatif Latihan
+                {levelName || 'Hasil Evaluasi Formatif Latihan'}
               </span>
               <h1 className="text-3xl font-extrabold text-white mt-1">
                 Skor Anda: {score}%
@@ -118,7 +120,7 @@ export default function LearningResultPage({ params }: { params: Promise<{ attem
               <div>
                 <p className="text-slate-400">Benar</p>
                 <p className="text-xl font-bold text-emerald-400 mt-1 flex items-center justify-center gap-1">
-                  <CheckCircle2 className="h-4 w-4" /> {correct} / {total}
+                  <CheckCircle2 className="h-4 w-4" /> {formattedCorrect} / {total}
                 </p>
               </div>
               <div className="h-8 w-px bg-slate-800" />

@@ -17,6 +17,7 @@ import {
   AlertCircle,
   GraduationCap
 } from 'lucide-react';
+import { UserAvatar } from '@/components/common/UserAvatar';
 
 export default function ProfilePage() {
   const { user, updateUser } = useAuth();
@@ -50,10 +51,27 @@ export default function ProfilePage() {
     api.profile
       .getAvatars()
       .then((res: any) => {
-        const list = Array.isArray(res) ? res : res.data || [];
-        setAvatars(list);
+        const list = res?.data?.items || res?.items || (Array.isArray(res) ? res : res.data || []);
+        if (Array.isArray(list)) {
+          setAvatars(list);
+          const active = list.find((a: any) => a.selected);
+          if (active) {
+            setSelectedAvatarId(active.id);
+          }
+        }
       })
       .catch((err) => console.error('Failed to load avatars:', err));
+
+    // Fetch profile details to ensure selected avatar ID is in sync
+    api.profile
+      .get()
+      .then((res: any) => {
+        const pData = res?.data || res;
+        if (pData?.avatar?.id) {
+          setSelectedAvatarId(pData.avatar.id);
+        }
+      })
+      .catch(() => {});
 
     // Fetch XP transactions
     api.profile
@@ -88,12 +106,15 @@ export default function ProfilePage() {
   const handleSelectAvatar = async (avatarId: number) => {
     setUpdatingAvatar(true);
     try {
-      await api.profile.updateAvatar(avatarId);
+      const res = await api.profile.updateAvatar(avatarId);
+      const updated = res?.data || res;
       setSelectedAvatarId(avatarId);
+      const chosen = avatars.find((a) => a.id === avatarId);
+      const newAvatarUrl = updated?.imageUrl || updated?.image_url || chosen?.imageUrl || chosen?.image_url;
+      updateUser({ avatarId, avatarUrl: newAvatarUrl });
       setAvatarModalOpen(false);
-    } catch {
-      setSelectedAvatarId(avatarId);
-      setAvatarModalOpen(false);
+    } catch (err: any) {
+      alert(err.message || 'Gagal mengubah avatar.');
     } finally {
       setUpdatingAvatar(false);
     }
@@ -143,25 +164,31 @@ export default function ProfilePage() {
           {/* Left Column: Avatar & Quick Info */}
           <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 flex flex-col items-center text-center space-y-4">
             <div className="relative">
-              <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-tr from-indigo-600 via-blue-600 to-cyan-500 text-3xl font-extrabold text-white shadow-xl shadow-indigo-600/30">
-                {user?.name?.[0]?.toUpperCase() || 'B'}
-              </div>
+              <UserAvatar
+                src={user?.avatarUrl}
+                name={user?.name || user?.username}
+                size="xl"
+                rounded="3xl"
+                className="shadow-xl shadow-indigo-600/30 ring-4 ring-indigo-500/20"
+              />
               <button
                 onClick={() => setAvatarModalOpen(true)}
-                className="absolute -bottom-2 -right-2 flex h-8 w-8 items-center justify-center rounded-xl bg-slate-800 border border-slate-700 text-indigo-400 hover:text-white shadow-lg transition-colors"
-                title="Ganti Avatar Preset"
+                className="absolute -bottom-2 -right-2 flex h-8 w-8 items-center justify-center rounded-xl bg-slate-800 border border-slate-700 text-indigo-400 hover:text-white hover:bg-slate-700 shadow-lg transition-colors cursor-pointer"
+                title="Ganti Avatar Karakter"
               >
                 <Smile className="h-4 w-4" />
               </button>
             </div>
 
             <div>
-              <h3 className="text-base font-bold text-white">{user?.name}</h3>
-              <p className="text-xs text-slate-400 font-mono">@{user?.username}</p>
-              <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 px-3 py-0.5 text-xs font-semibold text-indigo-400">
-                <GraduationCap className="h-3.5 w-3.5" />
-                <span>Kelas {user?.grade || 8} SMP</span>
-              </div>
+              <h3 className="text-base font-bold text-white">{user?.name || user?.username || 'Siswa'}</h3>
+              <p className="text-xs text-slate-400 font-mono">@{user?.username || '-'}</p>
+              {user?.grade ? (
+                <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 px-3 py-0.5 text-xs font-semibold text-indigo-400">
+                  <GraduationCap className="h-3.5 w-3.5" />
+                  <span>Kelas {user.grade} SMP</span>
+                </div>
+              ) : null}
             </div>
 
             {/* Total XP Card */}
@@ -171,7 +198,7 @@ export default function ProfilePage() {
               </p>
               <p className="text-2xl font-extrabold text-white mt-1 flex items-center justify-center gap-1.5">
                 <Sparkles className="h-5 w-5 text-amber-400" />
-                <span>{user?.totalXp || 450} XP</span>
+                <span>{user?.totalXp ?? 0} XP</span>
               </p>
             </div>
 
@@ -368,22 +395,33 @@ export default function ProfilePage() {
               Pilih karakter representasi profil belajar Anda di platform AGRA.
             </p>
 
-            <div className="grid grid-cols-3 gap-3 py-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 py-2">
               {avatars.map((av) => (
                 <button
                   key={av.id}
                   onClick={() => handleSelectAvatar(av.id)}
                   disabled={updatingAvatar}
-                  className={`flex flex-col items-center p-3 rounded-xl border text-center transition-all ${
+                  className={`flex flex-col items-center p-3 rounded-2xl border text-center transition-all cursor-pointer ${
                     selectedAvatarId === av.id
-                      ? 'border-indigo-500 bg-indigo-600/20 text-white ring-2 ring-indigo-500/40'
-                      : 'border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-700'
+                      ? 'border-indigo-500 bg-indigo-600/20 text-white ring-2 ring-indigo-500/40 shadow-lg shadow-indigo-500/20'
+                      : 'border-slate-800 bg-slate-950/60 text-slate-300 hover:border-slate-700 hover:bg-slate-900/80'
                   }`}
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-800 text-indigo-400 mb-2">
-                    <Smile className="h-6 w-6" />
+                  <div className="relative mb-2">
+                    <UserAvatar
+                      src={av.imageUrl || av.image_url}
+                      name={av.name}
+                      size="lg"
+                      rounded="full"
+                      className={selectedAvatarId === av.id ? 'ring-2 ring-indigo-400' : ''}
+                    />
+                    {selectedAvatarId === av.id && (
+                      <div className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-indigo-500 text-white shadow-md">
+                        <Check className="h-3 w-3" />
+                      </div>
+                    )}
                   </div>
-                  <span className="text-[11px] font-semibold leading-tight line-clamp-1">{av.name}</span>
+                  <span className="text-xs font-semibold leading-tight line-clamp-1">{av.name}</span>
                 </button>
               ))}
             </div>

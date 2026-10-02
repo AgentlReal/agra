@@ -6,6 +6,10 @@ import { ThemeProvider } from '@/lib/theme-context';
 export const metadata: Metadata = {
   title: 'AGRA - Platform TKA & Kurikulum SMP (Fase D)',
   description: 'Ruang Belajar Mandiri & Asesmen Adaptif TKA Kemendikdasmen Jenjang SMP/MTs Berbasis Mastery Learning',
+  icons: {
+    icon: '/assets/images/agra-icon.png',
+    apple: '/assets/images/agra-icon.png',
+  },
 };
 
 export default function RootLayout({

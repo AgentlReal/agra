@@ -4,8 +4,9 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
-import { Database, Layers, UserCheck, ArrowLeftRight, LogOut, ShieldAlert, Sun, Moon } from 'lucide-react';
+import { Database, Layers, UserCheck, LogOut, Sun, Moon } from 'lucide-react';
 import { useTheme } from '@/lib/theme-context';
+import { AppLogo } from '@/components/common/AppLogo';
 
 export const AdminNav: React.FC = () => {
   const pathname = usePathname();
@@ -23,8 +24,8 @@ export const AdminNav: React.FC = () => {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-6">
           <Link href="/admin/bank-soal" className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-blue-500 shadow-lg shadow-purple-500/20">
-              <ShieldAlert className="h-5 w-5 text-white" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900/90 border border-purple-500/30 shadow-lg shadow-purple-500/10 p-1">
+              <AppLogo size={30} />
             </div>
             <div>
               <span className="text-lg font-bold tracking-tight text-white flex items-center gap-2">
@@ -71,19 +72,10 @@ export const AdminNav: React.FC = () => {
             {isLight ? <Moon className="h-4 w-4 text-purple-600" /> : <Sun className="h-4 w-4 text-amber-400" />}
           </button>
 
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
-            title="Ke Portal Siswa"
-          >
-            <ArrowLeftRight className="h-3.5 w-3.5 text-indigo-400" />
-            <span>Lihat Mode Siswa</span>
-          </Link>
-
           <div className="flex items-center gap-2 pl-2 border-l border-slate-800">
             <div className="text-right hidden sm:block">
-              <p className="text-xs font-semibold text-slate-200">{user?.name || 'Tim Kurikulum'}</p>
-              <p className="text-[10px] text-purple-400 font-mono">@{user?.username || 'tim_kurikulum'}</p>
+              <p className="text-xs font-semibold text-slate-200">{user?.name || user?.username || 'Admin'}</p>
+              <p className="text-[10px] text-purple-400 font-mono">@{user?.username || 'admin'}</p>
             </div>
             <button
               onClick={() => logout()}

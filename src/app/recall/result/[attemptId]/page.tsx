@@ -12,8 +12,7 @@ import {
   Sparkles, 
   ArrowRight, 
   RotateCcw, 
-  BookOpen, 
-  GraduationCap 
+  BookOpen 
 } from 'lucide-react';
 
 export default function RecallResultPage({ params }: { params: Promise<{ attemptId: string }> }) {
@@ -39,6 +38,9 @@ export default function RecallResultPage({ params }: { params: Promise<{ attempt
   const isPassed = Boolean(result?.isPassed ?? result?.is_passed);
   const totalQuestions = result?.totalQuestions ?? result?.total_questions ?? 30;
   const totalCorrect = result?.totalCorrect ?? result?.total_correct ?? (result?.score ? Math.round((result.score / 100) * totalQuestions) : 0);
+  const formattedCorrect = Number.isInteger(Number(totalCorrect)) ? totalCorrect : Number(totalCorrect).toFixed(1);
+  const wrongCount = totalQuestions - totalCorrect;
+  const formattedWrong = Number.isInteger(Number(wrongCount)) ? wrongCount : Number(wrongCount).toFixed(1);
   const score = result?.score ?? (totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0);
   const earnedXp = result?.earnedXp ?? result?.xpEarned ?? result?.xp_earned ?? 0;
 
@@ -143,14 +145,14 @@ export default function RecallResultPage({ params }: { params: Promise<{ attempt
               <div>
                 <p className="text-xs text-slate-400">Jumlah Benar</p>
                 <p className="text-xl font-bold text-emerald-400 flex items-center justify-center gap-1 mt-1">
-                  <CheckCircle2 className="h-5 w-5" /> {totalCorrect}
+                  <CheckCircle2 className="h-5 w-5" /> {formattedCorrect}
                 </p>
               </div>
               <div className="h-8 w-px bg-slate-800" />
               <div>
                 <p className="text-xs text-slate-400">Jumlah Salah</p>
                 <p className="text-xl font-bold text-rose-400 flex items-center justify-center gap-1 mt-1">
-                  <XCircle className="h-5 w-5" /> {totalQuestions - totalCorrect}
+                  <XCircle className="h-5 w-5" /> {formattedWrong}
                 </p>
               </div>
               <div className="h-8 w-px bg-slate-800" />

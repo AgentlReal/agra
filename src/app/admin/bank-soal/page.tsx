@@ -20,6 +20,8 @@ import {
   AlertCircle,
   Image as ImageIcon
 } from 'lucide-react';
+import Pagination from '@/components/common/Pagination';
+import FormattedContent from '@/components/common/FormattedContent';
 
 export default function AdminBankSoalPage() {
   const [bankType, setBankType] = useState<string>('LATIHAN');
@@ -33,10 +35,21 @@ export default function AdminBankSoalPage() {
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | number | null>(null);
 
+  // Pagination states
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(20);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalItems, setTotalItems] = useState<number>(0);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [bankType, subjectFilter, levelFilter, statusFilter]);
+
   useEffect(() => {
     fetchStock();
     fetchQuestions();
-  }, [bankType, subjectFilter, levelFilter, statusFilter]);
+  }, [bankType, subjectFilter, levelFilter, statusFilter, page, limit]);
 
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -59,30 +72,49 @@ export default function AdminBankSoalPage() {
         SIMULASI: 'SIMULATION',
         RECALL: 'RECALL',
       };
-      const params: any = { bank: bankMap[bankType] || bankType };
+      const normalizedBank = bankMap[bankType] || bankType;
+      const params: any = { 
+        bank: normalizedBank,
+        page,
+        limit,
+      };
+
       if (subjectFilter === 'MAT') params.subject = 1;
       else if (subjectFilter === 'BIN') params.subject = 2;
       else if (subjectFilter !== 'ALL') params.subject = subjectFilter;
 
-      if (levelFilter === 'L1') params.level = 1;
-      else if (levelFilter === 'L2') params.level = 2;
-      else if (levelFilter === 'L3') params.level = 3;
-      else if (levelFilter !== 'ALL') params.level = levelFilter;
+      // Recall questions do not have cognitive levels in database
+      if (normalizedBank !== 'RECALL') {
+        if (levelFilter === 'L1') params.level = 1;
+        else if (levelFilter === 'L2') params.level = 2;
+        else if (levelFilter === 'L3') params.level = 3;
+        else if (levelFilter !== 'ALL') params.level = levelFilter;
+      }
 
       if (statusFilter === 'ACTIVE') params.is_active = true;
       else if (statusFilter === 'INACTIVE') params.is_active = false;
 
       const res = await api.admin.getQuestions(params);
-      const list = res?.items || (Array.isArray(res) ? res : res?.data || []);
+      const list = res?.data || res?.items || (Array.isArray(res) ? res : []);
+      const paginationMeta = res?.pagination;
+
+      if (paginationMeta) {
+        setTotalPages(paginationMeta.total_pages || paginationMeta.totalPages || 1);
+        setTotalItems(paginationMeta.total_items ?? paginationMeta.totalItems ?? list.length);
+      } else {
+        setTotalPages(1);
+        setTotalItems(list.length);
+      }
+
       const mapped = list.map((q: any) => ({
         id: q.id,
         bankType: q.bankType || q.bank_type || bankType,
         subjectName: q.subjectName || (q.subject_id === 1 ? 'Matematika SMP' : 'Bahasa Indonesia SMP'),
         materialName: q.materialName || q.material_name || '-',
-        cognitiveLevel: q.cognitiveLevel || (q.cognitive_level_id ? `Level ${q.cognitive_level_id}` : 'C1'),
+        cognitiveLevel: q.cognitiveLevel || (q.cognitive_level_id ? `Level ${q.cognitive_level_id}` : (normalizedBank === 'RECALL' ? 'Recall' : 'L1')),
         type: q.questionFormat || q.question_format || q.type || 'SINGLE_CHOICE',
         questionText: q.questionText || q.question_text || '',
-        imageUrl: q.stimulus_image_url || q.stimulusImageUrl || q.imageUrl || q.stimulus?.stimulus_image_url || null,
+        imageUrl: q.question_image_url || q.questionImageUrl || q.stimulus_image_url || q.stimulusImageUrl || q.imageUrl || q.stimulus?.stimulus_image_url || null,
         isActive: Boolean(q.isActive ?? q.is_active ?? true),
         updatedAt: q.updatedAt || q.created_at || '-',
       }));
@@ -244,7 +276,11 @@ export default function AdminBankSoalPage() {
             <select
               value={levelFilter}
               onChange={(e) => setLevelFilter(e.target.value)}
-              className="rounded-xl border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+              disabled={bankType === 'RECALL'}
+              className={`rounded-xl border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none ${
+                bankType === 'RECALL' ? 'opacity-40 cursor-not-allowed' : ''
+              }`}
+              title={bankType === 'RECALL' ? 'Bank Recall tidak memiliki level kognitif' : 'Filter Level Kognitif'}
             >
               <option value="ALL">Semua Level</option>
               <option value="L1">Level 1 (Pemahaman)</option>
@@ -297,7 +333,9 @@ export default function AdminBankSoalPage() {
                             </span>
                           )}
                           <div>
-                            <p className="font-semibold text-white line-clamp-2">{q.questionText}</p>
+                            <div className="font-semibold text-white line-clamp-2">
+                              <FormattedContent content={q.questionText} inline />
+                            </div>
                             <p className="text-[11px] text-purple-300 mt-1">
                               Materi: {q.materialName}
                             </p>
@@ -353,6 +391,24 @@ export default function AdminBankSoalPage() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          )}
+
+          {/* Pagination controls */}
+          {!loading && (
+            <div className="p-4 bg-slate-950/40">
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                itemsPerPage={limit}
+                onPageChange={(newPage) => setPage(newPage)}
+                onItemsPerPageChange={(newLimit) => {
+                  setLimit(newLimit);
+                  setPage(1);
+                }}
+                itemsPerPageOptions={[10, 20, 50]}
+              />
             </div>
           )}
         </div>
