@@ -12,7 +12,11 @@ import {
   CheckCircle2, 
   ArrowRight, 
   BookOpen,
-  AlertCircle
+  AlertCircle,
+  ArrowLeft,
+  FileText,
+  Layers,
+  ShieldCheck
 } from 'lucide-react';
 
 export default function LearningResultPage({ params }: { params: Promise<{ attemptId: string }> }) {
@@ -41,121 +45,157 @@ export default function LearningResultPage({ params }: { params: Promise<{ attem
   const formattedCorrect = Number.isInteger(correct) ? correct : Number(correct).toFixed(1);
   const total = result?.totalQuestions ?? result?.total_questions ?? 10;
   const xp = result?.earnedXp ?? result?.xpEarned ?? result?.xp_earned ?? 0;
-  const levelName = result?.level_name || result?.levelName;
+  const levelName = result?.level_name || result?.levelName || 'Latihan Level Kognitif';
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#f8fafc]">
+    <div className="flex min-h-screen flex-col bg-[#F8FAFC] text-slate-800 font-sans">
       <Navbar />
 
-      <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-2xl mx-auto w-full">
+      <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full space-y-6">
+        
+        {/* Breadcrumb Navigation */}
+        <div className="flex items-center justify-between border-b border-slate-200/80 pb-4">
+          <nav className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+            <Link href="/dashboard" className="hover:text-blue-600 transition-colors">
+              Dasbor
+            </Link>
+            <span className="text-slate-300">/</span>
+            <Link href="/curriculum" className="hover:text-blue-600 transition-colors">
+              Kurikulum
+            </Link>
+            <span className="text-slate-300">/</span>
+            <span className="text-slate-700 font-semibold">Hasil Latihan</span>
+          </nav>
+
+          <Link
+            href="/curriculum"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-blue-600 transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Kembali ke Kurikulum</span>
+          </Link>
+        </div>
+
         {loading ? (
           <div className="flex h-64 items-center justify-center">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
           </div>
         ) : errorMsg || !result ? (
-          <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-4 shadow-sm">
+          <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-4 shadow-xs">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 border border-amber-200">
               <AlertCircle className="h-6 w-6" />
             </div>
             <p className="text-sm font-semibold text-slate-800">{errorMsg || 'Data hasil latihan tidak ditemukan.'}</p>
             <Link
               href="/curriculum"
-              className="btn-tactile-primary inline-block px-5 py-2.5 rounded-xl text-xs font-bold text-white"
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold"
             >
               Kembali ke Kurikulum
             </Link>
           </div>
         ) : (
           <div className="space-y-6">
-            {/* Header Result Card */}
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 sm:p-10 text-center space-y-4">
-              <div
-                className={`mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border ${
-                  isPassed
-                    ? 'border-emerald-200 bg-emerald-50 text-emerald-600'
-                    : 'border-amber-200 bg-amber-50 text-amber-600'
-                }`}
-              >
-                {isPassed ? <Trophy className="h-8 w-8" /> : <RotateCcw className="h-8 w-8" />}
-              </div>
-
-              <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                  {levelName || 'Hasil Evaluasi Formatif Latihan'}
-                </span>
-                <h1 className="text-3xl font-extrabold text-slate-900 mt-1">
-                  Skor Anda: {score}%
+            
+            {/* Status Banner */}
+            {isPassed ? (
+              <div className="rounded-3xl border border-emerald-200 bg-emerald-50/80 p-6 sm:p-8 shadow-xs space-y-2">
+                <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 border border-emerald-200 px-3.5 py-1 text-xs font-bold text-emerald-800 uppercase tracking-wider">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                  <span>LEVEL TUNTAS</span>
+                </div>
+                <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                  Hebat! Kamu Berhasil Menuntaskan {levelName}
                 </h1>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl">
+                  Pemahaman kognitif Anda pada level ini telah terverifikasi. Level berikutnya atau simulasi kini telah siap dibuka! {xp > 0 ? `(Poin XP: +${xp} XP)` : ''}
+                </p>
+              </div>
+            ) : (
+              <div className="rounded-3xl border border-amber-200 bg-amber-50/80 p-6 sm:p-8 shadow-xs space-y-2">
+                <div className="inline-flex items-center gap-2 rounded-full bg-amber-100 border border-amber-200 px-3.5 py-1 text-xs font-bold text-amber-800 uppercase tracking-wider">
+                  <ShieldCheck className="h-4 w-4 text-amber-600" />
+                  <span>PERLU PENGUATAN REMEDIAL</span>
+                </div>
+                <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                  Perlu Sedikit Penguatan untuk {levelName}
+                </h1>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl">
+                  Jangan berkecil hati! Pelajari butir latihan yang keliru pada halaman pembahasan, lalu ulangi latihan agar penguasaan konsep Anda semakin matang secara aman (<strong className="text-slate-800 font-semibold">Safe-to-Fail</strong>).
+                </p>
+              </div>
+            )}
 
-                <div className="mt-2.5">
-                  {isPassed ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3.5 py-1 text-xs font-bold text-emerald-700">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> TUNTAS (LULUS LEVEL)
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-200 px-3.5 py-1 text-xs font-bold text-amber-800">
-                      <RotateCcw className="h-3.5 w-3.5" /> PERLU PENGUATAN REMEDIAL
-                    </span>
-                  )}
+            {/* Score & Metrics Card */}
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-8 space-y-6">
+              
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-6">
+                <div>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    Nilai Penguasaan Level
+                  </p>
+                  <div className="text-3xl sm:text-4xl font-black text-slate-900 mt-1">
+                    {Math.round(score)}%
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5 font-medium">
+                    {formattedCorrect} dari {total} Butir Soal Latihan Dijawab Benar
+                  </p>
                 </div>
 
-                <p className="mt-3 text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
-                  {isPassed
-                    ? 'Pemahaman Anda pada level kognitif ini sangat solid. Level berikutnya siap untuk dieksplorasi.'
-                    : 'Ambang kelulusan KKM adalah 90% (minimal 9 benar). Silakan pelajari pembahasan dan ikuti sesi remedial penguatan.'}
-                </p>
-
-                {isPassed && xp > 0 && (
-                  <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-1.5 text-xs font-bold text-amber-900">
+                {xp > 0 && (
+                  <div className="inline-flex items-center gap-2 rounded-2xl bg-amber-50 border border-amber-200 px-4 py-2.5 text-xs font-bold text-amber-900 shadow-2xs">
                     <Sparkles className="h-4 w-4 text-amber-500" />
-                    <span>+{xp} XP Ditambahkan ke Akun!</span>
+                    <span>+{xp} XP Formatif</span>
                   </div>
                 )}
               </div>
 
-              {/* Answer Breakdown (Safe-to-fail: Warm Amber instead of red) */}
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex items-center justify-around text-center text-xs">
-                <div>
-                  <p className="text-slate-500 font-medium">Benar</p>
-                  <p className="text-lg font-bold text-emerald-700 mt-0.5 flex items-center justify-center gap-1">
-                    <CheckCircle2 className="h-4 w-4" /> {formattedCorrect} / {total}
-                  </p>
+              {/* Metrics Columns */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="rounded-2xl border border-slate-200/80 bg-slate-50/60 p-4 text-center">
+                  <p className="text-[11px] font-semibold text-slate-500">Total Soal</p>
+                  <p className="text-xl font-extrabold text-slate-900 mt-1">{total}</p>
                 </div>
-                <div className="h-8 w-px bg-slate-200" />
-                <div>
-                  <p className="text-slate-500 font-medium">Perlu Penguatan</p>
-                  <p className="text-lg font-bold text-amber-800 mt-0.5 flex items-center justify-center gap-1">
-                    <RotateCcw className="h-4 w-4" /> {total - Number(formattedCorrect)}
-                  </p>
+
+                <div className="rounded-2xl border border-emerald-200/80 bg-emerald-50/50 p-4 text-center">
+                  <p className="text-[11px] font-semibold text-emerald-700">Tepat</p>
+                  <p className="text-xl font-extrabold text-emerald-800 mt-1">{formattedCorrect}</p>
                 </div>
-                <div className="h-8 w-px bg-slate-200" />
-                <div>
-                  <p className="text-slate-500 font-medium">Target KKM</p>
-                  <p className="text-lg font-bold text-blue-600 mt-0.5">90%</p>
+
+                <div className="rounded-2xl border border-amber-200/80 bg-amber-50/50 p-4 text-center">
+                  <p className="text-[11px] font-semibold text-amber-700">Perlu Ditinjau</p>
+                  <p className="text-xl font-extrabold text-amber-800 mt-1">{total - correct}</p>
+                </div>
+
+                <div className="rounded-2xl border border-slate-200/80 bg-slate-50/60 p-4 text-center">
+                  <p className="text-[11px] font-semibold text-slate-500">Ambang Kelulusan</p>
+                  <p className="text-xl font-extrabold text-slate-900 mt-1">70%</p>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 pt-3 border-t border-slate-100">
+              <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <Link
                   href={`/learning/review/${attemptId}`}
-                  className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 px-5 py-3 text-xs font-bold transition-all shadow-2xs"
                 >
-                  <BookOpen className="h-4 w-4 text-slate-500" />
-                  <span>Lihat Pembahasan 10 Soal</span>
+                  <FileText className="h-4 w-4 text-blue-600" />
+                  <span>Pelajari Pembahasan Soal &amp; Kunci</span>
                 </Link>
 
                 <Link
-                  href="/curriculum/1"
-                  className="btn-tactile-primary flex-1 flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-xs font-bold text-white shadow-xs"
+                  href="/curriculum"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 text-xs font-bold shadow-xs transition-colors"
                 >
-                  <span>Lanjut ke Kurikulum</span>
+                  <span>Lanjutkan ke Kurikulum</span>
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
+
             </div>
+
           </div>
         )}
+
       </main>
 
       <Footer />
