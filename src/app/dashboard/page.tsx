@@ -195,10 +195,15 @@ export default function DashboardPage() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {subjects.map((sub: any, idx: number) => {
-                    const subjectId = sub.subjectCode === 'MAT' ? 1 : 2;
+                    const subjectId = sub.subjectId ?? sub.id ?? (sub.subjectCode === 'MAT' ? 1 : 2);
                     const masteryPercent = sub.masteryPercent ?? sub.masteryPercentage ?? 0;
                     const masteredCount = sub.masteredSubmaterials ?? sub.completedSubmaterials ?? 0;
                     const totalCount = sub.totalSubmaterials ?? 0;
+                    const isSimulationUnlocked = Boolean(
+                      sub.simulationUnlocked ??
+                      sub.simulation_unlocked ??
+                      (totalCount > 0 && masteredCount >= totalCount)
+                    );
 
                     return (
                       <div
@@ -238,7 +243,7 @@ export default function DashboardPage() {
                         {/* Capstone status & action */}
                         <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
                           <div>
-                            {sub.simulationUnlocked ? (
+                            {isSimulationUnlocked ? (
                               <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 rounded-full px-3 py-1 border border-emerald-200">
                                 <ShieldCheck className="h-3.5 w-3.5" /> Simulasi Terbuka
                               </span>
@@ -257,7 +262,7 @@ export default function DashboardPage() {
                               Buka Materi
                             </Link>
 
-                            {sub.simulationUnlocked ? (
+                            {isSimulationUnlocked ? (
                               <Link
                                 href={`/simulations/${subjectId}`}
                                 className="btn-tactile-secondary rounded-xl px-4 py-2 text-xs font-bold text-white shadow-xs transition-all"

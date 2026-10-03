@@ -17,7 +17,12 @@ import {
   CircleDot,
   ZoomIn,
   Sparkles,
-  HelpCircle
+  HelpCircle,
+  BookOpen,
+  LayoutGrid,
+  FastForward,
+  Loader2,
+  Lock
 } from 'lucide-react';
 import FormattedContent from '@/components/common/FormattedContent';
 import OptionRenderer from '@/components/common/OptionRenderer';
@@ -47,9 +52,11 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
   const [zoomImageUrl, setZoomImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [paletteMobileOpen, setPaletteMobileOpen] = useState(false);
   const [submitModalOpen, setSubmitModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [timeoutModalOpen, setTimeoutModalOpen] = useState(false);
+  const [timeoutProgress, setTimeoutProgress] = useState(0);
 
   // 75 minutes = 4500 seconds
   const [timeLeft, setTimeLeft] = useState<number>(4500);
@@ -160,7 +167,7 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timerRef.current!);
-          handleAutoSubmitTimeout();
+          triggerTimeoutSubmission();
           return 0;
         }
         return prev - 1;
@@ -172,14 +179,27 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
     };
   }, [loading]);
 
-  const handleAutoSubmitTimeout = async () => {
-    try {
-      await api.simulation.submit(attemptId);
-    } catch {
-      // silent
-    } finally {
-      router.push(`/simulations/result/${attemptId}`);
-    }
+  const triggerTimeoutSubmission = () => {
+    setTimeoutModalOpen(true);
+    let p = 15;
+    setTimeoutProgress(p);
+    const progressInterval = setInterval(() => {
+      p += 25;
+      if (p >= 100) {
+        clearInterval(progressInterval);
+        setTimeoutProgress(100);
+        api.simulation
+          .submit(attemptId)
+          .catch(() => {})
+          .finally(() => {
+            setTimeout(() => {
+              router.push(`/simulations/result/${attemptId}`);
+            }, 600);
+          });
+      } else {
+        setTimeoutProgress(p);
+      }
+    }, 350);
   };
 
   const currentQ = questions[currentIndex];
@@ -254,24 +274,26 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
     }
   };
 
-  // Format time MM:SS
-  const formatTime = (secs: number) => {
-    const m = Math.floor(secs / 60);
+  // Format time HH:MM:SS
+  const formatTimeFull = (secs: number) => {
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
     const s = secs % 60;
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  const isLowTime = timeLeft <= 300; // <= 5 mins (Safe-to-fail: use warm amber, not red)
+  const isLowTime = timeLeft <= 300; // <= 5 mins: Warm Amber alert, strictly zero-red
 
   const answeredCount = Object.values(answers).filter((arr) => arr && arr.length > 0).length;
   const doubtfulCount = Object.values(doubtfuls).filter(Boolean).length;
   const unansweredCount = questions.length - answeredCount;
+  const currentProgressPercent = questions.length > 0 ? Math.round(((currentIndex + 1) / questions.length) * 100) : 0;
 
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center bg-[#F8FAFC]">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-600 border-t-transparent" />
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
           <p className="text-xs font-semibold text-slate-500">Menyiapkan Ruang Ujian CBT Simulasi...</p>
         </div>
       </div>
@@ -281,7 +303,7 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
   if (errorMsg || questions.length === 0) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-[#F8FAFC] p-6 text-center">
-        <div className="max-w-md space-y-4 rounded-3xl border border-amber-200 bg-white p-8 shadow-sm">
+        <div className="max-w-md space-y-4 rounded-3xl border border-amber-200 bg-white p-8 shadow-xs">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 mx-auto border border-amber-200">
             <AlertTriangle className="h-6 w-6" />
           </div>
@@ -291,7 +313,7 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
           </p>
           <button
             onClick={() => router.push('/dashboard')}
-            className="w-full btn-tactile-primary rounded-xl px-4 py-2.5 text-xs font-semibold text-white cursor-pointer"
+            className="w-full rounded-xl bg-slate-900 hover:bg-slate-800 px-4 py-2.5 text-xs font-bold text-white transition-colors cursor-pointer"
           >
             Kembali ke Dasbor
           </button>
@@ -300,338 +322,452 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
     );
   }
 
+  const normStimulusImg = normalizeImageUrl(currentQ.stimulusImageUrl);
+  const normQuestionImg = normalizeImageUrl(currentQ.questionImageUrl);
+  const showQuestionImg = normQuestionImg && (normQuestionImg !== normStimulusImg || !normStimulusImg);
+
   return (
-    <div className="flex min-h-screen flex-col bg-[#F8FAFC] text-slate-800">
-      {/* Header CBT with 75-min Timer */}
-      <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200/80 bg-white/95 px-4 sm:px-6 backdrop-blur-md">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 text-purple-600 border border-purple-100">
-            <ShieldCheck className="h-5 w-5" />
+    <div className="flex min-h-screen flex-col bg-[#F8FAFC] text-slate-800 font-sans">
+      {/* Sub-header Navigation & Progress Bar (Inspired by reference-design/halaman-pengerjaan-wg) */}
+      <header className="sticky top-0 z-30 border-b border-slate-200/90 bg-white shadow-2xs backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100 shadow-2xs">
+              <ShieldCheck className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight">
+                  Simulasi TKA Matematika
+                </span>
+                <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-bold text-blue-700 uppercase tracking-wider">
+                  CBT 75 Menit
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 font-medium">
+                Standar Asesmen Formatif Fase D (SMP/MTs)
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-sm font-bold text-slate-900 leading-tight">Simulasi TKA CBT</h2>
-            <p className="text-[11px] text-purple-700 font-medium">Asesmen Puncak Terstandar</p>
+
+          <div className="flex items-center gap-4">
+            {/* Top Progress Indicator */}
+            <div className="hidden md:flex flex-col items-end gap-1 min-w-[200px]">
+              <div className="flex items-center justify-between w-full text-[11px] text-slate-500">
+                <span className="font-semibold text-slate-700">Progres Pengerjaan</span>
+                <span className="font-bold text-blue-600">
+                  Soal {currentIndex + 1} dari {questions.length} ({currentProgressPercent}%)
+                </span>
+              </div>
+              <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden border border-slate-200/60">
+                <div
+                  className="h-full rounded-full bg-blue-600 transition-all duration-300"
+                  style={{ width: `${currentProgressPercent}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Mobile Peta Soal Trigger */}
+            <button
+              onClick={() => setPaletteMobileOpen(true)}
+              className="lg:hidden inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-2xs cursor-pointer"
+            >
+              <LayoutGrid className="h-4 w-4 text-blue-600" />
+              <span>Peta Soal</span>
+              <span className="rounded-md bg-blue-50 px-1.5 py-0.5 text-[10px] font-bold text-blue-700 font-mono">
+                {answeredCount}/{questions.length}
+              </span>
+            </button>
+
+            {/* Submit Button */}
+            <button
+              onClick={() => setSubmitModalOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2 transition-colors shadow-2xs cursor-pointer"
+            >
+              <CheckCircle2 className="h-4 w-4" />
+              <span>Kumpulkan Ujian</span>
+            </button>
           </div>
-        </div>
-
-        {/* 75-Min Countdown Timer (Zero-Red: uses warm amber when low) */}
-        <div
-          className={`flex items-center gap-2 rounded-xl px-4 py-1.5 border font-mono text-sm font-bold transition-colors ${
-            isLowTime
-              ? 'border-amber-400 bg-amber-50 text-amber-800'
-              : 'border-slate-200 bg-slate-50 text-slate-700'
-          }`}
-        >
-          <Clock className={`h-4 w-4 ${isLowTime ? 'text-amber-600' : 'text-purple-600'}`} />
-          <span>Sisa Waktu: {formatTime(timeLeft)}</span>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setPaletteOpen(true)}
-            className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
-          >
-            <span>Daftar Soal</span>
-            <span className="rounded-md bg-purple-50 px-1.5 py-0.5 text-[10px] text-purple-700 font-bold border border-purple-100 font-mono">
-              {answeredCount}/{questions.length}
-            </span>
-          </button>
-
-          <button
-            onClick={() => setSubmitModalOpen(true)}
-            className="btn-tactile-secondary rounded-xl px-4 py-1.5 text-xs font-bold text-white shadow-xs cursor-pointer"
-          >
-            Kumpulkan
-          </button>
         </div>
       </header>
 
-      {/* Main Workspace */}
-      <main className="flex-1 mx-auto max-w-4xl w-full p-4 sm:p-6 lg:p-8 flex flex-col justify-between">
-        <div className="space-y-6">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-600 text-xs font-bold text-white">
-                {currentQ.questionNumber}
-              </span>
-              <span className="text-xs font-semibold text-slate-500">
-                dari {questions.length} Butir Soal
-              </span>
-              <span className="text-slate-300 hidden sm:inline">•</span>
-              {currentQ.questionFormat === 'COMPLEX_CHOICE' ? (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-200 bg-purple-50 px-3 py-0.5 text-[11px] font-semibold text-purple-700">
-                  <CheckSquare className="h-3.5 w-3.5" />
-                  Pilihan Ganda Kompleks (Pilih 1 atau 2)
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3 py-0.5 text-[11px] font-semibold text-blue-700">
-                  <CircleDot className="h-3.5 w-3.5" />
-                  Pilihan Ganda (1 Jawaban)
-                </span>
-              )}
-            </div>
-
-            <button
-              onClick={handleToggleDoubtful}
-              className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
-                doubtfuls[currentIndex]
-                  ? 'border-amber-300 bg-amber-50 text-amber-800'
-                  : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              <Flag className={`h-3.5 w-3.5 ${doubtfuls[currentIndex] ? 'text-amber-600' : 'text-slate-400'}`} />
-              <span>{doubtfuls[currentIndex] ? 'Ditandai Ragu-ragu' : 'Tandai Ragu-ragu'}</span>
-            </button>
-          </div>
-
-          {(() => {
-            const normStimulusImg = normalizeImageUrl(currentQ.stimulusImageUrl);
-            const normQuestionImg = normalizeImageUrl(currentQ.questionImageUrl);
-            const showQuestionImg = normQuestionImg && (normQuestionImg !== normStimulusImg || !normStimulusImg);
-
-            return (
-              <>
-                {(currentQ.stimulus || normStimulusImg) && (
-                  <div className="rounded-2xl border border-purple-100 bg-purple-50/40 p-4 sm:p-5 text-xs sm:text-sm text-slate-700 leading-relaxed border-l-4 border-l-purple-600 space-y-3">
-                    {currentQ.stimulus && (
-                      <div>
-                        <p className="font-bold text-purple-700 mb-1.5 text-[11px] uppercase tracking-wider">
-                          Teks Stimulus Bacaan:
-                        </p>
-                        <FormattedContent content={currentQ.stimulus} />
-                      </div>
-                    )}
-
-                    {normStimulusImg && (
-                      <div className="relative group overflow-hidden rounded-xl border border-purple-100 bg-white p-2 text-center">
-                        <img
-                          src={normStimulusImg}
-                          alt="Stimulus visual simulasi"
-                          className="max-h-72 sm:max-h-96 w-auto mx-auto object-contain rounded-lg cursor-zoom-in hover:opacity-95 transition-opacity"
-                          onClick={() => setZoomImageUrl(normStimulusImg)}
-                          loading="lazy"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setZoomImageUrl(normStimulusImg)}
-                          className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-lg bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-xs border border-slate-200 hover:bg-white transition-colors"
-                        >
-                          <ZoomIn className="h-3.5 w-3.5 text-purple-600" />
-                          <span>Perbesar</span>
-                        </button>
-                      </div>
-                    )}
+      {/* Main Dual-Pane Workspace */}
+      <main className="flex-1 mx-auto max-w-7xl w-full p-4 sm:p-6 lg:p-8">
+        <div className="flex flex-col lg:flex-row items-start gap-8">
+          
+          {/* LEFT PANE: Question, Stimulus & Option Area (~68% width on desktop) */}
+          <div className="flex-1 w-full space-y-6">
+            
+            {/* Stimulus Section (Inspired by reference-design) */}
+            {(currentQ.stimulus || normStimulusImg) && (
+              <div className="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-7 shadow-xs space-y-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 text-white px-3 py-1 text-[11px] font-bold tracking-wider uppercase shadow-2xs">
+                    <BookOpen className="h-3.5 w-3.5" />
+                    <span>STIMULUS SOAL</span>
                   </div>
-                )}
-
-                <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-8">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3 mb-4">
-                    <span className="text-xs font-bold uppercase tracking-wider text-purple-700">
-                      Soal #{currentQ.questionNumber}
-                    </span>
-                    {currentQ.questionFormat === 'COMPLEX_CHOICE' ? (
-                      <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-200 bg-purple-50 px-2.5 py-0.5 text-[11px] font-semibold text-purple-700">
-                        <CheckSquare className="h-3 w-3" />
-                        Pilihan Ganda Kompleks (Pilih 1 atau 2)
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-0.5 text-[11px] font-semibold text-blue-700">
-                        <CircleDot className="h-3 w-3" />
-                        Pilihan Ganda (1 Jawaban)
-                      </span>
-                    )}
+                  <div className="inline-flex items-center rounded-full bg-slate-100 text-slate-700 border border-slate-200 px-3 py-1 text-[11px] font-semibold">
+                    <span>Numerasi &amp; Pemecahan Masalah</span>
                   </div>
+                </div>
 
-                  <div className="text-sm sm:text-base font-medium text-slate-900 leading-relaxed">
-                    <FormattedContent content={currentQ.questionText} />
-                  </div>
+                <div className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-5 space-y-3.5">
+                  {currentQ.stimulus && (
+                    <div className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
+                      <FormattedContent content={currentQ.stimulus} />
+                    </div>
+                  )}
 
-                  {showQuestionImg && (
-                    <div className="mt-4 relative group overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-2 text-center">
+                  {normStimulusImg && (
+                    <div className="relative group overflow-hidden rounded-xl border border-slate-200 bg-white p-2.5 text-center">
                       <img
-                        src={normQuestionImg!}
-                        alt="Ilustrasi pertanyaan"
+                        src={normStimulusImg}
+                        alt="Visual Stimulus"
                         className="max-h-72 sm:max-h-96 w-auto mx-auto object-contain rounded-lg cursor-zoom-in hover:opacity-95 transition-opacity"
-                        onClick={() => setZoomImageUrl(normQuestionImg!)}
+                        onClick={() => setZoomImageUrl(normStimulusImg)}
                         loading="lazy"
                       />
                       <button
                         type="button"
-                        onClick={() => setZoomImageUrl(normQuestionImg!)}
-                        className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-lg bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-xs border border-slate-200 hover:bg-white transition-colors"
+                        onClick={() => setZoomImageUrl(normStimulusImg)}
+                        className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-lg bg-white/95 px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-xs border border-slate-200 hover:bg-white transition-colors"
                       >
-                        <ZoomIn className="h-3.5 w-3.5 text-purple-600" />
-                        <span>Perbesar</span>
+                        <ZoomIn className="h-3.5 w-3.5 text-blue-600" />
+                        <span>Perbesar Gambar</span>
                       </button>
                     </div>
                   )}
+                </div>
+              </div>
+            )}
 
-                  <div className="mt-6 space-y-3">
-                    {currentQ.options.map((opt, oIdx) => {
-                      const currentAnswers = answers[currentIndex] || [];
-                      const isSelected = currentAnswers.includes(opt.key);
-                      const isComplex = currentQ.questionFormat === 'COMPLEX_CHOICE';
-                      const isMaxReached = isComplex && currentAnswers.length >= 2 && !isSelected;
-                      return (
-                        <button
-                          key={opt.key || opt.id || `opt-${oIdx}`}
-                          disabled={isMaxReached}
-                          onClick={() => handleSelectOption(opt.key)}
-                          className={`w-full flex items-start gap-3.5 p-4 rounded-2xl border text-left transition-all cursor-pointer ${
-                            isMaxReached
-                              ? 'opacity-50 cursor-not-allowed border-slate-100 bg-slate-50 text-slate-400'
-                              : isSelected
-                              ? 'border-purple-600 bg-purple-50/70 text-slate-900 shadow-xs'
-                              : 'border-slate-200 bg-white text-slate-700 hover:border-purple-300 hover:bg-slate-50/60'
-                          }`}
-                        >
-                          <div
-                            className={`flex h-7 w-7 shrink-0 items-center justify-center text-xs font-bold transition-colors ${
-                              isComplex ? 'rounded-lg' : 'rounded-full'
-                            } ${
-                              isSelected
-                                ? 'bg-purple-600 text-white shadow-xs'
-                                : 'bg-slate-100 text-slate-600 border border-slate-200'
-                            }`}
-                          >
-                            {isSelected && isComplex ? <Check className="h-4 w-4" /> : opt.key}
-                          </div>
-                          <div className="text-xs sm:text-sm pt-0.5 leading-relaxed flex-1 font-medium">
-                            <OptionRenderer text={opt.text} onZoom={setZoomImageUrl} />
-                          </div>
-                        </button>
-                      );
-                    })}
+            {/* Question Stem Box */}
+            <div className="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-xs space-y-6">
+              <div className="flex items-start gap-4">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white font-extrabold text-sm shadow-2xs">
+                  ?
+                </div>
+                <div className="flex-1 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
+                      Butir Soal #{currentQ.questionNumber}
+                    </span>
+                    <span className="text-slate-300">•</span>
+                    {currentQ.questionFormat === 'COMPLEX_CHOICE' ? (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
+                        <CheckSquare className="h-3 w-3 text-purple-600" /> Pilihan Ganda Kompleks (Maks. 2 Jawaban)
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
+                        <CircleDot className="h-3 w-3 text-blue-600" /> Pilihan Ganda Tunggal
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-sm sm:text-base font-bold text-slate-900 leading-relaxed pt-1">
+                    <FormattedContent content={currentQ.questionText} />
                   </div>
                 </div>
-              </>
-            );
-          })()}
-        </div>
+              </div>
 
-        {/* Bottom Nav */}
-        <div className="mt-8 pt-4 border-t border-slate-200 flex items-center justify-between">
-          <button
-            onClick={() => setCurrentIndex((prev) => Math.max(0, prev - 1))}
-            disabled={currentIndex === 0}
-            className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            <span>Sebelumnya</span>
-          </button>
+              {showQuestionImg && (
+                <div className="relative group overflow-hidden rounded-xl border border-slate-200 bg-slate-50/60 p-2.5 text-center">
+                  <img
+                    src={normQuestionImg!}
+                    alt="Ilustrasi Pertanyaan"
+                    className="max-h-72 sm:max-h-96 w-auto mx-auto object-contain rounded-lg cursor-zoom-in hover:opacity-95 transition-opacity"
+                    onClick={() => setZoomImageUrl(normQuestionImg!)}
+                    loading="lazy"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setZoomImageUrl(normQuestionImg!)}
+                    className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-lg bg-white/95 px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-xs border border-slate-200 hover:bg-white transition-colors"
+                  >
+                    <ZoomIn className="h-3.5 w-3.5 text-blue-600" />
+                    <span>Perbesar</span>
+                  </button>
+                </div>
+              )}
 
-          <span className="text-xs font-semibold text-slate-500">
-            Nomor {currentIndex + 1} dari {questions.length}
-          </span>
+              {/* Options Stack (With "Pilihan Anda" badge tag) */}
+              <div className="space-y-3 pt-2">
+                {currentQ.options.map((opt, oIdx) => {
+                  const currentAnswers = answers[currentIndex] || [];
+                  const isSelected = currentAnswers.includes(opt.key);
+                  const isComplex = currentQ.questionFormat === 'COMPLEX_CHOICE';
+                  const isMaxReached = isComplex && currentAnswers.length >= 2 && !isSelected;
 
-          {currentIndex < questions.length - 1 ? (
-            <button
-              onClick={() => setCurrentIndex((prev) => prev + 1)}
-              className="btn-tactile-primary flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-xs font-bold text-white cursor-pointer"
-            >
-              <span>Selanjutnya</span>
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          ) : (
-            <button
-              onClick={() => setSubmitModalOpen(true)}
-              className="btn-tactile-secondary flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-xs font-bold text-white cursor-pointer"
-            >
-              <span>Kumpulkan Ujian</span>
-              <CheckCircle2 className="h-4 w-4" />
-            </button>
-          )}
+                  return (
+                    <button
+                      key={opt.key || opt.id || `opt-${oIdx}`}
+                      disabled={isMaxReached}
+                      onClick={() => handleSelectOption(opt.key)}
+                      className={`group w-full flex items-center justify-between gap-4 p-4 rounded-2xl border text-left transition-all cursor-pointer ${
+                        isMaxReached
+                          ? 'opacity-40 cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400'
+                          : isSelected
+                          ? 'border-blue-600 bg-blue-50/40 text-slate-900 shadow-2xs ring-1 ring-blue-600/30'
+                          : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50/70'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                        <div
+                          className={`flex h-8 w-8 shrink-0 items-center justify-center text-xs font-bold rounded-full transition-all ${
+                            isSelected
+                              ? 'bg-blue-600 text-white shadow-2xs'
+                              : 'bg-slate-100 text-slate-700 border border-slate-200 group-hover:bg-slate-200/80'
+                          }`}
+                        >
+                          {isSelected && isComplex ? <Check className="h-4 w-4" /> : opt.key}
+                        </div>
+                        <div className="text-xs sm:text-sm font-medium leading-relaxed flex-1">
+                          <OptionRenderer text={opt.text} onZoom={setZoomImageUrl} />
+                        </div>
+                      </div>
+
+                      {/* Selected State Badge (Reference Design: "Pilihan Anda") */}
+                      {isSelected && (
+                        <div className="shrink-0 flex items-center gap-1.5 rounded-full bg-blue-100 border border-blue-200/80 px-3 py-1 text-[11px] font-bold text-blue-700">
+                          <Check className="h-3.5 w-3.5" />
+                          <span className="hidden sm:inline">Pilihan Anda</span>
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Bottom Question Navigation Toolbar */}
+              <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+                {/* Skip Question (Left) */}
+                <button
+                  onClick={() => setCurrentIndex((prev) => Math.min(questions.length - 1, prev + 1))}
+                  disabled={currentIndex >= questions.length - 1}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+                >
+                  <FastForward className="h-4 w-4 text-slate-400" />
+                  <span>Lewati Soal Ini</span>
+                </button>
+
+                {/* Right: Ragu-ragu & Save/Next */}
+                <div className="w-full sm:w-auto flex items-center gap-2.5">
+                  <button
+                    onClick={handleToggleDoubtful}
+                    className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl border px-4 py-2.5 text-xs font-bold transition-all cursor-pointer ${
+                      doubtfuls[currentIndex]
+                        ? 'border-amber-400 bg-amber-50 text-amber-800 shadow-2xs'
+                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300'
+                    }`}
+                  >
+                    <Flag className={`h-3.5 w-3.5 ${doubtfuls[currentIndex] ? 'text-amber-600 fill-amber-600' : 'text-slate-400'}`} />
+                    <span>{doubtfuls[currentIndex] ? 'Ditandai Ragu-ragu' : 'Ragu-ragu'}</span>
+                  </button>
+
+                  {currentIndex < questions.length - 1 ? (
+                    <button
+                      onClick={() => setCurrentIndex((prev) => prev + 1)}
+                      className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                    >
+                      <span>Simpan &amp; Lanjut</span>
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setSubmitModalOpen(true)}
+                      className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                    >
+                      <span>Selesaikan Ujian</span>
+                      <CheckCircle2 className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT PANE: Sticky Sidebar "Peta Soal" (~32% width on desktop) */}
+          <aside className="hidden lg:block w-80 shrink-0 sticky top-24 space-y-5">
+            <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-xs space-y-5">
+              
+              {/* Sidebar Header */}
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div className="flex items-center gap-2.5">
+                  <LayoutGrid className="h-5 w-5 text-blue-600" />
+                  <span className="text-sm font-extrabold text-slate-900 tracking-tight">Peta Soal</span>
+                </div>
+                <span className="rounded-full bg-slate-100 px-3 py-0.5 text-xs font-bold text-slate-600 border border-slate-200">
+                  {questions.length} Butir
+                </span>
+              </div>
+
+              {/* Countdown Timer Box */}
+              <div className={`rounded-2xl border p-4 text-center space-y-1 transition-colors ${
+                isLowTime
+                  ? 'border-amber-300 bg-amber-50 text-amber-900'
+                  : 'border-slate-200 bg-slate-50/70 text-slate-900'
+              }`}>
+                <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                  <Clock className={`h-3.5 w-3.5 ${isLowTime ? 'text-amber-600' : 'text-blue-600'}`} />
+                  <span>SISA WAKTU</span>
+                </div>
+                <div className="font-mono text-2xl font-black tracking-wider text-slate-900">
+                  {formatTimeFull(timeLeft)}
+                </div>
+                <p className="text-[11px] text-slate-500 font-medium">
+                  Timer berjalan ketat selama 75 menit
+                </p>
+              </div>
+
+              {/* Status Color Legend */}
+              <div className="flex items-center justify-between text-[11px] font-semibold text-slate-600 px-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="h-3 w-3 rounded-full border border-slate-300 bg-slate-100" />
+                  <span>Belum</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="h-3 w-3 rounded-full bg-blue-600" />
+                  <span>Sudah</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="h-3 w-3 rounded-full bg-amber-400" />
+                  <span>Ragu-ragu</span>
+                </div>
+              </div>
+
+              {/* Question Matrix Grid */}
+              <div className="grid grid-cols-5 gap-2 max-h-[340px] overflow-y-auto p-1">
+                {questions.map((q, idx) => {
+                  const isAnswered = (answers[idx] || []).length > 0;
+                  const isDoubt = doubtfuls[idx];
+                  const isCurrent = currentIndex === idx;
+
+                  let colorClass = 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-300';
+                  if (isDoubt) {
+                    colorClass = 'border-amber-400 bg-amber-50 text-amber-800 font-bold';
+                  } else if (isAnswered) {
+                    colorClass = 'border-blue-600 bg-blue-600 text-white font-bold shadow-2xs';
+                  }
+
+                  return (
+                    <button
+                      key={q.id || q.questionNumber || `pal-${idx}`}
+                      onClick={() => setCurrentIndex(idx)}
+                      className={`flex h-10 items-center justify-center rounded-xl border text-xs font-mono transition-all cursor-pointer ${colorClass} ${
+                        isCurrent ? 'ring-2 ring-blue-600 ring-offset-2 scale-105 font-extrabold z-10' : ''
+                      }`}
+                    >
+                      {String(q.questionNumber).padStart(2, '0')}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Finish Exam Button */}
+              <div className="pt-2 border-t border-slate-100">
+                <button
+                  onClick={() => setSubmitModalOpen(true)}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3 transition-colors shadow-2xs cursor-pointer"
+                >
+                  <CheckCircle2 className="h-4 w-4" />
+                  <span>Kumpulkan Ujian</span>
+                </button>
+              </div>
+
+            </div>
+          </aside>
+
         </div>
       </main>
 
-      {/* Palette Modal */}
-      {paletteOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 shadow-xl">
+      {/* Mobile Palette Drawer / Modal */}
+      {paletteMobileOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 lg:hidden animate-in fade-in duration-150">
+          <div className="w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-6 shadow-xl space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-sm font-bold text-slate-900">Palet 30 Butir Soal Simulasi</h3>
+              <div className="flex items-center gap-2">
+                <LayoutGrid className="h-5 w-5 text-blue-600" />
+                <h3 className="text-sm font-bold text-slate-900">Peta Soal Simulasi</h3>
+              </div>
               <button 
-                onClick={() => setPaletteOpen(false)} 
+                onClick={() => setPaletteMobileOpen(false)} 
                 className="text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="my-4 flex flex-wrap gap-4 text-[11px] text-slate-600">
+            <div className="flex items-center justify-between text-[11px] font-semibold text-slate-600 px-1">
               <div className="flex items-center gap-1.5">
-                <span className="h-3 w-3 rounded-md bg-emerald-600" />
-                <span>Dijawab ({answeredCount})</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="h-3 w-3 rounded-md bg-amber-500" />
-                <span>Ragu-ragu ({doubtfulCount})</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="h-3 w-3 rounded-md border border-slate-200 bg-slate-50" />
+                <span className="h-3 w-3 rounded-full border border-slate-300 bg-slate-100" />
                 <span>Belum ({unansweredCount})</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="h-3 w-3 rounded-full bg-blue-600" />
+                <span>Sudah ({answeredCount})</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="h-3 w-3 rounded-full bg-amber-400" />
+                <span>Ragu ({doubtfulCount})</span>
               </div>
             </div>
 
-            <div className="grid grid-cols-6 sm:grid-cols-10 gap-2 max-h-64 overflow-y-auto p-1">
+            <div className="grid grid-cols-5 gap-2 max-h-64 overflow-y-auto p-1">
               {questions.map((q, idx) => {
                 const isAnswered = (answers[idx] || []).length > 0;
                 const isDoubt = doubtfuls[idx];
                 const isCurrent = currentIndex === idx;
 
-                let colorClass = 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100';
+                let colorClass = 'border-slate-200 bg-white text-slate-700';
                 if (isDoubt) {
-                  colorClass = 'border-amber-300 bg-amber-50 text-amber-800 font-bold';
+                  colorClass = 'border-amber-400 bg-amber-50 text-amber-800 font-bold';
                 } else if (isAnswered) {
-                  colorClass = 'border-emerald-200 bg-emerald-50 text-emerald-800 font-bold';
+                  colorClass = 'border-blue-600 bg-blue-600 text-white font-bold';
                 }
 
                 return (
                   <button
-                    key={q.id || q.questionNumber || `pal-${idx}`}
+                    key={q.id || q.questionNumber || `pal-mob-${idx}`}
                     onClick={() => {
                       setCurrentIndex(idx);
-                      setPaletteOpen(false);
+                      setPaletteMobileOpen(false);
                     }}
-                    className={`flex h-10 w-full items-center justify-center rounded-xl border text-xs transition-all cursor-pointer ${colorClass} ${
-                      isCurrent ? 'ring-2 ring-purple-600 scale-105' : ''
+                    className={`flex h-10 items-center justify-center rounded-xl border text-xs font-mono transition-all cursor-pointer ${colorClass} ${
+                      isCurrent ? 'ring-2 ring-blue-600 scale-105' : ''
                     }`}
                   >
-                    {q.questionNumber}
+                    {String(q.questionNumber).padStart(2, '0')}
                   </button>
                 );
               })}
             </div>
 
-            <div className="mt-5 pt-3 border-t border-slate-100 flex justify-end">
-              <button
-                onClick={() => setPaletteOpen(false)}
-                className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 cursor-pointer"
-              >
-                Tutup
-              </button>
-            </div>
+            <button
+              onClick={() => setPaletteMobileOpen(false)}
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 cursor-pointer"
+            >
+              Tutup Peta Soal
+            </button>
           </div>
         </div>
       )}
 
-      {/* Submit Modal */}
+      {/* Manual Submit Confirmation Modal */}
       {submitModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-150">
           <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 shadow-xl text-center space-y-4">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100">
-              <AlertTriangle className="h-6 w-6" />
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 border border-blue-100">
+              <CheckCircle2 className="h-6 w-6" />
             </div>
 
             <h3 className="text-base font-bold text-slate-900">Kumpulkan Lembar Jawaban Simulasi?</h3>
             <p className="text-xs text-slate-600 leading-relaxed">
-              Sisa waktu Anda masih <strong className="text-purple-700 font-mono">{formatTime(timeLeft)}</strong>. Setelah dikumpulkan, hasil dan evaluasi nilai Anda akan segera diproses.
+              Sisa waktu Anda masih <strong className="text-blue-700 font-mono">{formatTimeFull(timeLeft)}</strong>. Setelah dikumpulkan, hasil dan evaluasi nilai Anda akan segera diproses.
             </p>
 
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 grid grid-cols-3 gap-2 text-center text-xs">
               <div>
                 <p className="text-slate-500 font-medium">Dijawab</p>
-                <p className="text-xl font-bold text-emerald-700 mt-0.5">{answeredCount}</p>
+                <p className="text-xl font-bold text-blue-700 mt-0.5">{answeredCount}</p>
               </div>
               <div>
                 <p className="text-slate-500 font-medium">Ragu-ragu</p>
@@ -655,10 +791,55 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
                 type="button"
                 onClick={handleSubmit}
                 disabled={submitting}
-                className="flex-1 btn-tactile-secondary rounded-xl px-4 py-2.5 text-xs font-bold text-white disabled:opacity-50 cursor-pointer"
+                className="flex-1 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2.5 transition-colors disabled:opacity-50 cursor-pointer"
               >
                 {submitting ? 'Mengumpulkan...' : 'Ya, Selesaikan'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Timeout Auto-Submit Modal (Exact replica of reference-design/halaman-pengerjaan-waktu-kd) */}
+      {timeoutModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-7 sm:p-8 shadow-2xl text-center space-y-5">
+            <div className="mx-auto inline-flex items-center gap-2 rounded-full bg-amber-100 border border-amber-200 px-3.5 py-1 text-xs font-bold text-amber-800 uppercase tracking-wider">
+              <Clock className="h-3.5 w-3.5 text-amber-700" />
+              <span>SIMULASI SELESAI</span>
+            </div>
+
+            <div className="space-y-1.5">
+              <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">
+                Waktu Simulasi Telah Habis
+              </h2>
+              <p className="text-xs text-slate-600 leading-relaxed max-w-sm mx-auto">
+                Waktu pengerjaanmu sudah berakhir. Jawaban sedang dikirim dan hasil simulasi sedang diproses.
+              </p>
+            </div>
+
+            {/* Progress Bar Sending Answers */}
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-2">
+              <div className="flex items-center justify-between text-xs font-medium text-slate-600">
+                <span>Mengirim jawaban...</span>
+                <span className="font-bold text-blue-600">{timeoutProgress}%</span>
+              </div>
+              <div className="h-2 w-full rounded-full bg-slate-200 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-blue-600 transition-all duration-300"
+                  style={{ width: `${timeoutProgress}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-[11px] text-amber-900 font-medium flex items-center justify-center gap-2">
+              <Lock className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+              <span>Jawaban tidak dapat diubah setelah waktu berakhir.</span>
+            </div>
+
+            <div className="flex items-center justify-center gap-2 text-xs text-slate-500 pt-1">
+              <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+              <span>Kamu akan diarahkan ke halaman hasil secara otomatis...</span>
             </div>
           </div>
         </div>

@@ -1,0 +1,3610 @@
+.halaman-pengerjaan-waktu-kd-frame-halaman-pengerjaan-kd {
+  width: 1280px;
+  max-width: 1280px;
+  box-sizing: border-box;
+  min-height: 1149px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  background-color: #fff;
+}
+.halaman-pengerjaan-waktu-kd-frame-section-sub-ve {
+  width: 1280px;
+  height: auto;
+  display: flex;
+  padding: 24px 24px 8px;
+  position: relative;
+  max-width: 1440px;
+  box-sizing: border-box;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container6f {
+  gap: 613.72998046875px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: 1232px;
+  align-self: stretch;
+  box-sizing: border-box;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.halaman-pengerjaan-waktu-kd-frame-exam-subject-hg {
+  gap: 10px;
+  width: fit-content;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-background-sh {
+  width: 10px;
+  height: 10px;
+  box-sizing: border-box;
+  border-radius: 9999px 9999px 9999px 9999px;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-frame-heading13i {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-simulasi-tka-ej1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-simulasi-tka-ej2 {
+  color: #0f172a;
+  font-size: 24px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 32px;
+  margin-bottom: 0;
+  letter-spacing: -.6000000238418579px;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-progress-bar-pk {
+  gap: 6px;
+  width: 320px;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: 320px;
+  box-sizing: border-box;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container0l {
+  gap: 48.630001068115234px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: 320px;
+  align-self: stretch;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: space-between;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-bm {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-progres-pengerjaan-k71 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-progres-pengerjaan-k72 {
+  color: #64748b;
+  font-size: 14px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 20px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-v8 {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-soal14y51 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-soal14y52 {
+  color: #1d4ed8;
+  font-size: 14px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 20px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-vector-background96 {
+  width: 100%;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  max-width: 320px;
+  align-self: stretch;
+  box-sizing: border-box;
+  min-height: 8px;
+  align-items: flex-start;
+  border-radius: 9999px 9999px 9999px 9999px;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-main-two3c {
+  width: 1280px;
+  height: auto;
+  display: flex;
+  padding: 16px 24px;
+  position: relative;
+  max-width: 1440px;
+  box-sizing: border-box;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container69,.halaman-pengerjaan-waktu-kd-frame-section-stimulus-ha {
+  width: 100%;
+  height: auto;
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container69 {
+  max-width: 1232px;
+  align-self: stretch;
+}
+.halaman-pengerjaan-waktu-kd-frame-section-stimulus-ha {
+  gap: 24px;
+  padding: 32px;
+  flex-grow: 1;
+  max-width: 813px;
+  border-top: 1px solid rgba(226,232,240,.9);
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+  border-left: 1px solid rgba(226,232,240,.9);
+  flex-shrink: 1;
+  border-right: 1px solid rgba(226,232,240,.9);
+  border-bottom: 1px solid rgba(226,232,240,.9);
+  border-radius: 16px 16px 16px 16px;
+  flex-direction: column;
+  background-color: #fff;
+}
+.halaman-pengerjaan-waktu-kd-frame-stimulus-pill0f {
+  gap: 406.8500061035156px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  padding: 0 0 16px;
+  position: relative;
+  max-width: 747px;
+  align-self: stretch;
+  box-sizing: border-box;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  justify-content: space-between;
+}
+.halaman-pengerjaan-waktu-kd-frame-background-bg {
+  gap: 8px;
+  width: fit-content;
+  height: auto;
+  display: flex;
+  padding: 6px 14px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: flex-start;
+  background-color: #eff6ff;
+}
+.halaman-pengerjaan-waktu-kd-vector-svg-we {
+  width: 16px;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  max-width: 16px;
+  box-sizing: border-box;
+  min-height: 16px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-ig {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-stimulus-soal7f1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-stimulus-soal7f2 {
+  color: #1d4ed8;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: .30000001192092896px;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-background-oa {
+  width: fit-content;
+  height: auto;
+  display: flex;
+  padding: 4px 12px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  align-items: flex-start;
+  border-radius: 6px 6px 6px 6px;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text-numerasi-geometri-d91 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-numerasi-geometri-d92 {
+  color: #475569;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-stimulus-content-ac {
+  gap: 16px;
+  display: flex;
+  position: relative;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-heading2-zb,.halaman-pengerjaan-waktu-kd-frame-stimulus-content-ac {
+  width: 100%;
+  height: auto;
+  max-width: 747px;
+  align-self: stretch;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-kebutuhan-air-cm1 {
+  width: 100%;
+  max-width: 100%;
+  align-self: stretch;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-kebutuhan-air-cm2 {
+  color: #0f172a;
+  font-size: 20px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 28px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-overlay-border1l,.halaman-pengerjaan-waktu-kd-frame-paragraph-g5 {
+  width: 100%;
+  align-self: stretch;
+  box-sizing: border-box;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-overlay-border1l {
+  gap: 12px;
+  height: auto;
+  display: flex;
+  padding: 20px;
+  position: relative;
+  max-width: 747px;
+  border-top: 1px solid #f1f5f9;
+  border-left: 1px solid #f1f5f9;
+  border-right: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+  border-radius: 12px 12px 12px 12px;
+  flex-direction: column;
+  background-color: rgba(248,250,252,.8);
+}
+.halaman-pengerjaan-waktu-kd-frame-paragraph-g5 {
+  max-width: 705px;
+  min-height: 98px;
+}
+.halaman-pengerjaan-waktu-kd-text-r61 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-r62,.halaman-pengerjaan-waktu-kd-text-r63 {
+  color: #334155;
+  font-size: 16px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 24px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-text271 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text272 {
+  color: #334155;
+  font-size: 16px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 24px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-text-d81 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-d82 {
+  color: #334155;
+  font-size: 16px;
+  font-style: italic;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Liberation Serif",sans-serif;
+  font-weight: 700;
+  line-height: 24px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-text-o91 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-o92 {
+  color: #334155;
+  font-size: 16px;
+  font-style: italic;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Liberation Serif",sans-serif;
+  font-weight: 700;
+  line-height: 24px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-text000-liter-za1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text000-liter-za2 {
+  margin-top: 0;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text1,.halaman-pengerjaan-waktu-kd-text2,.halaman-pengerjaan-waktu-kd-text3 {
+  color: #334155;
+  font-size: 16px;
+  font-style: normal;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-text2,.halaman-pengerjaan-waktu-kd-text3 {
+  color: #0f172a;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+}
+.halaman-pengerjaan-waktu-kd-text3 {
+  color: #334155;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-ab {
+  width: 100%;
+  height: auto;
+  max-width: 705px;
+  align-self: stretch;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text00-wib-lc1 {
+  width: 100%;
+  max-width: 100%;
+  align-self: stretch;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text00-wib-lc2,.halaman-pengerjaan-waktu-kd-text00-wib-lc3 {
+  color: #334155;
+  font-size: 16px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 24px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-margin-ay,.halaman-pengerjaan-waktu-kd-frame-specific-question-zx {
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-specific-question-zx {
+  gap: 14px;
+  width: 100%;
+  height: auto;
+  padding: 16px;
+  max-width: 747px;
+  align-self: stretch;
+  border-top: 1px solid #e2e8f0;
+  border-left: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  border-radius: 12px 12px 12px 12px;
+  background-color: #fff;
+}
+.halaman-pengerjaan-waktu-kd-frame-margin-ay {
+  width: 32px;
+  padding: 2px 0 0;
+  max-width: 32px;
+  min-height: 34px;
+  flex-direction: column;
+}
+.halaman-pengerjaan-waktu-kd-frame-background-sc {
+  width: 32px;
+  display: flex;
+  position: relative;
+  max-width: 32px;
+  box-sizing: border-box;
+  min-height: 32px;
+  align-items: center;
+  border-radius: 9999px 9999px 9999px 9999px;
+  justify-content: center;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-text-hb1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-hb2 {
+  color: #fff;
+  font-size: 16px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 24px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-container6a {
+  width: 667px;
+  max-width: 667px;
+  box-sizing: border-box;
+  min-height: 55px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-text-jika-tandon-v91 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-jika-tandon-v92,.halaman-pengerjaan-waktu-kd-text-jika-tandon-v93 {
+  color: #0f172a;
+  font-size: 17px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 28px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-label-option-pf,.halaman-pengerjaan-waktu-kd-frame-multiple-choice0g {
+  width: 100%;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: 747px;
+  align-self: stretch;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-frame-multiple-choice0g {
+  gap: 12px;
+  opacity: .6000000238418579;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-label-option-pf {
+  gap: 232.61000061035156px;
+  padding: 16px;
+  border-top: 2px solid #2563eb;
+  align-items: center;
+  border-left: 2px solid #2563eb;
+  border-right: 2px solid #2563eb;
+  border-bottom: 2px solid #2563eb;
+  border-radius: 12px 12px 12px 12px;
+  justify-content: space-between;
+  background-color: rgba(239,246,255,.4);
+}
+.halaman-pengerjaan-waktu-kd-frame-container-ee {
+  gap: 16px;
+  width: fit-content;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-background3d {
+  width: 36px;
+  display: flex;
+  position: relative;
+  max-width: 36px;
+  box-sizing: border-box;
+  min-height: 36px;
+  align-items: center;
+  border-radius: 9999px 9999px 9999px 9999px;
+  justify-content: center;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-text-ac41 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-ac42 {
+  color: #fff;
+  font-size: 14px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 20px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-container13 {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text540-liter4j1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text540-liter4j2 {
+  color: #0f172a;
+  font-size: 16px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 24px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-fk {
+  gap: 6px;
+  width: fit-content;
+  height: auto;
+  display: flex;
+  padding: 0 0 0 8px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-vector-svg-ih {
+  width: 20px;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  max-width: 20px;
+  box-sizing: border-box;
+  min-height: 20px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-wf {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-pilihan-anda7g1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-pilihan-anda7g2 {
+  color: #2563eb;
+  font-size: 14px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 20px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-le,.halaman-pengerjaan-waktu-kd-frame-label-option-ad {
+  height: auto;
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-label-option-ad {
+  width: 100%;
+  padding: 16px;
+  max-width: 747px;
+  align-self: stretch;
+  border-top: 1px solid #e2e8f0;
+  border-left: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  border-radius: 12px 12px 12px 12px;
+  background-color: #fff;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-le {
+  gap: 16px;
+  width: fit-content;
+  max-width: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-background-border-ob {
+  width: 36px;
+  display: flex;
+  position: relative;
+  max-width: 36px;
+  border-top: 1px solid #e2e8f0;
+  box-sizing: border-box;
+  min-height: 36px;
+  align-items: center;
+  border-left: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  border-radius: 9999px 9999px 9999px 9999px;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text-b-zc1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-b-zc2 {
+  color: #334155;
+  font-size: 14px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 20px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-ui {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-jh1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-jh2 {
+  color: #1e293b;
+  font-size: 16px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 24px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-container5j,.halaman-pengerjaan-waktu-kd-frame-label-option-gk {
+  height: auto;
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-label-option-gk {
+  width: 100%;
+  padding: 16px;
+  max-width: 747px;
+  align-self: stretch;
+  border-top: 1px solid #e2e8f0;
+  border-left: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  border-radius: 12px 12px 12px 12px;
+  background-color: #fff;
+}
+.halaman-pengerjaan-waktu-kd-frame-container5j {
+  gap: 16px;
+  width: fit-content;
+  max-width: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-background-border2m {
+  width: 36px;
+  display: flex;
+  position: relative;
+  max-width: 36px;
+  border-top: 1px solid #e2e8f0;
+  box-sizing: border-box;
+  min-height: 36px;
+  align-items: center;
+  border-left: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  border-radius: 9999px 9999px 9999px 9999px;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text-c-rl1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-c-rl2 {
+  color: #334155;
+  font-size: 14px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 20px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-oo {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-dn1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-dn2 {
+  color: #1e293b;
+  font-size: 16px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 24px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-zp,.halaman-pengerjaan-waktu-kd-frame-label-option-aq {
+  height: auto;
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-label-option-aq {
+  width: 100%;
+  padding: 16px;
+  max-width: 747px;
+  align-self: stretch;
+  border-top: 1px solid #e2e8f0;
+  border-left: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  border-radius: 12px 12px 12px 12px;
+  background-color: #fff;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-zp {
+  gap: 16px;
+  width: fit-content;
+  max-width: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-background-border6p {
+  width: 36px;
+  display: flex;
+  position: relative;
+  max-width: 36px;
+  border-top: 1px solid #e2e8f0;
+  box-sizing: border-box;
+  min-height: 36px;
+  align-items: center;
+  border-left: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  border-radius: 9999px 9999px 9999px 9999px;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text-d-hq1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-d-hq2 {
+  color: #334155;
+  font-size: 14px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 20px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-sr {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text3s1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text3s2 {
+  color: #1e293b;
+  font-size: 16px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 24px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-bottom-question-yl {
+  gap: 179.47000122070312px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  opacity: .6000000238418579;
+  padding: 16px 0 0;
+  position: relative;
+  max-width: 747px;
+  align-self: stretch;
+  border-top: 1px solid #f1f5f9;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: space-between;
+}
+.halaman-pengerjaan-waktu-kd-frame-button9m {
+  gap: 8px;
+  width: fit-content;
+  height: auto;
+  display: flex;
+  padding: 10px 20px;
+  position: relative;
+  max-width: none;
+  border-top: 1px solid #e2e8f0;
+  box-sizing: border-box;
+  align-items: center;
+  border-left: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  border-radius: 12px 12px 12px 12px;
+  justify-content: center;
+}
+.halaman-pengerjaan-waktu-kd-vector-svg-kn {
+  width: 16px;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  max-width: 16px;
+  box-sizing: border-box;
+  min-height: 16px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-mx {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-xy1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-xy2 {
+  color: #334155;
+  font-size: 14px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 20px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button7v,.halaman-pengerjaan-waktu-kd-frame-container-iw {
+  gap: 12px;
+  width: fit-content;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-button7v {
+  gap: 8px;
+  padding: 10px 16px;
+  border-top: 1px solid #fcd34d;
+  border-left: 1px solid #fcd34d;
+  border-right: 1px solid #fcd34d;
+  border-bottom: 1px solid #fcd34d;
+  border-radius: 12px 12px 12px 12px;
+  justify-content: center;
+  background-color: #fffbeb;
+}
+.halaman-pengerjaan-waktu-kd-vector-svg-wu {
+  width: 16px;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  max-width: 16px;
+  box-sizing: border-box;
+  min-height: 16px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-as {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-zr1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-zr2 {
+  color: #92400e;
+  font-size: 14px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 20px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-oq {
+  gap: 8px;
+  display: flex;
+  padding: 10px 24px;
+  position: relative;
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+  align-items: center;
+  border-radius: 12px 12px 12px 12px;
+  justify-content: center;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-oq,.halaman-pengerjaan-waktu-kd-frame-container-dp {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-z41 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-z42 {
+  color: #fff;
+  font-size: 14px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 20px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-vector-svg-o3 {
+  width: 16px;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  max-width: 16px;
+  box-sizing: border-box;
+  min-height: 16px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-aside-peta64 {
+  gap: 20px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  padding: 24px;
+  position: relative;
+  flex-grow: 1;
+  max-width: 395px;
+  border-top: 1px solid rgba(226,232,240,.9);
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+  box-sizing: border-box;
+  align-items: flex-start;
+  border-left: 1px solid rgba(226,232,240,.9);
+  flex-shrink: 1;
+  border-right: 1px solid rgba(226,232,240,.9);
+  border-bottom: 1px solid rgba(226,232,240,.9);
+  border-radius: 16px 16px 16px 16px;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: #fff;
+}
+.halaman-pengerjaan-waktu-kd-frame-sidebar-header91 {
+  gap: 180.02999877929688px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  padding: 0 0 16px;
+  position: relative;
+  max-width: 345px;
+  align-self: stretch;
+  box-sizing: border-box;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  justify-content: space-between;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-k2 {
+  gap: 8px;
+  width: fit-content;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-vector-svg37 {
+  width: 20px;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  max-width: 20px;
+  box-sizing: border-box;
+  min-height: 20px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-h5 {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-peta-soal-s61 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-peta-soal-s62 {
+  color: #0f172a;
+  font-size: 16px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 24px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-background-ev {
+  width: fit-content;
+  height: auto;
+  display: flex;
+  padding: 4px 10px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  align-items: flex-start;
+  border-radius: 9999px 9999px 9999px 9999px;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text30-butir-pw1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text30-butir-pw2 {
+  color: #475569;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-countdown-timer-eu {
+  width: 100%;
+  height: auto;
+  display: flex;
+  padding: 16px;
+  position: relative;
+  max-width: 345px;
+  align-self: stretch;
+  border-top: 1px solid rgba(226,232,240,.8);
+  box-sizing: border-box;
+  align-items: center;
+  border-left: 1px solid rgba(226,232,240,.8);
+  border-right: 1px solid rgba(226,232,240,.8);
+  border-bottom: 1px solid rgba(226,232,240,.8);
+  border-radius: 12px 12px 12px 12px;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #f8fafc;
+}
+.halaman-pengerjaan-waktu-kd-frame-container0w,.halaman-pengerjaan-waktu-kd-frame-margin3t {
+  width: fit-content;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-margin3t {
+  padding: 0 0 4px;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.halaman-pengerjaan-waktu-kd-frame-container0w {
+  gap: 8px;
+  align-items: center;
+}
+.halaman-pengerjaan-waktu-kd-vector-svg-pv {
+  width: 16px;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  max-width: 16px;
+  box-sizing: border-box;
+  min-height: 16px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-vp {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-waktu-habis-ss1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-waktu-habis-ss2 {
+  color: #ef4444;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: .6000000238418579px;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-hr {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-ym1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-ym2 {
+  color: #dc2626;
+  font-size: 30px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Nimbus Mono PS",sans-serif;
+  font-weight: 700;
+  line-height: 36px;
+  margin-bottom: 0;
+  letter-spacing: 1.5px;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-margin-nl {
+  display: flex;
+  padding: 3px 0 0;
+  position: relative;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container9i,.halaman-pengerjaan-waktu-kd-frame-margin-nl {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-yh1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-yh2 {
+  color: #64748b;
+  font-size: 11px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 17px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-color-status-vk {
+  gap: 6px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  padding: 8px 0;
+  position: relative;
+  max-width: 345px;
+  align-self: stretch;
+  border-top: 1px solid #f1f5f9;
+  box-sizing: border-box;
+  align-items: flex-start;
+  border-bottom: 1px solid #f1f5f9;
+  justify-content: center;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-kj {
+  gap: 6px;
+  width: 111px;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: 111px;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+}
+.halaman-pengerjaan-waktu-kd-frame-background1e {
+  width: 12px;
+  height: 12px;
+  box-sizing: border-box;
+  border-radius: 4px 4px 4px 4px;
+  background-color: #e2e8f0;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-qd {
+  width: 31px;
+  max-width: 31px;
+  box-sizing: border-box;
+  min-height: 17px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-text-ng1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-ng2 {
+  color: #475569;
+  font-size: 11px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 17px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-cf {
+  gap: 6px;
+  width: 111px;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: 111px;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+}
+.halaman-pengerjaan-waktu-kd-frame-background-ta {
+  width: 12px;
+  height: 12px;
+  box-sizing: border-box;
+  border-radius: 4px 4px 4px 4px;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-i9 {
+  width: 32px;
+  max-width: 32px;
+  box-sizing: border-box;
+  min-height: 17px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-text-xb1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-xb2 {
+  color: #475569;
+  font-size: 11px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 17px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-container8c {
+  gap: 6px;
+  width: 111px;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: 111px;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+}
+.halaman-pengerjaan-waktu-kd-frame-background-b9 {
+  width: 12px;
+  height: 12px;
+  box-sizing: border-box;
+  border-radius: 4px 4px 4px 4px;
+  background-color: #fbbf24;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-ma {
+  width: 52px;
+  max-width: 52px;
+  box-sizing: border-box;
+  min-height: 17px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-text5f1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text5f2 {
+  color: #475569;
+  font-size: 11px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 17px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-question-grid-gg {
+  width: 100%;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: 345px;
+  align-self: stretch;
+  box-sizing: border-box;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-row-jd {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-text01-ue1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text01-ue2 {
+  color: #fff;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-h3 {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-text02s41 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text02s42 {
+  color: #fff;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-ck {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-text031j1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text031j2 {
+  color: #fff;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-qi {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-text04-fh1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text04-fh2 {
+  color: #fff;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-ko {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-text059n1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text059n2 {
+  color: #fff;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-row-ym {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-text06-nl1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text06-nl2 {
+  color: #fff;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-ss {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #fbbf24;
+}
+.halaman-pengerjaan-waktu-kd-text07-hr1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text07-hr2 {
+  color: #451a03;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button0d {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-text08-be1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text08-be2 {
+  color: #fff;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-mf {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-text09-xg1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text09-xg2 {
+  color: #fff;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button8h {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-text10-ji1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text10-ji2 {
+  color: #fff;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-row-uj {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-text115k1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text115k2 {
+  color: #fff;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-gl {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #fbbf24;
+}
+.halaman-pengerjaan-waktu-kd-text12-rm1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text12-rm2 {
+  color: #451a03;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button7m {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-text13-wl1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text13-wl2 {
+  color: #fff;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button14-to {
+  width: fit-content;
+  display: flex;
+  padding: 0 23px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #1d4ed8;
+}
+.halaman-pengerjaan-waktu-kd-frame-button14-in {
+  top: 518px;
+  left: 1099px;
+  width: 60px;
+  height: 40px;
+  position: absolute;
+  box-shadow: 0 0 0 4px #2563eb,0 0 0 2px #fff;
+  box-sizing: border-box;
+  border-radius: 8px 8px 8px 8px;
+}
+.halaman-pengerjaan-waktu-kd-text14-fq1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text14-fq2 {
+  color: #fff;
+  font-size: 14px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 20px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button4p {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text151s1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text151s2 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-row-qr {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text16-re1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text16-re2 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-gd {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text17-or1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text17-or2 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-zs {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text182p1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text182p2 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-dq {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text19-gn1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text19-gn2 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-ro {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text20-ul1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text20-ul2 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-row5m {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text214z1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text214z2 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-g0 {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text22w01 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text22w02 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-kz {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text239y1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text239y2 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-yx {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text24-nw1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text24-nw2 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-cv {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text251u1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text251u2 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-row-qt {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text26-fs1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text26-fs2 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button4r {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text27-jt1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text27-jt2 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-uu {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text285v1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text285v2 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-gw {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text29-bp1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text29-bp2 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-button-mq {
+  width: fit-content;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 8px 8px 8px 8px;
+  justify-content: center;
+  background-color: #f1f5f9;
+}
+.halaman-pengerjaan-waktu-kd-text30-xr1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text30-xr2 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-bottom-action8s,.halaman-pengerjaan-waktu-kd-frame-button3l {
+  gap: 8px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: 345px;
+  align-self: stretch;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-frame-bottom-action8s {
+  padding: 8px 0 0;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-button3l {
+  opacity: .6000000238418579;
+  padding: 12px 16px;
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+  align-items: center;
+  border-radius: 12px 12px 12px 12px;
+  justify-content: center;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-vector-svg-em {
+  width: 20px;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  max-width: 20px;
+  box-sizing: border-box;
+  min-height: 20px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-nl {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-kirim-jawaban-ko1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-kirim-jawaban-ko2 {
+  color: #fff;
+  font-size: 14px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 20px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-container9n {
+  width: 100%;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: 345px;
+  align-self: stretch;
+  box-sizing: border-box;
+  align-items: center;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-text-qi1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-qi2 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-footer-official-fh {
+  width: 1280px;
+  height: auto;
+  display: flex;
+  padding: 24px 0;
+  position: relative;
+  max-width: 1280px;
+  border-top: 1px solid #e2e8f0;
+  box-sizing: border-box;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: #fff;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-ck {
+  gap: 8px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: 1440px;
+  align-self: stretch;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+}
+.halaman-pengerjaan-waktu-kd-frame-background1j {
+  width: 20px;
+  display: flex;
+  position: relative;
+  max-width: 20px;
+  box-sizing: border-box;
+  min-height: 20px;
+  align-items: center;
+  border-radius: 4px 4px 4px 4px;
+  justify-content: center;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-vector-svg-eu {
+  width: 14px;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  max-width: 14px;
+  box-sizing: border-box;
+  min-height: 14px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-xg {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text0d1 {
+  width: 100%;
+  max-width: auto;
+  min-height: auto;
+}
+.halaman-pengerjaan-waktu-kd-text0d1,.halaman-pengerjaan-waktu-kd-text0d2 {
+  margin-top: 0;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text4,.halaman-pengerjaan-waktu-kd-text5 {
+  color: #1e293b;
+  font-size: 14px;
+  font-style: normal;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 20px;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-text5 {
+  color: #64748b;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+}
+.halaman-pengerjaan-waktu-kd-frame-header-top-be {
+  width: 1280px;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: 1280px;
+  box-sizing: border-box;
+  align-items: flex-start;
+  border-bottom: 1px solid #e2e8f0;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: #fff;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-uj {
+  gap: 329.5px;
+  width: 100%;
+  display: flex;
+  padding: 0 24px;
+  position: relative;
+  max-width: 1440px;
+  align-self: stretch;
+  box-sizing: border-box;
+  min-height: 64px;
+  align-items: center;
+  justify-content: space-between;
+}
+.halaman-pengerjaan-waktu-kd-frame-brand-identifier5k {
+  gap: 12px;
+  width: fit-content;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-background-shadow8h {
+  width: 40px;
+  display: flex;
+  position: relative;
+  max-width: 40px;
+  box-shadow: 0 1px 2px 0#bfdbfe;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 12px 12px 12px 12px;
+  justify-content: center;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-vector-svg-ji {
+  width: 24px;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  max-width: 24px;
+  box-sizing: border-box;
+  min-height: 24px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-f5 {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-agra-q61 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-agra-q62 {
+  color: #2563eb;
+  font-size: 20px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 28px;
+  margin-bottom: 0;
+  letter-spacing: -.5px;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-center-context17 {
+  gap: 8px;
+  width: fit-content;
+  height: auto;
+  display: flex;
+  padding: 6px 16px;
+  position: relative;
+  max-width: none;
+  border-top: 1px solid #dbeafe;
+  box-sizing: border-box;
+  align-items: center;
+  border-left: 1px solid #dbeafe;
+  border-right: 1px solid #dbeafe;
+  border-bottom: 1px solid #dbeafe;
+  border-radius: 9999px 9999px 9999px 9999px;
+  justify-content: flex-start;
+  background-color: #eff6ff;
+}
+.halaman-pengerjaan-waktu-kd-frame-background-c8 {
+  width: 8px;
+  height: 8px;
+  box-sizing: border-box;
+  border-radius: 9999px 9999px 9999px 9999px;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-frame-container71 {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-i21 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-i22 {
+  color: #1d4ed8;
+  font-size: 14px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 20px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-student-profile-t3 {
+  gap: 12px;
+  width: fit-content;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-background44 {
+  width: 40px;
+  display: flex;
+  position: relative;
+  max-width: 40px;
+  box-sizing: border-box;
+  min-height: 40px;
+  align-items: center;
+  border-radius: 9999px 9999px 9999px 9999px;
+  justify-content: center;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-vector-svg-vd {
+  width: 20px;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  max-width: 20px;
+  box-sizing: border-box;
+  min-height: 20px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-nv,.halaman-pengerjaan-waktu-kd-frame-container-yw {
+  width: fit-content;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-nv {
+  width: 100%;
+  max-width: 62px;
+  align-self: stretch;
+}
+.halaman-pengerjaan-waktu-kd-text-budi-cu1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-budi-cu2 {
+  color: #0f172a;
+  font-size: 14px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 20px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-container1t {
+  width: 100%;
+  height: auto;
+  max-width: 62px;
+  align-self: stretch;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-qs1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: left;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-qs2 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: left;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-dialog-fr {
+  width: 1280px;
+  display: flex;
+  padding: 24px;
+  position: relative;
+  max-width: 1280px;
+  box-sizing: border-box;
+  min-height: 1144px;
+  align-items: center;
+  backdrop-filter: blur(3px);
+  justify-content: center;
+  background-color: rgba(15,23,42,.6);
+}
+.halaman-pengerjaan-waktu-kd-frame-background-border4q {
+  width: 512px;
+  max-width: 512px;
+  border-top: 1px solid #f1f5f9;
+  box-sizing: border-box;
+  min-height: 410px;
+  align-items: flex-start;
+  border-left: 1px solid #f1f5f9;
+  border-right: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+  border-radius: 16px 16px 16px 16px;
+  justify-content: flex-start;
+  background-color: #fff;
+}
+.halaman-pengerjaan-waktu-kd-frame-overlay-shadow-tp {
+  width: 512px;
+  height: 410px;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,.25);
+  box-sizing: border-box;
+  border-radius: 16px 16px 16px 16px;
+}
+.halaman-pengerjaan-waktu-kd-frame-background43,.halaman-pengerjaan-waktu-kd-frame-margin-f4 {
+  width: fit-content;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-margin-f4 {
+  padding: 0 0 12px;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.halaman-pengerjaan-waktu-kd-frame-background43 {
+  gap: 6px;
+  padding: 4px 12px;
+  align-items: center;
+  border-radius: 9999px 9999px 9999px 9999px;
+  background-color: #eff6ff;
+}
+.halaman-pengerjaan-waktu-kd-frame-background-jn {
+  width: 8px;
+  height: 8px;
+  box-sizing: border-box;
+  border-radius: 9999px 9999px 9999px 9999px;
+  background-color: #2563eb;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-uo {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-simulasi-selesai-xl1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-simulasi-selesai-xl2 {
+  color: #1d4ed8;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: .6000000238418579px;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-heading28m {
+  display: flex;
+  padding: 0 0 8px;
+  position: relative;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-heading2-bj,.halaman-pengerjaan-waktu-kd-frame-heading28m {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-waktu-simulasi-mk1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-waktu-simulasi-mk2 {
+  color: #0f172a;
+  font-size: 24px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 32px;
+  margin-bottom: 0;
+  letter-spacing: -.6000000238418579px;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-margin-ph {
+  width: 384px;
+  max-width: 384px;
+  box-sizing: border-box;
+  min-height: 70px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container0i {
+  width: fit-content;
+  height: auto;
+  display: flex;
+  padding: 0 21px;
+  position: relative;
+  max-width: 384px;
+  box-sizing: border-box;
+  align-items: center;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-text3f1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text3f2,.halaman-pengerjaan-waktu-kd-text3f3 {
+  color: #475569;
+  font-size: 14px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 23px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-margin-eg {
+  width: 320px;
+  height: auto;
+  display: flex;
+  padding: 0 0 12px;
+  position: relative;
+  max-width: 320px;
+  box-sizing: border-box;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-st,.halaman-pengerjaan-waktu-kd-frame-container2y {
+  width: 100%;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: 320px;
+  align-self: stretch;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-frame-container2y {
+  gap: 6px;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-st {
+  gap: 184.6199951171875px;
+  align-items: center;
+  justify-content: space-between;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-p0 {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-dz1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-dz2 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Plus Jakarta Sans",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-b2 {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text011 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text012 {
+  color: #2563eb;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Nimbus Mono PS",sans-serif;
+  font-weight: 700;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-vector-background-border-x4 {
+  width: 100%;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  max-width: 320px;
+  align-self: stretch;
+  border-top: 1px solid rgba(226,232,240,.6);
+  box-sizing: border-box;
+  min-height: 10px;
+  align-items: flex-start;
+  border-left: 1px solid rgba(226,232,240,.6);
+  border-right: 1px solid rgba(226,232,240,.6);
+  border-bottom: 1px solid rgba(226,232,240,.6);
+  border-radius: 9999px 9999px 9999px 9999px;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container85,.halaman-pengerjaan-waktu-kd-frame-margin-j6 {
+  width: fit-content;
+  height: auto;
+  display: flex;
+  position: relative;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-frame-margin-j6 {
+  padding: 0 0 20px;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container85 {
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+}
+.halaman-pengerjaan-waktu-kd-vector-svg-ol {
+  width: 14px;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  max-width: 14px;
+  box-sizing: border-box;
+  min-height: 14px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container-lo {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-wp1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-wp2 {
+  color: #64748b;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-background-border7q {
+  gap: 8px;
+  width: 446px;
+  height: auto;
+  display: flex;
+  padding: 10px 16px;
+  position: relative;
+  max-width: 446px;
+  border-top: 1px solid rgba(226,232,240,.8);
+  box-sizing: border-box;
+  align-items: center;
+  border-left: 1px solid rgba(226,232,240,.8);
+  border-right: 1px solid rgba(226,232,240,.8);
+  border-bottom: 1px solid rgba(226,232,240,.8);
+  border-radius: 12px 12px 12px 12px;
+  justify-content: center;
+  background-color: #f8fafc;
+}
+.halaman-pengerjaan-waktu-kd-vector-svg-ir {
+  width: 16px;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  max-width: 16px;
+  box-sizing: border-box;
+  min-height: 16px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-container8d {
+  width: fit-content;
+  height: auto;
+  max-width: none;
+  box-sizing: border-box;
+}
+.halaman-pengerjaan-waktu-kd-text-je1 {
+  width: 100%;
+  max-width: auto;
+  margin-top: 0;
+  min-height: auto;
+  text-align: center;
+  margin-bottom: 0;
+}
+.halaman-pengerjaan-waktu-kd-text-je2 {
+  color: #475569;
+  font-size: 12px;
+  font-style: normal;
+  margin-top: 0;
+  text-align: center;
+  font-family: "Nimbus Sans",sans-serif;
+  font-weight: 400;
+  line-height: 16px;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.halaman-pengerjaan-waktu-kd-frame-margin0s {
+  width: 64px;
+  display: flex;
+  padding: 0 0 16px;
+  position: relative;
+  max-width: 64px;
+  box-sizing: border-box;
+  min-height: 80px;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-background-shadow-pr {
+  width: 64px;
+  display: flex;
+  position: relative;
+  max-width: 64px;
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+  box-sizing: border-box;
+  min-height: 64px;
+  align-items: center;
+  border-radius: 9999px 9999px 9999px 9999px;
+  justify-content: center;
+  background-color: #eff6ff;
+}
+.halaman-pengerjaan-waktu-kd-vector-svg-eq {
+  width: 32px;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  max-width: 32px;
+  box-sizing: border-box;
+  min-height: 32px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.halaman-pengerjaan-waktu-kd-frame-border8w {
+  top: 400px;
+  left: 608px;
+  width: 64px;
+  height: 64px;
+  position: absolute;
+  border-top: 2px solid #00000000;
+  box-sizing: border-box;
+  border-left: 2px solid #00000000;
+  border-right: 2px solid #00000000;
+  border-bottom: 2px solid #00000000;
+  border-radius: 9999px 9999px 9999px 9999px;
+}
+@media (max-width: 1440px) {
+  .halaman-pengerjaan-waktu-kd-frame-container-ck,.halaman-pengerjaan-waktu-kd-frame-container-uj,.halaman-pengerjaan-waktu-kd-frame-main-two3c,.halaman-pengerjaan-waktu-kd-frame-section-sub-ve {
+    width: 100%;
+    max-width: 1440px;
+  }
+  ;
+}
+@media (max-width: 512px) {
+  .halaman-pengerjaan-waktu-kd-frame-background-border4q {
+    width: 100%;
+    max-width: 512px;
+  }
+  ;
+}
+@media (max-width: 384px) {
+  .halaman-pengerjaan-waktu-kd-frame-container0i {
+    width: 100%;
+    max-width: 384px;
+  }
+  ;
+}
+@media (max-width: 320px) {
+  .halaman-pengerjaan-waktu-kd-frame-container2y,.halaman-pengerjaan-waktu-kd-frame-margin-eg {
+    width: 100%;
+    max-width: 320px;
+  }
+  ;
+}

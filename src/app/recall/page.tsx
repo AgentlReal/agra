@@ -12,6 +12,7 @@ import {
   Clock, 
   HelpCircle, 
   ArrowRight, 
+  ArrowLeft,
   RotateCcw, 
   BookOpen, 
   AlertCircle,
@@ -80,7 +81,26 @@ export default function RecallIntroPage() {
     <div className="flex min-h-screen flex-col bg-[#f8fafc]">
       <Navbar />
 
-      <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full space-y-8">
+      <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full space-y-6">
+        <div className="flex items-center justify-between border-b border-slate-200/80 pb-4">
+          <nav className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+            <Link href="/dashboard" className="hover:text-blue-600 transition-colors">
+              Dasbor
+            </Link>
+            <span className="text-slate-300">/</span>
+            <span className="text-slate-700 font-semibold">Recall Kemampuan</span>
+            <span className="text-slate-300">/</span>
+            <span className="text-slate-400">Petunjuk Asesmen</span>
+          </nav>
+
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-blue-600 transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Kembali ke Dasbor</span>
+          </Link>
+        </div>
         {/* Error notification (Safe-to-fail warm amber container, red banned) */}
         {errorMsg && (
           <div className="flex items-center justify-between rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs sm:text-sm text-amber-900 shadow-2xs">

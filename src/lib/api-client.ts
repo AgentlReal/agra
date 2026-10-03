@@ -227,8 +227,21 @@ export const api = {
 
   // Simulation
   simulation: {
-    getEligibility: (subjectId: string | number) =>
-      request<any>(`/api/v1/simulations/${subjectId}/eligibility`),
+    getEligibility: async (subjectId: string | number) => {
+      const res = await request<any>(`/api/v1/simulations/${subjectId}/eligibility`);
+      const data = res?.data || res;
+      if (data && typeof data === 'object') {
+        return {
+          ...data,
+          isEligible: Boolean(data.isEligible ?? data.is_eligible),
+          subjectName: data.subjectName ?? data.subject_name,
+          totalSubMaterials: data.totalSubMaterials ?? data.total_sub_materials ?? 0,
+          masteredSubMaterials: data.masteredSubMaterials ?? data.mastered_sub_materials ?? 0,
+          completionPercentage: data.completionPercentage ?? data.completion_percentage ?? 0,
+        };
+      }
+      return data;
+    },
     startAttempt: async (subjectId: string | number) => {
       const res = await request<any>(`/api/v1/simulations/${subjectId}/attempts`, {
         method: 'POST',
