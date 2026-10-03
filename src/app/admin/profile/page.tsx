@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 export default function AdminProfilePage() {
-  const { user, updateUser } = useAuth();
+  const { user, role, isLoading, isAuthenticated, updateUser } = useAuth();
 
   const [name, setName] = useState(user?.name || '');
   const [savingName, setSavingName] = useState(false);
@@ -78,6 +78,10 @@ export default function AdminProfilePage() {
       setChangingPass(false);
     }
   };
+
+  if (!isLoading && (!isAuthenticated || (role !== 'TIM_KURIKULUM' && user?.role !== 'TIM_KURIKULUM'))) {
+    return null;
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F8FAFC]">

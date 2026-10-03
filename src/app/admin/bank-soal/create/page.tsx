@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AdminNav } from '@/components/layout/AdminNav';
 import { Footer } from '@/components/layout/Footer';
+import { useAuth } from '@/lib/auth-context';
 import { api } from '@/lib/api-client';
 import { 
   ArrowLeft, 
@@ -50,6 +51,7 @@ const DEFAULT_SUBMATERIALS: Record<string, SubMaterialOption[]> = {
 
 export default function CreateQuestionPage() {
   const router = useRouter();
+  const { user, role, isLoading, isAuthenticated } = useAuth();
 
   const [bankType, setBankType] = useState('LEVEL_EXERCISE');
   const [subjectId, setSubjectId] = useState('1');
@@ -214,6 +216,10 @@ export default function CreateQuestionPage() {
       setSubmitting(false);
     }
   };
+
+  if (!isLoading && (!isAuthenticated || (role !== 'TIM_KURIKULUM' && user?.role !== 'TIM_KURIKULUM'))) {
+    return null;
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F8FAFC]">

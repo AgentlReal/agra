@@ -72,8 +72,17 @@ export default function SimulationEligibilityPage({ params }: { params: Promise<
     }
   };
 
-  const isEligible = Boolean(eligibility?.isEligible);
-  const subjectName = eligibility?.subjectName || (subjectId === '2' ? 'Bahasa Indonesia SMP' : 'Matematika SMP');
+  const isEligible = Boolean(eligibility?.isEligible ?? eligibility?.is_eligible);
+  const subjectName =
+    eligibility?.subjectName ??
+    eligibility?.subject_name ??
+    (subjectId === '2' ? 'Bahasa Indonesia SMP' : 'Matematika SMP');
+  const totalSub = eligibility?.totalSubMaterials ?? eligibility?.total_sub_materials ?? 0;
+  const masteredSub = eligibility?.masteredSubMaterials ?? eligibility?.mastered_sub_materials ?? 0;
+  const completionPercentage =
+    eligibility?.completionPercentage ??
+    eligibility?.completion_percentage ??
+    (totalSub > 0 ? Math.round((masteredSub / totalSub) * 100) : 0);
 
   return (
     <div className="flex min-h-screen flex-col bg-[#f8fafc]">
@@ -181,11 +190,16 @@ export default function SimulationEligibilityPage({ params }: { params: Promise<
               {!isEligible && (
                 <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 text-xs text-amber-900">
                   <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-                  <div className="space-y-1 leading-relaxed">
+                  <div className="space-y-1.5 leading-relaxed">
                     <p className="font-bold text-amber-900">Syarat Pembukaan Akses Simulasi Capstone:</p>
                     <p>
                       Anda harus menuntaskan seluruh 3 level kognitif di setiap submateri mata pelajaran ini terlebih dahulu agar simulasi CBT dapat dibuka secara resmi.
                     </p>
+                    {totalSub > 0 && (
+                      <p className="font-medium text-amber-800">
+                        Progres saat ini: <span className="font-bold">{masteredSub} dari {totalSub} submateri tuntas</span> ({completionPercentage}%).
+                      </p>
+                    )}
                   </div>
                 </div>
               )}

@@ -124,10 +124,12 @@ export default function SubjectCurriculumPage({ params }: { params: Promise<{ su
                 </div>
               ) : (
                 materials.map((mat: any, mIdx: number) => {
+                  const matId = mat.materialId || mat.id || `mat-${mIdx}`;
+                  const matTitle = mat.title || mat.name || `Materi ${mIdx + 1}`;
                   const submaterials = mat.submaterials || mat.sub_materials || [];
                   return (
                     <div
-                      key={mat.id || `mat-${mIdx}`}
+                      key={matId}
                       className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-7 space-y-4"
                     >
                       <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -135,7 +137,7 @@ export default function SubjectCurriculumPage({ params }: { params: Promise<{ su
                           <span className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-50 text-blue-600 text-xs font-bold">
                             {mIdx + 1}
                           </span>
-                          <h3 className="text-base font-bold text-slate-900">{mat.name || mat.title}</h3>
+                          <h3 className="text-base font-bold text-slate-900">{matTitle}</h3>
                         </div>
                         <span className="text-xs font-medium text-slate-500">
                           {submaterials.length} Submateri
@@ -144,18 +146,20 @@ export default function SubjectCurriculumPage({ params }: { params: Promise<{ su
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                         {submaterials.map((sub: any, sIdx: number) => {
-                          const isMastered = Boolean(sub.isMastered ?? sub.is_mastered);
-                          const progressState = sub.progressState || (isMastered ? 'MASTERED' : 'IN_PROGRESS');
+                          const subId = sub.submaterialId || sub.id || sub.sub_material_id;
+                          const subTitle = sub.title || sub.name || `Submateri ${sIdx + 1}`;
+                          const isMastered = sub.status === 'MASTERED' || Boolean(sub.isMastered ?? sub.is_mastered);
+                          const progressState = sub.status || sub.progressState || (isMastered ? 'MASTERED' : 'IN_PROGRESS');
 
                           return (
                             <Link
-                              key={sub.id || `sub-${sIdx}`}
-                              href={`/submaterials/${sub.id}`}
+                              key={subId || `sub-${sIdx}`}
+                              href={`/submaterials/${subId}`}
                               className="group flex items-center justify-between p-4 rounded-2xl border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/60 transition-all shadow-2xs"
                             >
                               <div className="min-w-0 pr-3">
                                 <h4 className="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-blue-600 transition-colors truncate">
-                                  {sub.name || sub.title}
+                                  {subTitle}
                                 </h4>
                                 <div className="mt-1 flex items-center gap-2">
                                   {isMastered ? (
