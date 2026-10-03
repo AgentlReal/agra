@@ -14,18 +14,14 @@ import {
   ShieldCheck, 
   Menu, 
   X, 
-  Sun, 
-  Moon, 
   ArrowRight 
 } from 'lucide-react';
-import { useTheme } from '@/lib/theme-context';
 import { AppLogo } from '@/components/common/AppLogo';
 import { UserAvatar } from '@/components/common/UserAvatar';
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
   const { user, role, logout } = useAuth();
-  const { isLight, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
@@ -101,15 +97,6 @@ export const Navbar: React.FC = () => {
             <Flame className="h-3.5 w-3.5 text-amber-500" />
             <span>{user?.currentStreak ?? 0} Hari</span>
           </div>
-
-          {/* Theme Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors shadow-xs"
-            title="Ganti Tema (Dark / Light)"
-          >
-            {isLight ? <Moon className="h-4 w-4 text-blue-600" /> : <Sun className="h-4 w-4 text-amber-500" />}
-          </button>
 
           {/* Role Switcher Pill / User Dropdown */}
           <div className="relative">
@@ -211,18 +198,6 @@ export const Navbar: React.FC = () => {
               </Link>
             );
           })}
-          <div className="pt-2 border-t border-slate-100">
-            <button
-              onClick={toggleTheme}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
-            >
-              <span className="flex items-center gap-3">
-                {isLight ? <Moon className="h-4 w-4 text-blue-600" /> : <Sun className="h-4 w-4 text-amber-500" />}
-                <span>Tema: {isLight ? 'Terang (Light)' : 'Gelap (Dark)'}</span>
-              </span>
-              <span className="text-[11px] text-slate-400">Ubah</span>
-            </button>
-          </div>
         </div>
       )}
     </header>

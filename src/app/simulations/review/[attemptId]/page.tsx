@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import FormattedContent from '@/components/common/FormattedContent';
 import OptionRenderer from '@/components/common/OptionRenderer';
+import { normalizeImageUrl } from '@/lib/image-utils';
 
 interface ReviewItem {
   id: string | number;
@@ -220,9 +221,14 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
           </div>
         ) : (
           <div className="space-y-6">
-            {filtered.map((q) => (
+            {filtered.map((q, idx) => {
+              const normStimulusImg = normalizeImageUrl(q.stimulusImageUrl);
+              const normQuestionImg = normalizeImageUrl(q.questionImageUrl);
+              const showQuestionImg = normQuestionImg && (normQuestionImg !== normStimulusImg || !normStimulusImg);
+
+              return (
               <div
-                key={q.questionNumber}
+                key={q.id || q.questionNumber || `q-${idx}`}
                 className={`rounded-3xl border p-6 sm:p-7 bg-white shadow-sm transition-all ${
                   q.score === 0.5
                     ? 'border-amber-300'
@@ -262,7 +268,7 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
                   )}
                 </div>
 
-                {(q.stimulus || q.stimulusImageUrl) && (
+                {(q.stimulus || normStimulusImg) && (
                   <div className="mb-5 rounded-2xl border border-purple-100 bg-purple-50/40 p-4 text-xs text-slate-700 space-y-2.5 leading-relaxed">
                     {q.stimulus && (
                       <div>
@@ -273,17 +279,18 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
                       </div>
                     )}
 
-                    {q.stimulusImageUrl && (
+                    {normStimulusImg && (
                       <div className="relative group overflow-hidden rounded-xl border border-purple-100 bg-white p-2 text-center">
                         <img
-                          src={q.stimulusImageUrl}
+                          src={normStimulusImg}
                           alt="Stimulus visual simulasi"
                           className="max-h-60 sm:max-h-72 w-auto mx-auto object-contain rounded-lg cursor-zoom-in hover:opacity-95 transition-opacity"
-                          onClick={() => setZoomImageUrl(q.stimulusImageUrl || null)}
+                          onClick={() => setZoomImageUrl(normStimulusImg)}
+                          loading="lazy"
                         />
                         <button
                           type="button"
-                          onClick={() => setZoomImageUrl(q.stimulusImageUrl || null)}
+                          onClick={() => setZoomImageUrl(normStimulusImg)}
                           className="absolute bottom-2.5 right-2.5 flex items-center gap-1 rounded-lg bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-slate-700 shadow-xs border border-slate-200 hover:bg-white transition-colors"
                         >
                           <ZoomIn className="h-3 w-3 text-purple-600" />
@@ -298,17 +305,18 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
                   <FormattedContent content={q.questionText} />
                 </div>
 
-                {q.questionImageUrl && (
+                {showQuestionImg && (
                   <div className="mb-4 relative group overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-2 text-center">
                     <img
-                      src={q.questionImageUrl}
+                      src={normQuestionImg!}
                       alt="Ilustrasi pertanyaan"
                       className="max-h-60 sm:max-h-72 w-auto mx-auto object-contain rounded-lg cursor-zoom-in hover:opacity-95 transition-opacity"
-                      onClick={() => setZoomImageUrl(q.questionImageUrl || null)}
+                      onClick={() => setZoomImageUrl(normQuestionImg!)}
+                      loading="lazy"
                     />
                     <button
                       type="button"
-                      onClick={() => setZoomImageUrl(q.questionImageUrl || null)}
+                      onClick={() => setZoomImageUrl(normQuestionImg!)}
                       className="absolute bottom-2.5 right-2.5 flex items-center gap-1 rounded-lg bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-slate-700 shadow-xs border border-slate-200 hover:bg-white transition-colors"
                     >
                       <ZoomIn className="h-3 w-3 text-purple-600" />
@@ -318,7 +326,7 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
                 )}
 
                 <div className="space-y-2.5 mb-5">
-                  {q.options.map((opt) => {
+                  {q.options.map((opt, oIdx) => {
                     const studentKeys = q.studentAnswer && q.studentAnswer !== '-' 
                       ? q.studentAnswer.split(',').map((s: string) => s.trim()) 
                       : [];
@@ -340,7 +348,7 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
 
                     return (
                       <div
-                        key={opt.key}
+                        key={opt.key || opt.id || `opt-${oIdx}`}
                         className={`flex items-start gap-3 p-3.5 rounded-2xl border text-xs sm:text-sm ${optClass}`}
                       >
                         <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[11px] font-bold ${
@@ -384,7 +392,8 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
                   </div>
                 </div>
               </div>
-            ))}
+            );
+          })}
           </div>
         )}
       </main>

@@ -124,11 +124,11 @@ export default function AdminPaketSimulasiPage() {
         ) : (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {packages.map((pkg) => {
+              {packages.map((pkg, idx) => {
                 const isPublished = pkg.status === 'PUBLISHED' || pkg.status === 'ACTIVE';
                 return (
                   <div
-                    key={pkg.id}
+                    key={pkg.id || `pkg-${idx}`}
                     className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between hover:border-purple-300 hover:shadow-md transition-all space-y-5"
                   >
                     <div>

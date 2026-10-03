@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import FormattedContent from '@/components/common/FormattedContent';
 import OptionRenderer from '@/components/common/OptionRenderer';
+import { normalizeImageUrl } from '@/lib/image-utils';
 
 interface QuestionItem {
   id: string | number;
@@ -383,117 +384,129 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
             </button>
           </div>
 
-          {(currentQ.stimulus || currentQ.stimulusImageUrl) && (
-            <div className="rounded-2xl border border-purple-100 bg-purple-50/40 p-4 sm:p-5 text-xs sm:text-sm text-slate-700 leading-relaxed border-l-4 border-l-purple-600 space-y-3">
-              {currentQ.stimulus && (
-                <div>
-                  <p className="font-bold text-purple-700 mb-1.5 text-[11px] uppercase tracking-wider">
-                    Teks Stimulus Bacaan:
-                  </p>
-                  <FormattedContent content={currentQ.stimulus} />
-                </div>
-              )}
+          {(() => {
+            const normStimulusImg = normalizeImageUrl(currentQ.stimulusImageUrl);
+            const normQuestionImg = normalizeImageUrl(currentQ.questionImageUrl);
+            const showQuestionImg = normQuestionImg && (normQuestionImg !== normStimulusImg || !normStimulusImg);
 
-              {currentQ.stimulusImageUrl && (
-                <div className="relative group overflow-hidden rounded-xl border border-purple-100 bg-white p-2 text-center">
-                  <img
-                    src={currentQ.stimulusImageUrl}
-                    alt="Stimulus visual simulasi"
-                    className="max-h-72 sm:max-h-96 w-auto mx-auto object-contain rounded-lg cursor-zoom-in hover:opacity-95 transition-opacity"
-                    onClick={() => setZoomImageUrl(currentQ.stimulusImageUrl || null)}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setZoomImageUrl(currentQ.stimulusImageUrl || null)}
-                    className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-lg bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-xs border border-slate-200 hover:bg-white transition-colors"
-                  >
-                    <ZoomIn className="h-3.5 w-3.5 text-purple-600" />
-                    <span>Perbesar</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
+            return (
+              <>
+                {(currentQ.stimulus || normStimulusImg) && (
+                  <div className="rounded-2xl border border-purple-100 bg-purple-50/40 p-4 sm:p-5 text-xs sm:text-sm text-slate-700 leading-relaxed border-l-4 border-l-purple-600 space-y-3">
+                    {currentQ.stimulus && (
+                      <div>
+                        <p className="font-bold text-purple-700 mb-1.5 text-[11px] uppercase tracking-wider">
+                          Teks Stimulus Bacaan:
+                        </p>
+                        <FormattedContent content={currentQ.stimulus} />
+                      </div>
+                    )}
 
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-8">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3 mb-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-purple-700">
-                Soal #{currentQ.questionNumber}
-              </span>
-              {currentQ.questionFormat === 'COMPLEX_CHOICE' ? (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-200 bg-purple-50 px-2.5 py-0.5 text-[11px] font-semibold text-purple-700">
-                  <CheckSquare className="h-3 w-3" />
-                  Pilihan Ganda Kompleks (Pilih 1 atau 2)
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-0.5 text-[11px] font-semibold text-blue-700">
-                  <CircleDot className="h-3 w-3" />
-                  Pilihan Ganda (1 Jawaban)
-                </span>
-              )}
-            </div>
+                    {normStimulusImg && (
+                      <div className="relative group overflow-hidden rounded-xl border border-purple-100 bg-white p-2 text-center">
+                        <img
+                          src={normStimulusImg}
+                          alt="Stimulus visual simulasi"
+                          className="max-h-72 sm:max-h-96 w-auto mx-auto object-contain rounded-lg cursor-zoom-in hover:opacity-95 transition-opacity"
+                          onClick={() => setZoomImageUrl(normStimulusImg)}
+                          loading="lazy"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setZoomImageUrl(normStimulusImg)}
+                          className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-lg bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-xs border border-slate-200 hover:bg-white transition-colors"
+                        >
+                          <ZoomIn className="h-3.5 w-3.5 text-purple-600" />
+                          <span>Perbesar</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
 
-            <div className="text-sm sm:text-base font-medium text-slate-900 leading-relaxed">
-              <FormattedContent content={currentQ.questionText} />
-            </div>
+                <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-8">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3 mb-4">
+                    <span className="text-xs font-bold uppercase tracking-wider text-purple-700">
+                      Soal #{currentQ.questionNumber}
+                    </span>
+                    {currentQ.questionFormat === 'COMPLEX_CHOICE' ? (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-200 bg-purple-50 px-2.5 py-0.5 text-[11px] font-semibold text-purple-700">
+                        <CheckSquare className="h-3 w-3" />
+                        Pilihan Ganda Kompleks (Pilih 1 atau 2)
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-0.5 text-[11px] font-semibold text-blue-700">
+                        <CircleDot className="h-3 w-3" />
+                        Pilihan Ganda (1 Jawaban)
+                      </span>
+                    )}
+                  </div>
 
-            {currentQ.questionImageUrl && (
-              <div className="mt-4 relative group overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-2 text-center">
-                <img
-                  src={currentQ.questionImageUrl}
-                  alt="Ilustrasi pertanyaan"
-                  className="max-h-72 sm:max-h-96 w-auto mx-auto object-contain rounded-lg cursor-zoom-in hover:opacity-95 transition-opacity"
-                  onClick={() => setZoomImageUrl(currentQ.questionImageUrl || null)}
-                />
-                <button
-                  type="button"
-                  onClick={() => setZoomImageUrl(currentQ.questionImageUrl || null)}
-                  className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-lg bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-xs border border-slate-200 hover:bg-white transition-colors"
-                >
-                  <ZoomIn className="h-3.5 w-3.5 text-purple-600" />
-                  <span>Perbesar</span>
-                </button>
-              </div>
-            )}
+                  <div className="text-sm sm:text-base font-medium text-slate-900 leading-relaxed">
+                    <FormattedContent content={currentQ.questionText} />
+                  </div>
 
-            <div className="mt-6 space-y-3">
-              {currentQ.options.map((opt) => {
-                const currentAnswers = answers[currentIndex] || [];
-                const isSelected = currentAnswers.includes(opt.key);
-                const isComplex = currentQ.questionFormat === 'COMPLEX_CHOICE';
-                const isMaxReached = isComplex && currentAnswers.length >= 2 && !isSelected;
-                return (
-                  <button
-                    key={opt.key}
-                    disabled={isMaxReached}
-                    onClick={() => handleSelectOption(opt.key)}
-                    className={`w-full flex items-start gap-3.5 p-4 rounded-2xl border text-left transition-all cursor-pointer ${
-                      isMaxReached
-                        ? 'opacity-50 cursor-not-allowed border-slate-100 bg-slate-50 text-slate-400'
-                        : isSelected
-                        ? 'border-purple-600 bg-purple-50/70 text-slate-900 shadow-xs'
-                        : 'border-slate-200 bg-white text-slate-700 hover:border-purple-300 hover:bg-slate-50/60'
-                    }`}
-                  >
-                    <div
-                      className={`flex h-7 w-7 shrink-0 items-center justify-center text-xs font-bold transition-colors ${
-                        isComplex ? 'rounded-lg' : 'rounded-full'
-                      } ${
-                        isSelected
-                          ? 'bg-purple-600 text-white shadow-xs'
-                          : 'bg-slate-100 text-slate-600 border border-slate-200'
-                      }`}
-                    >
-                      {isSelected && isComplex ? <Check className="h-4 w-4" /> : opt.key}
+                  {showQuestionImg && (
+                    <div className="mt-4 relative group overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-2 text-center">
+                      <img
+                        src={normQuestionImg!}
+                        alt="Ilustrasi pertanyaan"
+                        className="max-h-72 sm:max-h-96 w-auto mx-auto object-contain rounded-lg cursor-zoom-in hover:opacity-95 transition-opacity"
+                        onClick={() => setZoomImageUrl(normQuestionImg!)}
+                        loading="lazy"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setZoomImageUrl(normQuestionImg!)}
+                        className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-lg bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-xs border border-slate-200 hover:bg-white transition-colors"
+                      >
+                        <ZoomIn className="h-3.5 w-3.5 text-purple-600" />
+                        <span>Perbesar</span>
+                      </button>
                     </div>
-                    <div className="text-xs sm:text-sm pt-0.5 leading-relaxed flex-1 font-medium">
-                      <OptionRenderer text={opt.text} onZoom={setZoomImageUrl} />
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+                  )}
+
+                  <div className="mt-6 space-y-3">
+                    {currentQ.options.map((opt, oIdx) => {
+                      const currentAnswers = answers[currentIndex] || [];
+                      const isSelected = currentAnswers.includes(opt.key);
+                      const isComplex = currentQ.questionFormat === 'COMPLEX_CHOICE';
+                      const isMaxReached = isComplex && currentAnswers.length >= 2 && !isSelected;
+                      return (
+                        <button
+                          key={opt.key || opt.id || `opt-${oIdx}`}
+                          disabled={isMaxReached}
+                          onClick={() => handleSelectOption(opt.key)}
+                          className={`w-full flex items-start gap-3.5 p-4 rounded-2xl border text-left transition-all cursor-pointer ${
+                            isMaxReached
+                              ? 'opacity-50 cursor-not-allowed border-slate-100 bg-slate-50 text-slate-400'
+                              : isSelected
+                              ? 'border-purple-600 bg-purple-50/70 text-slate-900 shadow-xs'
+                              : 'border-slate-200 bg-white text-slate-700 hover:border-purple-300 hover:bg-slate-50/60'
+                          }`}
+                        >
+                          <div
+                            className={`flex h-7 w-7 shrink-0 items-center justify-center text-xs font-bold transition-colors ${
+                              isComplex ? 'rounded-lg' : 'rounded-full'
+                            } ${
+                              isSelected
+                                ? 'bg-purple-600 text-white shadow-xs'
+                                : 'bg-slate-100 text-slate-600 border border-slate-200'
+                            }`}
+                          >
+                            {isSelected && isComplex ? <Check className="h-4 w-4" /> : opt.key}
+                          </div>
+                          <div className="text-xs sm:text-sm pt-0.5 leading-relaxed flex-1 font-medium">
+                            <OptionRenderer text={opt.text} onZoom={setZoomImageUrl} />
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            );
+          })()}
         </div>
 
         {/* Bottom Nav */}
@@ -575,7 +588,7 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
 
                 return (
                   <button
-                    key={q.questionNumber}
+                    key={q.id || q.questionNumber || `pal-${idx}`}
                     onClick={() => {
                       setCurrentIndex(idx);
                       setPaletteOpen(false);

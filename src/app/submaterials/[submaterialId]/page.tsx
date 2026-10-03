@@ -192,11 +192,11 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
 
             {/* Levels List */}
             <div className="space-y-4">
-              {levels.map((lvl) => {
+              {levels.map((lvl, idx) => {
                 const IconComponent = lvl.icon;
                 return (
                   <div
-                    key={lvl.levelNumber}
+                    key={lvl.levelNumber || `lvl-${idx}`}
                     className={`bg-white rounded-3xl border p-6 sm:p-7 transition-all ${
                       lvl.isPassed
                         ? 'border-emerald-200 shadow-xs'

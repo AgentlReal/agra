@@ -316,8 +316,8 @@ export default function CreateQuestionPage() {
                     bankType === 'RECALL' ? 'opacity-50 cursor-not-allowed bg-slate-50' : ''
                   }`}
                 >
-                  {submaterials.map((sm) => (
-                    <option key={sm.id} value={sm.id}>
+                  {submaterials.map((sm, smIdx) => (
+                    <option key={sm.id || `sm-${smIdx}`} value={sm.id}>
                       {sm.material_title ? `[${sm.material_title}] ` : ''}{sm.title}
                     </option>
                   ))}
@@ -461,8 +461,8 @@ export default function CreateQuestionPage() {
             </p>
 
             <div className="space-y-3">
-              {options.map((opt) => (
-                <div key={opt.key} className="flex items-center gap-3">
+              {options.map((opt, optIdx) => (
+                <div key={opt.key || `opt-${optIdx}`} className="flex items-center gap-3">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700">
                     {opt.key}
                   </span>
@@ -567,13 +567,13 @@ export default function CreateQuestionPage() {
               <div>
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Pilihan Jawaban:</p>
                 <div className="space-y-2">
-                  {options.map((opt) => {
+                  {options.map((opt, optIdx) => {
                     const isKey = questionType === 'PG_TUNGGAL' 
                       ? singleKey === opt.key 
                       : complexKeys.includes(opt.key);
                     return (
                       <div
-                        key={opt.key}
+                        key={opt.key || `opt-prev-${optIdx}`}
                         className={`flex items-start gap-3 p-3 rounded-xl border text-xs ${
                           isKey
                             ? 'border-emerald-300 bg-emerald-50/60 text-slate-900'

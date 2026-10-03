@@ -1,7 +1,6 @@
-'use client';
-
 import React from 'react';
 import katex from 'katex';
+import { normalizeImageUrl } from '@/lib/image-utils';
 
 interface FormattedContentProps {
   content?: string | null;
@@ -27,10 +26,56 @@ function renderKatexToString(expr: string, displayMode: boolean): string {
 
 /**
  * Parses inline string into React nodes:
- * 1. Math formulas ($...$)
- * 2. Markdown formatting (**bold**, *italic*, `code`)
+ * 1. Markdown images (![alt](url))
+ * 2. Math formulas ($...$)
+ * 3. Markdown formatting (**bold**, *italic*, `code`)
  */
 function renderInlineContent(text: string): React.ReactNode[] {
+  if (!text) return [];
+
+  // Match markdown images first: ![alt](url)
+  const mdImageRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
+  const imageNodes: React.ReactNode[] = [];
+  let lastImgIdx = 0;
+  let imgMatch: RegExpExecArray | null;
+
+  while ((imgMatch = mdImageRegex.exec(text)) !== null) {
+    if (imgMatch.index > lastImgIdx) {
+      const slice = text.slice(lastImgIdx, imgMatch.index);
+      imageNodes.push(...renderMathAndMarkdown(slice, `pre-img-${lastImgIdx}`));
+    }
+
+    const alt = imgMatch[1] || 'Gambar Soal';
+    const rawSrc = imgMatch[2];
+    const normalizedSrc = normalizeImageUrl(rawSrc);
+
+    if (normalizedSrc) {
+      imageNodes.push(
+        <span key={`img-${imgMatch.index}`} className="my-2 block max-w-full overflow-hidden">
+          <img
+            src={normalizedSrc}
+            alt={alt}
+            className="max-h-80 max-w-full rounded-lg border border-gray-200 bg-white object-contain shadow-sm"
+            loading="lazy"
+          />
+        </span>
+      );
+    }
+
+    lastImgIdx = imgMatch.index + imgMatch[0].length;
+  }
+
+  if (lastImgIdx < text.length) {
+    imageNodes.push(...renderMathAndMarkdown(text.slice(lastImgIdx), `post-img-${lastImgIdx}`));
+  }
+
+  return imageNodes;
+}
+
+/**
+ * Parses math formulas ($...$) and passes remaining chunks to markdown formatting
+ */
+function renderMathAndMarkdown(text: string, keyPrefix: string): React.ReactNode[] {
   if (!text) return [];
 
   // Match inline math $...$
@@ -42,14 +87,14 @@ function renderInlineContent(text: string): React.ReactNode[] {
   while ((match = mathInlineRegex.exec(text)) !== null) {
     if (match.index > lastIndex) {
       const plainText = text.slice(lastIndex, match.index);
-      nodes.push(...renderMarkdownInline(plainText, `text-${lastIndex}`));
+      nodes.push(...renderMarkdownInline(plainText, `${keyPrefix}-txt-${lastIndex}`));
     }
 
     const mathContent = match[1];
     const html = renderKatexToString(mathContent, false);
     nodes.push(
       <span
-        key={`math-${match.index}`}
+        key={`${keyPrefix}-math-${match.index}`}
         className="katex-inline mx-0.5 select-text"
         dangerouslySetInnerHTML={{ __html: html }}
       />
@@ -60,7 +105,7 @@ function renderInlineContent(text: string): React.ReactNode[] {
 
   if (lastIndex < text.length) {
     const trailingText = text.slice(lastIndex);
-    nodes.push(...renderMarkdownInline(trailingText, `text-${lastIndex}`));
+    nodes.push(...renderMarkdownInline(trailingText, `${keyPrefix}-txt-${lastIndex}`));
   }
 
   return nodes;
@@ -78,14 +123,14 @@ function renderMarkdownInline(text: string, keyPrefix: string): React.ReactNode[
     const key = `${keyPrefix}-${idx}`;
     if (part.startsWith('**') && part.endsWith('**') && part.length >= 4) {
       return (
-        <strong key={key} className="font-bold text-white">
+        <strong key={key} className="font-bold text-gray-900">
           {part.slice(2, -2)}
         </strong>
       );
     }
     if (part.startsWith('*') && part.endsWith('*') && part.length >= 2) {
       return (
-        <em key={key} className="italic text-slate-200">
+        <em key={key} className="italic text-gray-700">
           {part.slice(1, -1)}
         </em>
       );
@@ -94,7 +139,7 @@ function renderMarkdownInline(text: string, keyPrefix: string): React.ReactNode[
       return (
         <code
           key={key}
-          className="rounded bg-slate-800/80 px-1.5 py-0.5 font-mono text-[0.85em] text-amber-300 border border-slate-700/60"
+          className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-[0.85em] text-amber-700 border border-gray-200"
         >
           {part.slice(1, -1)}
         </code>
@@ -219,7 +264,7 @@ export default function FormattedContent({
           return (
             <div
               key={`block-${idx}`}
-              className="katex-display my-2 overflow-x-auto rounded-lg bg-slate-950/40 p-2 text-center border border-slate-800/40"
+              className="katex-display my-2 overflow-x-auto rounded-lg bg-gray-50 p-2 text-center border border-gray-200"
               dangerouslySetInnerHTML={{ __html: html }}
             />
           );

@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import FormattedContent from '@/components/common/FormattedContent';
 import OptionRenderer from '@/components/common/OptionRenderer';
+import { normalizeImageUrl } from '@/lib/image-utils';
 
 interface ReviewQuestion {
   id: string | number;
@@ -216,12 +217,16 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
           </div>
         ) : (
           <div className="space-y-6">
-            {filteredQuestions.map((q) => {
+            {filteredQuestions.map((q, idx) => {
               const studentAnswerKeys = q.studentAnswer.split(',').map((s) => s.trim());
+              const normStimulusImg = normalizeImageUrl(q.stimulusImageUrl);
+              const normQuestionImg = normalizeImageUrl(q.questionImageUrl);
+              // Avoid duplicate image if stimulus has no text and uses the same image
+              const showQuestionImg = normQuestionImg && (normQuestionImg !== normStimulusImg || !normStimulusImg);
 
               return (
                 <div
-                  key={q.id}
+                  key={q.id || q.questionNumber || `q-${idx}`}
                   className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-8 space-y-6"
                 >
                   {/* Question Header Meta */}
@@ -249,7 +254,7 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
                   </div>
 
                   {/* Stimulus if available */}
-                  {(q.stimulus || q.stimulusImageUrl) && (
+                  {(q.stimulus || normStimulusImg) && (
                     <div className="rounded-2xl border border-blue-100 bg-[#eff6ff]/50 p-4 sm:p-5 text-xs sm:text-sm text-slate-700 leading-relaxed border-l-4 border-l-blue-600 space-y-3">
                       {q.stimulus && (
                         <div>
@@ -259,13 +264,14 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
                           <FormattedContent content={q.stimulus} />
                         </div>
                       )}
-                      {q.stimulusImageUrl && (
+                      {normStimulusImg && (
                         <div className="relative group overflow-hidden rounded-xl border border-blue-100 bg-white p-2 text-center">
                           <img
-                            src={q.stimulusImageUrl}
+                            src={normStimulusImg}
                             alt="Stimulus visual"
                             className="max-h-72 w-auto mx-auto object-contain rounded-lg cursor-zoom-in"
-                            onClick={() => setZoomImageUrl(q.stimulusImageUrl || null)}
+                            onClick={() => setZoomImageUrl(normStimulusImg)}
+                            loading="lazy"
                           />
                         </div>
                       )}
@@ -277,9 +283,22 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
                     <FormattedContent content={q.questionText} />
                   </div>
 
+                  {/* Question Image (Rendered below question text if present and not duplicate) */}
+                  {showQuestionImg && (
+                    <div className="relative group overflow-hidden rounded-xl border border-slate-200 bg-white p-2 text-center">
+                      <img
+                        src={normQuestionImg!}
+                        alt="Visual Soal"
+                        className="max-h-80 w-auto mx-auto object-contain rounded-lg cursor-zoom-in"
+                        onClick={() => setZoomImageUrl(normQuestionImg!)}
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+
                   {/* Options List with Safe-to-Fail state (Emerald for correct, Amber for student review) */}
                   <div className="space-y-3">
-                    {q.options.map((opt) => {
+                    {q.options.map((opt, oIdx) => {
                       const isStudentAnswer = studentAnswerKeys.includes(opt.key);
                       const isKey = opt.isCorrect;
 
@@ -308,7 +327,7 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
 
                       return (
                         <div
-                          key={opt.key}
+                          key={opt.key || opt.id || `opt-${oIdx}`}
                           className={`w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border text-left transition-all ${containerStyle}`}
                         >
                           <div className="flex items-start gap-3 flex-1">

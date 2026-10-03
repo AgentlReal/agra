@@ -4,14 +4,12 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
-import { Database, Layers, UserCheck, LogOut, Sun, Moon } from 'lucide-react';
-import { useTheme } from '@/lib/theme-context';
+import { Database, Layers, UserCheck, LogOut } from 'lucide-react';
 import { AppLogo } from '@/components/common/AppLogo';
 
 export const AdminNav: React.FC = () => {
   const pathname = usePathname();
   const { user, logout } = useAuth();
-  const { isLight, toggleTheme } = useTheme();
 
   const links = [
     { label: 'Bank Soal', href: '/admin/bank-soal', icon: Database },
@@ -63,16 +61,7 @@ export const AdminNav: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Theme Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors shadow-xs"
-            title="Ganti Tema (Dark / Light)"
-          >
-            {isLight ? <Moon className="h-4 w-4 text-purple-600" /> : <Sun className="h-4 w-4 text-amber-500" />}
-          </button>
-
-          <div className="flex items-center gap-3 pl-3 border-l border-slate-200">
+          <div className="flex items-center gap-3">
             <div className="text-right hidden sm:block">
               <p className="text-xs font-semibold text-slate-800">{user?.name || user?.username || 'Admin'}</p>
               <p className="text-[10px] text-purple-700 font-mono">@{user?.username || 'admin'}</p>

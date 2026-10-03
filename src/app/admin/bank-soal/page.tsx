@@ -319,8 +319,8 @@ export default function AdminBankSoalPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {filteredQuestions.map((q) => (
-                    <tr key={q.id} className="hover:bg-slate-50/80 transition-colors">
+                  {filteredQuestions.map((q, idx) => (
+                    <tr key={q.id || `q-row-${idx}`} className="hover:bg-slate-50/80 transition-colors">
                       <td className="py-3.5 px-4 max-w-md">
                         <div className="flex items-start gap-2">
                           {q.imageUrl && (

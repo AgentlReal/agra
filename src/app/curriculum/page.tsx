@@ -78,9 +78,9 @@ export default function CurriculumIndexPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {subjects.map((sub: any) => (
+            {subjects.map((sub: any, idx: number) => (
               <div
-                key={sub.id || sub.subjectId}
+                key={sub.id || sub.subjectId || `sub-${idx}`}
                 className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-8 flex flex-col justify-between hover:border-slate-300 hover:shadow-md transition-all group"
               >
                 <div>

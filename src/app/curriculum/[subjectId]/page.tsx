@@ -127,7 +127,7 @@ export default function SubjectCurriculumPage({ params }: { params: Promise<{ su
                   const submaterials = mat.submaterials || mat.sub_materials || [];
                   return (
                     <div
-                      key={mat.id || mIdx}
+                      key={mat.id || `mat-${mIdx}`}
                       className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-7 space-y-4"
                     >
                       <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -143,13 +143,13 @@ export default function SubjectCurriculumPage({ params }: { params: Promise<{ su
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                        {submaterials.map((sub: any) => {
+                        {submaterials.map((sub: any, sIdx: number) => {
                           const isMastered = Boolean(sub.isMastered ?? sub.is_mastered);
                           const progressState = sub.progressState || (isMastered ? 'MASTERED' : 'IN_PROGRESS');
 
                           return (
                             <Link
-                              key={sub.id}
+                              key={sub.id || `sub-${sIdx}`}
                               href={`/submaterials/${sub.id}`}
                               className="group flex items-center justify-between p-4 rounded-2xl border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/60 transition-all shadow-2xs"
                             >

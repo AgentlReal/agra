@@ -407,7 +407,7 @@ export default function ProfilePage() {
                       minute: '2-digit'
                     }) : '-';
                     return (
-                      <div key={tx.id || idx} className="py-3 flex items-center justify-between gap-4">
+                      <div key={tx.id || `tx-${idx}`} className="py-3 flex items-center justify-between gap-4">
                         <div className="min-w-0">
                           <p className="text-xs font-bold text-slate-800 truncate">{desc}</p>
                           <p className="text-[11px] text-slate-400 mt-0.5">{dateFormatted}</p>
