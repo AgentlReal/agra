@@ -194,6 +194,7 @@ export class SimulationRepository {
         question_id: number;
         question_type: "SINGLE_CHOICE" | "COMPLEX_CHOICE";
         question_text: string;
+        question_image_url: string | null;
         stimulus_image_url: string | null;
         stimulus_id: number | null;
         stimulus_title: string | null;
@@ -210,6 +211,7 @@ export class SimulationRepository {
                 qb.id AS question_id,
                 qb.question_format AS question_type,
                 qb.question_text,
+                qb.question_image_url AS question_image_url,
                 stm.stimulus_image_url AS stimulus_image_url,
                 stm.id AS stimulus_id,
                 stm.title AS stimulus_title,
@@ -489,6 +491,7 @@ export class SimulationRepository {
         session_question_id: number;
         question_order: number;
         question_text: string;
+        question_image_url: string | null;
         stimulus_image_url: string | null;
         stimulus_id: number | null;
         stimulus_title: string | null;
@@ -510,6 +513,7 @@ export class SimulationRepository {
                 sq.id AS session_question_id,
                 sq.question_order,
                 qb.question_text,
+                qb.question_image_url AS question_image_url,
                 stm.stimulus_image_url AS stimulus_image_url,
                 stm.id AS stimulus_id,
                 stm.title AS stimulus_title,

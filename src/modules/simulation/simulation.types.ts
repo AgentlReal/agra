@@ -57,6 +57,7 @@ export interface M05_SimulationQuestionItem {
     question_order: number;
     question_type: "SINGLE_CHOICE" | "COMPLEX_CHOICE";
     question_text: string;
+    question_image_url?: string | null;
     stimulus_image_url: string | null;
     options: M05_QuestionOptionItem[];
     saved_answer: M05_SavedAnswerItem | null;
@@ -110,6 +111,7 @@ export interface M05_SimulationQuestionReviewItem {
     session_question_id: number;
     question_order: number;
     question_text: string;
+    question_image_url?: string | null;
     stimulus_image_url: string | null;
     options: M05_SimulationQuestionReviewOption[];
     selected_option_ids: number[];

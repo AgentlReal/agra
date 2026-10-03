@@ -21,6 +21,8 @@ export interface RecallQuestion {
     question_order: number;
     question_type: string;
     question_text: string;
+    question_image_url?: string | null;
+    stimulus_image_url?: string | null;
     options: RecallQuestionOption[];
     selected_option_ids: number[];
     is_skipped: boolean;
@@ -29,7 +31,10 @@ export interface RecallQuestion {
         subject_id: number;
         title: string;
         content_text: string;
-        source_citation: string | null;
+        stimulus_text?: string;
+        source_citation?: string | null;
+        image_url?: string | null;
+        stimulus_image_url?: string | null;
     } | null;
 }
 
@@ -86,6 +91,8 @@ export interface RecallReviewItem {
     subject_id: number;
     question_order: number;
     question_text: string;
+    question_image_url?: string | null;
+    stimulus_image_url?: string | null;
     options: RecallReviewItemOption[];
     selected_option_ids: number[];
     is_correct: boolean;
@@ -97,7 +104,10 @@ export interface RecallReviewItem {
         subject_id: number;
         title: string;
         content_text: string;
-        source_citation: string | null;
+        stimulus_text?: string;
+        source_citation?: string | null;
+        image_url?: string | null;
+        stimulus_image_url?: string | null;
     } | null;
 }
 
