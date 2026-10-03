@@ -190,6 +190,7 @@ export class LearningService {
         }
 
         const res = await this.repo.upsertAnswer(
+            attemptId,
             sessionQuestionId,
             dto.selected_option_ids || [],
             dto.is_skipped || false,
