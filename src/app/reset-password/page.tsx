@@ -4,8 +4,9 @@ import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api-client';
-import { Lock, Check, AlertCircle, ArrowRight, ShieldCheck, Eye, EyeOff } from 'lucide-react';
+import { Lock, Check, AlertCircle, ArrowRight, ShieldCheck, Eye, EyeOff, Sparkles, Sliders } from 'lucide-react';
 import { AppLogo } from '@/components/common/AppLogo';
+import { Footer } from '@/components/layout/Footer';
 
 function ResetPasswordForm() {
   const router = useRouter();
@@ -57,135 +58,178 @@ function ResetPasswordForm() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-4 py-12 bg-slate-950">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-6">
-          <Link href="/" className="inline-flex items-center gap-2.5">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-900/90 border border-slate-700/60 shadow-lg shadow-indigo-500/10 p-1">
-              <AppLogo size={34} />
+    <div className="min-h-screen flex flex-col bg-[#f8fafc]">
+      <header className="w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md px-4 sm:px-8 py-3.5">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 border border-blue-100 p-1">
+              <AppLogo size={26} />
             </div>
-            <span className="text-2xl font-bold tracking-tight text-white">AGRA</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-bold tracking-tight text-blue-600">AGRA</span>
+              <span className="hidden sm:inline-block text-xs font-semibold text-slate-500 border-l border-slate-200 pl-2">
+                TKA Pintar SMP
+              </span>
+            </div>
           </Link>
-          <h2 className="mt-4 text-2xl font-bold text-white">Atur Ulang Kata Sandi</h2>
-          <p className="mt-1 text-xs text-slate-400">Buat kata sandi baru untuk akun Anda</p>
-        </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 sm:p-8 backdrop-blur-xl shadow-2xl">
-          {success ? (
-            <div className="text-center py-4 space-y-3">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
-                <ShieldCheck className="h-6 w-6" />
+          <Link
+            href="/login"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors"
+          >
+            <span>Masuk</span>
+          </Link>
+        </div>
+      </header>
+
+      <main className="flex-1 flex items-center justify-center p-4 sm:p-8">
+        <div className="w-full max-w-lg">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-6 sm:p-8 md:p-10">
+            <div className="mb-6">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold tracking-wide mb-3">
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>ATUR ULANG KATA SANDI</span>
               </div>
-              <h3 className="text-base font-semibold text-white">Kata Sandi Berhasil Diperbarui!</h3>
-              <p className="text-xs text-slate-300">
-                Mengalihkan Anda ke halaman masuk...
+              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Buat Kata Sandi Baru</h1>
+              <p className="text-slate-500 text-xs sm:text-sm mt-1">
+                Masukkan kombinasi sandi baru yang aman untuk akun belajarmu.
               </p>
             </div>
-          ) : (
-            <form onSubmit={handleReset} className="space-y-4">
-              {errorMsg && (
-                <div className="flex items-center gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-400">
-                  <AlertCircle className="h-4 w-4 shrink-0" />
-                  <span>{errorMsg}</span>
-                </div>
-              )}
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300">Kata Sandi Baru</label>
-                <div className="relative mt-1">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    required
-                    className="w-full rounded-xl border border-slate-800 bg-slate-950/80 px-4 py-2.5 pl-10 pr-10 text-sm text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none"
-                  />
-                  <Lock className="absolute left-3.5 top-3 h-4 w-4 text-slate-500" />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-3 text-slate-500 hover:text-slate-300 transition-colors focus:outline-none"
-                    aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
+            {success ? (
+              <div className="text-center py-4 space-y-4">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200">
+                  <ShieldCheck className="h-7 w-7" />
                 </div>
-
-                {/* Password Requirements Checklist - 4 Kriteria Eksplisit */}
-                <div className="mt-2.5 rounded-lg border border-slate-800/80 bg-slate-950/60 p-2.5 text-[11px] space-y-1">
-                  <div className={`flex items-center gap-1.5 ${hasLength ? 'text-emerald-400' : 'text-slate-500'}`}>
-                    <Check className="h-3 w-3" />
-                    <span>Panjang 6 - 12 karakter</span>
-                  </div>
-                  <div className={`flex items-center gap-1.5 ${hasUpper && hasLower ? 'text-emerald-400' : 'text-slate-500'}`}>
-                    <Check className="h-3 w-3" />
-                    <span>Kombinasi huruf kapital dan huruf kecil</span>
-                  </div>
-                  <div className={`flex items-center gap-1.5 ${hasNumber ? 'text-emerald-400' : 'text-slate-500'}`}>
-                    <Check className="h-3 w-3" />
-                    <span>Memuat minimal 1 angka (0-9)</span>
-                  </div>
-                  <div className={`flex items-center gap-1.5 ${hasSpecial ? 'text-emerald-400' : 'text-slate-500'}`}>
-                    <Check className="h-3 w-3" />
-                    <span>Memuat minimal 1 karakter simbol khusus</span>
-                  </div>
-                </div>
+                <h3 className="text-base font-bold text-slate-900">Kata Sandi Berhasil Diperbarui!</h3>
+                <p className="text-xs text-slate-600">
+                  Mengalihkanmu ke halaman masuk dalam beberapa detik...
+                </p>
               </div>
+            ) : (
+              <form onSubmit={handleReset} className="space-y-4">
+                {errorMsg && (
+                  <div className="flex items-center gap-2.5 rounded-xl border border-amber-200 bg-amber-50 p-3.5 text-xs text-amber-900">
+                    <AlertCircle className="h-4 w-4 text-amber-600 shrink-0" />
+                    <span>{errorMsg}</span>
+                  </div>
+                )}
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300">Konfirmasi Kata Sandi Baru</label>
-                <div className="relative mt-1">
-                  <input
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
-                    required
-                    className={`w-full rounded-xl border bg-slate-950/80 px-4 py-2.5 pl-10 pr-10 text-sm text-white placeholder-slate-500 focus:outline-none ${
-                      confirmPassword && !passwordsMatch ? 'border-rose-500' : 'border-slate-800 focus:border-indigo-500'
-                    }`}
-                  />
-                  <Lock className="absolute left-3.5 top-3 h-4 w-4 text-slate-500" />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3.5 top-3 text-slate-500 hover:text-slate-300 transition-colors focus:outline-none"
-                    aria-label={showConfirmPassword ? 'Sembunyikan konfirmasi kata sandi' : 'Tampilkan konfirmasi kata sandi'}
-                  >
-                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
+                <div>
+                  <label className="font-semibold text-slate-800 text-xs sm:text-sm flex items-center gap-2 mb-2">
+                    <Lock className="h-4 w-4 text-blue-600" />
+                    <span>Kata Sandi Baru</span>
+                  </label>
+                  <div className="relative flex items-center">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Buat sandi baru (6–12 karakter)"
+                      required
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 pr-11 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition shadow-2xs"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 text-slate-400 hover:text-slate-600 p-1 focus:outline-none"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
-                {confirmPassword && !passwordsMatch && (
-                  <p className="mt-1 text-[11px] text-rose-400">Konfirmasi kata sandi tidak cocok</p>
-                )}
-              </div>
 
-              <button
-                type="submit"
-                disabled={loading || !isValid}
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/30 hover:from-indigo-500 hover:to-blue-500 disabled:opacity-50 transition-all cursor-pointer disabled:cursor-not-allowed mt-2"
-              >
-                {loading ? (
-                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                ) : (
-                  <>
-                    <span>Simpan Kata Sandi Baru</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
-              </button>
-            </form>
-          )}
+                {/* Password Criteria Box */}
+                <div className="bg-[#eff6ff] border border-blue-100 rounded-xl p-4 text-xs">
+                  <div className="font-semibold text-slate-800 flex items-center gap-2 mb-2">
+                    <Sliders className="h-3.5 w-3.5 text-blue-600" />
+                    <span>Kriteria Keamanan Sandi :</span>
+                  </div>
+                  <ul className="space-y-1.5 text-slate-600">
+                    <li className="flex items-center gap-2">
+                      <span className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${hasLength ? 'bg-emerald-600 text-white' : 'border border-slate-300'}`}>
+                        {hasLength ? '✓' : ''}
+                      </span>
+                      <span>Minimal 6 karakter (maksimal 12 karakter)</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${hasUpper && hasLower ? 'bg-emerald-600 text-white' : 'border border-slate-300'}`}>
+                        {hasUpper && hasLower ? '✓' : ''}
+                      </span>
+                      <span>Memuat huruf kapital (A–Z) dan huruf kecil (a–z)</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${hasNumber ? 'bg-emerald-600 text-white' : 'border border-slate-300'}`}>
+                        {hasNumber ? '✓' : ''}
+                      </span>
+                      <span>Memuat minimal satu angka (0–9)</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${hasSpecial ? 'bg-emerald-600 text-white' : 'border border-slate-300'}`}>
+                        {hasSpecial ? '✓' : ''}
+                      </span>
+                      <span>Memuat simbol atau karakter khusus (@, #, $, %, dll.)</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div>
+                  <label className="font-semibold text-slate-800 text-xs sm:text-sm flex items-center gap-2 mb-2">
+                    <ShieldCheck className="h-4 w-4 text-blue-600" />
+                    <span>Konfirmasi Kata Sandi Baru</span>
+                  </label>
+                  <div className="relative flex items-center">
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Ketik ulang kata sandi baru"
+                      required
+                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 pr-11 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition shadow-2xs"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 text-slate-400 hover:text-slate-600 p-1 focus:outline-none"
+                    >
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  {confirmPassword.length > 0 && (
+                    <p className={`text-[11px] mt-1 flex items-center gap-1 ${passwordsMatch ? 'text-emerald-600' : 'text-amber-600'}`}>
+                      {passwordsMatch ? '✓ Kata sandi cocok' : '⚠ Kata sandi belum cocok'}
+                    </p>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading || !isValid}
+                  className="btn-tactile-primary w-full py-3.5 px-6 rounded-xl font-bold text-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 transition-all mt-2"
+                >
+                  {loading ? (
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  ) : (
+                    <>
+                      <span>Simpan Kata Sandi Baru</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
+          </div>
         </div>
-      </div>
+      </main>
+
+      <Footer />
     </div>
   );
 }
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Memuat...</div>}>
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center text-slate-500 text-sm">Memuat halaman...</div>}>
       <ResetPasswordForm />
     </Suspense>
   );

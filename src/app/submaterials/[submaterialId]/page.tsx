@@ -38,7 +38,7 @@ const LEVEL_CONFIGS = [
     name: 'Level 1: Pemahaman & Pengetahuan (C1-C2)',
     category: 'Recall & Faktual',
     description: 'Mengenali konsep dasar, istilah matematis/literasi, dan prosedur operasi langsung.',
-    xpReward: 30,
+    xpReward: 50,
     icon: Brain,
   },
   {
@@ -46,7 +46,7 @@ const LEVEL_CONFIGS = [
     name: 'Level 2: Aplikasi & Prosedural (C3-C4)',
     category: 'Penerapan Konsep',
     description: 'Menerapkan prosedur multi-langkah dan pemecahan masalah kontekstual sehari-hari.',
-    xpReward: 50,
+    xpReward: 75,
     icon: Target,
   },
   {
@@ -54,7 +54,7 @@ const LEVEL_CONFIGS = [
     name: 'Level 3: Penalaran & Analisis (C5-C6)',
     category: 'HOTS & Problem Solving',
     description: 'Menganalisis skenario baru, mengevaluasi validitas strategi, dan penarikan simpulan.',
-    xpReward: 80,
+    xpReward: 100,
     icon: Zap,
   },
 ];
@@ -143,26 +143,26 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-950">
+    <div className="flex min-h-screen flex-col bg-[#f8fafc]">
       <Navbar />
 
       <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full space-y-6">
         <Link
           href="/curriculum"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700"
         >
           <ArrowLeft className="h-4 w-4" /> Kembali ke Kurikulum
         </Link>
 
         {errorMsg && (
-          <div className="flex items-center justify-between rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-400">
+          <div className="flex items-center justify-between rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs sm:text-sm text-amber-900 shadow-2xs">
             <div className="flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 shrink-0" />
+              <AlertCircle className="h-5 w-5 text-amber-600 shrink-0" />
               <span>{errorMsg}</span>
             </div>
             <button
               onClick={loadProgress}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-rose-500/20 px-3 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-500/30 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-amber-200/80 hover:bg-amber-300 px-3.5 py-1.5 text-xs font-bold text-amber-900 transition-colors cursor-pointer"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               <span>Coba Lagi</span>
@@ -172,110 +172,108 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
 
         {loading ? (
           <div className="flex h-64 items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
           </div>
         ) : (
           <>
             {/* Header Card */}
-            <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-6 sm:p-8 backdrop-blur-md">
-              <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-400 mb-2">
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-8">
+              <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 mb-2">
                 <Layers className="h-3.5 w-3.5" />
-                Pohon Level Kognitif Asesmen
+                <span>Pohon Level Kognitif Asesmen</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                 {submaterial?.title || 'Submateri Pembelajaran'}
               </h1>
-              <p className="mt-2 text-xs sm:text-sm text-slate-300">
-                Selesaikan 3 level kognitif secara bertahap dengan ambang kelulusan 80% (Mastery Learning) untuk menuntaskan submateri ini.
+              <p className="mt-1 text-xs sm:text-sm text-slate-500 leading-relaxed">
+                Selesaikan 3 level kognitif secara bertahap dengan ambang kelulusan 90% (KKM 9/10 butir) untuk menuntaskan submateri ini.
               </p>
             </div>
 
             {/* Levels List */}
             <div className="space-y-4">
-              {levels.map((lvl) => {
+              {levels.map((lvl, idx) => {
                 const IconComponent = lvl.icon;
                 return (
                   <div
-                    key={lvl.levelNumber}
-                    className={`rounded-2xl border p-6 transition-all ${
-                      lvl.isUnlocked
-                        ? 'border-slate-800 bg-slate-900/80 hover:border-slate-700'
-                        : 'border-slate-900 bg-slate-950/40 opacity-60'
+                    key={lvl.levelNumber || `lvl-${idx}`}
+                    className={`bg-white rounded-3xl border p-6 sm:p-7 transition-all ${
+                      lvl.isPassed
+                        ? 'border-emerald-200 shadow-xs'
+                        : lvl.isUnlocked
+                        ? 'border-blue-200 shadow-xs'
+                        : 'border-slate-200 opacity-60'
                     }`}
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div className="flex items-start gap-4">
                         <div
-                          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${
+                          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border ${
                             lvl.isPassed
-                              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                              ? 'border-emerald-200 bg-emerald-50 text-emerald-600'
                               : lvl.isUnlocked
-                              ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30'
-                              : 'bg-slate-800 text-slate-500'
+                              ? 'border-blue-100 bg-blue-50 text-blue-600'
+                              : 'border-slate-200 bg-slate-100 text-slate-400'
                           }`}
                         >
-                          {lvl.isPassed ? (
-                            <CheckCircle2 className="h-6 w-6" />
-                          ) : lvl.isUnlocked ? (
-                            <IconComponent className="h-6 w-6" />
-                          ) : (
-                            <Lock className="h-6 w-6" />
-                          )}
+                          <IconComponent className="h-6 w-6" />
                         </div>
-
                         <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-base font-bold text-white">{lvl.name}</h3>
-                            <span className="rounded-md bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-slate-400">
+                          <div className="flex flex-wrap items-center gap-2 mb-1">
+                            <h2 className="text-base font-bold text-slate-900">{lvl.name}</h2>
+                            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">
                               {lvl.category}
                             </span>
                           </div>
-                          <p className="text-xs text-slate-400 mt-1 max-w-xl">
-                            {lvl.description}
-                          </p>
-
-                          <div className="mt-3 flex items-center gap-4 text-xs">
-                            <span className="text-indigo-400 font-semibold flex items-center gap-1">
-                              <Sparkles className="h-3.5 w-3.5" /> +{lvl.xpReward} XP
+                          <p className="text-xs text-slate-500 max-w-lg leading-relaxed">{lvl.description}</p>
+                          <div className="mt-2.5 flex items-center gap-3">
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full">
+                              <Sparkles className="h-3 w-3 text-amber-500" />
+                              +{lvl.xpReward} XP Reward
                             </span>
                             {lvl.highestScore !== null && (
-                              <span className="text-slate-400">
+                              <span className="text-[11px] font-semibold text-slate-500">
                                 Skor Tertinggi:{' '}
-                                <strong
-                                  className={
-                                    lvl.highestScore >= 80 ? 'text-emerald-400' : 'text-amber-400'
-                                  }
-                                >
+                                <span className={lvl.isPassed ? 'text-emerald-700 font-bold' : 'text-slate-800 font-bold'}>
                                   {lvl.highestScore}%
-                                </strong>
+                                </span>
                               </span>
                             )}
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
-                        {lvl.isUnlocked ? (
+                      <div className="shrink-0 flex items-center">
+                        {lvl.isPassed ? (
+                          <div className="flex items-center gap-3 w-full sm:w-auto">
+                            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-bold text-emerald-700">
+                              <CheckCircle2 className="h-4 w-4" /> Tuntas
+                            </span>
+                            <button
+                              onClick={() => handleStartLevel(lvl.levelNumber)}
+                              disabled={startingLevel === lvl.levelNumber}
+                              className="w-full sm:w-auto rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+                            >
+                              Latihan Ulang
+                            </button>
+                          </div>
+                        ) : lvl.isUnlocked ? (
                           <button
                             onClick={() => handleStartLevel(lvl.levelNumber)}
                             disabled={startingLevel === lvl.levelNumber}
-                            className={`flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-xs font-semibold text-white shadow-lg transition-all ${
-                              lvl.isPassed
-                                ? 'bg-slate-800 hover:bg-slate-700 text-slate-200'
-                                : 'bg-indigo-600 hover:bg-indigo-500 shadow-indigo-600/30'
-                            }`}
+                            className="btn-tactile-primary w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold cursor-pointer disabled:opacity-50"
                           >
                             {startingLevel === lvl.levelNumber ? (
                               <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                             ) : (
                               <>
-                                <span>{lvl.isPassed ? 'Ulangi Latihan' : 'Mulai Latihan'}</span>
+                                <span>Mulai Latihan Level</span>
                                 <ArrowRight className="h-3.5 w-3.5" />
                               </>
                             )}
                           </button>
                         ) : (
-                          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+                          <div className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-400">
                             <Lock className="h-3.5 w-3.5" />
                             <span>Terkunci</span>
                           </div>

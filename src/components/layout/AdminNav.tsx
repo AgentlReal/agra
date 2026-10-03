@@ -4,14 +4,12 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
-import { Database, Layers, UserCheck, LogOut, Sun, Moon } from 'lucide-react';
-import { useTheme } from '@/lib/theme-context';
+import { Database, Layers, UserCheck, LogOut } from 'lucide-react';
 import { AppLogo } from '@/components/common/AppLogo';
 
 export const AdminNav: React.FC = () => {
   const pathname = usePathname();
   const { user, logout } = useAuth();
-  const { isLight, toggleTheme } = useTheme();
 
   const links = [
     { label: 'Bank Soal', href: '/admin/bank-soal', icon: Database },
@@ -20,21 +18,21 @@ export const AdminNav: React.FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-indigo-950/60 bg-slate-950/90 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md shadow-xs">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-6">
           <Link href="/admin/bank-soal" className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900/90 border border-purple-500/30 shadow-lg shadow-purple-500/10 p-1">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 border border-purple-100 shadow-xs p-1">
               <AppLogo size={30} />
             </div>
             <div>
-              <span className="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+              <span className="text-lg font-bold tracking-tight text-slate-900 flex items-center gap-2">
                 AGRA Kurikulum
-                <span className="rounded-md bg-purple-500/20 px-2 py-0.5 text-[10px] font-semibold text-purple-300 border border-purple-500/30">
+                <span className="rounded-md bg-purple-100 px-2 py-0.5 text-[10px] font-semibold text-purple-700 border border-purple-200">
                   Admin Tim Kurikulum
                 </span>
               </span>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-slate-500">
                 Pusat Tata Kelola Bank Soal & Blueprint Asesmen
               </p>
             </div>
@@ -48,10 +46,10 @@ export const AdminNav: React.FC = () => {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-purple-600/20 text-purple-300 border border-purple-500/30'
-                      : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                      ? 'bg-purple-50 text-purple-700 font-semibold border border-purple-200/70'
+                      : 'text-slate-600 hover:text-purple-700 hover:bg-slate-50'
                   }`}
                 >
                   <Icon className="h-4 w-4" />
@@ -63,23 +61,14 @@ export const AdminNav: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Theme Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors shadow-xs"
-            title="Ganti Tema (Dark / Light)"
-          >
-            {isLight ? <Moon className="h-4 w-4 text-purple-600" /> : <Sun className="h-4 w-4 text-amber-400" />}
-          </button>
-
-          <div className="flex items-center gap-2 pl-2 border-l border-slate-800">
+          <div className="flex items-center gap-3">
             <div className="text-right hidden sm:block">
-              <p className="text-xs font-semibold text-slate-200">{user?.name || user?.username || 'Admin'}</p>
-              <p className="text-[10px] text-purple-400 font-mono">@{user?.username || 'admin'}</p>
+              <p className="text-xs font-semibold text-slate-800">{user?.name || user?.username || 'Admin'}</p>
+              <p className="text-[10px] text-purple-700 font-mono">@{user?.username || 'admin'}</p>
             </div>
             <button
               onClick={() => logout()}
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors shadow-xs"
               title="Keluar Sesi"
             >
               <LogOut className="h-4 w-4" />

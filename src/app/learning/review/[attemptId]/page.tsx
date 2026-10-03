@@ -8,16 +8,20 @@ import { api } from '@/lib/api-client';
 import { 
   Layers, 
   CheckCircle2, 
-  XCircle, 
   ArrowLeft, 
-  BookOpen,
-  CheckSquare,
-  CircleDot,
-  ZoomIn,
-  X
+  BookOpen, 
+  CheckSquare, 
+  CircleDot, 
+  ZoomIn, 
+  X,
+  Lightbulb,
+  Check,
+  RotateCcw,
+  Sparkles
 } from 'lucide-react';
 import FormattedContent from '@/components/common/FormattedContent';
 import OptionRenderer from '@/components/common/OptionRenderer';
+import { normalizeImageUrl } from '@/lib/image-utils';
 
 interface ReviewItem {
   id: string | number;
@@ -41,7 +45,6 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
   const [levelName, setLevelName] = useState<string | null>(null);
   const [zoomImageUrl, setZoomImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
@@ -100,256 +103,233 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
               correctAnswer = Array.isArray(q.correctAnswer) ? q.correctAnswer.join(', ') : q.correctAnswer;
             }
 
-            const rawScore = typeof q.score === 'number' ? q.score : typeof q.point === 'number' ? q.point : null;
-            const isCorrect = Boolean(q.is_correct ?? q.isCorrect);
-            const score = rawScore !== null ? rawScore : (isCorrect ? 1 : 0);
-
             return {
               id: q.session_question_id ?? q.id ?? i + 1,
               questionNumber: q.question_order ?? q.questionNumber ?? i + 1,
               stimulus: stimulusText,
               stimulusImageUrl,
-              questionText: q.question_text || q.questionText || '',
               questionImageUrl,
+              questionText: q.question_text || q.questionText || '',
               options: mappedOptions,
               questionFormat,
               studentAnswer,
               correctAnswer,
-              isCorrect,
-              score,
-              explanation: q.explanation_text || q.explanation || q.reasoning_guide || 'Pembahasan belum tersedia untuk butir soal ini.',
+              isCorrect: Boolean(q.is_correct ?? q.isCorrect),
+              score: q.score,
+              explanation: q.explanation || q.discussion || 'Tidak ada catatan pembahasan khusus untuk butir soal ini.',
             };
           });
           setQuestions(qs);
         } else {
-          setErrorMsg('Tidak ada data review untuk sesi latihan ini.');
+          setErrorMsg('Data review pembahasan butir soal tidak ditemukan.');
         }
       })
       .catch((err: any) => {
         console.error('Failed to load learning review:', err);
-        setErrorMsg(err.message || 'Gagal memuat review latihan dari server.');
+        setErrorMsg(err.message || 'Gagal memuat review latihan level.');
       })
       .finally(() => setLoading(false));
   }, [attemptId]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-[#f8fafc]">
       <Navbar />
 
-      <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto w-full space-y-6">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-          <div>
-            <div className="flex items-center gap-1.5 text-xs text-indigo-400 font-semibold mb-1">
-              <BookOpen className="h-4 w-4" />
-              <span>Pembahasan Detail 10 Soal</span>
-            </div>
-            <h1 className="text-2xl font-bold text-white">
-              {levelName ? `Review ${levelName}` : 'Review Latihan Level Kognitif'}
-            </h1>
-          </div>
-
+      <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full space-y-8">
+        <div>
           <Link
             href={`/learning/result/${attemptId}`}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900 px-3.5 py-2 text-xs font-semibold text-slate-300 hover:text-white"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 mb-2"
           >
-            <ArrowLeft className="h-3.5 w-3.5" /> Kembali ke Hasil
+            <ArrowLeft className="h-4 w-4" /> Kembali ke Skor Evaluasi
           </Link>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Pembahasan {levelName || 'Latihan Level Kognitif'}
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Pelajari setiap kunci konsep untuk memperdalam pemahaman formatifmu.
+          </p>
         </div>
 
         {loading ? (
           <div className="flex h-64 items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
           </div>
-        ) : errorMsg || questions.length === 0 ? (
-          <div className="rounded-3xl border border-rose-500/30 bg-slate-900/80 p-8 text-center space-y-4">
-            <p className="text-sm font-semibold text-rose-400">{errorMsg || 'Tidak ada butir pembahasan yang dapat ditampilkan.'}</p>
+        ) : errorMsg ? (
+          <div className="bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-4 shadow-sm">
+            <p className="text-sm font-semibold text-slate-800">{errorMsg}</p>
             <Link
               href="/curriculum"
-              className="inline-block rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-indigo-500 transition-colors"
+              className="btn-tactile-primary inline-block px-5 py-2.5 rounded-xl text-xs font-bold text-white"
             >
               Kembali ke Kurikulum
             </Link>
           </div>
         ) : (
           <div className="space-y-6">
-            {questions.map((q) => (
-              <div
-                key={q.questionNumber}
-                className={`rounded-2xl border p-5 sm:p-6 backdrop-blur-md ${
-                  q.score === 0.5
-                    ? 'border-amber-500/20 bg-slate-900/60'
-                    : q.isCorrect
-                    ? 'border-emerald-500/20 bg-slate-900/60'
-                    : 'border-rose-500/20 bg-slate-900/60'
-                }`}
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-3 mb-4">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 text-xs font-bold text-white">
-                      {q.questionNumber}
-                    </span>
-                    {q.questionFormat === 'COMPLEX_CHOICE' ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-purple-400">
-                        <CheckSquare className="h-3 w-3" /> Pilihan Ganda Kompleks (Pilih 1 atau 2)
+            {questions.map((q, idx) => {
+              const studentAnswerKeys = q.studentAnswer.split(',').map((s) => s.trim());
+              const normStimulusImg = normalizeImageUrl(q.stimulusImageUrl);
+              const normQuestionImg = normalizeImageUrl(q.questionImageUrl);
+              // Avoid duplicate image if stimulus has no text and uses the same image
+              const showQuestionImg = normQuestionImg && (normQuestionImg !== normStimulusImg || !normStimulusImg);
+
+              return (
+                <div
+                  key={q.id || q.questionNumber || `q-${idx}`}
+                  className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-8 space-y-6"
+                >
+                  {/* Question Header Meta */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-xs font-bold text-white">
+                        {q.questionNumber}
                       </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-indigo-400">
-                        <CircleDot className="h-3 w-3" /> Pilihan Ganda
-                      </span>
-                    )}
-                  </div>
+                      <span className="text-xs font-bold text-slate-800">Soal #{q.questionNumber}</span>
+                    </div>
 
-                  {q.score === 0.5 ? (
-                    <span className="flex items-center gap-1 text-xs font-semibold text-amber-400 bg-amber-500/10 rounded-full px-2.5 py-0.5 border border-amber-500/20">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> Benar Sebagian (+0.5)
-                    </span>
-                  ) : q.isCorrect ? (
-                    <span className="flex items-center gap-1 text-xs font-semibold text-emerald-400 bg-emerald-500/10 rounded-full px-2.5 py-0.5 border border-emerald-500/20">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> Jawaban Tepat (+1)
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-1 text-xs font-semibold text-rose-400 bg-rose-500/10 rounded-full px-2.5 py-0.5 border border-rose-500/20">
-                      <XCircle className="h-3.5 w-3.5" /> Jawaban Kurang Tepat
-                    </span>
-                  )}
-                </div>
-
-                {(q.stimulus || q.stimulusImageUrl) && (
-                  <div className="mb-4 rounded-xl border border-slate-800 bg-slate-950/60 p-3 text-xs text-slate-300 space-y-2.5">
-                    {q.stimulus && <FormattedContent content={q.stimulus} />}
-
-                    {q.stimulusImageUrl && (
-                      <div className="relative group overflow-hidden rounded-lg border border-slate-800 bg-slate-900/60 p-2 text-center">
-                        <img
-                          src={q.stimulusImageUrl}
-                          alt="Stimulus visual latihan"
-                          className="max-h-60 sm:max-h-72 w-auto mx-auto object-contain rounded cursor-zoom-in hover:opacity-95 transition-opacity"
-                          onClick={() => setZoomImageUrl(q.stimulusImageUrl || null)}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setZoomImageUrl(q.stimulusImageUrl || null)}
-                          className="absolute bottom-2.5 right-2.5 flex items-center gap-1 rounded bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold text-slate-300 backdrop-blur-sm border border-slate-700 hover:text-white transition-colors"
-                        >
-                          <ZoomIn className="h-3 w-3" />
-                          <span>Perbesar</span>
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <div className="text-sm font-medium text-white mb-4 leading-relaxed">
-                  <FormattedContent content={q.questionText} />
-                </div>
-
-                {q.questionImageUrl && (
-                  <div className="mb-4 relative group overflow-hidden rounded-lg border border-slate-800 bg-slate-900/60 p-2 text-center">
-                    <img
-                      src={q.questionImageUrl}
-                      alt="Ilustrasi pertanyaan"
-                      className="max-h-60 sm:max-h-72 w-auto mx-auto object-contain rounded cursor-zoom-in hover:opacity-95 transition-opacity"
-                      onClick={() => setZoomImageUrl(q.questionImageUrl || null)}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setZoomImageUrl(q.questionImageUrl || null)}
-                      className="absolute bottom-2.5 right-2.5 flex items-center gap-1 rounded bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold text-slate-300 backdrop-blur-sm border border-slate-700 hover:text-white transition-colors"
-                    >
-                      <ZoomIn className="h-3 w-3" />
-                      <span>Perbesar</span>
-                    </button>
-                  </div>
-                )}
-
-                <div className="space-y-2 mb-4">
-                  {q.options.map((opt) => {
-                    const studentKeys = q.studentAnswer && q.studentAnswer !== '-' 
-                      ? q.studentAnswer.split(',').map((s: string) => s.trim()) 
-                      : [];
-                    const correctKeys = q.correctAnswer && q.correctAnswer !== '-' 
-                      ? q.correctAnswer.split(',').map((s: string) => s.trim()) 
-                      : [];
-
-                    const isStudentOpt = studentKeys.includes(opt.key);
-                    const isCorrectOpt = opt.isCorrect || correctKeys.includes(opt.key);
-
-                    let optClass = 'border-slate-800 bg-slate-950/40 text-slate-300';
-                    if (isCorrectOpt && isStudentOpt) {
-                      optClass = 'border-emerald-500/60 bg-emerald-500/15 text-emerald-200 font-semibold ring-1 ring-emerald-500/30';
-                    } else if (isCorrectOpt) {
-                      optClass = 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300 font-medium';
-                    } else if (isStudentOpt) {
-                      optClass = 'border-rose-500/50 bg-rose-500/10 text-rose-200 line-through';
-                    }
-
-                    return (
-                      <div
-                        key={opt.key}
-                        className={`flex items-center gap-3 p-3 rounded-xl border text-xs ${optClass}`}
-                      >
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-slate-800 text-[11px] font-bold">
-                          {opt.key}
+                    <div>
+                      {q.isCorrect ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-bold text-emerald-700">
+                          <CheckCircle2 className="h-3.5 w-3.5" /> Jawaban Tepat
                         </span>
-                        <div className="flex-1">
-                          <OptionRenderer text={opt.text} onZoom={setZoomImageUrl} />
-                        </div>
-                        {isCorrectOpt && isStudentOpt && (
-                          <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
-                            (Kunci Benar • Jawaban Anda)
-                          </span>
-                        )}
-                        {isCorrectOpt && !isStudentOpt && (
-                          <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
-                            (Kunci Benar)
-                          </span>
-                        )}
-                        {isStudentOpt && !isCorrectOpt && (
-                          <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider">
-                            (Jawaban Anda)
-                          </span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-xs font-bold text-amber-800">
+                          <RotateCcw className="h-3.5 w-3.5" /> Perlu Penguatan Konsep
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
-                <div className="rounded-xl border border-indigo-500/30 bg-indigo-950/20 p-4 text-xs text-indigo-200">
-                  <p className="font-bold text-indigo-400 flex items-center gap-1 mb-1 text-[11px] uppercase tracking-wider">
-                    <BookOpen className="h-3.5 w-3.5" /> Pembahasan Nalar:
-                  </p>
-                  <div className="leading-relaxed text-slate-300">
-                    <FormattedContent content={q.explanation} />
+                  {/* Stimulus */}
+                  {(q.stimulus || normStimulusImg) && (
+                    <div className="rounded-2xl border border-blue-100 bg-[#eff6ff]/50 p-4 sm:p-5 text-xs sm:text-sm text-slate-700 leading-relaxed border-l-4 border-l-blue-600 space-y-3">
+                      {q.stimulus && (
+                        <div>
+                          <p className="font-bold text-blue-700 mb-1 text-[11px] uppercase tracking-wider">
+                            Teks Stimulus:
+                          </p>
+                          <FormattedContent content={q.stimulus} />
+                        </div>
+                      )}
+                      {normStimulusImg && (
+                        <div className="relative group overflow-hidden rounded-xl border border-blue-100 bg-white p-2 text-center">
+                          <img
+                            src={normStimulusImg}
+                            alt="Stimulus visual"
+                            className="max-h-72 w-auto mx-auto object-contain rounded-lg cursor-zoom-in"
+                            onClick={() => setZoomImageUrl(normStimulusImg)}
+                            loading="lazy"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Question Text */}
+                  <div className="text-sm sm:text-base font-medium text-slate-900 leading-relaxed">
+                    <FormattedContent content={q.questionText} />
+                  </div>
+
+                  {/* Question Image (Rendered below question text if present and not duplicate) */}
+                  {showQuestionImg && (
+                    <div className="relative group overflow-hidden rounded-xl border border-slate-200 bg-white p-2 text-center">
+                      <img
+                        src={normQuestionImg!}
+                        alt="Visual Soal"
+                        className="max-h-80 w-auto mx-auto object-contain rounded-lg cursor-zoom-in"
+                        onClick={() => setZoomImageUrl(normQuestionImg!)}
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+
+                  {/* Options List with Safe-to-Fail state (Emerald for correct, Amber for student review) */}
+                  <div className="space-y-3">
+                    {q.options.map((opt, oIdx) => {
+                      const isStudentAnswer = studentAnswerKeys.includes(opt.key);
+                      const isKey = opt.isCorrect;
+
+                      let containerStyle = 'border-slate-200 bg-white text-slate-700';
+                      let badgeStyle = 'bg-slate-100 text-slate-600 border border-slate-200';
+                      let statusNote = null;
+
+                      if (isKey) {
+                        containerStyle = 'border-emerald-500 bg-emerald-50/70 text-emerald-950 ring-1 ring-emerald-500/20';
+                        badgeStyle = 'bg-emerald-600 text-white font-bold';
+                        statusNote = (
+                          <span className="text-[11px] font-bold text-emerald-700 inline-flex items-center gap-1">
+                            <Check className="h-3.5 w-3.5" /> Kunci Jawaban Benar
+                          </span>
+                        );
+                      } else if (isStudentAnswer && !isKey) {
+                        // Safe-to-fail Warm Amber highlight (NO RED)
+                        containerStyle = 'border-amber-400 bg-amber-50/70 text-amber-950 ring-1 ring-amber-400/20';
+                        badgeStyle = 'bg-amber-500 text-white font-bold';
+                        statusNote = (
+                          <span className="text-[11px] font-bold text-amber-800 inline-flex items-center gap-1">
+                            <RotateCcw className="h-3 w-3" /> Jawaban yang Kamu Pilih
+                          </span>
+                        );
+                      }
+
+                      return (
+                        <div
+                          key={opt.key || opt.id || `opt-${oIdx}`}
+                          className={`w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border text-left transition-all ${containerStyle}`}
+                        >
+                          <div className="flex items-start gap-3 flex-1">
+                            <div
+                              className={`flex h-7 w-7 shrink-0 items-center justify-center text-xs font-bold rounded-full ${badgeStyle}`}
+                            >
+                              {opt.key}
+                            </div>
+                            <div className="text-xs sm:text-sm pt-0.5 leading-relaxed flex-1">
+                              <OptionRenderer text={opt.text} onZoom={setZoomImageUrl} />
+                            </div>
+                          </div>
+
+                          {statusNote && (
+                            <div className="pl-10 sm:pl-0 shrink-0">
+                              {statusNote}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Pedagogical Explanation Box */}
+                  <div className="bg-[#eff6ff] border border-blue-100 rounded-2xl p-4 sm:p-5 text-xs sm:text-sm text-slate-700 space-y-2">
+                    <div className="flex items-center gap-2 font-bold text-blue-700">
+                      <Lightbulb className="h-4 w-4" />
+                      <span>Pembahasan & Kunci Konsep:</span>
+                    </div>
+                    <div className="text-slate-700 leading-relaxed pl-6">
+                      <FormattedContent content={q.explanation} />
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>
 
-      {/* Lightbox Zoom Modal */}
+      {/* Image Zoom Modal */}
       {zoomImageUrl && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-150"
           onClick={() => setZoomImageUrl(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm"
         >
-          <div
-            className="relative max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 p-2 shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="relative max-w-4xl max-h-[90vh] bg-white p-2 rounded-2xl border border-slate-200 shadow-2xl overflow-hidden">
+            <img src={zoomImageUrl} alt="Zoomed" className="max-h-[85vh] w-auto object-contain mx-auto rounded-lg" />
             <button
-              type="button"
               onClick={() => setZoomImageUrl(null)}
-              className="absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-slate-900/90 text-white hover:bg-slate-800 border border-slate-700 transition-colors"
+              className="absolute top-4 right-4 h-8 w-8 rounded-full bg-slate-900/70 text-white flex items-center justify-center hover:bg-slate-900 transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
-            <img
-              src={zoomImageUrl}
-              alt="Stimulus visual diperbesar"
-              className="max-h-[85vh] w-auto max-w-full object-contain rounded-xl mx-auto"
-            />
           </div>
         </div>
       )}

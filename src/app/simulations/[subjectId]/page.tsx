@@ -9,14 +9,15 @@ import { api } from '@/lib/api-client';
 import { 
   ShieldCheck, 
   Clock, 
-  AlertTriangle, 
   ArrowRight, 
   Lock, 
   CheckCircle2, 
-  ArrowLeft,
-  Sparkles,
-  AlertCircle,
-  RefreshCw 
+  ArrowLeft, 
+  Sparkles, 
+  AlertCircle, 
+  RefreshCw,
+  HelpCircle,
+  Award
 } from 'lucide-react';
 
 export default function SimulationEligibilityPage({ params }: { params: Promise<{ subjectId: string }> }) {
@@ -75,26 +76,26 @@ export default function SimulationEligibilityPage({ params }: { params: Promise<
   const subjectName = eligibility?.subjectName || (subjectId === '2' ? 'Bahasa Indonesia SMP' : 'Matematika SMP');
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-950">
+    <div className="flex min-h-screen flex-col bg-[#f8fafc]">
       <Navbar />
 
       <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full space-y-8">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700"
         >
           <ArrowLeft className="h-4 w-4" /> Kembali ke Dasbor
         </Link>
 
         {errorMsg && (
-          <div className="flex items-center justify-between rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-400">
+          <div className="flex items-center justify-between rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs sm:text-sm text-amber-900 shadow-2xs">
             <div className="flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 shrink-0" />
+              <AlertCircle className="h-5 w-5 text-amber-600 shrink-0" />
               <span>{errorMsg}</span>
             </div>
             <button
               onClick={loadEligibility}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-rose-500/20 px-3 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-500/30 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-amber-200/80 hover:bg-amber-300 px-3.5 py-1.5 text-xs font-bold text-amber-900 transition-colors cursor-pointer"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               <span>Coba Lagi</span>
@@ -104,103 +105,127 @@ export default function SimulationEligibilityPage({ params }: { params: Promise<
 
         {loading ? (
           <div className="flex h-64 items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
           </div>
         ) : (
-          <>
-            {/* Header Hero */}
-            <div className="rounded-3xl border border-purple-900/50 bg-gradient-to-r from-purple-950/60 via-slate-900 to-slate-950 p-8 sm:p-10 backdrop-blur-md shadow-2xl">
-              <div className="max-w-2xl">
-                <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-3.5 py-1 text-xs font-semibold text-purple-300 mb-3">
-                  <ShieldCheck className="h-4 w-4 text-purple-400" />
-                  Ujian Capstone Berstandar Asesmen Nasional
+          <div className="space-y-6">
+            {/* Header Card */}
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-10 space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-2">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-3.5 py-1 text-xs font-semibold text-purple-700">
+                    <Award className="h-3.5 w-3.5" />
+                    <span>Simulasi Ujian CBT Standar Nasional</span>
+                  </div>
+                  <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                    Simulasi TKA: {subjectName}
+                  </h1>
+                  <p className="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
+                    Evaluasi kesiapan akhir berstandar Kemendikdasmen dengan sistem CAT 75 menit dan format 30 butir soal lengkap.
+                  </p>
                 </div>
-                <h1 className="text-3xl font-extrabold text-white">
-                  Simulasi TKA {subjectName}
-                </h1>
-                <p className="mt-2 text-xs sm:text-sm text-slate-300 leading-relaxed">
-                  Uji kesiapan akhir Anda dalam simulasi 30 butir soal komprehensif berstandar TKA Fase D dengan batas waktu 75 menit.
-                </p>
-              </div>
 
-              {/* Eligibility Status Banner */}
-              <div className="mt-8">
                 {isEligible ? (
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5">
-                    <div className="flex items-center gap-3">
-                      <CheckCircle2 className="h-8 w-8 text-emerald-400 shrink-0" />
-                      <div>
-                        <h4 className="text-sm font-bold text-white">Memenuhi Syarat Simulasi 🎉</h4>
-                        <p className="text-xs text-emerald-300">
-                          Anda telah menuntaskan seluruh submateri kurikulum {subjectName}.
-                        </p>
-                      </div>
+                  <div className="shrink-0 flex items-center gap-2 rounded-2xl bg-emerald-50 border border-emerald-200 px-4 py-3">
+                    <CheckCircle2 className="h-6 w-6 text-emerald-600 shrink-0" />
+                    <div>
+                      <p className="text-xs font-bold text-emerald-900">Eligibel Ikut Ujian</p>
+                      <p className="text-[11px] text-emerald-700">Prasyarat Terpenuhi</p>
                     </div>
-
-                    <button
-                      onClick={handleStartSimulation}
-                      disabled={starting}
-                      className="flex items-center justify-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-500 px-5 py-3 text-xs font-bold text-white shadow-lg shadow-purple-600/30 disabled:opacity-50 transition-all shrink-0"
-                    >
-                      {starting ? (
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                      ) : (
-                        <>
-                          <span>Mulai Simulasi (75 Menit)</span>
-                          <ArrowRight className="h-4 w-4" />
-                        </>
-                      )}
-                    </button>
                   </div>
                 ) : (
-                  <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5">
-                    <div className="flex items-start gap-3">
-                      <Lock className="h-6 w-6 text-amber-400 shrink-0 mt-0.5" />
-                      <div>
-                        <h4 className="text-sm font-bold text-white">Belum Memenuhi Syarat Akses Simulasi</h4>
-                        <p className="text-xs text-amber-300 mt-1">
-                          {eligibility?.reason || 'Untuk membuka simulasi, Anda harus menuntaskan seluruh 3 level kognitif pada setiap submateri terlebih dahulu.'}
-                        </p>
-                      </div>
+                  <div className="shrink-0 flex items-center gap-2 rounded-2xl bg-slate-100 border border-slate-200 px-4 py-3">
+                    <Lock className="h-6 w-6 text-slate-400 shrink-0" />
+                    <div>
+                      <p className="text-xs font-bold text-slate-800">Simulasi Terkunci</p>
+                      <p className="text-[11px] text-slate-500">Tuntaskan Submateri</p>
                     </div>
                   </div>
                 )}
               </div>
+
+              {/* Specs Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100/70 text-purple-700">
+                    <Clock className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-semibold text-slate-500">Durasi Ujian</p>
+                    <p className="text-sm font-bold text-slate-900">75 Menit Ketat</p>
+                  </div>
+                </div>
+
+                <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100/70 text-blue-700">
+                    <HelpCircle className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-semibold text-slate-500">Jumlah Butir</p>
+                    <p className="text-sm font-bold text-slate-900">30 Soal Capstone</p>
+                  </div>
+                </div>
+
+                <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100/70 text-emerald-800">
+                    <ShieldCheck className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-semibold text-slate-500">Standar Asesmen</p>
+                    <p className="text-sm font-bold text-slate-900">Kemendikdasmen</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Readiness requirement box */}
+              {!isEligible && (
+                <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 text-xs text-amber-900">
+                  <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                  <div className="space-y-1 leading-relaxed">
+                    <p className="font-bold text-amber-900">Syarat Pembukaan Akses Simulasi Capstone:</p>
+                    <p>
+                      Anda harus menuntaskan seluruh 3 level kognitif di setiap submateri mata pelajaran ini terlebih dahulu agar simulasi CBT dapat dibuka secara resmi.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Action Area */}
+              <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center gap-3 justify-end">
+                <Link
+                  href={`/curriculum/${subjectId}`}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                >
+                  <span>Cek Progres Submateri</span>
+                </Link>
+
+                {isEligible ? (
+                  <button
+                    onClick={handleStartSimulation}
+                    disabled={starting}
+                    className="btn-tactile-secondary w-full sm:w-auto inline-flex items-center justify-center gap-2 py-3.5 px-8 rounded-xl text-sm font-bold text-white shadow-xs cursor-pointer disabled:opacity-50"
+                  >
+                    {starting ? (
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    ) : (
+                      <>
+                        <span>Mulai Simulasi Sekarang</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <button
+                    disabled
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 py-3.5 px-8 rounded-xl text-sm font-bold text-slate-400 bg-slate-100 border border-slate-200 cursor-not-allowed"
+                  >
+                    <Lock className="h-4 w-4" />
+                    <span>Simulasi Belum Terbuka</span>
+                  </button>
+                )}
+              </div>
             </div>
-
-            {/* Assessment Specifications */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-600/20 text-purple-400 mb-4 font-bold text-sm">
-                  30
-                </div>
-                <h3 className="text-sm font-bold text-white">30 Soal Capstone</h3>
-                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                  Kombinasi komprehensif tingkat C1 hingga C6 mencakup seluruh materi Fase D.
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600/20 text-indigo-400 mb-4">
-                  <Clock className="h-5 w-5" />
-                </div>
-                <h3 className="text-sm font-bold text-white">Batas Waktu 75 Menit</h3>
-                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                  Dilengkapi hitung mundur otomatis dan penyerahan lembar jawaban otomatis saat waktu habis.
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600/20 text-emerald-400 mb-4 font-bold text-sm">
-                  +150
-                </div>
-                <h3 className="text-sm font-bold text-white">Reward +150 XP</h3>
-                <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                  Kumpulkan XP berlimpah dan tingkatkan lencana capaian akademik profil Anda.
-                </p>
-              </div>
-            </div>
-          </>
+          </div>
         )}
       </main>
 

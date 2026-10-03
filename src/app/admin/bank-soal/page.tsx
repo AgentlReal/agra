@@ -8,15 +8,11 @@ import { api } from '@/lib/api-client';
 import { 
   Database, 
   Search, 
-  Filter, 
   Plus, 
   CheckCircle2, 
   XCircle, 
   BarChart2, 
-  Layers, 
   Edit3, 
-  Trash2,
-  Sparkles,
   AlertCircle,
   Image as ImageIcon
 } from 'lucide-react';
@@ -153,28 +149,28 @@ export default function AdminBankSoalPage() {
   });
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-950">
+    <div className="flex min-h-screen flex-col bg-[#F8FAFC]">
       <AdminNav />
 
       <main className="flex-1 py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-8">
         {/* Header Action */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-1.5 text-xs text-purple-400 font-semibold mb-1">
+            <div className="inline-flex items-center gap-1.5 text-xs text-purple-700 font-bold mb-1">
               <Database className="h-4 w-4" />
               <span>Manajemen Konten Kurikulum</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
               Tata Kelola Bank Soal TKA
             </h1>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-slate-600">
               Kelola butir soal pada 3 bank terpisah: Bank Recall, Bank Latihan Kognitif, dan Bank Simulasi.
             </p>
           </div>
 
           <Link
             href="/admin/bank-soal/create"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-purple-600/30 hover:opacity-95 transition-all"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-700 px-4 py-2.5 text-xs font-bold text-white shadow-xs transition-all cursor-pointer"
           >
             <Plus className="h-4 w-4" />
             <span>Tambah Butir Soal Baru</span>
@@ -191,59 +187,59 @@ export default function AdminBankSoalPage() {
             <button
               key={tab.key}
               onClick={() => setBankType(tab.key)}
-              className={`flex flex-col items-start p-4 rounded-2xl border text-left transition-all ${
+              className={`flex flex-col items-start p-4 rounded-2xl border text-left transition-all cursor-pointer ${
                 bankType === tab.key
-                  ? 'border-purple-500 bg-purple-500/20 ring-2 ring-purple-500/30 shadow-lg'
-                  : 'border-slate-800 bg-slate-900/60 text-slate-400 hover:border-slate-700 hover:text-white'
+                  ? 'border-purple-600 bg-purple-50/70 shadow-xs ring-1 ring-purple-500'
+                  : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
               }`}
             >
-              <span className={`text-xs font-bold ${bankType === tab.key ? 'text-purple-300' : ''}`}>{tab.title}</span>
-              <span className={`text-[11px] mt-1 ${bankType === tab.key ? 'text-purple-400' : 'text-slate-400'}`}>{tab.desc}</span>
+              <span className={`text-xs font-bold ${bankType === tab.key ? 'text-purple-800' : 'text-slate-900'}`}>{tab.title}</span>
+              <span className={`text-[11px] mt-1 ${bankType === tab.key ? 'text-purple-700' : 'text-slate-500'}`}>{tab.desc}</span>
             </button>
           ))}
         </div>
 
         {/* Monitoring Stok & Kecukupan Soal */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 backdrop-blur-md">
-          <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
-            <BarChart2 className="h-4 w-4 text-purple-400" />
+        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h3 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+            <BarChart2 className="h-4 w-4 text-purple-600" />
             <span>Monitoring Kecukupan Stok Soal Aktif</span>
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
-              <div className="flex justify-between text-xs mb-1">
-                <span className="text-slate-400">Bank Recall</span>
-                <span className="font-bold text-emerald-400">
+            <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-4">
+              <div className="flex justify-between text-xs mb-1.5 font-medium">
+                <span className="text-slate-600">Bank Recall</span>
+                <span className="font-bold text-emerald-700">
                   {stockData?.recall?.current || 60} / {stockData?.recall?.target || 60} Butir
                 </span>
               </div>
-              <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
+              <div className="h-2 w-full rounded-full bg-slate-200 overflow-hidden">
                 <div className="h-full bg-emerald-500 rounded-full" style={{ width: '100%' }} />
               </div>
             </div>
 
-            <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
-              <div className="flex justify-between text-xs mb-1">
-                <span className="text-slate-400">Bank Latihan Kognitif</span>
-                <span className="font-bold text-amber-400">
+            <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-4">
+              <div className="flex justify-between text-xs mb-1.5 font-medium">
+                <span className="text-slate-600">Bank Latihan Kognitif</span>
+                <span className="font-bold text-amber-700">
                   {stockData?.latihan?.current || 180} / {stockData?.latihan?.target || 240} Butir
                 </span>
               </div>
-              <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
+              <div className="h-2 w-full rounded-full bg-slate-200 overflow-hidden">
                 <div className="h-full bg-amber-500 rounded-full" style={{ width: '75%' }} />
               </div>
             </div>
 
-            <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
-              <div className="flex justify-between text-xs mb-1">
-                <span className="text-slate-400">Bank Simulasi TKA</span>
-                <span className="font-bold text-purple-400">
+            <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-4">
+              <div className="flex justify-between text-xs mb-1.5 font-medium">
+                <span className="text-slate-600">Bank Simulasi TKA</span>
+                <span className="font-bold text-purple-700">
                   {stockData?.simulasi?.current || 120} / {stockData?.simulasi?.target || 120} Butir
                 </span>
               </div>
-              <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
-                <div className="h-full bg-purple-500 rounded-full" style={{ width: '100%' }} />
+              <div className="h-2 w-full rounded-full bg-slate-200 overflow-hidden">
+                <div className="h-full bg-purple-600 rounded-full" style={{ width: '100%' }} />
               </div>
             </div>
           </div>
@@ -257,16 +253,16 @@ export default function AdminBankSoalPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari teks soal atau materi..."
-              className="w-full rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-2.5 pl-10 text-xs text-white placeholder-slate-500 focus:border-purple-500 focus:outline-none"
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 pl-10 text-xs text-slate-800 placeholder-slate-400 focus:border-purple-600 focus:outline-none shadow-xs"
             />
-            <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-500" />
+            <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
           </div>
 
           <div className="flex flex-wrap gap-2">
             <select
               value={subjectFilter}
               onChange={(e) => setSubjectFilter(e.target.value)}
-              className="rounded-xl border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 focus:border-purple-600 focus:outline-none shadow-xs"
             >
               <option value="ALL">Semua Mapel</option>
               <option value="MAT">Matematika</option>
@@ -277,7 +273,7 @@ export default function AdminBankSoalPage() {
               value={levelFilter}
               onChange={(e) => setLevelFilter(e.target.value)}
               disabled={bankType === 'RECALL'}
-              className={`rounded-xl border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none ${
+              className={`rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 focus:border-purple-600 focus:outline-none shadow-xs ${
                 bankType === 'RECALL' ? 'opacity-40 cursor-not-allowed' : ''
               }`}
               title={bankType === 'RECALL' ? 'Bank Recall tidak memiliki level kognitif' : 'Filter Level Kognitif'}
@@ -291,7 +287,7 @@ export default function AdminBankSoalPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="rounded-xl border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 focus:border-purple-600 focus:outline-none shadow-xs"
             >
               <option value="ALL">Semua Status</option>
               <option value="ACTIVE">Aktif</option>
@@ -301,65 +297,65 @@ export default function AdminBankSoalPage() {
         </div>
 
         {/* Questions Table */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/80 overflow-hidden shadow-xl">
+        <div className="rounded-3xl border border-slate-200 bg-white overflow-hidden shadow-sm">
           {loading ? (
             <div className="flex h-48 items-center justify-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-500 border-t-transparent" />
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-600 border-t-transparent" />
             </div>
           ) : filteredQuestions.length === 0 ? (
-            <div className="text-center py-12 text-slate-400 text-xs">
+            <div className="text-center py-12 text-slate-500 text-xs">
               Tidak ada butir soal yang sesuai dengan kriteria filter.
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-slate-800 bg-slate-950/60 text-slate-400">
-                    <th className="py-3.5 px-4 font-semibold">Teks Soal & Materi</th>
-                    <th className="py-3.5 px-4 font-semibold">Mapel & Level</th>
-                    <th className="py-3.5 px-4 font-semibold">Tipe Soal</th>
-                    <th className="py-3.5 px-4 font-semibold">Status</th>
-                    <th className="py-3.5 px-4 font-semibold text-right">Aksi</th>
+                  <tr className="border-b border-slate-200 bg-slate-50/70 text-slate-600">
+                    <th className="py-3.5 px-4 font-bold">Teks Soal & Materi</th>
+                    <th className="py-3.5 px-4 font-bold">Mapel & Level</th>
+                    <th className="py-3.5 px-4 font-bold">Tipe Soal</th>
+                    <th className="py-3.5 px-4 font-bold">Status</th>
+                    <th className="py-3.5 px-4 font-bold text-right">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
-                  {filteredQuestions.map((q) => (
-                    <tr key={q.id} className="hover:bg-slate-800/30 transition-colors">
+                <tbody className="divide-y divide-slate-100">
+                  {filteredQuestions.map((q, idx) => (
+                    <tr key={q.id || `q-row-${idx}`} className="hover:bg-slate-50/80 transition-colors">
                       <td className="py-3.5 px-4 max-w-md">
                         <div className="flex items-start gap-2">
                           {q.imageUrl && (
-                            <span className="shrink-0 mt-0.5 inline-flex items-center gap-1 rounded bg-purple-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-purple-300 border border-purple-500/30" title="Memuat Gambar Stimulus">
+                            <span className="shrink-0 mt-0.5 inline-flex items-center gap-1 rounded bg-purple-50 px-1.5 py-0.5 text-[10px] font-semibold text-purple-700 border border-purple-200" title="Memuat Gambar Stimulus">
                               <ImageIcon className="h-3 w-3" />
                             </span>
                           )}
                           <div>
-                            <div className="font-semibold text-white line-clamp-2">
+                            <div className="font-semibold text-slate-900 line-clamp-2">
                               <FormattedContent content={q.questionText} inline />
                             </div>
-                            <p className="text-[11px] text-purple-300 mt-1">
+                            <p className="text-[11px] text-purple-700 font-medium mt-1">
                               Materi: {q.materialName}
                             </p>
                           </div>
                         </div>
                       </td>
                       <td className="py-3.5 px-4 whitespace-nowrap">
-                        <p className="font-medium text-slate-200">{q.subjectName}</p>
-                        <span className="inline-block mt-0.5 rounded-md bg-indigo-500/20 px-2 py-0.5 text-[10px] font-bold text-indigo-400 border border-indigo-500/30">
+                        <p className="font-medium text-slate-800">{q.subjectName}</p>
+                        <span className="inline-block mt-0.5 rounded-md bg-purple-50 px-2 py-0.5 text-[10px] font-bold text-purple-700 border border-purple-100">
                           {q.cognitiveLevel || 'L1'}
                         </span>
                       </td>
                       <td className="py-3.5 px-4 whitespace-nowrap">
-                        <span className="rounded-md bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-slate-300">
+                        <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700 border border-slate-200">
                           {q.type === 'PG_KOMPLEKS' ? 'Pilihan Kompleks (MCMA)' : 'Pilihan Tunggal'}
                         </span>
                       </td>
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         {q.isActive ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400 border border-emerald-500/20">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700 border border-emerald-200">
                             <CheckCircle2 className="h-3 w-3" /> Aktif
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-rose-400 border border-rose-500/20">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600 border border-slate-200">
                             <XCircle className="h-3 w-3" /> Nonaktif
                           </span>
                         )}
@@ -370,20 +366,20 @@ export default function AdminBankSoalPage() {
                             type="button"
                             onClick={() => handleToggleStatus(q.id, q.isActive)}
                             disabled={updatingId === q.id}
-                            className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold border transition-colors ${
+                            className={`rounded-xl px-2.5 py-1 text-[11px] font-semibold border transition-colors cursor-pointer ${
                               q.isActive
-                                ? 'border-rose-500/30 text-rose-400 hover:bg-rose-500/10'
-                                : 'border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10'
+                                ? 'border-amber-200 text-amber-700 hover:bg-amber-50'
+                                : 'border-emerald-200 text-emerald-700 hover:bg-emerald-50'
                             }`}
                           >
                             {q.isActive ? 'Nonaktifkan' : 'Aktifkan'}
                           </button>
                           <Link
                             href={`/admin/bank-soal/${q.id}`}
-                            className="rounded-lg bg-slate-800 hover:bg-slate-700 p-1.5 text-slate-300 hover:text-white transition-colors"
+                            className="rounded-xl border border-slate-200 bg-white hover:bg-slate-50 p-1.5 text-slate-700 shadow-xs transition-colors"
                             title="Edit Butir Soal"
                           >
-                            <Edit3 className="h-3.5 w-3.5" />
+                            <Edit3 className="h-3.5 w-3.5 text-purple-600" />
                           </Link>
                         </div>
                       </td>
@@ -396,7 +392,7 @@ export default function AdminBankSoalPage() {
 
           {/* Pagination controls */}
           {!loading && (
-            <div className="p-4 bg-slate-950/40">
+            <div className="p-4 bg-slate-50/50">
               <Pagination
                 currentPage={page}
                 totalPages={totalPages}

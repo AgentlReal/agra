@@ -28,13 +28,11 @@ export default function RootLayout({
         />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('agra_theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add(t);}catch(e){}})()`,
+            __html: `(function(){try{var t=localStorage.getItem('agra_theme')||'light';document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.add(t);}catch(e){}})()`,
           }}
         />
       </head>
-      <body className="min-h-screen bg-slate-950 text-slate-100 antialiased flex flex-col relative selection:bg-indigo-500 selection:text-white transition-colors duration-150">
-        <div className="ambient-glow-1" />
-        <div className="ambient-glow-2" />
+      <body className="min-h-screen bg-[#f8fafc] text-slate-800 antialiased flex flex-col relative selection:bg-blue-100 selection:text-blue-700 transition-colors duration-150">
         <ThemeProvider>
           <AuthProvider>
             <div className="relative z-10 flex min-h-screen flex-col">

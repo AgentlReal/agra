@@ -1,8 +1,7 @@
-'use client';
-
 import React, { useState } from 'react';
-import { ZoomIn, X, Image as ImageIcon } from 'lucide-react';
+import { ZoomIn, X } from 'lucide-react';
 import FormattedContent from './FormattedContent';
+import { normalizeImageUrl } from '@/lib/image-utils';
 
 interface OptionRendererProps {
   text: string;
@@ -16,9 +15,11 @@ interface OptionRendererProps {
 export function isImageUrl(str?: string | null): boolean {
   if (!str) return false;
   const trimmed = str.trim();
-  const urlPattern = /^(https?:\/\/|\/|\.\/|data:image\/).*\.(png|jpg|jpeg|gif|webp|svg)(\?.*)?$/i;
-  const dataUriPattern = /^data:image\/[a-z]+;base64,/i;
-  return urlPattern.test(trimmed) || dataUriPattern.test(trimmed);
+  if (trimmed.startsWith('data:image/')) return true;
+  // Check common image extensions or image directories
+  const hasExt = /\.(png|jpg|jpeg|gif|webp|svg)(\?.*)?$/i.test(trimmed);
+  const isImageDir = /^(assets\/|public\/|\/)?image_soal\//i.test(trimmed);
+  return hasExt || isImageDir;
 }
 
 /**
@@ -52,34 +53,37 @@ export default function OptionRenderer({
 
   const handleZoom = (url: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    const normalized = normalizeImageUrl(url) || url;
     if (onZoom) {
-      onZoom(url);
+      onZoom(normalized);
     } else {
-      setInternalZoom(url);
+      setInternalZoom(normalized);
     }
   };
 
   // 1. Check Markdown image syntax: ![alt](url)
   const mdImg = extractMarkdownImage(text);
   if (mdImg) {
+    const normalizedUrl = normalizeImageUrl(mdImg.url) || mdImg.url;
     return (
       <div className={`flex flex-col gap-2 ${className}`}>
         {mdImg.prefixText && (
           <FormattedContent content={mdImg.prefixText} inline className="text-inherit" />
         )}
-        <div className="relative group inline-block max-w-xs overflow-hidden rounded-lg border border-slate-800 bg-slate-950/60 p-1.5">
+        <div className="relative group inline-block max-w-xs overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-1.5 shadow-xs">
           <img
-            src={mdImg.url}
+            src={normalizedUrl}
             alt={mdImg.alt}
-            className="max-h-36 sm:max-h-44 w-auto object-contain rounded cursor-zoom-in hover:opacity-95 transition-opacity"
-            onClick={(e) => handleZoom(mdImg.url, e)}
+            className="max-h-36 sm:max-h-44 w-auto object-contain rounded-lg cursor-zoom-in hover:opacity-95 transition-opacity"
+            onClick={(e) => handleZoom(normalizedUrl, e)}
+            loading="lazy"
           />
           <button
             type="button"
-            onClick={(e) => handleZoom(mdImg.url, e)}
-            className="absolute bottom-2 right-2 flex items-center gap-1 rounded bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold text-slate-300 backdrop-blur-sm border border-slate-700 hover:text-white transition-colors"
+            onClick={(e) => handleZoom(normalizedUrl, e)}
+            className="absolute bottom-2 right-2 flex items-center gap-1 rounded-lg bg-white/95 px-2 py-0.5 text-[10px] font-semibold text-slate-700 shadow-xs border border-slate-200 hover:bg-white transition-colors"
           >
-            <ZoomIn className="h-3 w-3" />
+            <ZoomIn className="h-3 w-3 text-blue-600" />
             <span>Perbesar</span>
           </button>
         </div>
@@ -90,22 +94,22 @@ export default function OptionRenderer({
         {/* Fallback Internal Modal if parent onZoom not passed */}
         {internalZoom && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 p-4 backdrop-blur-sm animate-in fade-in duration-200"
             onClick={(e) => {
               e.stopPropagation();
               setInternalZoom(null);
             }}
           >
             <div
-              className="relative max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 p-2 shadow-2xl"
+              className="relative max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 type="button"
                 onClick={() => setInternalZoom(null)}
-                className="absolute top-3 right-3 z-10 rounded-full bg-slate-800/80 p-2 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+                className="absolute top-3 right-3 z-10 rounded-full bg-slate-900/70 p-1.5 text-white hover:bg-slate-900 transition-colors"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
               <img
                 src={internalZoom}
@@ -121,42 +125,44 @@ export default function OptionRenderer({
 
   // 2. Check standalone Image URL
   if (isImageUrl(text)) {
+    const normalizedUrl = normalizeImageUrl(text.trim()) || text.trim();
     return (
-      <div className={`relative group inline-block max-w-xs overflow-hidden rounded-lg border border-slate-800 bg-slate-950/60 p-1.5 ${className}`}>
+      <div className={`relative group inline-block max-w-xs overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-1.5 shadow-xs ${className}`}>
         <img
-          src={text.trim()}
+          src={normalizedUrl}
           alt="Pilihan Gambar"
-          className="max-h-36 sm:max-h-44 w-auto object-contain rounded cursor-zoom-in hover:opacity-95 transition-opacity"
-          onClick={(e) => handleZoom(text.trim(), e)}
+          className="max-h-36 sm:max-h-44 w-auto object-contain rounded-lg cursor-zoom-in hover:opacity-95 transition-opacity"
+          onClick={(e) => handleZoom(normalizedUrl, e)}
+          loading="lazy"
         />
         <button
           type="button"
-          onClick={(e) => handleZoom(text.trim(), e)}
-          className="absolute bottom-2 right-2 flex items-center gap-1 rounded bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold text-slate-300 backdrop-blur-sm border border-slate-700 hover:text-white transition-colors"
+          onClick={(e) => handleZoom(normalizedUrl, e)}
+          className="absolute bottom-2 right-2 flex items-center gap-1 rounded-lg bg-white/95 px-2 py-0.5 text-[10px] font-semibold text-slate-700 shadow-xs border border-slate-200 hover:bg-white transition-colors"
         >
-          <ZoomIn className="h-3 w-3" />
+          <ZoomIn className="h-3 w-3 text-blue-600" />
           <span>Perbesar</span>
         </button>
 
         {/* Fallback Internal Modal if parent onZoom not passed */}
         {internalZoom && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 p-4 backdrop-blur-sm animate-in fade-in duration-200"
             onClick={(e) => {
               e.stopPropagation();
               setInternalZoom(null);
             }}
           >
             <div
-              className="relative max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 p-2 shadow-2xl"
+              className="relative max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 type="button"
                 onClick={() => setInternalZoom(null)}
-                className="absolute top-3 right-3 z-10 rounded-full bg-slate-800/80 p-2 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+                className="absolute top-3 right-3 z-10 rounded-full bg-slate-900/70 p-1.5 text-white hover:bg-slate-900 transition-colors"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
               <img
                 src={internalZoom}

@@ -12,7 +12,6 @@ import {
   Check, 
   AlertCircle, 
   ShieldCheck, 
-  Edit3,
   Trash2,
   Image as ImageIcon,
   Eye
@@ -222,54 +221,56 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-950">
+    <div className="flex min-h-screen flex-col bg-[#F8FAFC]">
       <AdminNav />
 
       <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full space-y-8">
         <Link
           href="/admin/bank-soal"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-purple-600 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" /> Kembali ke Bank Soal
         </Link>
 
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
             Edit Butir Soal #{questionId}
           </h1>
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-slate-600">
             Perbarui konten pertanyaan, opsi pilihan, dan penjelasan nalar.
           </p>
         </div>
 
         {loading ? (
           <div className="flex h-64 items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-500 border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-600 border-t-transparent" />
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             {errorMsg && (
-              <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-400">
-                {errorMsg}
+              <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-800 flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 shrink-0 text-amber-600" />
+                <span>{errorMsg}</span>
               </div>
             )}
             {successMsg && (
-              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-400">
-                {successMsg}
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-xs text-emerald-800 flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-600" />
+                <span>{successMsg}</span>
               </div>
             )}
 
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 space-y-4">
-              <h3 className="text-sm font-bold text-white border-b border-slate-800 pb-2">
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 space-y-4 shadow-sm">
+              <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2">
                 1. Klasifikasi Soal
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300">Bank Soal</label>
+                  <label className="block text-xs font-semibold text-slate-700">Bank Soal</label>
                   <select
                     value={bankType}
                     onChange={(e) => setBankType(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white"
+                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-800 focus:border-purple-600 focus:outline-none shadow-xs"
                   >
                     <option value="RECALL">Bank Recall Kemampuanmu</option>
                     <option value="LEVEL_EXERCISE">Bank Latihan Level Kognitif</option>
@@ -277,13 +278,13 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300">Level Kognitif</label>
+                  <label className="block text-xs font-semibold text-slate-700">Level Kognitif</label>
                   <select
                     value={cognitiveLevel}
                     onChange={(e) => setCognitiveLevel(e.target.value)}
                     disabled={bankType === 'RECALL'}
-                    className={`mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white ${
-                      bankType === 'RECALL' ? 'opacity-50 cursor-not-allowed' : ''
+                    className={`mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-800 focus:border-purple-600 focus:outline-none shadow-xs ${
+                      bankType === 'RECALL' ? 'opacity-50 cursor-not-allowed bg-slate-50' : ''
                     }`}
                   >
                     <option value="1">Level 1 (Pemahaman)</option>
@@ -291,17 +292,17 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
                     <option value="3">Level 3 (Penalaran)</option>
                   </select>
                   {bankType === 'RECALL' && (
-                    <span className="text-[10px] text-amber-400 mt-1 block">
+                    <span className="text-[10px] text-amber-700 mt-1 block">
                       Tidak berlaku untuk Bank Recall (UCS-10)
                     </span>
                   )}
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300">Bentuk Soal</label>
+                  <label className="block text-xs font-semibold text-slate-700">Bentuk Soal</label>
                   <select
                     value={questionType}
                     onChange={(e: any) => setQuestionType(e.target.value)}
-                    className="mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-white"
+                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-800 focus:border-purple-600 focus:outline-none shadow-xs"
                   >
                     <option value="PG_TUNGGAL">Pilihan Ganda Tunggal</option>
                     <option value="PG_KOMPLEKS">Pilihan Ganda Kompleks (MCMA)</option>
@@ -310,39 +311,39 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 space-y-4">
-              <h3 className="text-sm font-bold text-white border-b border-slate-800 pb-2">
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 space-y-4 shadow-sm">
+              <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2">
                 2. Teks Pertanyaan & Stimulus
               </h3>
               <div>
-                <label className="block text-xs font-semibold text-slate-300">Stimulus</label>
+                <label className="block text-xs font-semibold text-slate-700">Stimulus</label>
                 <textarea
                   rows={3}
                   value={stimulus}
                   onChange={(e) => setStimulus(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2 text-xs text-white"
+                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:border-purple-600 focus:outline-none shadow-xs"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-300">Teks Soal</label>
+                <label className="block text-xs font-semibold text-slate-700">Teks Soal</label>
                 <textarea
                   rows={3}
                   value={questionText}
                   onChange={(e) => setQuestionText(e.target.value)}
                   required
-                  className="mt-1 w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2 text-xs text-white"
+                  className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:border-purple-600 focus:outline-none shadow-xs"
                 />
               </div>
 
               {/* Image upload & URL */}
               <div className="space-y-2">
-                <label className="block text-xs font-semibold text-slate-300">
+                <label className="block text-xs font-semibold text-slate-700">
                   Gambar Stimulus / Pendukung Soal (Opsional)
                 </label>
                 
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                  <label className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800 px-3.5 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 cursor-pointer transition-colors shrink-0">
-                    <Upload className="h-4 w-4 text-purple-400" />
+                  <label className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 cursor-pointer transition-colors shrink-0 shadow-xs">
+                    <Upload className="h-4 w-4 text-purple-600" />
                     <span>{uploadingImage ? 'Mengunggah...' : 'Unggah Berkas'}</span>
                     <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                   </label>
@@ -353,27 +354,27 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
                       value={imageUrl}
                       onChange={(e) => setImageUrl(e.target.value)}
                       placeholder="Atau masukkan path / URL gambar (misal: /assets/gambar.jpeg atau https://...)"
-                      className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2 pl-9 text-xs text-white placeholder-slate-500 focus:border-purple-500 focus:outline-none"
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 pl-9 text-xs text-slate-800 placeholder-slate-400 focus:border-purple-600 focus:outline-none shadow-xs"
                     />
-                    <ImageIcon className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
+                    <ImageIcon className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                   </div>
                 </div>
 
                 {imageUrl && (
-                  <div className="mt-2.5 flex items-start gap-4 rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+                  <div className="mt-2.5 flex items-start gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-3">
                     <img
                       src={imageUrl}
                       alt="Pratinjau stimulus"
-                      className="h-24 w-auto max-w-[200px] object-contain rounded-lg border border-slate-700 bg-slate-900"
+                      className="h-24 w-auto max-w-[200px] object-contain rounded-xl border border-slate-200 bg-white"
                     />
                     <div className="flex-1 space-y-2">
-                      <span className="text-xs text-emerald-400 flex items-center gap-1 font-medium">
-                        <Check className="h-3.5 w-3.5" /> Gambar aktif terpasang
+                      <span className="text-xs text-emerald-700 flex items-center gap-1 font-semibold">
+                        <Check className="h-3.5 w-3.5 text-emerald-600" /> Gambar aktif terpasang
                       </span>
                       <button
                         type="button"
                         onClick={() => setImageUrl('')}
-                        className="flex items-center gap-1 text-xs text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
+                        className="flex items-center gap-1 text-xs text-amber-700 hover:text-amber-800 transition-colors cursor-pointer font-medium"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                         <span>Hapus Gambar</span>
@@ -384,11 +385,11 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 space-y-4">
-              <h3 className="text-sm font-bold text-white border-b border-slate-800 pb-2">
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 space-y-4 shadow-sm">
+              <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2">
                 3. Pilihan Jawaban
               </h3>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-slate-500">
                 {questionType === 'PG_TUNGGAL'
                   ? 'Pilih satu radio button pada opsi yang menjadi kunci jawaban benar.'
                   : 'Centang kotak checkbox pada 2 opsi yang menjadi kunci jawaban benar (tepat 2 kunci).'}
@@ -396,7 +397,7 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
               <div className="space-y-3">
                 {options.map((opt) => (
                   <div key={opt.key} className="flex items-center gap-3">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800 text-xs font-bold text-white">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700">
                       {opt.key}
                     </span>
                     <input
@@ -404,10 +405,10 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
                       value={opt.text}
                       onChange={(e) => handleOptionChange(opt.key, e.target.value)}
                       required
-                      className="flex-1 rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2 text-xs text-white"
+                      className="flex-1 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:border-purple-600 focus:outline-none shadow-xs"
                     />
                     {questionType === 'PG_TUNGGAL' ? (
-                      <label className="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer px-2">
+                      <label className="flex items-center gap-1.5 text-xs text-slate-700 cursor-pointer px-2">
                         <input
                           type="radio"
                           name="editSingleKey"
@@ -418,7 +419,7 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
                         <span>Kunci</span>
                       </label>
                     ) : (
-                      <label className="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer px-2">
+                      <label className="flex items-center gap-1.5 text-xs text-slate-700 cursor-pointer px-2">
                         <input
                           type="checkbox"
                           checked={complexKeys.includes(opt.key)}
@@ -434,8 +435,8 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 space-y-4">
-              <h3 className="text-sm font-bold text-white border-b border-slate-800 pb-2">
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 space-y-4 shadow-sm">
+              <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2">
                 4. Pembahasan Nalar
               </h3>
               <textarea
@@ -443,57 +444,57 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
                 value={explanation}
                 onChange={(e) => setExplanation(e.target.value)}
                 required
-                className="w-full rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-2 text-xs text-white"
+                className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:border-purple-600 focus:outline-none shadow-xs"
               />
             </div>
 
             {/* Section 5: Live Preview */}
-            <div className="rounded-2xl border border-indigo-500/30 bg-slate-900/90 p-6 space-y-4 shadow-xl">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Eye className="h-4 w-4 text-indigo-400" />
+            <div className="rounded-3xl border border-purple-200 bg-white p-6 sm:p-7 space-y-4 shadow-sm">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-purple-600" />
                   5. Pratinjau Tampilan Siswa (Live LaTeX, Markdown & Gambar)
                 </h3>
-                <span className="rounded-full bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 text-[10px] font-semibold text-indigo-300">
+                <span className="rounded-full bg-purple-50 border border-purple-200 px-2.5 py-0.5 text-[10px] font-bold text-purple-700">
                   Pratinjau Otomatis
                 </span>
               </div>
 
-              <p className="text-[11px] text-slate-400 leading-relaxed">
-                Format yang didukung: rumus LaTeX inline (<code className="text-indigo-300 font-mono">$...$</code>), block math (<code className="text-indigo-300 font-mono">$$...$$</code>), markdown (<code className="text-indigo-300 font-mono">**tebal**</code>, <code className="text-indigo-300 font-mono">*miring*</code>), dan gambar pada opsi (<code className="text-indigo-300 font-mono">/assets/gambar.png</code> atau <code className="text-indigo-300 font-mono">![alt](url)</code>).
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Format yang didukung: rumus LaTeX inline (<code className="text-purple-700 font-mono font-bold">$...$</code>), block math (<code className="text-purple-700 font-mono font-bold">$$...$$</code>), markdown (<code className="text-purple-700 font-mono font-bold">**tebal**</code>, <code className="text-purple-700 font-mono font-bold">*miring*</code>), dan gambar pada opsi (<code className="text-purple-700 font-mono font-bold">/assets/gambar.png</code> atau <code className="text-purple-700 font-mono font-bold">![alt](url)</code>).
               </p>
 
-              <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-5 space-y-4">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-5 space-y-4">
                 {stimulus && (
-                  <div className="rounded-lg border border-slate-800/80 bg-slate-900/40 p-3 text-xs text-slate-300 border-l-4 border-l-purple-500">
-                    <p className="text-[10px] font-bold text-purple-400 uppercase tracking-wider mb-1">Stimulus / Narasi:</p>
+                  <div className="rounded-xl border border-purple-100 bg-purple-50/40 p-3 text-xs text-slate-700 border-l-4 border-l-purple-600">
+                    <p className="text-[10px] font-bold text-purple-700 uppercase tracking-wider mb-1">Stimulus / Narasi:</p>
                     <FormattedContent content={stimulus} />
                   </div>
                 )}
 
                 {imageUrl && (
-                  <div className="rounded-lg border border-slate-800/80 bg-slate-900/40 p-2 text-center">
+                  <div className="rounded-xl border border-slate-200 bg-white p-2 text-center">
                     <img
                       src={imageUrl}
                       alt="Pratinjau Stimulus"
-                      className="max-h-48 w-auto mx-auto object-contain rounded"
+                      className="max-h-48 w-auto mx-auto object-contain rounded-lg"
                     />
                   </div>
                 )}
 
                 <div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Pertanyaan:</p>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">Pertanyaan:</p>
                   {questionText ? (
-                    <div className="text-sm font-medium text-white leading-relaxed">
+                    <div className="text-sm font-medium text-slate-900 leading-relaxed">
                       <FormattedContent content={questionText} />
                     </div>
                   ) : (
-                    <p className="text-xs italic text-slate-500">Belum ada teks pokok soal...</p>
+                    <p className="text-xs italic text-slate-400">Belum ada teks pokok soal...</p>
                   )}
                 </div>
 
                 <div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Pilihan Jawaban:</p>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Pilihan Jawaban:</p>
                   <div className="space-y-2">
                     {options.map((opt) => {
                       const isKey = questionType === 'PG_TUNGGAL' 
@@ -504,12 +505,12 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
                           key={opt.key}
                           className={`flex items-start gap-3 p-3 rounded-xl border text-xs ${
                             isKey
-                              ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-200'
-                              : 'border-slate-800 bg-slate-900/40 text-slate-300'
+                              ? 'border-emerald-300 bg-emerald-50/60 text-slate-900'
+                              : 'border-slate-200 bg-white text-slate-700'
                           }`}
                         >
-                          <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[11px] font-bold ${
-                            isKey ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-300'
+                          <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[11px] font-bold ${
+                            isKey ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600 border border-slate-200'
                           }`}>
                             {opt.key}
                           </span>
@@ -517,11 +518,11 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
                             {opt.text ? (
                               <OptionRenderer text={opt.text} />
                             ) : (
-                              <span className="italic text-slate-500 text-[11px]">(Belum diisi)</span>
+                              <span className="italic text-slate-400 text-[11px]">(Belum diisi)</span>
                             )}
                           </div>
                           {isKey && (
-                            <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider shrink-0 mt-0.5">
+                            <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider shrink-0 mt-0.5">
                               (Kunci Jawaban)
                             </span>
                           )}
@@ -532,11 +533,11 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
                 </div>
 
                 {explanation && (
-                  <div className="rounded-lg border border-indigo-500/30 bg-indigo-950/20 p-3.5 text-xs text-indigo-200">
-                    <p className="font-bold text-indigo-400 text-[10px] uppercase tracking-wider mb-1">
+                  <div className="rounded-xl border border-purple-200 bg-purple-50/60 p-3.5 text-xs text-slate-800">
+                    <p className="font-bold text-purple-700 text-[10px] uppercase tracking-wider mb-1">
                       Pratinjau Pembahasan:
                     </p>
-                    <div className="leading-relaxed text-slate-300">
+                    <div className="leading-relaxed text-slate-700">
                       <FormattedContent content={explanation} />
                     </div>
                   </div>
@@ -547,14 +548,14 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
             <div className="flex justify-end gap-3 pt-4">
               <Link
                 href="/admin/bank-soal"
-                className="rounded-xl border border-slate-800 bg-slate-900 px-5 py-2.5 text-xs font-semibold text-slate-300 hover:bg-slate-800"
+                className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer shadow-xs"
               >
                 Batal
               </Link>
               <button
                 type="submit"
                 disabled={submitting}
-                className="rounded-xl bg-purple-600 px-6 py-2.5 text-xs font-bold text-white hover:bg-purple-500 shadow-lg"
+                className="btn-tactile-primary rounded-xl px-6 py-2.5 text-xs font-bold text-white shadow-xs cursor-pointer disabled:opacity-50"
               >
                 {submitting ? 'Menyimpan...' : 'Perbarui Soal'}
               </button>

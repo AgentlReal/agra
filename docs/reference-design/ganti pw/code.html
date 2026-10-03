@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ubah Kata Sandi - Keamanan Akun Siswa Mandiri</title>
+<!-- Tailwind CSS v3 with forms and container queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#0052cc',
+              700: '#0041a8',
+            }
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom Styles -->
+<style data-purpose="custom-styling">
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+  </style>
+<!-- END: Custom Styles -->
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen relative overflow-x-hidden selection:bg-blue-100 selection:text-blue-700">
+<!-- BEGIN: SimulatedDashboardBackdrop -->
+<!-- Blurred authentic background recreating the student portal -->
+<div aria-hidden="true" class="fixed inset-0 pointer-events-none filter blur-sm select-none z-0 opacity-80">
+<!-- Top Navigation Bar -->
+<header class="bg-white border-b border-slate-200 px-8 py-3.5 flex items-center justify-between">
+<div class="flex items-center gap-10">
+<span class="text-blue-600 font-bold text-xl tracking-tight">TKA Pintar SMP</span>
+<nav class="hidden md:flex items-center gap-6 text-sm text-slate-600 font-medium">
+<span class="hover:text-blue-600">Belajar</span>
+<span class="hover:text-blue-600">Latihan</span>
+<span class="hover:text-blue-600">Tugas &amp; Pembahasan</span>
+<span class="hover:text-blue-600">Rapor Progres</span>
+<span class="hover:text-blue-600">Konsultasi Guru</span>
+</nav>
+</div>
+<div class="flex items-center gap-4 text-sm font-medium text-slate-700">
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200">
+<svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Profil Siswa</span>
+</div>
+</div>
+</header>
+<!-- Main Content Area Behind Modal -->
+<div class="max-w-7xl mx-auto px-8 py-10 grid grid-cols-12 gap-8">
+<!-- Sidebar Profile Info -->
+<aside class="col-span-3 space-y-6">
+<div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+<div class="w-14 h-14 rounded-full bg-blue-100 text-blue-700 font-bold text-lg flex items-center justify-center">
+            RR
+          </div>
+<div>
+<h2 class="font-bold text-slate-800 text-base">Rizky Ramadhan</h2>
+<p class="text-xs text-slate-500">Kelas 9 SMP Negeri 1 Jakarta</p>
+<span class="inline-block mt-1 text-[11px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">NISN: 0098172819</span>
+</div>
+</div>
+<nav class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm space-y-1 text-sm font-medium">
+<div class="px-4 py-2.5 rounded-xl text-slate-600 flex items-center gap-3">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Informasi Akun</span>
+</div>
+<div class="px-4 py-2.5 rounded-xl text-blue-600 bg-blue-50 font-semibold flex items-center gap-3">
+<svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 012 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Keamanan Akun</span>
+</div>
+<div class="px-4 py-2.5 rounded-xl text-slate-600 flex items-center gap-3">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span>Target Masuk SMA/SMK</span>
+</div>
+</nav>
+</aside>
+<!-- Main Dashboard Panel -->
+<section class="col-span-9 bg-white p-8 rounded-2xl border border-slate-200 shadow-sm min-h-[500px]">
+<div class="flex justify-between items-center mb-8">
+<div>
+<div class="h-6 w-48 bg-slate-200 rounded mb-2"></div>
+<div class="h-4 w-72 bg-slate-100 rounded"></div>
+</div>
+<div class="h-10 w-32 bg-blue-600 rounded-xl"></div>
+</div>
+<div class="space-y-4">
+<div class="h-14 bg-slate-50 border border-slate-200 rounded-xl"></div>
+<div class="h-14 bg-slate-50 border border-slate-200 rounded-xl"></div>
+</div>
+</section>
+</div>
+</div>
+<!-- END: SimulatedDashboardBackdrop -->
+<!-- BEGIN: ModalOverlayWrapper -->
+<!-- Full-screen translucent blur layer with proper vertical flex alignment to prevent any content clipping -->
+<main class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 overflow-y-auto bg-slate-900/30 backdrop-blur-md">
+<!-- BEGIN: PasswordChangeModal -->
+<section aria-labelledby="modal-title" aria-modal="true" class="relative w-full max-w-[580px] bg-white rounded-[28px] shadow-2xl p-6 sm:p-8 md:p-10 my-auto text-slate-800 transition-all border border-slate-100" data-purpose="password-change-card" role="dialog">
+<!-- Top Close Button -->
+<button aria-label="Tutup dialog" class="absolute top-6 right-6 sm:top-8 sm:right-8 text-slate-400 hover:text-slate-600 transition-colors p-1.5 rounded-full hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-300" data-purpose="close-modal-button" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- BEGIN: ModalHeader -->
+<header class="mb-6">
+<!-- Feature Pill Badge -->
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold tracking-wide">
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zm3.707 6.763a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span>Keamanan Akun Siswa Mandiri</span>
+</div>
+<!-- Main Modal Title -->
+<h1 class="text-2xl sm:text-[28px] font-bold text-slate-900 mt-3 mb-2 tracking-tight leading-snug" id="modal-title">
+          Ubah Kata Sandi
+        </h1>
+<!-- Subtitle / Descriptive Text -->
+<p class="text-slate-600 text-sm leading-relaxed">
+          Perbarui kata sandi akun belajarmu secara mandiri. Gunakan kombinasi yang kuat dan mudah kamu ingat agar akun belajarmu tetap aman dan terlindungi.
+        </p>
+</header>
+<!-- END: ModalHeader -->
+<!-- BEGIN: ChangePasswordForm -->
+<form action="#" class="space-y-4" method="POST" onsubmit="event.preventDefault();">
+<!-- Field 1: Kata Sandi Lama -->
+<div data-purpose="old-password-group">
+<label class="font-semibold text-slate-800 text-sm flex items-center gap-2 mb-2" for="old-password">
+<!-- Blue Lock Icon -->
+<svg class="w-4 h-4 text-blue-600 stroke-[2.2]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Kata Sandi Lama</span>
+</label>
+<div class="relative flex items-center">
+<input class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 pr-11 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition shadow-sm" id="old-password" name="old_password" placeholder="Masukkan kata sandi lama yang saat ini aktif" required="" type="password"/>
+<button aria-label="Lihat kata sandi lama" class="absolute right-3 text-slate-400 hover:text-slate-600 p-1 focus:outline-none" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<!-- Helper note -->
+<p class="text-xs text-slate-500 mt-1.5 flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<line x1="12" x2="12" y1="16" y2="12"></line>
+<line x1="12" x2="12.01" y1="8" y2="8"></line>
+</svg>
+<span>Masukkan kata sandi aktif untuk memverifikasi kepemilikan akun.</span>
+</p>
+</div>
+<!-- Field 2: Kata Sandi Baru -->
+<div class="pt-1" data-purpose="new-password-group">
+<label class="font-semibold text-slate-800 text-sm flex items-center gap-2 mb-2" for="new-password">
+<!-- Key / Link Icon -->
+<svg class="w-4 h-4 text-blue-600 stroke-[2.2]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Kata Sandi Baru</span>
+</label>
+<div class="relative flex items-center">
+<input class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 pr-11 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition shadow-sm" id="new-password" name="new_password" placeholder="Buat kata sandi baru (8–16 karakter)" required="" type="password"/>
+<button aria-label="Lihat kata sandi baru" class="absolute right-3 text-slate-400 hover:text-slate-600 p-1 focus:outline-none" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+</div>
+<!-- BEGIN: PasswordSecurityCriteriaBox -->
+<!-- Light blue tinted card displaying validation rules -->
+<div class="bg-[#eff6ff] border border-blue-100 rounded-xl p-4 my-3 text-xs" data-purpose="security-criteria-card">
+<div class="font-semibold text-slate-800 flex items-center gap-2 mb-2.5">
+<!-- Settings / Sliders Icon -->
+<svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<path d="M4 6h16M4 12h10M4 18h7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Kriteria Keamanan Sandi :</span>
+</div>
+<ul class="space-y-1.5 text-slate-600 pl-0.5">
+<li class="flex items-center gap-2.5">
+<span class="w-3.5 h-3.5 rounded-full border border-slate-400 inline-block flex-shrink-0"></span>
+<span>Minimal 6 karakter (maksimal 12 karakter)</span>
+</li>
+<li class="flex items-center gap-2.5">
+<span class="w-3.5 h-3.5 rounded-full border border-slate-400 inline-block flex-shrink-0"></span>
+<span>Memuat huruf kapital (A–Z) dan huruf kecil (a–z)</span>
+</li>
+<li class="flex items-center gap-2.5">
+<span class="w-3.5 h-3.5 rounded-full border border-slate-400 inline-block flex-shrink-0"></span>
+<span>Memuat minimal satu angka (0–9)</span>
+</li>
+<li class="flex items-center gap-2.5">
+<span class="w-3.5 h-3.5 rounded-full border border-slate-400 inline-block flex-shrink-0"></span>
+<span>Memuat simbol atau karakter khusus (@, #, $, %, dll.)</span>
+</li>
+</ul>
+</div>
+<!-- END: PasswordSecurityCriteriaBox -->
+<!-- Field 3: Konfirmasi Kata Sandi Baru -->
+<div class="pt-1" data-purpose="confirm-password-group">
+<label class="font-semibold text-slate-800 text-sm flex items-center gap-2 mb-2" for="confirm-password">
+<!-- Shield Outline Icon -->
+<svg class="w-4 h-4 text-blue-600 stroke-[2.2]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Konfirmasi Kata Sandi Baru</span>
+</label>
+<div class="relative flex items-center">
+<input class="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 pr-11 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition shadow-sm" id="confirm-password" name="confirm_password" placeholder="Ulangi kata sandi baru kamu" required="" type="password"/>
+<button aria-label="Lihat konfirmasi kata sandi" class="absolute right-3 text-slate-400 hover:text-slate-600 p-1 focus:outline-none" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<!-- Helper note -->
+<p class="text-xs text-slate-500 mt-1.5 flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<line x1="12" x2="12" y1="16" y2="12"></line>
+<line x1="12" x2="12.01" y1="8" y2="8"></line>
+</svg>
+<span>Ketik ulang kata sandi baru persis sama.</span>
+</p>
+</div>
+<!-- BEGIN: ModalActionFooter -->
+<!-- Actions bottom right with generous spacing -->
+<footer class="pt-6 mt-6 flex items-center justify-end gap-3 sm:gap-4">
+<!-- Batal (Cancel) Button -->
+<button class="px-5 py-3 text-sm font-semibold text-slate-700 hover:text-slate-900 rounded-xl hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-300 cursor-pointer" type="button">
+            Batal
+          </button>
+<!-- Simpan Kata Sandi Baru Button -->
+<button class="px-6 py-3 bg-[#0052cc] hover:bg-[#0041a8] text-white text-sm font-semibold rounded-xl inline-flex items-center gap-2 shadow-sm transition-all hover:shadow focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 active:scale-[0.99] cursor-pointer" type="submit">
+<svg class="w-4 h-4 fill-current" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" fill-rule="evenodd"></path>
+</svg>
+<span>Simpan Kata Sandi Baru</span>
+</button>
+</footer>
+<!-- END: ModalActionFooter -->
+</form>
+<!-- END: ChangePasswordForm -->
+</section>
+<!-- END: PasswordChangeModal -->
+</main>
+<!-- END: ModalOverlayWrapper -->
+</body></html>
