@@ -115,9 +115,14 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
             const isCorrect = Boolean(q.is_correct ?? q.isCorrect);
             const score = rawScore !== null ? rawScore : (isCorrect ? 1 : 0);
 
+            const sessionQuestionId = q.session_question_id ?? q.id;
+            if (!sessionQuestionId) {
+              throw new Error(`Data butir soal review #${i + 1} tidak valid.`);
+            }
+
             return {
-              id: q.session_question_id ?? q.id ?? i + 1,
-              questionNumber: q.question_order ?? q.questionNumber ?? i + 1,
+              id: sessionQuestionId,
+              questionNumber: q.question_order ?? q.questionNumber ?? (i + 1),
               stimulus: stimulusText,
               stimulusImageUrl,
               questionText: q.question_text || q.questionText || '',
