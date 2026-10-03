@@ -191,7 +191,8 @@ export class SimulationService {
                     question_order: r.question_order,
                     question_type: r.question_type,
                     question_text: r.question_text,
-                    stimulus_image_url: r.stimulus_image_url,
+                    question_image_url: r.question_image_url || null,
+                    stimulus_image_url: r.stimulus_image_url || r.question_image_url || null,
                     options: [],
                     saved_answer: ans
                         ? {
@@ -402,7 +403,8 @@ export class SimulationService {
                     session_question_id: r.session_question_id,
                     question_order: r.question_order,
                     question_text: r.question_text,
-                    stimulus_image_url: r.stimulus_image_url,
+                    question_image_url: r.question_image_url || null,
+                    stimulus_image_url: r.stimulus_image_url || r.question_image_url || null,
                     options: [],
                     selected_option_ids: [],
                     correct_option_ids: [],

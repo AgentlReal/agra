@@ -100,6 +100,11 @@ describe("RecallService Unit Tests", () => {
                     question_order: 1,
                     question_format: "SINGLE_CHOICE",
                     question_text: "2 + 2 = ...",
+                    question_image_url: "/assets/image_soal/recall_kemampuan/matematika/soal1.png",
+                    stimulus_id: 25,
+                    stimulus_title: "Wacana Fabel",
+                    stimulus_text: "Teks cerita...",
+                    stimulus_image_url: "/assets/image_soal/recall_kemampuan/bahasa_indonesia/stimulus1.png",
                     option_id: 10,
                     option_label: "A",
                     option_text: "4",
@@ -116,6 +121,9 @@ describe("RecallService Unit Tests", () => {
             expect(res.answeredCount).toBe(1);
             expect(res.questions[0].options[0].option_text).toBe("4");
             expect(res.questions[0].selected_option_ids).toEqual([10]);
+            expect(res.questions[0].question_image_url).toBe("/assets/image_soal/recall_kemampuan/matematika/soal1.png");
+            expect(res.questions[0].stimulus_image_url).toBe("/assets/image_soal/recall_kemampuan/bahasa_indonesia/stimulus1.png");
+            expect(res.questions[0].stimulus?.title).toBe("Wacana Fabel");
         });
     });
 
@@ -211,6 +219,11 @@ describe("RecallService Unit Tests", () => {
                     question_order: 1,
                     subject_id: 1,
                     question_text: "Soal 1",
+                    question_image_url: "/assets/image_soal/recall_kemampuan/matematika/soal1.png",
+                    stimulus_id: 25,
+                    stimulus_title: "Wacana Fabel",
+                    stimulus_text: "Teks cerita...",
+                    stimulus_image_url: "/assets/image_soal/recall_kemampuan/bahasa_indonesia/stimulus1.png",
                     option_id: 10,
                     option_label: "A",
                     option_text: "Pilihan A",
@@ -228,6 +241,9 @@ describe("RecallService Unit Tests", () => {
             expect(res.reviews[0].is_correct).toBe(true);
             expect(res.reviews[0].explanation_text).toBe("Pembahasan mendalam.");
             expect(res.reviews[0].reasoning_guide).toBe("Panduan penalaran.");
+            expect(res.reviews[0].question_image_url).toBe("/assets/image_soal/recall_kemampuan/matematika/soal1.png");
+            expect(res.reviews[0].stimulus_image_url).toBe("/assets/image_soal/recall_kemampuan/bahasa_indonesia/stimulus1.png");
+            expect(res.reviews[0].stimulus?.title).toBe("Wacana Fabel");
         });
     });
 });

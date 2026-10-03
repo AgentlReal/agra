@@ -119,6 +119,7 @@ export const createQuestionSchema = z
             question_format,
             question_text,
             stimulus_image_url: data.stimulus_image_url ?? data.stimulusImageUrl ?? data.question_image_url ?? data.questionImageUrl ?? null,
+            question_image_url: data.question_image_url ?? data.questionImageUrl ?? data.stimulus_image_url ?? data.stimulusImageUrl ?? null,
             options: data.options.map((o) => {
                 const option_label = o.option_label ?? o.optionLabel;
                 const option_text = o.option_text ?? o.optionText;
@@ -261,6 +262,7 @@ export const updateQuestionSchema = z
             question_format,
             question_text,
             stimulus_image_url,
+            question_image_url: stimulus_image_url,
             options,
             explanation,
             stimulus,

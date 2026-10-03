@@ -337,6 +337,8 @@ describe("SimulationService Unit Tests", () => {
                     session_question_id: 1,
                     question_order: 1,
                     question_text: "Soal Simulasi 1",
+                    question_image_url: "/assets/image_soal/simulasi/soal1.png",
+                    stimulus_image_url: null,
                     option_id: 10,
                     option_label: "A",
                     option_text: "Jawaban A",
@@ -354,6 +356,47 @@ describe("SimulationService Unit Tests", () => {
             expect(res.attempt_id).toBe(301);
             expect(res.reviews[0].is_correct).toBe(true);
             expect(res.reviews[0].explanation_text).toBe("Pembahasan komprehensif");
+            expect(res.reviews[0].question_image_url).toBe("/assets/image_soal/simulasi/soal1.png");
+            expect(res.reviews[0].stimulus_image_url).toBe("/assets/image_soal/simulasi/soal1.png");
+        });
+    });
+
+    describe("getSimulationAttempt", () => {
+        it("harus mengembalikan detail pengerjaan simulasi beserta question_image_url", async () => {
+            mockProfileRepo.findRawProfile!.mockResolvedValue({ user_id: "user-1" } as any);
+            mockSimRepo.getSessionById!.mockResolvedValue({
+                id: 301,
+                status: "IN_PROGRESS",
+                simulation_id: 5,
+                attempt_number: 1,
+                start_time: new Date(),
+                current_question_order: 1,
+            });
+            mockSimRepo.getPackageById!.mockResolvedValue({ title: "Simulasi Paket A" });
+            mockSimRepo.countAnsweredQuestions!.mockResolvedValue(5);
+            mockSimRepo.countDoubtfulAnswers!.mockResolvedValue(1);
+            mockSimRepo.getSessionQuestions!.mockResolvedValue([
+                {
+                    session_question_id: 1,
+                    question_id: 100,
+                    question_order: 1,
+                    question_type: "SINGLE_CHOICE",
+                    question_text: "Soal Simulasi Matematika",
+                    question_image_url: "/assets/image_soal/simulasi/matematika_1.png",
+                    stimulus_image_url: null,
+                    stimulus_id: null,
+                    option_id: 10,
+                    option_label: "A",
+                    option_text: "Jawaban A",
+                },
+            ]);
+            mockSimRepo.getSavedAnswers!.mockResolvedValue([]);
+
+            const res = await service.getAttemptState(301, "user-1");
+
+            expect(res.attempt_id).toBe(301);
+            expect(res.questions[0].question_image_url).toBe("/assets/image_soal/simulasi/matematika_1.png");
+            expect(res.questions[0].stimulus_image_url).toBe("/assets/image_soal/simulasi/matematika_1.png");
         });
     });
 });
