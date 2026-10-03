@@ -67,19 +67,19 @@ export default function OptionRenderer({
         {mdImg.prefixText && (
           <FormattedContent content={mdImg.prefixText} inline className="text-inherit" />
         )}
-        <div className="relative group inline-block max-w-xs overflow-hidden rounded-lg border border-slate-800 bg-slate-950/60 p-1.5">
+        <div className="relative group inline-block max-w-xs overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-1.5 shadow-xs">
           <img
             src={mdImg.url}
             alt={mdImg.alt}
-            className="max-h-36 sm:max-h-44 w-auto object-contain rounded cursor-zoom-in hover:opacity-95 transition-opacity"
+            className="max-h-36 sm:max-h-44 w-auto object-contain rounded-lg cursor-zoom-in hover:opacity-95 transition-opacity"
             onClick={(e) => handleZoom(mdImg.url, e)}
           />
           <button
             type="button"
             onClick={(e) => handleZoom(mdImg.url, e)}
-            className="absolute bottom-2 right-2 flex items-center gap-1 rounded bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold text-slate-300 backdrop-blur-sm border border-slate-700 hover:text-white transition-colors"
+            className="absolute bottom-2 right-2 flex items-center gap-1 rounded-lg bg-white/95 px-2 py-0.5 text-[10px] font-semibold text-slate-700 shadow-xs border border-slate-200 hover:bg-white transition-colors"
           >
-            <ZoomIn className="h-3 w-3" />
+            <ZoomIn className="h-3 w-3 text-purple-600" />
             <span>Perbesar</span>
           </button>
         </div>
@@ -90,7 +90,7 @@ export default function OptionRenderer({
         {/* Fallback Internal Modal if parent onZoom not passed */}
         {internalZoom && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md animate-in fade-in duration-200"
             onClick={(e) => {
               e.stopPropagation();
               setInternalZoom(null);
@@ -122,26 +122,26 @@ export default function OptionRenderer({
   // 2. Check standalone Image URL
   if (isImageUrl(text)) {
     return (
-      <div className={`relative group inline-block max-w-xs overflow-hidden rounded-lg border border-slate-800 bg-slate-950/60 p-1.5 ${className}`}>
+      <div className={`relative group inline-block max-w-xs overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-1.5 shadow-xs ${className}`}>
         <img
           src={text.trim()}
           alt="Pilihan Gambar"
-          className="max-h-36 sm:max-h-44 w-auto object-contain rounded cursor-zoom-in hover:opacity-95 transition-opacity"
+          className="max-h-36 sm:max-h-44 w-auto object-contain rounded-lg cursor-zoom-in hover:opacity-95 transition-opacity"
           onClick={(e) => handleZoom(text.trim(), e)}
         />
         <button
           type="button"
           onClick={(e) => handleZoom(text.trim(), e)}
-          className="absolute bottom-2 right-2 flex items-center gap-1 rounded bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold text-slate-300 backdrop-blur-sm border border-slate-700 hover:text-white transition-colors"
+          className="absolute bottom-2 right-2 flex items-center gap-1 rounded-lg bg-white/95 px-2 py-0.5 text-[10px] font-semibold text-slate-700 shadow-xs border border-slate-200 hover:bg-white transition-colors"
         >
-          <ZoomIn className="h-3 w-3" />
+          <ZoomIn className="h-3 w-3 text-purple-600" />
           <span>Perbesar</span>
         </button>
 
         {/* Fallback Internal Modal if parent onZoom not passed */}
         {internalZoom && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md animate-in fade-in duration-200"
             onClick={(e) => {
               e.stopPropagation();
               setInternalZoom(null);

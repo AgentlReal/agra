@@ -8,13 +8,16 @@ import { api } from '@/lib/api-client';
 import { 
   ShieldCheck, 
   CheckCircle2, 
-  XCircle, 
+  RotateCcw, 
   ArrowLeft, 
   BookOpen,
   CheckSquare,
   CircleDot,
   ZoomIn,
-  X
+  X,
+  Sparkles,
+  HelpCircle,
+  AlertCircle
 } from 'lucide-react';
 import FormattedContent from '@/components/common/FormattedContent';
 import OptionRenderer from '@/components/common/OptionRenderer';
@@ -141,73 +144,76 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
   });
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-950">
+    <div className="flex min-h-screen flex-col bg-[#F8FAFC]">
       <Navbar />
 
       <main className="flex-1 py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
           <div>
-            <div className="flex items-center gap-1.5 text-xs text-purple-400 font-semibold mb-1">
+            <div className="flex items-center gap-1.5 text-xs text-purple-700 font-bold mb-1">
               <BookOpen className="h-4 w-4" />
               <span>Kunci Jawaban & Pembahasan Nalar Capstone</span>
             </div>
-            <h1 className="text-2xl font-bold text-white">Review Simulasi TKA 30 Soal</h1>
+            <h1 className="text-2xl font-bold text-slate-900">Review Simulasi TKA 30 Soal</h1>
           </div>
 
           <Link
             href={`/simulations/result/${attemptId}`}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900 px-3.5 py-2 text-xs font-semibold text-slate-300 hover:text-white"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-xs transition-colors cursor-pointer"
           >
             <ArrowLeft className="h-3.5 w-3.5" /> Kembali ke Hasil
           </Link>
         </div>
 
-        {/* Filter buttons */}
+        {/* Filter buttons (Zero Red: Warm amber for review/wrong) */}
         <div className="flex gap-2">
           <button
             onClick={() => setFilter('all')}
-            className={`rounded-lg px-3 py-1.5 text-xs font-semibold ${
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer ${
               filter === 'all'
-                ? 'bg-purple-600 text-white'
-                : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                ? 'bg-purple-600 text-white shadow-xs'
+                : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
             }`}
           >
             Semua ({questions.length})
           </button>
           <button
             onClick={() => setFilter('correct')}
-            className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold ${
+            className={`flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer ${
               filter === 'correct'
-                ? 'bg-emerald-600 text-white'
-                : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                ? 'bg-emerald-600 text-white shadow-xs'
+                : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
             }`}
           >
-            <CheckCircle2 className="h-3.5 w-3.5" />
-            <span>Benar ({questions.filter((q) => q.isCorrect).length})</span>
+            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+            <span>Tepat ({questions.filter((q) => q.isCorrect).length})</span>
           </button>
           <button
             onClick={() => setFilter('wrong')}
-            className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold ${
+            className={`flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer ${
               filter === 'wrong'
-                ? 'bg-rose-600 text-white'
-                : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                ? 'bg-amber-600 text-white shadow-xs'
+                : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
             }`}
           >
-            <XCircle className="h-3.5 w-3.5" />
-            <span>Salah ({questions.filter((q) => !q.isCorrect).length})</span>
+            <RotateCcw className="h-3.5 w-3.5 text-amber-500" />
+            <span>Perlu Ditinjau ({questions.filter((q) => !q.isCorrect).length})</span>
           </button>
         </div>
 
         {loading ? (
           <div className="flex h-64 items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-500 border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-600 border-t-transparent" />
           </div>
         ) : errorMsg || questions.length === 0 ? (
-          <div className="rounded-3xl border border-rose-500/30 bg-slate-900/80 p-8 text-center space-y-4">
-            <p className="text-sm font-semibold text-rose-400">{errorMsg || 'Tidak ada butir pembahasan yang dapat ditampilkan.'}</p>
+          <div className="rounded-3xl border border-amber-200 bg-white p-8 text-center space-y-4 shadow-sm">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 border border-amber-200">
+              <AlertCircle className="h-6 w-6" />
+            </div>
+            <p className="text-sm font-semibold text-slate-700">{errorMsg || 'Tidak ada butir pembahasan yang dapat ditampilkan.'}</p>
             <Link
               href="/dashboard"
-              className="inline-block rounded-xl bg-purple-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-purple-500 transition-colors"
+              className="inline-block btn-tactile-primary rounded-xl px-5 py-2.5 text-xs font-bold text-white cursor-pointer"
             >
               Kembali ke Dasbor
             </Link>
@@ -217,63 +223,70 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
             {filtered.map((q) => (
               <div
                 key={q.questionNumber}
-                className={`rounded-2xl border p-5 sm:p-6 backdrop-blur-md ${
+                className={`rounded-3xl border p-6 sm:p-7 bg-white shadow-sm transition-all ${
                   q.score === 0.5
-                    ? 'border-amber-500/20 bg-slate-900/60'
+                    ? 'border-amber-300'
                     : q.isCorrect
-                    ? 'border-emerald-500/20 bg-slate-900/60'
-                    : 'border-rose-500/20 bg-slate-900/60'
+                    ? 'border-slate-200'
+                    : 'border-amber-300'
                 }`}
               >
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-3 mb-4">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3 mb-4">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 text-xs font-bold text-white">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-900 text-xs font-bold text-white">
                       {q.questionNumber}
                     </span>
                     {q.questionFormat === 'COMPLEX_CHOICE' ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-purple-500/30 bg-purple-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-purple-400">
-                        <CheckSquare className="h-3 w-3" /> Pilihan Ganda Kompleks (Pilih 1 atau 2)
+                      <span className="inline-flex items-center gap-1 rounded-full border border-purple-200 bg-purple-50 px-2.5 py-0.5 text-[10px] font-bold text-purple-700">
+                        <CheckSquare className="h-3 w-3" /> Pilihan Ganda Kompleks
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-indigo-400">
+                      <span className="inline-flex items-center gap-1 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-0.5 text-[10px] font-bold text-blue-700">
                         <CircleDot className="h-3 w-3" /> Pilihan Ganda
                       </span>
                     )}
                   </div>
 
                   {q.score === 0.5 ? (
-                    <span className="flex items-center gap-1 text-xs font-semibold text-amber-400 bg-amber-500/10 rounded-full px-2.5 py-0.5 border border-amber-500/20">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> Benar Sebagian (+0.5)
+                    <span className="flex items-center gap-1 text-xs font-bold text-amber-800 bg-amber-50 rounded-full px-3 py-0.5 border border-amber-300">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-amber-600" /> Benar Sebagian (+0.5)
                     </span>
                   ) : q.isCorrect ? (
-                    <span className="flex items-center gap-1 text-xs font-semibold text-emerald-400 bg-emerald-500/10 rounded-full px-2.5 py-0.5 border border-emerald-500/20">
-                      <CheckCircle2 className="h-3.5 w-3.5" /> Jawaban Benar (+1)
+                    <span className="flex items-center gap-1 text-xs font-bold text-emerald-800 bg-emerald-50 rounded-full px-3 py-0.5 border border-emerald-200">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> Jawaban Tepat (+1)
                     </span>
                   ) : (
-                    <span className="flex items-center gap-1 text-xs font-semibold text-rose-400 bg-rose-500/10 rounded-full px-2.5 py-0.5 border border-rose-500/20">
-                      <XCircle className="h-3.5 w-3.5" /> Jawaban Kurang Tepat
+                    <span className="flex items-center gap-1 text-xs font-bold text-amber-800 bg-amber-50 rounded-full px-3 py-0.5 border border-amber-300">
+                      <RotateCcw className="h-3.5 w-3.5 text-amber-600" /> Perlu Ditinjau
                     </span>
                   )}
                 </div>
 
                 {(q.stimulus || q.stimulusImageUrl) && (
-                  <div className="mb-4 rounded-xl border border-slate-800 bg-slate-950/60 p-3 text-xs text-slate-300 space-y-2.5">
-                    {q.stimulus && <FormattedContent content={q.stimulus} />}
+                  <div className="mb-5 rounded-2xl border border-purple-100 bg-purple-50/40 p-4 text-xs text-slate-700 space-y-2.5 leading-relaxed">
+                    {q.stimulus && (
+                      <div>
+                        <p className="font-bold text-purple-700 mb-1 text-[10px] uppercase tracking-wider">
+                          Teks Stimulus Bacaan:
+                        </p>
+                        <FormattedContent content={q.stimulus} />
+                      </div>
+                    )}
 
                     {q.stimulusImageUrl && (
-                      <div className="relative group overflow-hidden rounded-lg border border-slate-800 bg-slate-900/60 p-2 text-center">
+                      <div className="relative group overflow-hidden rounded-xl border border-purple-100 bg-white p-2 text-center">
                         <img
                           src={q.stimulusImageUrl}
                           alt="Stimulus visual simulasi"
-                          className="max-h-60 sm:max-h-72 w-auto mx-auto object-contain rounded cursor-zoom-in hover:opacity-95 transition-opacity"
+                          className="max-h-60 sm:max-h-72 w-auto mx-auto object-contain rounded-lg cursor-zoom-in hover:opacity-95 transition-opacity"
                           onClick={() => setZoomImageUrl(q.stimulusImageUrl || null)}
                         />
                         <button
                           type="button"
                           onClick={() => setZoomImageUrl(q.stimulusImageUrl || null)}
-                          className="absolute bottom-2.5 right-2.5 flex items-center gap-1 rounded bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold text-slate-300 backdrop-blur-sm border border-slate-700 hover:text-white transition-colors"
+                          className="absolute bottom-2.5 right-2.5 flex items-center gap-1 rounded-lg bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-slate-700 shadow-xs border border-slate-200 hover:bg-white transition-colors"
                         >
-                          <ZoomIn className="h-3 w-3" />
+                          <ZoomIn className="h-3 w-3 text-purple-600" />
                           <span>Perbesar</span>
                         </button>
                       </div>
@@ -281,30 +294,30 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
                   </div>
                 )}
 
-                <div className="text-sm font-medium text-white mb-4 leading-relaxed">
+                <div className="text-sm font-medium text-slate-900 mb-4 leading-relaxed">
                   <FormattedContent content={q.questionText} />
                 </div>
 
                 {q.questionImageUrl && (
-                  <div className="mb-4 relative group overflow-hidden rounded-lg border border-slate-800 bg-slate-900/60 p-2 text-center">
+                  <div className="mb-4 relative group overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-2 text-center">
                     <img
                       src={q.questionImageUrl}
                       alt="Ilustrasi pertanyaan"
-                      className="max-h-60 sm:max-h-72 w-auto mx-auto object-contain rounded cursor-zoom-in hover:opacity-95 transition-opacity"
+                      className="max-h-60 sm:max-h-72 w-auto mx-auto object-contain rounded-lg cursor-zoom-in hover:opacity-95 transition-opacity"
                       onClick={() => setZoomImageUrl(q.questionImageUrl || null)}
                     />
                     <button
                       type="button"
                       onClick={() => setZoomImageUrl(q.questionImageUrl || null)}
-                      className="absolute bottom-2.5 right-2.5 flex items-center gap-1 rounded bg-slate-900/90 px-2 py-0.5 text-[10px] font-semibold text-slate-300 backdrop-blur-sm border border-slate-700 hover:text-white transition-colors"
+                      className="absolute bottom-2.5 right-2.5 flex items-center gap-1 rounded-lg bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-slate-700 shadow-xs border border-slate-200 hover:bg-white transition-colors"
                     >
-                      <ZoomIn className="h-3 w-3" />
+                      <ZoomIn className="h-3 w-3 text-purple-600" />
                       <span>Perbesar</span>
                     </button>
                   </div>
                 )}
 
-                <div className="space-y-2 mb-4">
+                <div className="space-y-2.5 mb-5">
                   {q.options.map((opt) => {
                     const studentKeys = q.studentAnswer && q.studentAnswer !== '-' 
                       ? q.studentAnswer.split(',').map((s: string) => s.trim()) 
@@ -316,39 +329,45 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
                     const isStudentOpt = studentKeys.includes(opt.key);
                     const isCorrectOpt = opt.isCorrect || correctKeys.includes(opt.key);
 
-                    let optClass = 'border-slate-800 bg-slate-950/40 text-slate-300';
+                    let optClass = 'border-slate-200 bg-white text-slate-700';
                     if (isCorrectOpt && isStudentOpt) {
-                      optClass = 'border-emerald-500/60 bg-emerald-500/15 text-emerald-200 font-semibold ring-1 ring-emerald-500/30';
+                      optClass = 'border-emerald-500 bg-emerald-50/70 text-slate-900 font-semibold ring-1 ring-emerald-400';
                     } else if (isCorrectOpt) {
-                      optClass = 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300 font-medium';
+                      optClass = 'border-emerald-300 bg-emerald-50/40 text-slate-800 font-medium';
                     } else if (isStudentOpt) {
-                      optClass = 'border-rose-500/50 bg-rose-500/10 text-rose-200 line-through';
+                      optClass = 'border-amber-300 bg-amber-50 text-amber-900';
                     }
 
                     return (
                       <div
                         key={opt.key}
-                        className={`flex items-center gap-3 p-3 rounded-xl border text-xs ${optClass}`}
+                        className={`flex items-start gap-3 p-3.5 rounded-2xl border text-xs sm:text-sm ${optClass}`}
                       >
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-slate-800 text-[11px] font-bold">
+                        <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[11px] font-bold ${
+                          isCorrectOpt 
+                            ? 'bg-emerald-600 text-white' 
+                            : isStudentOpt 
+                            ? 'bg-amber-500 text-white'
+                            : 'bg-slate-100 text-slate-600 border border-slate-200'
+                        }`}>
                           {opt.key}
                         </span>
-                        <div className="flex-1">
+                        <div className="flex-1 font-medium leading-relaxed pt-0.5">
                           <OptionRenderer text={opt.text} onZoom={setZoomImageUrl} />
                         </div>
                         {isCorrectOpt && isStudentOpt && (
-                          <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
-                            (Kunci Benar • Jawaban Anda)
+                          <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider bg-emerald-100/60 px-2 py-0.5 rounded-md self-center">
+                            Kunci Benar • Pilihan Anda
                           </span>
                         )}
                         {isCorrectOpt && !isStudentOpt && (
-                          <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
-                            (Kunci Benar)
+                          <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider bg-emerald-100/60 px-2 py-0.5 rounded-md self-center">
+                            Kunci Benar
                           </span>
                         )}
                         {isStudentOpt && !isCorrectOpt && (
-                          <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider">
-                            (Jawaban Anda)
+                          <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider bg-amber-100 px-2 py-0.5 rounded-md self-center">
+                            Pilihan Anda • Perlu Penguatan
                           </span>
                         )}
                       </div>
@@ -356,11 +375,11 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
                   })}
                 </div>
 
-                <div className="rounded-xl border border-purple-500/30 bg-purple-950/20 p-4 text-xs text-purple-200">
-                  <p className="font-bold text-purple-400 flex items-center gap-1 mb-1 text-[11px] uppercase tracking-wider">
-                    <BookOpen className="h-3.5 w-3.5" /> Pembahasan Capstone:
+                <div className="rounded-2xl border border-purple-200 bg-purple-50/60 p-5 text-xs text-slate-800">
+                  <p className="font-bold text-purple-800 flex items-center gap-1.5 mb-1.5 text-xs uppercase tracking-wider">
+                    <BookOpen className="h-4 w-4 text-purple-600" /> Pembahasan Capstone:
                   </p>
-                  <div className="leading-relaxed text-slate-300">
+                  <div className="leading-relaxed text-slate-700 font-medium">
                     <FormattedContent content={q.explanation} />
                   </div>
                 </div>
@@ -373,11 +392,11 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
       {/* Lightbox Zoom Modal */}
       {zoomImageUrl && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-in fade-in duration-150"
           onClick={() => setZoomImageUrl(null)}
         >
           <div
-            className="relative max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 p-2 shadow-2xl"
+            className="relative max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 p-2 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button

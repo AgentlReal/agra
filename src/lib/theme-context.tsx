@@ -12,21 +12,21 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: 'dark',
-  isLight: false,
+  theme: 'light',
+  isLight: true,
   toggleTheme: () => {},
   setTheme: () => {},
 });
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setThemeState] = useState<Theme>('dark');
+  const [theme, setThemeState] = useState<Theme>('light');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     // Check initial theme from DOM or localStorage
     const domTheme = document.documentElement.getAttribute('data-theme') as Theme | null;
     const storedTheme = (typeof window !== 'undefined' ? localStorage.getItem('agra_theme') : null) as Theme | null;
-    const initialTheme: Theme = storedTheme || domTheme || 'dark';
+    const initialTheme: Theme = storedTheme || domTheme || 'light';
 
     setThemeState(initialTheme);
     applyTheme(initialTheme);

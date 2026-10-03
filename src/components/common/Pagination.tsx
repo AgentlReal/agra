@@ -70,23 +70,23 @@ export function Pagination({
 
   return (
     <div
-      className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-slate-800/80 pt-4 text-xs text-slate-400 ${className}`}
+      className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-slate-200 pt-4 text-xs text-slate-500 ${className}`}
     >
       {/* Item summary & per-page dropdown */}
       <div className="flex flex-wrap items-center gap-3">
         <span>
-          Menampilkan <strong className="text-white font-semibold">{startItem}</strong> -{' '}
-          <strong className="text-white font-semibold">{endItem}</strong> dari{' '}
-          <strong className="text-white font-semibold">{totalItems}</strong> butir data
+          Menampilkan <strong className="text-slate-900 font-semibold">{startItem}</strong> -{' '}
+          <strong className="text-slate-900 font-semibold">{endItem}</strong> dari{' '}
+          <strong className="text-slate-900 font-semibold">{totalItems}</strong> butir data
         </span>
 
         {onItemsPerPageChange && (
-          <div className="flex items-center gap-1.5 pl-2 sm:border-l sm:border-slate-800">
+          <div className="flex items-center gap-1.5 pl-2 sm:border-l sm:border-slate-200">
             <span>Per halaman:</span>
             <select
               value={itemsPerPage}
               onChange={(e) => onItemsPerPageChange(Number(e.target.value))}
-              className="rounded-lg border border-slate-800 bg-slate-900 px-2 py-1 text-xs text-slate-200 focus:border-purple-500 focus:outline-none"
+              className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs text-slate-700 focus:border-purple-600 focus:outline-none shadow-xs"
             >
               {itemsPerPageOptions.map((opt) => (
                 <option key={opt} value={opt}>
@@ -104,7 +104,7 @@ export function Pagination({
           type="button"
           onClick={() => onPageChange(safeCurrentPage - 1)}
           disabled={safeCurrentPage <= 1}
-          className="flex h-8 items-center gap-1 rounded-lg border border-slate-800 bg-slate-900 px-2.5 text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white disabled:pointer-events-none disabled:opacity-40 transition-colors"
+          className="flex h-8 items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40 shadow-xs transition-colors cursor-pointer"
           title="Halaman Sebelumnya"
         >
           <ChevronLeft className="h-3.5 w-3.5" />
@@ -117,7 +117,7 @@ export function Pagination({
               return (
                 <span
                   key={`ellipsis-${idx}`}
-                  className="flex h-8 w-7 items-center justify-center text-slate-500 font-bold"
+                  className="flex h-8 w-7 items-center justify-center text-slate-400 font-bold"
                 >
                   ...
                 </span>
@@ -132,10 +132,10 @@ export function Pagination({
                 key={`page-${pageNum}`}
                 type="button"
                 onClick={() => onPageChange(pageNum)}
-                className={`flex h-8 min-w-[2rem] items-center justify-center rounded-lg px-2 text-xs font-bold transition-all ${
+                className={`flex h-8 min-w-[2rem] items-center justify-center rounded-xl px-2.5 text-xs font-bold transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-purple-600 text-white shadow-sm shadow-purple-600/30'
-                    : 'border border-slate-800 bg-slate-900 text-slate-300 hover:border-slate-700 hover:bg-slate-800 hover:text-white'
+                    ? 'bg-purple-600 text-white shadow-xs'
+                    : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 shadow-xs'
                 }`}
               >
                 {pageNum}
@@ -148,7 +148,7 @@ export function Pagination({
           type="button"
           onClick={() => onPageChange(safeCurrentPage + 1)}
           disabled={safeCurrentPage >= totalPages}
-          className="flex h-8 items-center gap-1 rounded-lg border border-slate-800 bg-slate-900 px-2.5 text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white disabled:pointer-events-none disabled:opacity-40 transition-colors"
+          className="flex h-8 items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40 shadow-xs transition-colors cursor-pointer"
           title="Halaman Berikutnya"
         >
           <span className="hidden sm:inline">Berikutnya</span>

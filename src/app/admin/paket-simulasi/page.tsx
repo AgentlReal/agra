@@ -10,10 +10,8 @@ import {
   Plus, 
   CheckCircle2, 
   Clock, 
-  BarChart2, 
   Archive, 
-  Eye, 
-  ShieldCheck 
+  Eye
 } from 'lucide-react';
 import Pagination from '@/components/common/Pagination';
 
@@ -87,27 +85,27 @@ export default function AdminPaketSimulasiPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-950">
+    <div className="flex min-h-screen flex-col bg-[#F8FAFC]">
       <AdminNav />
 
       <main className="flex-1 py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-1.5 text-xs text-purple-400 font-semibold mb-1">
+            <div className="inline-flex items-center gap-1.5 text-xs text-purple-700 font-bold mb-1">
               <Layers className="h-4 w-4" />
               <span>Manajemen Asesmen Puncak</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
               Paket Ujian Simulasi TKA
             </h1>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-slate-600">
               Kelola susunan 30 butir soal paket capstone, status publikasi, dan statistik nilai peserta.
             </p>
           </div>
 
           <Link
             href="/admin/paket-simulasi/create"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-purple-600/30 hover:opacity-95 transition-all"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-700 px-4 py-2.5 text-xs font-bold text-white shadow-xs transition-all cursor-pointer"
           >
             <Plus className="h-4 w-4" />
             <span>Buat Paket Simulasi Baru</span>
@@ -117,10 +115,10 @@ export default function AdminPaketSimulasiPage() {
         {/* Packages Grid */}
         {loading ? (
           <div className="flex h-48 items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-500 border-t-transparent" />
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-600 border-t-transparent" />
           </div>
         ) : packages.length === 0 ? (
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-12 text-center text-slate-400">
+          <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center text-slate-500 shadow-sm">
             <p className="text-sm">Tidak ada paket simulasi yang ditemukan.</p>
           </div>
         ) : (
@@ -131,56 +129,56 @@ export default function AdminPaketSimulasiPage() {
                 return (
                   <div
                     key={pkg.id}
-                    className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 backdrop-blur-md flex flex-col justify-between hover:border-slate-700 transition-all space-y-5"
+                    className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between hover:border-purple-300 hover:shadow-md transition-all space-y-5"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-[11px] font-semibold text-purple-400 font-mono">
+                        <span className="text-[11px] font-bold text-purple-700 font-mono bg-purple-50 px-2 py-0.5 rounded-md border border-purple-100">
                           {pkg.subjectName}
                         </span>
                         {isPublished ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/20">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
                             <CheckCircle2 className="h-3 w-3" /> Published
                           </span>
                         ) : pkg.status === 'ARCHIVED' ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-slate-500/10 px-2.5 py-0.5 text-[10px] font-bold text-slate-400 border border-slate-500/20">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-600 border border-slate-200">
                             <Archive className="h-3 w-3" /> Diarsipkan
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-bold text-amber-400 border border-amber-500/20">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-[10px] font-bold text-amber-700 border border-amber-200">
                             <Clock className="h-3 w-3" /> {pkg.status || 'Draft'}
                           </span>
                         )}
                       </div>
 
-                      <h3 className="text-base font-bold text-white leading-snug">{pkg.title}</h3>
-                      <p className="text-xs text-slate-400 mt-1">
-                        Kapasitas Standar: <strong className="text-slate-200">30 Butir Soal</strong>
+                      <h3 className="text-base font-bold text-slate-900 leading-snug">{pkg.title}</h3>
+                      <p className="text-xs text-slate-500 mt-1">
+                        Kapasitas Standar: <strong className="text-slate-800">30 Butir Soal</strong>
                       </p>
 
                       {/* Stats pills */}
                       <div className="mt-4 grid grid-cols-2 gap-2 text-center text-xs">
-                        <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-2.5">
-                          <p className="text-[10px] text-slate-400">Total Peserta</p>
-                          <p className="text-sm font-bold text-white mt-0.5">{pkg.participantsCount}</p>
+                        <div className="rounded-2xl border border-slate-100 bg-slate-50 p-2.5">
+                          <p className="text-[10px] text-slate-500 font-medium">Total Peserta</p>
+                          <p className="text-sm font-bold text-slate-900 mt-0.5">{pkg.participantsCount}</p>
                         </div>
-                        <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-2.5">
-                          <p className="text-[10px] text-slate-400">Rata-rata Nilai</p>
-                          <p className="text-sm font-bold text-purple-400 mt-0.5">
+                        <div className="rounded-2xl border border-slate-100 bg-slate-50 p-2.5">
+                          <p className="text-[10px] text-slate-500 font-medium">Rata-rata Nilai</p>
+                          <p className="text-sm font-bold text-purple-700 mt-0.5">
                             {pkg.averageScore > 0 ? `${pkg.averageScore}%` : '-'}
                           </p>
                         </div>
                       </div>
                     </div>
 
-                    <div className="pt-4 border-t border-slate-800 flex items-center justify-between gap-2">
+                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
                       <button
                         onClick={() => handleToggleStatus(pkg.id, pkg.status)}
                         disabled={updatingId === pkg.id}
-                        className={`rounded-lg px-3 py-1.5 text-xs font-semibold border transition-colors ${
+                        className={`rounded-xl px-3 py-1.5 text-xs font-semibold border transition-colors cursor-pointer ${
                           isPublished
-                            ? 'border-rose-500/30 text-rose-400 hover:bg-rose-500/10'
-                            : 'border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10'
+                            ? 'border-amber-200 text-amber-700 hover:bg-amber-50'
+                            : 'border-emerald-200 text-emerald-700 hover:bg-emerald-50'
                         }`}
                       >
                         {isPublished ? 'Nonaktifkan' : 'Publikasikan'}
@@ -188,9 +186,9 @@ export default function AdminPaketSimulasiPage() {
 
                       <Link
                         href={`/admin/paket-simulasi/${pkg.id}`}
-                        className="inline-flex items-center gap-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 px-3 py-1.5 text-xs font-semibold text-slate-200"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-xs transition-colors"
                       >
-                        <Eye className="h-3.5 w-3.5" />
+                        <Eye className="h-3.5 w-3.5 text-purple-600" />
                         <span>Rincian & Statistik</span>
                       </Link>
                     </div>
