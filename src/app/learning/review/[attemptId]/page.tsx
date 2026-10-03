@@ -109,9 +109,14 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
               correctAnswer = Array.isArray(q.correctAnswer) ? q.correctAnswer.join(', ') : q.correctAnswer;
             }
 
+            const sessionQuestionId = q.session_question_id ?? q.id;
+            if (!sessionQuestionId) {
+              throw new Error(`Data butir soal review #${i + 1} tidak valid.`);
+            }
+
             return {
-              id: q.session_question_id ?? q.id ?? i + 1,
-              questionNumber: q.question_order ?? q.questionNumber ?? i + 1,
+              id: sessionQuestionId,
+              questionNumber: q.question_order ?? q.questionNumber ?? (i + 1),
               stimulus: stimulusText,
               stimulusImageUrl,
               questionImageUrl,

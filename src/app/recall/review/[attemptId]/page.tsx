@@ -108,9 +108,14 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
               correctAnswer = Array.isArray(q.correctAnswer) ? q.correctAnswer.join(', ') : q.correctAnswer;
             }
 
+            const sessionQuestionId = q.session_question_id ?? q.id;
+            if (!sessionQuestionId) {
+              throw new Error(`Data butir soal review #${i + 1} tidak valid.`);
+            }
+
             return {
-              id: q.session_question_id ?? q.id ?? i + 1,
-              questionNumber: q.question_order ?? q.questionNumber ?? i + 1,
+              id: sessionQuestionId,
+              questionNumber: q.question_order ?? q.questionNumber ?? (i + 1),
               subjectName: q.subject_name || q.subjectName || 'TKA SMP',
               stimulus: stimulusText,
               stimulusImageUrl,

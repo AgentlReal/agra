@@ -12,6 +12,8 @@ import {
   CheckCircle2, 
   Check, 
   AlertTriangle, 
+  AlertCircle,
+  RefreshCw,
   X,
   CheckSquare,
   CircleDot,
@@ -63,6 +65,13 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const [errorMsg, setErrorMsg] = useState('');
+  const [saveError, setSaveError] = useState<{
+    message: string;
+    status?: number;
+    questionNumber?: number;
+  } | null>(null);
+  const [failedSaveIndices, setFailedSaveIndices] = useState<number[]>([]);
+  const [showSubmitWarningModal, setShowSubmitWarningModal] = useState(false);
 
   useEffect(() => {
     api.simulation
@@ -126,9 +135,14 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
               q.isFlagged
             );
 
+            const sessionQuestionId = q.session_question_id ?? q.id;
+            if (!sessionQuestionId || isNaN(Number(sessionQuestionId))) {
+              throw new Error(`Data butir soal nomor urut ${q.question_order ?? (i + 1)} tidak valid (ID sesi soal tidak ditemukan dari server).`);
+            }
+
             return {
-              id: q.session_question_id ?? q.id ?? i + 1,
-              questionNumber: q.question_order ?? q.questionNumber ?? i + 1,
+              id: sessionQuestionId,
+              questionNumber: q.question_order ?? q.questionNumber ?? (i + 1),
               stimulus: stimulusText,
               stimulusImageUrl,
               questionText: q.question_text || q.questionText || '',
@@ -204,7 +218,45 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
 
   const currentQ = questions[currentIndex];
 
-  const handleSelectOption = async (optionKey: string) => {
+  const saveAnswer = async (qIndex: number, selectedKeys: string[], isDoubt: boolean) => {
+    const targetQ = questions[qIndex];
+    if (!targetQ) return;
+
+    setSaving(true);
+    try {
+      const selectedOptionIds = targetQ.options
+        .filter((o) => selectedKeys.includes(o.key) && o.id !== undefined && o.id !== null)
+        .map((o) => Number(o.id));
+
+      await api.simulation.saveAnswer(attemptId, targetQ.id, {
+        selectedOptionIds,
+        selected_option_ids: selectedOptionIds,
+        is_doubtful: isDoubt,
+        isDoubtful: isDoubt,
+        isFlagged: isDoubt,
+        is_flagged: isDoubt,
+        currentQuestionOrder: qIndex + 1,
+        current_question_order: qIndex + 1,
+        answer: selectedKeys.join(', '),
+      });
+
+      // Clear successful question from failed list
+      setFailedSaveIndices((prev) => prev.filter((idx) => idx !== qIndex));
+      setSaveError((prev) => (prev?.questionNumber === qIndex + 1 ? null : prev));
+    } catch (err: any) {
+      console.error('Simulation autosave failed:', err);
+      setFailedSaveIndices((prev) => (prev.includes(qIndex) ? prev : [...prev, qIndex]));
+      setSaveError({
+        message: err.message || 'Gagal menyimpan jawaban simulasi ke server.',
+        status: err.status,
+        questionNumber: qIndex + 1,
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSelectOption = (optionKey: string) => {
     if (!currentQ) return;
 
     let nextAnswerKeys: string[] = [];
@@ -220,51 +272,33 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
       nextAnswerKeys = [optionKey];
     }
 
-    const newAnswers = { ...answers, [currentIndex]: nextAnswerKeys };
-    setAnswers(newAnswers);
-
-    const selectedOptionIds = currentQ.options
-      .filter((o) => nextAnswerKeys.includes(o.key) && o.id)
-      .map((o) => o.id as number);
-
-    setSaving(true);
-    try {
-      await api.simulation.saveAnswer(attemptId, currentQ.id, {
-        selectedOptionIds,
-        is_doubtful: doubtfuls[currentIndex] || false,
-        currentQuestionOrder: currentQ.questionNumber,
-        answer: nextAnswerKeys.join(', '),
-      });
-    } catch {
-      // silent
-    } finally {
-      setSaving(false);
-    }
+    setAnswers((prev) => ({ ...prev, [currentIndex]: nextAnswerKeys }));
+    saveAnswer(currentIndex, nextAnswerKeys, doubtfuls[currentIndex] || false);
   };
 
-  const handleToggleDoubtful = async () => {
+  const handleToggleDoubtful = () => {
     if (!currentQ) return;
     const nextDoubtful = !doubtfuls[currentIndex];
-    setDoubtfuls({ ...doubtfuls, [currentIndex]: nextDoubtful });
+    setDoubtfuls((prev) => ({ ...prev, [currentIndex]: nextDoubtful }));
+    saveAnswer(currentIndex, answers[currentIndex] || [], nextDoubtful);
+  };
 
-    const curKeys = answers[currentIndex] || [];
-    const selectedOptionIds = currentQ.options
-      .filter((o) => curKeys.includes(o.key) && o.id)
-      .map((o) => o.id as number);
+  const handleRetrySave = (qIndex: number) => {
+    saveAnswer(qIndex, answers[qIndex] || [], doubtfuls[qIndex] || false);
+  };
 
-    try {
-      await api.simulation.saveAnswer(attemptId, currentQ.id, {
-        selectedOptionIds,
-        is_doubtful: nextDoubtful,
-        currentQuestionOrder: currentQ.questionNumber,
-        answer: curKeys.join(', '),
-      });
-    } catch {
-      // silent
+  const handleRetryAllFailed = async () => {
+    const targets = [...failedSaveIndices];
+    for (const idx of targets) {
+      await saveAnswer(idx, answers[idx] || [], doubtfuls[idx] || false);
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (force = false) => {
+    if (!force && failedSaveIndices.length > 0) {
+      setShowSubmitWarningModal(true);
+      return;
+    }
     setSubmitting(true);
     try {
       await api.simulation.submit(attemptId);
@@ -392,7 +426,51 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
       </header>
 
       {/* Main Dual-Pane Workspace */}
-      <main className="flex-1 mx-auto max-w-7xl w-full p-4 sm:p-6 lg:p-8">
+      <main className="flex-1 mx-auto max-w-7xl w-full p-4 sm:p-6 lg:p-8 space-y-6">
+        {/* Autosave Error Notification Banner */}
+        {saveError && (
+          <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 text-amber-800 shrink-0">
+                <AlertCircle className="h-5 w-5 text-amber-600" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-amber-950">
+                  {saveError.status === 404
+                    ? 'Sesi Ujian Tidak Valid / Soal Tidak Ditemukan (404)'
+                    : `Gagal Menyimpan Jawaban (Soal #${saveError.questionNumber})`}
+                </p>
+                <p className="text-xs text-amber-800 mt-0.5">
+                  {saveError.status === 404
+                    ? 'Sesi simulasi tidak ditemukan atau telah berakhir di server. Silakan kembali ke halaman simulasi.'
+                    : saveError.message}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+              {saveError.status === 404 ? (
+                <button
+                  type="button"
+                  onClick={() => router.push('/simulations/1')}
+                  className="rounded-xl bg-amber-900 text-white px-3.5 py-1.5 text-xs font-bold hover:bg-amber-950 transition-colors shadow-2xs cursor-pointer"
+                >
+                  Kembali ke Halaman Simulasi
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => saveError.questionNumber && handleRetrySave(saveError.questionNumber - 1)}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-1.5 text-xs font-bold transition-colors shadow-2xs cursor-pointer"
+                >
+                  <RefreshCw className="h-3.5 w-3.5" />
+                  <span>Coba Simpan Ulang</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-col lg:flex-row items-start gap-8">
           
           {/* LEFT PANE: Question, Stimulus & Option Area (~68% width on desktop) */}
@@ -634,15 +712,35 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
                 </div>
               </div>
 
+              {/* Failed Sync Alert in Palette */}
+              {failedSaveIndices.length > 0 && (
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-950">
+                  <span className="flex items-center gap-1 font-bold">
+                    <AlertCircle className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                    {failedSaveIndices.length} Belum Tersinkron
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleRetryAllFailed}
+                    className="font-bold underline text-amber-800 hover:text-amber-950 transition-colors cursor-pointer"
+                  >
+                    Simpan Ulang
+                  </button>
+                </div>
+              )}
+
               {/* Question Matrix Grid */}
               <div className="grid grid-cols-5 gap-2 max-h-[340px] overflow-y-auto p-1">
                 {questions.map((q, idx) => {
                   const isAnswered = (answers[idx] || []).length > 0;
                   const isDoubt = doubtfuls[idx];
                   const isCurrent = currentIndex === idx;
+                  const isFailedSave = failedSaveIndices.includes(idx);
 
                   let colorClass = 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-300';
-                  if (isDoubt) {
+                  if (isFailedSave) {
+                    colorClass = 'border-amber-400 bg-amber-100 text-amber-900 font-black ring-1 ring-amber-400';
+                  } else if (isDoubt) {
                     colorClass = 'border-amber-400 bg-amber-50 text-amber-800 font-bold';
                   } else if (isAnswered) {
                     colorClass = 'border-blue-600 bg-blue-600 text-white font-bold shadow-2xs';
@@ -652,11 +750,15 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
                     <button
                       key={q.id || q.questionNumber || `pal-${idx}`}
                       onClick={() => setCurrentIndex(idx)}
-                      className={`flex h-10 items-center justify-center rounded-xl border text-xs font-mono transition-all cursor-pointer ${colorClass} ${
+                      title={isFailedSave ? 'Belum berhasil tersimpan ke server' : undefined}
+                      className={`flex h-10 items-center justify-center rounded-xl border text-xs font-mono transition-all cursor-pointer relative ${colorClass} ${
                         isCurrent ? 'ring-2 ring-blue-600 ring-offset-2 scale-105 font-extrabold z-10' : ''
                       }`}
                     >
                       {String(q.questionNumber).padStart(2, '0')}
+                      {isFailedSave && (
+                        <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-amber-500 border border-white" />
+                      )}
                     </button>
                   );
                 })}
@@ -665,7 +767,7 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
               {/* Finish Exam Button */}
               <div className="pt-2 border-t border-slate-100">
                 <button
-                  onClick={() => setSubmitModalOpen(true)}
+                  onClick={() => handleSubmit(false)}
                   className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3 transition-colors shadow-2xs cursor-pointer"
                 >
                   <CheckCircle2 className="h-4 w-4" />
@@ -711,14 +813,33 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
               </div>
             </div>
 
+            {failedSaveIndices.length > 0 && (
+              <div className="flex items-center justify-between p-2 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-950">
+                <span className="flex items-center gap-1 font-bold">
+                  <AlertCircle className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                  {failedSaveIndices.length} Belum Tersinkron
+                </span>
+                <button
+                  type="button"
+                  onClick={handleRetryAllFailed}
+                  className="font-bold underline text-amber-800 hover:text-amber-950 transition-colors cursor-pointer"
+                >
+                  Simpan Ulang
+                </button>
+              </div>
+            )}
+
             <div className="grid grid-cols-5 gap-2 max-h-64 overflow-y-auto p-1">
               {questions.map((q, idx) => {
                 const isAnswered = (answers[idx] || []).length > 0;
                 const isDoubt = doubtfuls[idx];
                 const isCurrent = currentIndex === idx;
+                const isFailedSave = failedSaveIndices.includes(idx);
 
                 let colorClass = 'border-slate-200 bg-white text-slate-700';
-                if (isDoubt) {
+                if (isFailedSave) {
+                  colorClass = 'border-amber-400 bg-amber-100 text-amber-900 font-bold';
+                } else if (isDoubt) {
                   colorClass = 'border-amber-400 bg-amber-50 text-amber-800 font-bold';
                 } else if (isAnswered) {
                   colorClass = 'border-blue-600 bg-blue-600 text-white font-bold';
@@ -731,11 +852,14 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
                       setCurrentIndex(idx);
                       setPaletteMobileOpen(false);
                     }}
-                    className={`flex h-10 items-center justify-center rounded-xl border text-xs font-mono transition-all cursor-pointer ${colorClass} ${
+                    className={`flex h-10 items-center justify-center rounded-xl border text-xs font-mono transition-all cursor-pointer relative ${colorClass} ${
                       isCurrent ? 'ring-2 ring-blue-600 scale-105' : ''
                     }`}
                   >
                     {String(q.questionNumber).padStart(2, '0')}
+                    {isFailedSave && (
+                      <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-amber-500 border border-white" />
+                    )}
                   </button>
                 );
               })}
@@ -747,6 +871,53 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
             >
               Tutup Peta Soal
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Warning Modal when Submitting with Unsaved/Failed Questions */}
+      {showSubmitWarningModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 shadow-xl space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 border border-amber-200 shrink-0">
+                <AlertCircle className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-slate-900">Ada Jawaban Belum Tersimpan</h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Terdapat {failedSaveIndices.length} butir jawaban yang belum berhasil tersinkronisasi ke server.
+                </p>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-600 leading-relaxed bg-amber-50 border border-amber-200 rounded-2xl p-3.5">
+              Sebaiknya Anda mencoba simpan ulang terlebih dahulu agar seluruh hasil pengerjaan ujian Anda tercatat secara lengkap.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSubmitWarningModal(false);
+                  handleRetryAllFailed();
+                }}
+                className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 transition-colors shadow-2xs cursor-pointer"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                <span>Simpan Ulang Semua</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSubmitWarningModal(false);
+                  handleSubmit(true);
+                }}
+                className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold py-2.5 px-4 transition-colors cursor-pointer"
+              >
+                <span>Tetap Kumpulkan</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -789,7 +960,10 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
               </button>
               <button
                 type="button"
-                onClick={handleSubmit}
+                onClick={() => {
+                  setSubmitModalOpen(false);
+                  handleSubmit(false);
+                }}
                 disabled={submitting}
                 className="flex-1 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2.5 transition-colors disabled:opacity-50 cursor-pointer"
               >
