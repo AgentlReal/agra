@@ -97,6 +97,10 @@ export class RecallRepository {
         subject_id: number;
         question_text: string;
         question_format: "SINGLE_CHOICE" | "COMPLEX_CHOICE";
+        question_image_url: string | null;
+        stimulus_id: number | null;
+        stimulus_title: string | null;
+        stimulus_text: string | null;
         stimulus_image_url: string | null;
         option_id: number;
         option_label: "A" | "B" | "C" | "D";
@@ -110,12 +114,17 @@ export class RecallRepository {
                 qb.subject_id,
                 qb.question_text,
                 qb.question_format,
-                qb.question_image_url AS stimulus_image_url,
+                qb.question_image_url AS question_image_url,
+                stm.id AS stimulus_id,
+                stm.title AS stimulus_title,
+                stm.stimulus_text AS stimulus_text,
+                stm.stimulus_image_url AS stimulus_image_url,
                 qo.id AS option_id,
                 qo.option_label,
                 qo.option_text
              FROM session_questions sq
              JOIN question_banks qb ON qb.id = sq.question_id
+             LEFT JOIN stimuli stm ON stm.id = qb.stimulus_id
              JOIN question_options qo ON qo.question_id = qb.id
              WHERE sq.session_id = ?
              ORDER BY sq.question_order ASC, qo.option_label ASC`,
@@ -417,6 +426,11 @@ export class RecallRepository {
         question_order: number;
         subject_id: number;
         question_text: string;
+        question_image_url: string | null;
+        stimulus_id: number | null;
+        stimulus_title: string | null;
+        stimulus_text: string | null;
+        stimulus_image_url: string | null;
         is_answer_correct: number;
         answer_score: number;
         explanation_text: string | null;
@@ -434,6 +448,11 @@ export class RecallRepository {
                 sq.question_order,
                 qb.subject_id,
                 qb.question_text,
+                qb.question_image_url AS question_image_url,
+                stm.id AS stimulus_id,
+                stm.title AS stimulus_title,
+                stm.stimulus_text AS stimulus_text,
+                stm.stimulus_image_url AS stimulus_image_url,
                 COALESCE(sa.is_correct, 0) AS is_answer_correct,
                 COALESCE(sa.score, 0.00) AS answer_score,
                 qe.explanation_text,
@@ -446,6 +465,7 @@ export class RecallRepository {
                 CASE WHEN sao.selected_option_id IS NOT NULL THEN 1 ELSE 0 END AS is_selected
              FROM session_questions sq
              JOIN question_banks qb ON qb.id = sq.question_id
+             LEFT JOIN stimuli stm ON stm.id = qb.stimulus_id
              LEFT JOIN question_explanations qe ON qe.question_id = qb.id
              JOIN question_options qo ON qo.question_id = qb.id
              LEFT JOIN student_answers sa ON sa.session_question_id = sq.id

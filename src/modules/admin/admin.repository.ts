@@ -170,9 +170,10 @@ export class AdminRepository {
                 stimulusId = stmRes.insertId;
             }
 
+            const questionImageUrl = input.question_image_url ?? input.stimulus_image_url ?? null;
             const [qbRes] = await conn.execute<ResultSetHeader>(
                 `INSERT INTO question_banks 
-                 (subject_id, sub_material_id, cognitive_level_id, stimulus_id, bank_type, question_format, question_text, stimulus_image_url, is_active)
+                 (subject_id, sub_material_id, cognitive_level_id, stimulus_id, bank_type, question_format, question_text, question_image_url, is_active)
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, TRUE)`,
                 [
                     input.subject_id,
@@ -182,7 +183,7 @@ export class AdminRepository {
                     input.bank_type,
                     input.question_format,
                     input.question_text,
-                    input.stimulus_image_url || null,
+                    questionImageUrl,
                 ]
             );
             const questionId = qbRes.insertId;
@@ -224,7 +225,7 @@ export class AdminRepository {
             is_active: number;
             created_at: Date;
             stimulus_id: number | null;
-            stimulus_image_url: string | null;
+            question_image_url: string | null;
             stm_title: string | null;
             stm_text: string | null;
             stm_subject_id: number | null;
@@ -280,8 +281,8 @@ export class AdminRepository {
             is_active: Boolean(q.is_active),
             created_at: q.created_at ? new Date(q.created_at).toISOString() : new Date().toISOString(),
             stimulus_id: q.stimulus_id,
-            stimulus_image_url: q.stimulus_image_url,
-            question_image_url: q.stimulus_image_url,
+            stimulus_image_url: q.question_image_url || null,
+            question_image_url: q.question_image_url || null,
             stimulus: q.stimulus_id
                 ? {
                       id: q.stimulus_id,
@@ -375,9 +376,9 @@ export class AdminRepository {
                 fields.push("question_text = ?");
                 params.push(input.question_text);
             }
-            if (input.stimulus_image_url !== undefined) {
-                fields.push("stimulus_image_url = ?");
-                params.push(input.stimulus_image_url);
+            if (input.question_image_url !== undefined || input.stimulus_image_url !== undefined) {
+                fields.push("question_image_url = ?");
+                params.push(input.question_image_url ?? input.stimulus_image_url ?? null);
             }
 
             if (fields.length > 0) {

@@ -88,10 +88,23 @@ export class RecallService {
                     question_order: r.question_order,
                     question_type: r.question_format,
                     question_text: r.question_text,
+                    question_image_url: r.question_image_url || null,
+                    stimulus_image_url: r.stimulus_image_url || r.question_image_url || null,
                     options: [],
                     selected_option_ids: ans?.selected || [],
                     is_skipped: ans?.skipped || false,
-                    stimulus: null,
+                    stimulus: r.stimulus_id
+                        ? {
+                              id: r.stimulus_id,
+                              subject_id: r.subject_id,
+                              title: r.stimulus_title || "",
+                              content_text: r.stimulus_text || "",
+                              stimulus_text: r.stimulus_text || "",
+                              source_citation: null,
+                              image_url: r.stimulus_image_url || null,
+                              stimulus_image_url: r.stimulus_image_url || null,
+                          }
+                        : null,
                 });
             }
 
@@ -228,12 +241,26 @@ export class RecallService {
                     subject_id: r.subject_id,
                     question_order: r.question_order,
                     question_text: r.question_text,
+                    question_image_url: r.question_image_url || null,
+                    stimulus_image_url: r.stimulus_image_url || r.question_image_url || null,
                     options: [],
                     selected_option_ids: [],
                     is_correct: Boolean(r.is_answer_correct),
                     explanation_text: r.explanation_text || "",
                     reasoning_guide: r.reasoning_guide || null,
                     reference_url: r.reference_url || null,
+                    stimulus: r.stimulus_id
+                        ? {
+                              id: r.stimulus_id,
+                              subject_id: r.subject_id,
+                              title: r.stimulus_title || "",
+                              content_text: r.stimulus_text || "",
+                              stimulus_text: r.stimulus_text || "",
+                              source_citation: null,
+                              image_url: r.stimulus_image_url || null,
+                              stimulus_image_url: r.stimulus_image_url || null,
+                          }
+                        : null,
                 });
             }
 
