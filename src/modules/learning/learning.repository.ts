@@ -1,4 +1,5 @@
 import { query, withTransaction } from "@/shared/db";
+import { NotFoundError, BadRequestError } from "@/shared/errors/app-error";
 import {
     LearningSessionRow,
     QuestionBankRow,
@@ -169,6 +170,7 @@ export class LearningRepository {
     }
 
     async upsertAnswer(
+        attemptId: number,
         sessionQuestionId: number,
         selectedOptionIds: number[],
         isSkipped = false,
@@ -182,11 +184,33 @@ export class LearningRepository {
         currentQuestionOrder: number;
     }> {
         return withTransaction(async (conn) => {
-            const [sqRows] = await conn.query<Array<RowDataPacket & { session_id: number; question_order: number }>>(
-                `SELECT session_id, question_order FROM session_questions WHERE id = ?`,
-                [sessionQuestionId]
+            const [sqRows] = await conn.query<Array<RowDataPacket & { session_id: number; question_id: number; question_order: number; total_questions: number }>>(
+                `SELECT sq.session_id, sq.question_id, sq.question_order, ls.total_questions
+                 FROM session_questions sq
+                 JOIN learning_sessions ls ON ls.id = sq.session_id
+                 WHERE sq.id = ? AND sq.session_id = ?`,
+                [sessionQuestionId, attemptId]
             );
-            const sessionId = sqRows[0]?.session_id;
+            if (!sqRows[0]) {
+                throw new NotFoundError("Nomor soal tidak terdaftar pada sesi latihan ini");
+            }
+            const sessionId = sqRows[0].session_id;
+
+            const uniqueOptionIds = Array.from(new Set(selectedOptionIds));
+            if (!isSkipped && uniqueOptionIds.length > 0) {
+                const [validOpts] = await conn.query<Array<RowDataPacket & { id: number }>>(
+                    `SELECT id FROM question_options WHERE question_id = ? AND id IN (?)`,
+                    [sqRows[0].question_id, uniqueOptionIds]
+                );
+                if (validOpts.length !== uniqueOptionIds.length) {
+                    throw new BadRequestError("Opsi jawaban tidak valid untuk soal ini");
+                }
+            }
+
+            const totalQuestions = Number(sqRows[0].total_questions) || 10;
+            if (currentQuestionOrder !== undefined && currentQuestionOrder > totalQuestions) {
+                throw new BadRequestError(`Nomor urut soal melebihi jumlah soal sesi (${totalQuestions})`);
+            }
 
             const [existing] = await conn.query<StudentAnswerRow[]>(
                 `SELECT id FROM student_answers WHERE session_question_id = ?`,
@@ -216,8 +240,8 @@ export class LearningRepository {
                 answerId = ins.insertId;
             }
 
-            if (!isSkipped && selectedOptionIds.length > 0) {
-                for (const optId of selectedOptionIds) {
+            if (!isSkipped && uniqueOptionIds.length > 0) {
+                for (const optId of uniqueOptionIds) {
                     await conn.execute(
                         `INSERT INTO student_answer_options (student_answer_id, selected_option_id)
                          VALUES (?, ?)`,
@@ -256,7 +280,7 @@ export class LearningRepository {
                 answeredCount = countRows[0]?.total || 0;
             }
 
-            const remainingUnansweredCount = Math.max(0, 10 - answeredCount);
+            const remainingUnansweredCount = Math.max(0, totalQuestions - answeredCount);
 
             return {
                 sessionQuestionId,

@@ -146,6 +146,7 @@ export class RecallService {
         }
 
         const res = await this.repo.upsertAnswer(
+            attemptId,
             questionId,
             selected,
             dto.isSkipped || false,
@@ -156,7 +157,7 @@ export class RecallService {
         return {
             attemptId,
             questionId,
-            selectedOptionIds: dto.selectedOptionIds || [],
+            selectedOptionIds: Array.from(new Set(selected)),
             isSkipped: Boolean(dto.isSkipped),
             answeredAt: res.answeredAt.toISOString(),
             answeredCount: res.answeredCount,
