@@ -148,7 +148,10 @@ export class RecallService {
             throw new NotFoundError("Sesi Recall tidak ditemukan");
         }
         if (session.status !== "IN_PROGRESS") {
-            throw new BadRequestError("Sesi pengerjaan sudah selesai atau tidak aktif");
+            throw new BadRequestError(
+                "SESSION_CLOSED - Sesi pengerjaan sudah selesai atau tidak aktif",
+                "SESSION_CLOSED"
+            );
         }
 
         const selected = dto.selectedOptionIds || [];

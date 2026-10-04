@@ -29,8 +29,14 @@ export function successResponse<T>(data: T, status = 200, meta?: ApiResponse["me
     return NextResponse.json(payload, { status });
 }
 
-export function jsonResponse<T>(data: T, status = 200) {
-    return NextResponse.json(data, { status });
+export function jsonResponse<T>(data: T, status = 200, headers?: HeadersInit) {
+    return NextResponse.json(data, {
+        status,
+        headers: {
+            "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+            ...headers,
+        },
+    });
 }
 
 export function errorResponse(error: unknown, style: "m01" | "status" = "m01") {
