@@ -187,7 +187,7 @@ INSERT INTO `question_banks` (
 (697, 1, 3, 2, NULL, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Nilai tabungan seorang anak setelah m bulan dinyatakan dengan S = 100.000 + 15.000m. Arti dari variabel 15.000 dalam situasi tersebut adalah ...', NULL, TRUE),
 (698, 1, 3, 2, NULL, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Sebuah perusahaan konveksi memodelkan keuntungan harian dalam jutaan rupiah menggunakan bentuk P(n) = 5n - 20, di mana n adalah jumlah pakaian yang diproduksi. Jika pada suatu hari perusahaan tersebut memperoleh nilai P(n) = 0, artinya adalah ...', NULL, TRUE),
 (699, 1, 3, 2, NULL, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Kapasitas air dalam tangki yang mengalami kebocoran setelah t menit dinyatakan oleh V(t) = 500 - 4t liter. Koefisien -4 pada bentuk aljabar tersebut menjelaskan bahwa ..', NULL, TRUE),
-(700, 1, 3, 2, NULL, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Diberikan rumus laju konsumsi bahan bakar mobil B(s) = 8 / 12, di mana s adalah jarak tempuh dalam kilometer dan B(s) adalah liter bensin yang dibutuhkan. Pernyataan yang tepat menginterpretasikan rumus tersebut adalah .', NULL, TRUE),
+(700, 1, 3, 2, NULL, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Diberikan rumus laju konsumsi bahan bakar mobil $B(s) = \frac{s}{12}$, di mana $s$ adalah jarak tempuh dalam kilometer dan $B(s)$ adalah liter bensin yang dibutuhkan. Pernyataan yang tepat menginterpretasikan rumus tersebut adalah ....', NULL, TRUE),
 (701, 1, 3, 3, NULL, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Diketahui bentuk aljabar A = 3x - 2y + 5 dan B = 2x + 4y - 3. Jika C = 2A - B, maka bentuk aljabar C adalah ...', NULL, TRUE),
 (702, 1, 3, 3, NULL, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Suatu persegi panjang memiliki panjang (3x + 2)cm dan lebar (x - 1) cm. Jika keliling persegi panjang tersebut dinyatakan dalam bentuk aljabar K(x), maka hubungan antara keliling dan x yang benar adalah ..', NULL, TRUE),
 (703, 1, 3, 3, NULL, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Diberikan persamaan aljabar x^2 - y^2 = 36 dan x - y = 4. Nilai dari x + y adalah ...', NULL, TRUE),
@@ -345,7 +345,7 @@ INSERT INTO `question_banks` (
 (855, 1, 6, 1, NULL, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Banyak sisi pada sebuah prisma segitiga adalah …', NULL, TRUE),
 (856, 1, 6, 1, NULL, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pilih semua bangun yang dapat memiliki jaring-jaring yang terdiri dari beberapa persegi panjang dan dua segitiga kongruen.', NULL, TRUE),
 (857, 1, 6, 1, NULL, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Sebuah balok memiliki panjang 8 cm, lebar 5 cm, dan tinggi 3 cm. Banyak rusuk balok adalah …', NULL, TRUE),
-(858, 1, 6, 1, NULL, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pilih semua pernyataan yang benar tentang balok', NULL, TRUE),
+(858, 1, 6, 1, NULL, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pilih semua pernyataan yang benar tentang balok.', NULL, TRUE),
 (859, 1, 6, 1, NULL, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Sebuah persegi panjang memiliki panjang 12 cm dan lebar 7 cm. Sisi yang berhadapan pada persegi panjang memiliki sifat …', NULL, TRUE),
 (860, 1, 6, 1, NULL, 'LEVEL_EXERCISE', 'COMPLEX_CHOICE', 'Pilih semua pernyataan yang benar tentang diagonal persegi panjang.', NULL, TRUE),
 (861, 1, 6, 2, NULL, 'LEVEL_EXERCISE', 'SINGLE_CHOICE', 'Sebuah rambu berbentuk segitiga memiliki dua sudut 55° dan 65°. Sudut ketiganya adalah …', NULL, TRUE),
@@ -644,15 +644,17 @@ ON DUPLICATE KEY UPDATE
 -- -----------------------------------------------------------------------------
 
 -- 2. PEMBENIHAN QUESTION OPTIONS (KUNCI & DISTRAKTOR)
+
+-- 2. PEMBENIHAN QUESTION OPTIONS (KUNCI & DISTRAKTOR)
 INSERT INTO `question_options` (`id`, `question_id`, `option_label`, `option_text`, `is_correct`) VALUES
 (2161, 541, 'A', '5/8 ; 0,65 ; 68% ; 2/3', FALSE),
 (2162, 541, 'B', '5/8 ; 0,65 ; 2/3 ; 68%', TRUE),
 (2163, 541, 'C', '0,65 ; 5/8 ; 2/3 ; 68%', FALSE),
 (2164, 541, 'D', '5/8 ; 2/3 ; 0,65 ; 68%', FALSE),
-(2165, 542, 'A', 'Titik P merepresentasikan bilangan pecahan −9/4.', TRUE),
-(2166, 542, 'B', 'Titik Q terletak di antara bilangan bulat  dan  dengan nilai .', FALSE),
-(2167, 542, 'C', 'Titik R yang bernilai sekitar 1,414 dapat merepresentasikan bilangan irasional √(2).', TRUE),
-(2168, 542, 'D', 'Jarak antara titik P () dan titik S () pada garis bilangan adalah tepat 6 satuan.', FALSE),
+(2165, 542, 'A', 'Titik P merepresentasikan bilangan pecahan $-\\frac{9}{4}$.', TRUE),
+(2166, 542, 'B', 'Titik Q terletak di antara bilangan bulat $-1$ dan $0$ dengan nilai $-0,2$.', FALSE),
+(2167, 542, 'C', 'Titik R yang bernilai sekitar $1,414$ dapat merepresentasikan bilangan irasional $\\sqrt{2}$.', TRUE),
+(2168, 542, 'D', 'Jarak antara titik P ($-2,25$) dan titik S ($2,75$) pada garis bilangan adalah tepat 6 satuan.', FALSE),
 (2169, 543, 'A', '−42', FALSE),
 (2170, 543, 'B', '−2', TRUE),
 (2171, 543, 'C', '2', FALSE),
@@ -662,9 +664,9 @@ INSERT INTO `question_options` (`id`, `question_id`, `option_label`, `option_tex
 (2175, 544, 'C', '18', FALSE),
 (2176, 544, 'D', '24', FALSE),
 (2177, 545, 'A', 'Bentuk tersebut dapat diestimasi dengan perhitungan 5×20+9.', TRUE),
-(2178, 545, 'B', 'Estimasi nilai  paling mendekati bilangan bulat .', FALSE),
+(2178, 545, 'B', 'Estimasi nilai $\\sqrt{82}$ paling mendekati bilangan bulat $10$.', FALSE),
 (2179, 545, 'C', 'Nilai perkiraan keseluruhan berada di antara 100 dan 115.', TRUE),
-(2180, 545, 'D', 'Hasil perhitungan tersebut bernilai kurang dari .', FALSE),
+(2180, 545, 'D', 'Hasil perhitungan tersebut bernilai kurang dari $90$.', FALSE),
 (2181, 546, 'A', '2^3×3×5×7', TRUE),
 (2182, 546, 'B', '2^2×3^2×5×7', FALSE),
 (2183, 546, 'C', '2^4×3×5×7', FALSE),
@@ -700,15 +702,15 @@ INSERT INTO `question_options` (`id`, `question_id`, `option_label`, `option_tex
 (2213, 554, 'A', 'Skala numerik yang setara dengan skala grafis pada denah adalah 1:200.', TRUE),
 (2214, 554, 'B', 'Panjang ruang praktikum utama pada ukuran sebenarnya adalah 14 meter.', TRUE),
 (2215, 554, 'C', 'Lebar ruang praktikum utama pada ukuran sebenarnya adalah 5,8 meter.', FALSE),
-(2216, 554, 'D', 'Luas lantai ruang laboratorium utama pada ukuran sebenarnya adalah .', FALSE),
+(2216, 554, 'D', 'Luas lantai ruang laboratorium utama pada ukuran sebenarnya adalah $53,2\\text{ m}^2$.', FALSE),
 (2217, 555, 'A', '8', FALSE),
 (2218, 555, 'B', '10', TRUE),
 (2219, 555, 'C', '12', FALSE),
 (2220, 555, 'D', '22,5', FALSE),
 (2221, 556, 'A', 'Untuk setiap bilangan real a≠0, berlaku a^0=1.', TRUE),
 (2222, 556, 'B', 'Nilai dari 2^−3 sama dengan 1/8.', TRUE),
-(2223, 556, 'C', 'Nilai dari  sama dengan nilai dari .', FALSE),
-(2224, 556, 'D', 'Nilai dari  adalah .', FALSE),
+(2223, 556, 'C', 'Nilai dari ${(-3)}^{4}$ sama dengan nilai dari $-({3}^{4})$.', FALSE),
+(2224, 556, 'D', 'Nilai dari ${(-2)}^{-3}$ adalah $\\frac{1}{8}$.', FALSE),
 (2225, 557, 'A', '3√(3)', FALSE),
 (2226, 557, 'B', '4√(3)', FALSE),
 (2227, 557, 'C', '5√(3)', TRUE),
@@ -716,13 +718,13 @@ INSERT INTO `question_options` (`id`, `question_id`, `option_label`, `option_tex
 (2229, 558, 'A', 'FPB dari bilangan A dan B dinyatakan dengan bentuk 2^2×3^2.', TRUE),
 (2230, 558, 'B', 'KPK dari bilangan A dan B memuat faktor prima 2, 3, 5, dan 7.', TRUE),
 (2231, 558, 'C', 'Nilai numerik FPB dari bilangan A dan B adalah 72.', FALSE),
-(2232, 558, 'D', 'KPK dari bilangan A dan B dinyatakan dengan bentuk .', FALSE),
+(2232, 558, 'D', 'KPK dari bilangan A dan B dinyatakan dengan bentuk $2^5 \\times 3^5 \\times 5 \\times 7$.', FALSE),
 (2233, 559, 'A', 'Grafik I menunjukkan perbandingan berbalik nilai karena garisnya lurus miring ke atas.', FALSE),
 (2234, 559, 'B', 'Grafik I menunjukkan perbandingan senilai dengan persamaan hubungan Y=2,5X.', TRUE),
 (2235, 559, 'C', 'Grafik II menunjukkan perbandingan senilai karena kurvanya selalu melengkung halus.', FALSE),
 (2236, 559, 'D', 'Grafik II menunjukkan perbandingan berbalik nilai dengan persamaan hubungan P×Q=24.', FALSE),
 (2237, 560, 'A', 'Nilai K jika diestimasi dengan pembulatan ke satuan terdekat bernilai sekitar 8.', TRUE),
-(2238, 560, 'B', 'Nilai eksak K sedikit lebih kecil daripada  karena .', FALSE),
+(2238, 560, 'B', 'Nilai eksak K sedikit lebih kecil daripada $8$ karena $47,8 < 8 \\times 5,9$.', FALSE),
 (2239, 560, 'C', 'Bilangan desimal berulang M ekuivalen dengan pecahan biasa 26/11.', TRUE),
 (2240, 560, 'D', 'Bilangan M tergolong bilangan irasional karena digit desimalnya berulang tak berhingga.', FALSE),
 (2241, 561, 'A', 'Rp120.000,00', FALSE),
@@ -794,7 +796,7 @@ INSERT INTO `question_options` (`id`, `question_id`, `option_label`, `option_tex
 (2307, 577, 'C', '75 km/jam', FALSE),
 (2308, 577, 'D', '80 km/jam', FALSE),
 (2309, 578, 'A', 'Volume bahan bakar yang dibutuhkan dapat diestimasi sekitar 40 sampai 42 liter.', TRUE),
-(2310, 578, 'B', 'Perkiraan volume bahan bakar dapat didekati dengan pembulatan .', FALSE),
+(2310, 578, 'B', 'Perkiraan volume bahan bakar dapat didekati dengan pembulatan $440\\text{ km} \\div 10\\text{ km/liter} = 44\\text{ liter}$.', FALSE),
 (2311, 578, 'C', 'Total pengeluaran biaya bahan bakar diperkirakan berada pada rentang Rp530.000,00 hingga Rp550.000,00.', TRUE),
 (2312, 578, 'D', 'Jika Pak Budi hanya menyiapkan uang sebesar Rp400.000,00, uang tersebut dipastikan sudah mencukupi.', FALSE),
 (2313, 579, 'A', '6,7×10^2 foto', FALSE),
@@ -879,7 +881,7 @@ INSERT INTO `question_options` (`id`, `question_id`, `option_label`, `option_tex
 (2392, 598, 'D', '15 orang', FALSE),
 (2393, 599, 'A', 'Dalam kurun waktu 2 jam pertama, terjadi sebanyak 6 siklus pembelahan sel bakteri.', TRUE),
 (2394, 599, 'B', 'Jumlah populasi bakteri setelah 2 jam berkembang biak menjadi 12.800 sel.', TRUE),
-(2395, 599, 'C', 'Dalam bentuk notasi ilmiah, estimasi populasi bakteri setelah 3 jam adalah  sel.', FALSE),
+(2395, 599, 'C', 'Dalam bentuk notasi ilmiah, estimasi populasi bakteri setelah 3 jam adalah $5,12 \\times 10^4$ sel.', FALSE),
 (2396, 599, 'D', 'Pertumbuhan populasi bakteri tersebut bersifat linier dengan penambahan tetap 400 sel setiap jam.', FALSE),
 (2397, 600, 'A', '10 menit', FALSE),
 (2398, 600, 'B', '11 menit', FALSE),
@@ -1321,10 +1323,10 @@ INSERT INTO `question_options` (`id`, `question_id`, `option_label`, `option_tex
 (2834, 709, 'B', '15', FALSE),
 (2835, 709, 'C', '16', TRUE),
 (2836, 709, 'D', '17', FALSE),
-(2837, 710, 'A', 'H (1 – x/100', TRUE),
-(2838, 710, 'B', 'H (1 + x/100', FALSE),
-(2839, 710, 'C', 'H - x', FALSE),
-(2840, 710, 'D', 'H – x/100', FALSE),
+(2837, 710, 'A', '$H \\left(1 - \\frac{x}{100}\\right)$', TRUE),
+(2838, 710, 'B', '$H \\left(1 + \\frac{x}{100}\\right)$', FALSE),
+(2839, 710, 'C', '$H - x$', FALSE),
+(2840, 710, 'D', '$H - \\frac{x}{100}$', FALSE),
 (2841, 711, 'A', 'Langkah 1, karena seharusnya -2 x (-5) = +10', TRUE),
 (2842, 711, 'B', 'Langkah 2, karena pengelompokan suku salah', FALSE),
 (2843, 711, 'C', 'Langkah 3, karena -12 - 10 seharusnya -2', FALSE),
@@ -1866,9 +1868,9 @@ INSERT INTO `question_options` (`id`, `question_id`, `option_label`, `option_tex
 (3379, 845, 'C', '80°', FALSE),
 (3380, 845, 'D', '90°', FALSE),
 (3381, 846, 'A', 'Segitiga sama sisi memiliki tiga sudut yang besarnya berbeda', FALSE),
-(3382, 846, 'B', 'Segitiga siku-siku memiliki satu sudut 90°', TRUE),
+(3382, 846, 'B', 'Jumlah ketiga sudut selalu $180^\\circ$', TRUE),
 (3383, 846, 'C', 'Segitiga tumpul memiliki tiga sudut tumpul', FALSE),
-(3384, 846, 'D', 'Segitiga tumpul memiliki tiga sudut tumpul', TRUE),
+(3384, 846, 'D', 'Segitiga siku-siku memiliki satu sudut $90^\\circ$', TRUE),
 (3385, 847, 'A', '10 cm', TRUE),
 (3386, 847, 'B', '12 cm', FALSE),
 (3387, 847, 'C', '14 cm', FALSE),
@@ -2160,7 +2162,7 @@ INSERT INTO `question_options` (`id`, `question_id`, `option_label`, `option_tex
 (3673, 919, 'A', 'Bayangan P oleh refleksi terhadap sumbu-x adalah (2, −3).', TRUE),
 (3674, 919, 'B', 'Bayangan P oleh refleksi terhadap sumbu-y adalah (2, -3).', FALSE),
 (3675, 919, 'C', 'Bayangan P oleh translasi (1, 1) adalah (3, 4).', TRUE),
-(3676, 919, 'D', 'Bayangan P oleh rotasi  pusat O adalah (2, 3).', FALSE),
+(3676, 919, 'D', 'Bayangan P oleh rotasi $180^\\circ$ pusat O adalah (2, 3).', FALSE),
 (3677, 920, 'A', 'Jika k > 1, bangun diperbesar.', TRUE),
 (3678, 920, 'B', 'Jika 0 < k < 1, bangun diperkecil.', TRUE),
 (3679, 920, 'C', 'Jika k = 1, bangun menjadi lebih besar.', FALSE),
@@ -2239,7 +2241,7 @@ INSERT INTO `question_options` (`id`, `question_id`, `option_label`, `option_tex
 (3752, 938, 'D', 'Luas segitiga P\'Q\'R\' adalah 6 satuan luas', FALSE),
 (3753, 939, 'A', 'Bayangan M oleh refleksi terhadap sumbu-x adalah (−3, −2).', TRUE),
 (3754, 939, 'B', 'Bayangan M oleh refleksi terhadap sumbu-y adalah (3, 2).', TRUE),
-(3755, 939, 'C', 'Bayangan M oleh rotasi  pusat O adalah (3, 2).', FALSE),
+(3755, 939, 'C', 'Bayangan M oleh rotasi $180^\\circ$ pusat O adalah (3, 2).', FALSE),
 (3756, 939, 'D', 'Bayangan M oleh translasi (-1, -1) adalah (-2, 3).', FALSE),
 (3757, 940, 'A', 'A′ = (−1, 5)', TRUE),
 (3758, 940, 'B', 'B′ = (2, 3)', FALSE),
@@ -2306,7 +2308,7 @@ INSERT INTO `question_options` (`id`, `question_id`, `option_label`, `option_tex
 (3819, 955, 'C', 'Kedua transformasi tersebut setara dengan refleksi terhadap sumbu-y.', TRUE),
 (3820, 955, 'D', 'Bangun hasil akhir mengalami perubahan luas menjadi dua kali lipat.', FALSE),
 (3821, 956, 'A', 'Keliling bayangan adalah 10 cm.', TRUE),
-(3822, 956, 'B', 'Luas bayangan adalah .', FALSE),
+(3822, 956, 'B', 'Luas bayangan adalah $12\\text{ cm}^2$.', FALSE),
 (3823, 956, 'C', 'Perbandingan panjang dan lebar bayangan tetap 3 : 2.', TRUE),
 (3824, 956, 'D', 'Bayangan tidak sebangun dengan persegi panjang semula.', FALSE),
 (3825, 957, 'A', 'A′ = (−3, −4)', FALSE),
@@ -2314,9 +2316,9 @@ INSERT INTO `question_options` (`id`, `question_id`, `option_label`, `option_tex
 (3827, 957, 'C', 'Ruas AA′ tegak lurus terhadap garis y = x.', TRUE),
 (3828, 957, 'D', 'Titik tengah AA′ berada di luar garis y = x.', FALSE),
 (3829, 958, 'A', 'Rotasi 90° berlawanan arah jarum jam menghasilkan (−4, −3).', TRUE),
-(3830, 958, 'B', 'Rotasi  searah jarum jam menghasilkan (3, -4).', FALSE),
+(3830, 958, 'B', 'Rotasi $90^\\circ$ searah jarum jam menghasilkan (3, -4).', FALSE),
 (3831, 958, 'C', 'Jarak bayangan ke O sama dengan jarak B ke O, yaitu 5 satuan.', TRUE),
-(3832, 958, 'D', 'Dua rotasi berurutan sebesar  berlawanan arah jarum jam menghasilkan titik (3, 4).', FALSE),
+(3832, 958, 'D', 'Dua rotasi berurutan sebesar $90^\\circ$ berlawanan arah jarum jam menghasilkan titik (3, 4).', FALSE),
 (3833, 959, 'A', 'A″ = (0, 9)', TRUE),
 (3834, 959, 'B', 'A″ terletak pada sumbu-y.', TRUE),
 (3835, 959, 'C', 'A″ terletak di kuadran I.', FALSE),
@@ -3044,70 +3046,481 @@ INSERT INTO `question_options` (`id`, `question_id`, `option_label`, `option_tex
 (4557, 1140, 'A', 'Total kelereng di dalam kantong haruslah kelipatan persekutuan terkecil (KPK) dari penyebut 2 dan 3, yaitu 6.', TRUE),
 (4558, 1140, 'B', 'Peluang kelereng Kuning di dalam kantong tersebut pasti bernilai 1/6.', TRUE),
 (4559, 1140, 'C', 'Desain terkecil akan berisi tepat 2 Merah, 3 Biru, dan 1 Kuning.', FALSE),
-(4560, 1140, 'D', 'Tidak mungkin ada kelereng Kuning karena  dan  sudah memenuhi 100%.', FALSE);
+(4560, 1140, 'D', 'Tidak mungkin ada kelereng Kuning karena $\\frac{1}{2}$ dan $\\frac{1}{3}$ sudah memenuhi 100%.', FALSE);
 
 -- 3. PEMBENIHAN QUESTION EXPLANATIONS (PEMBAHASAN)
 INSERT INTO `question_explanations` (`id`, `question_id`, `explanation_text`, `reasoning_guide`, `reference_url`) VALUES
 (541, 541, 'Kunci: BUntuk membandingkan dan mengurutkan bilangan-bilangan tersebut, ubah seluruh bentuk bilangan ke dalam bentuk desimal dengan tiga angka di belakang koma:1. 5/8=0,6252. 0,65=0,6503. 2/3≈0,6674. 68%=68/100=0,680Membandingkan nilai desimalnya: 0,625<0,650<0,667<0,680.Dengan demikian, urutan dari nilai terkecil ke terbesar adalah 5/8 ; 0,65 ; 2/3 ; 68%.Jawaban yang benar adalah B.', NULL, NULL),
-(542, 542, 'Kunci: A, C\n\nEvaluasi terhadap setiap pernyataan berdasarkan posisi titik pada garis bilangan:\n* Pernyataan A BENAR: Titik P berada pada posisi . Dalam bentuk pecahan biasa, .\n* Pernyataan B SALAH: Titik Q berada pada koordinat , bukan .\n* Pernyataan C BENAR: Nilai pendekatan dari  adalah , yang sesuai dengan posisi titik R (sedikit di bawah ).\n* Pernyataan D SALAH: Jarak antara titik P dan S dihitung dengan selisih mutlak koordinatnya:  satuan, bukan 6 satuan.\nJawaban yang benar adalah A dan C.', NULL, NULL),
-(543, 543, 'Kunci: BSesuai dengan aturan hierarki operasi matematika (urutan operasi BODMAS/KABATAKU):1. Lakukan operasi pembagian terlebih dahulu:   12÷(−3)=−42. Lakukan operasi perkalian:   (−5)×4=−203. Lakukan operasi penjumlahan dan pengurangan dari kiri ke kanan:   (−18)+(−4)−(−20)=−22−(−20)=−22+20=−2.Jawaban yang benar adalah B.', NULL, NULL),
+(542, 542, 'Kunci: A, C\n\nEvaluasi terhadap setiap pernyataan berdasarkan posisi titik pada garis bilangan:
+* Pernyataan A BENAR: Titik P berada pada posisi $-2,25$. Dalam bentuk pecahan biasa, $-2,25=-\\frac{225}{100}=-\\frac{9}{4}$.
+* Pernyataan B SALAH: Titik Q berada pada koordinat $-0,6$, bukan $-0,2$.
+* Pernyataan C BENAR: Nilai pendekatan dari $\\sqrt{2}$ adalah $1,4142…$, yang sesuai dengan posisi titik R (sedikit di bawah $1,5$).
+* Pernyataan D SALAH: Jarak antara titik P dan S dihitung dengan selisih mutlak koordinatnya: $|2,75-(-2,25)|=2,75+2,25=5,0$ satuan, bukan 6 satuan.
+Jawaban yang benar adalah A dan C.', NULL, NULL),
+(543, 543, 'Kunci: B\n\nSesuai dengan aturan hierarki operasi matematika (urutan operasi BODMAS/KABATAKU):
+1. Lakukan operasi pembagian terlebih dahulu:
+$12 \\div (-3)=-4$
+2. Lakukan operasi perkalian:
+$(-5) \\times 4=-20$
+3. Lakukan operasi penjumlahan dan pengurangan dari kiri ke kanan:
+$(-18)+(-4)-(-20)=-22-(-20)=-22+20=-2$.
+Jawaban yang benar adalah B.', NULL, NULL),
 (544, 544, 'Kunci: BUraikan semua bilangan pokok menjadi faktor-faktor prima (2 dan 3):* 6^3=(2×3)^3=2^3×3^3* 4^3=(2^2)^3=2^6Substitusikan ke dalam pecahan:Pembilang: 2^5×(2^3×3^3)=2^5+3×3^3=2^8×3^3Penyebut: 3^2×2^6=2^6×3^2Lakukan pembagian dengan mengurangkan eksponen basis yang sama:=2^8−6×3^3−2=2^2×3^1=4×3=12.Jawaban yang benar adalah B.', NULL, NULL),
-(545, 545, 'Kunci: A, C\n\nAnalisis estimasi setiap komponen:\n* Bilangan  sangat dekat dengan .\n* Bilangan  sangat dekat dengan .\n* Bilangan  berada di antara  dan , dan karena  sangat dekat dengan , maka  (paling mendekati 9, bukan 10).\nEvaluasi opsi jawaban:\n* Pernyataan A BENAR: Estimasi cepat yang wajar adalah .\n* Pernyataan B SALAH: Karena  paling dekat ke  (), pendekatan ke bilangan bulat terdekat adalah 9, bukan 10.\n* Pernyataan C BENAR: Nilai eksak adalah , yang berada di antara  dan .\n* Pernyataan D SALAH: Nilai hasil perhitungan adalah sekitar , sehingga tidak mungkin kurang dari .\nJawaban yang benar adalah A dan C.', NULL, NULL),
+(545, 545, 'Kunci: A, C\n\nAnalisis estimasi setiap komponen:
+* Bilangan $4,98$ sangat dekat dengan $5$.
+* Bilangan $19,85$ sangat dekat dengan $20$.
+* Bilangan $\\sqrt{82}$ berada di antara $\\sqrt{81}=9$ dan $\\sqrt{100}=10$, dan karena $82$ sangat dekat dengan $81$, maka $\\sqrt{82} \\approx 9,05$ (paling mendekati 9, bukan 10).
+Evaluasi opsi jawaban:
+* Pernyataan A BENAR: Estimasi cepat yang wajar adalah $5 \\times 20+9=100+9=109$.
+* Pernyataan B SALAH: Karena $82$ paling dekat ke $81$ (${9}^{2}=81$), pendekatan ke bilangan bulat terdekat adalah 9, bukan 10.
+* Pernyataan C BENAR: Nilai eksak adalah $(4,98 \\times 19,85)+\\sqrt{82}=98,853+9,055=107,908$, yang berada di antara $100$ dan $115$.
+* Pernyataan D SALAH: Nilai hasil perhitungan adalah sekitar $108$, sehingga tidak mungkin kurang dari $90$.
+Jawaban yang benar adalah A dan C.', NULL, NULL),
 (546, 546, 'Kunci: ALakukan pembagian bertahap dengan bilangan prima terkecil:840÷2=420420÷2=210210÷2=105105÷3=3535÷5=77÷7=1Faktor prima yang diperoleh:Angka 2 muncul sebanyak 3 kali (2^3),Angka 3 muncul sebanyak 1 kali (3^1),Angka 5 muncul sebanyak 1 kali (5^1),Angka 7 muncul sebanyak 1 kali (7^1).Jadi, faktorisasi prima dari 840 adalah 2^3×3×5×7.Jawaban yang benar adalah A.', NULL, NULL),
 (547, 547, 'Kunci: BSebelum membandingkan rasio, kedua besaran harus disamakan satuannya ke dalam satuan yang sama (gram):2,5 kg=2,5×1.000 gram=2.500 gram.Rasio = 750 gram:2.500 gram=750:2500.Bagi kedua bilangan dengan FPB dari 750 dan 2500, yaitu 250:750÷250=32500÷250=10Bentuk paling sederhana dari rasio tersebut adalah 3:10.Jawaban yang benar adalah B.', NULL, NULL),
-(548, 548, 'Kunci: A, B\n\nPenguraian pohon faktor bilangan 360:\n.\nEvaluasi pernyataan:\n* Pernyataan A BENAR: Faktorisasi primanya adalah .\n* Pernyataan B BENAR: Faktor prima uniknya adalah 2, 3, dan 5 (ada 3 bilangan prima berbeda).\n* Pernyataan C SALAH: 15 bukan bilangan prima dan masih dapat diuraikan lebih lanjut menjadi faktor prima 3 dan 5.\n* Pernyataan D SALAH: Faktor prima yang berbeda hanya ada 3 (yaitu 2, 3, dan 5), bukan 4.\nJawaban yang benar adalah A dan B.', NULL, NULL),
+(548, 548, 'Kunci: A, B\n\nPenguraian pohon faktor bilangan 360:
+$360=2 \\times 180=2 \\times 2 \\times 90=2 \\times 2 \\times 2 \\times 45={2}^{3} \\times 3 \\times 15={2}^{3} \\times 3 \\times 3 \\times 5={2}^{3} \\times {3}^{2} \\times 5$.
+Evaluasi pernyataan:
+* Pernyataan A BENAR: Faktorisasi primanya adalah ${2}^{3} \\times {3}^{2} \\times 5$.
+* Pernyataan B BENAR: Faktor prima uniknya adalah 2, 3, dan 5 (ada 3 bilangan prima berbeda).
+* Pernyataan C SALAH: 15 bukan bilangan prima dan masih dapat diuraikan lebih lanjut menjadi faktor prima 3 dan 5.
+* Pernyataan D SALAH: Faktor prima yang berbeda hanya ada 3 (yaitu 2, 3, dan 5), bukan 4.
+Jawaban yang benar adalah A dan B.', NULL, NULL),
 (549, 549, 'Kunci: CAnalisis karakteristik perbandingan:* Hubungan A, B, dan D adalah perbandingan berbalik nilai, karena jika salah satu besaran bertambah, besaran pasangannya akan berkurang (hasil kalinya konstan).* Hubungan C merupakan perbandingan senilai karena semakin banyak volume bensin yang dibeli, semakin besar pula total biaya yang harus dibayar dengan tarif per liter yang tetap (hasil baginya bernilai konstan).Jawaban yang benar adalah C.', NULL, NULL),
 (550, 550, 'Kunci: CDefinisi bilangan rasional adalah bilangan yang dapat dinyatakan dalam bentuk a/b dengan a,b bilangan bulat dan b≠0:* Opsi A: √(144)=12=12/1 (bilangan rasional).* Opsi B: 0,3333…=1/3 (desimal berulang periodik, merupakan bilangan rasional).* Opsi C: √(50)=√(25×2)=5√(2). Karena √(2) tidak dapat dinyatakan dalam pecahan bulat sederhana dan desimalnya tidak berulang serta tidak berhingga, maka 5√(2) adalah bilangan irasional.* Opsi D: −22/7 sudah dalam bentuk pecahan a/b, sehingga merupakan bilangan rasional.Jawaban yang benar adalah C.', NULL, NULL),
-(551, 551, 'Kunci: A, C\n\nUji kebenaran masing-masing kesamaan:\n* Kesamaan A:  (BENAR).\n* Kesamaan B: . Nilai pada opsi adalah , sehingga kesamaan B SALAH.\n* Kesamaan C:  (BENAR).\n* Kesamaan D: . Nilai pada opsi adalah , sehingga kesamaan D SALAH.\nJawaban yang benar adalah A dan C.', NULL, NULL),
-(552, 552, 'Kunci: BBentuk baku notasi ilmiah dituliskan sebagai a×10^n dengan 1≤a<10 dan n bilangan bulat:1. Geser tanda koma desimal ke kanan melewati angka tak nol pertama (angka 7) sebanyak 5 langkah:   0,00007865=7,865×10^−5.2. Bulatkan koefisien 7,865 ke dua tempat desimal:   Karena angka ketiga di belakang koma adalah 5, maka angka kedua (6) dibulatkan ke atas menjadi 7.   7,865 dibulatkan menjadi 7,87.Bentuk notasi ilmiahnya adalah 7,87×10^−5.Jawaban yang benar adalah B.', NULL, NULL),
+(551, 551, 'Kunci: A, C\n\nUji kebenaran masing-masing kesamaan:
+* Kesamaan A: $\\frac{3}{4}+\\frac{2}{3}=\\frac{9}{12}+\\frac{8}{12}=\\frac{17}{12}$ (BENAR).
+* Kesamaan B: $\\frac{5}{6}-\\frac{1}{4}=\\frac{10}{12}-\\frac{3}{12}=\\frac{7}{12}$. Nilai pada opsi adalah $\\frac{1}{2}=\\frac{6}{12}$, sehingga kesamaan B SALAH.
+* Kesamaan C: $\\frac{2 \\times 15}{5 \\times 8}=\\frac{30}{40}=\\frac{3}{4}$ (BENAR).
+* Kesamaan D: $\\frac{4}{7} \\div \\frac{2}{7}=\\frac{4}{7} \\times \\frac{7}{2}=\\frac{28}{14}=2$. Nilai pada opsi adalah $\\frac{8}{49}$, sehingga kesamaan D SALAH.
+Jawaban yang benar adalah A dan C.', NULL, NULL),
+(552, 552, 'Kunci: B\n\nBentuk baku notasi ilmiah dituliskan sebagai $a \\times {10}^{n}$ dengan $1 \\le a<10$ dan $n$ bilangan bulat:
+1. Geser tanda koma desimal ke kanan melewati angka tak nol pertama (angka 7) sebanyak 5 langkah:
+$0,00007865=7,865 \\times {10}^{-5}$.
+2. Bulatkan koefisien $7,865$ ke dua tempat desimal:
+Karena angka ketiga di belakang koma adalah 5, maka angka kedua (6) dibulatkan ke atas menjadi 7.
+$7,865$ dibulatkan menjadi $7,87$.
+Bentuk notasi ilmiahnya adalah $7,87 \\times {10}^{-5}$.
+Jawaban yang benar adalah B.', NULL, NULL),
 (553, 553, 'Kunci: AHitung laju kecepatan dalam km/jam terlebih dahulu:Kecepatan = Jarak/Waktu=108 km/1,5 jam=72 km/jam.Konversikan km/jam ke meter per detik (m/s):1 km=1.000 meter1 jam=3.600 detikKecepatan = 72×1.000/3.600=72×5/18=4×5=20 m/s.Jawaban yang benar adalah A.', NULL, NULL),
-(554, 554, 'Kunci: A, B\n\nAnalisis denah berskala grafis:\n* Skala batang menunjukkan tiap ruas  mewakili  sebenarnya.\n, sehingga rasio skala numerik adalah . (Pernyataan A BENAR).\n* Panjang denah = . Ukuran sebenarnya = . (Pernyataan B BENAR).\n* Lebar denah = . Ukuran sebenarnya = , bukan . (Pernyataan C SALAH).\n* Luas sebenarnya = Panjang sebenarnya  Lebar sebenarnya = .\nPernyataan D menyebutkan , sehingga Pernyataan D SALAH.\nJawaban yang benar adalah A dan B.', NULL, NULL),
+(554, 554, 'Kunci: A, B\n\nAnalisis denah berskala grafis:
+* Skala batang menunjukkan tiap ruas $1 cm$ mewakili $2 meter$ sebenarnya.
+$2 meter=200 cm$, sehingga rasio skala numerik adalah $1 cm:200 cm=1:200$. (Pernyataan A BENAR).
+* Panjang denah = $7 cm$. Ukuran sebenarnya = $7 \\times 2 m=14 meter$. (Pernyataan B BENAR).
+* Lebar denah = $3,8 cm$. Ukuran sebenarnya = $3,8 \\times 2 m=7,6 meter$, bukan $5,8 meter$. (Pernyataan C SALAH).
+* Luas sebenarnya = Panjang sebenarnya $\\times$ Lebar sebenarnya = $14 m \\times 7,6 m=106,4\\text{ m}^2$.
+Pernyataan D menyebutkan $53,2\\text{ m}^2$, sehingga Pernyataan D SALAH.
+Jawaban yang benar adalah A dan B.', NULL, NULL),
 (555, 555, 'Kunci: BPada perbandingan berbalik nilai, hasil kali antara pasangan nilai x dan y selalu bernilai konstan (x×y=k):Konstanta k=4×15=60.Verifikasi dengan kolom ketiga: 10×6=60 (sesuai).Maka untuk kolom kedua ketika x=6:6×p=60p=60/6=10.Jawaban yang benar adalah B.', NULL, NULL),
-(556, 556, 'Kunci: A, B\n\nEvaluasi konsep sifat bilangan berpangkat:\n* Pernyataan A BENAR: Menurut definisi pangkat nol, setiap bilangan real bukan nol dipangkatkan nol bernilai .\n* Pernyataan B BENAR: .\n* Pernyataan C SALAH: , sedangkan . Karena , maka kesamaan ini tidak benar.\n* Pernyataan D SALAH: , bernilai negatif bukan positif .\nJawaban yang benar adalah A dan B.', NULL, NULL),
+(556, 556, 'Kunci: A, B\n\nEvaluasi konsep sifat bilangan berpangkat:
+* Pernyataan A BENAR: Menurut definisi pangkat nol, setiap bilangan real bukan nol dipangkatkan nol bernilai $1$.
+* Pernyataan B BENAR: ${2}^{-3}=\\frac{1}{{2}^{3}}=\\frac{1}{8}$.
+* Pernyataan C SALAH: $(-3{)}^{4}=(-3) \\times (-3) \\times (-3) \\times (-3)=+81$, sedangkan $-({3}^{4})=-(81)=-81$. Karena $81 \neq -81$, maka kesamaan ini tidak benar.
+* Pernyataan D SALAH: $(-2{)}^{-3}=\\frac{1}{{(-2)}^{3}}=\\frac{1}{-8}=-\\frac{1}{8}$, bernilai negatif bukan positif $\\frac{1}{8}$.
+Jawaban yang benar adalah A dan B.', NULL, NULL),
 (557, 557, 'Kunci: CSederhanakan setiap suku bentuk akar dengan mengeluarkan faktor kuadrat sempurnanya:* √(75)=√(25×3)=5√(3)* 2√(12)=2×√(4×3)=2×2√(3)=4√(3)* √(48)=√(16×3)=4√(3)Lakukan operasi penjumlahan dan pengurangan suku-suku sejenis:5√(3)+4√(3)−4√(3)=5√(3).Jawaban yang benar adalah C.', NULL, NULL),
-(558, 558, 'Kunci: A, B\n\nAturan penentuan FPB dan KPK dari faktorisasi prima:\n1. FPB mengambil faktor prima yang bersekutu pada kedua bilangan dengan pangkat terendah:\nFaktor bersekutu adalah 2 dan 3.\nPangkat terendah untuk 2 adalah , untuk 3 adalah .\nFPB = , bukan 72. (Pernyataan A BENAR, Pernyataan C SALAH).\n2. KPK mengambil semua faktor prima yang ada dengan pangkat tertinggi masing-masing:\nFaktor prima yang ada: 2, 3, 5, 7. (Pernyataan B BENAR).\nKPK = . Pernyataan D menjumlahkan pangkat menjadi , yang merupakan kesalahan konseptual (Pernyataan D SALAH).\nJawaban yang benar adalah A dan B.', NULL, NULL),
+(558, 558, 'Kunci: A, B\n\nAturan penentuan FPB dan KPK dari faktorisasi prima:
+1. FPB mengambil faktor prima yang bersekutu pada kedua bilangan dengan pangkat terendah:
+Faktor bersekutu adalah 2 dan 3.
+Pangkat terendah untuk 2 adalah ${2}^{2}$, untuk 3 adalah ${3}^{2}$.
+FPB = ${2}^{2} \\times {3}^{2}=4 \\times 9=36$, bukan 72. (Pernyataan A BENAR, Pernyataan C SALAH).
+2. KPK mengambil semua faktor prima yang ada dengan pangkat tertinggi masing-masing:
+Faktor prima yang ada: 2, 3, 5, 7. (Pernyataan B BENAR).
+KPK = ${2}^{3} \\times {3}^{3} \\times 5 \\times 7$. Pernyataan D menjumlahkan pangkat menjadi ${2}^{5} \\times {3}^{5}$, yang merupakan kesalahan konseptual (Pernyataan D SALAH).
+Jawaban yang benar adalah A dan B.', NULL, NULL),
 (559, 559, 'Kunci: BAnalisis grafik:1. Grafik I: Berupa garis lurus yang melalui titik asal (0,0). Titik yang dilalui antara lain (1; 2,5), (2; 5), dan (4; 10). Rasio Y/X=2,5/1=5/2=10/4=2,5 (konstan). Ini merupakan ciri utama perbandingan senilai dengan persamaan Y=2,5X. Opsi B benar.2. Grafik II: Berupa kurva hiperbola di kuadran I yang mendekati sumbu tetapi tidak memotongnya. Titik yang dilalui adalah (2,12), (3,8), dan (6,4). Hasil kalinya P×Q=2×12=3×8=6×4=24 (konstan). Ini merupakan perbandingan berbalik nilai dengan persamaan P×Q=24 atau Q=24/P, bukan P+Q=24 (bukan penjumlahan).Jawaban yang benar adalah B.', NULL, NULL),
-(560, 560, 'Kunci: A, C\n\nEvaluasi pernyataan:\n* Pernyataan A BENAR: Pembulatan ke satuan terdekat:  dan . Estimasi .\n* Pernyataan B SALAH: Karena , pembilang , sehingga nilai eksak  justru sedikit lebih besar daripada 8, bukan lebih kecil.\n* Pernyataan C BENAR: Misalkan  Maka  Pengurangan: .\n* Pernyataan D SALAH: Bilangan desimal berulang adalah bilangan rasional karena dapat diubah menjadi bentuk pecahan  (yaitu ), bukan bilangan irasional.\nJawaban yang benar adalah A dan C.', NULL, NULL),
-(561, 561, 'Kunci: BLangkah-langkah perhitungan diskon bertingkat:1. Diskon pertama (30%):   Potongan harga pertama = 30%×Rp200.000,00=Rp60.000,00.   Harga setelah diskon pertama = Rp200.000,00−Rp60.000,00=Rp140.000,00.2. Diskon kedua (10% dari sisa harga):   Potongan harga kedua = 10%×Rp140.000,00=Rp14.000,00.   Harga akhir yang harus dibayar = Rp140.000,00−Rp14.000,00=Rp126.000,00.Catatan: Diskon 30%+10% tidak sama dengan diskon langsung 40% (yang menghasilkan Rp120.000,00).Jawaban yang benar adalah B.', NULL, NULL),
-(562, 562, 'Kunci: A, B\n\nMenentukan banyak paket maksimum dengan mencari FPB dari 180, 90, dan 60:\n* Faktorisasi prima:\n* Faktorisasi prima:\n* Faktorisasi prima:\nFPB =  paket. (Pernyataan A BENAR).\nMenghitung isi masing-masing barang per paket:\n* Beras =  per paket. (Pernyataan B BENAR).\n* Minyak goreng =  per paket. (Pernyataan B BENAR).\n* Gula pasir =  per paket. Pernyataan C menyebutkan 4 kg, sehingga Pernyataan C SALAH.\n* Total isi per paket =  satuan barang, bukan 15 satuan barang. (Pernyataan D SALAH).\nJawaban yang benar adalah A, B.', NULL, NULL),
-(563, 563, 'Kunci: BLangkah-langkah penyelesaian:1. Hitung total penurunan suhu:   Kenaikan ketinggian = 1.500 m/100 m=15 kali kenaikan 100 meter.   Besar penurunan suhu = 15×0,6^∘C=9^∘C.2. Hitung suhu akhir di ketinggian 1.500 mdpl:   Suhu puncak = Suhu awal - Penurunan suhu   Suhu puncak = 28^∘C−9^∘C=19^∘C.Jawaban yang benar adalah B.', NULL, NULL),
+(560, 560, 'Kunci: A, C\n\nEvaluasi pernyataan:
+* Pernyataan A BENAR: Pembulatan ke satuan terdekat: $47,8 \\approx 48$ dan $5,9 \\approx 6$. Estimasi $K \\approx 48 \\div 6=8$.
+* Pernyataan B SALAH: Karena $8 \\times 5,9=47,2$, pembilang $47,8>47,2$, sehingga nilai eksak $K=8,1017…$ justru sedikit lebih besar daripada 8, bukan lebih kecil.
+* Pernyataan C BENAR: Misalkan $x=2,363636…$ Maka $100x=236,3636…$ Pengurangan: $99x=234⟹x=\\frac{234}{99}=\\frac{26}{11}$.
+* Pernyataan D SALAH: Bilangan desimal berulang adalah bilangan rasional karena dapat diubah menjadi bentuk pecahan $\\frac{a}{b}$ (yaitu $\\frac{26}{11}$), bukan bilangan irasional.
+Jawaban yang benar adalah A dan C.', NULL, NULL),
+(561, 561, 'Kunci: B\n\nLangkah-langkah perhitungan diskon bertingkat:
+1. Diskon pertama ($30\\%$):
+Potongan harga pertama = $30\\% \\times \\text{Rp}200.000,00 = \\text{Rp}60.000,00$.
+Harga setelah diskon pertama = $\\text{Rp}200.000,00 - \\text{Rp}60.000,00 = \\text{Rp}140.000,00$.
+2. Diskon kedua ($10\\%$ dari sisa harga):
+Potongan harga kedua = $10\\% \\times \\text{Rp}140.000,00 = \\text{Rp}14.000,00$.
+Harga akhir yang harus dibayar = $\\text{Rp}140.000,00 - \\text{Rp}14.000,00 = \\text{Rp}126.000,00$.
+Catatan: Diskon $30\\% + 10\\%$ tidak sama dengan diskon langsung $40\\%$ (yang menghasilkan Rp120.000,00).
+Jawaban yang benar adalah B.', NULL, NULL),
+(562, 562, 'Kunci: A, B\n\nMenentukan banyak paket maksimum dengan mencari FPB dari 180, 90, dan 60:
+* Faktorisasi prima: $180={2}^{2} \\times {3}^{2} \\times 5$
+* Faktorisasi prima: $90=2 \\times {3}^{2} \\times 5$
+* Faktorisasi prima: $60={2}^{2} \\times 3 \\times 5$
+FPB = $2 \\times 3 \\times 5=30$ paket. (Pernyataan A BENAR).
+Menghitung isi masing-masing barang per paket:
+* Beras = $180 kg \\div 30=6 kg$ per paket. (Pernyataan B BENAR).
+* Minyak goreng = $90 liter \\div 30=3 liter$ per paket. (Pernyataan B BENAR).
+* Gula pasir = $60 kg \\div 30=2 kg$ per paket. Pernyataan C menyebutkan 4 kg, sehingga Pernyataan C SALAH.
+* Total isi per paket = $6 kg beras+3 liter minyak+2 kg gula=11$ satuan barang, bukan 15 satuan barang. (Pernyataan D SALAH).
+Jawaban yang benar adalah A, B.', NULL, NULL),
+(563, 563, 'Kunci: B\n\nLangkah-langkah penyelesaian:
+1. Hitung total penurunan suhu:
+Kenaikan ketinggian = $\\frac{1.500 m}{100 m}=15$ kali kenaikan 100 meter.
+Besar penurunan suhu = $15 \\times 0,{6}^{∘}C={9}^{∘}C$.
+2. Hitung suhu akhir di ketinggian 1.500 mdpl:
+Suhu puncak = Suhu awal - Penurunan suhu
+Suhu puncak = ${28}^{∘}C-{9}^{∘}C={19}^{∘}C$.
+Jawaban yang benar adalah B.', NULL, NULL),
 (564, 564, 'Kunci: CIdentifikasi nilai suhu pada masing-masing kota dari termometer:* Kota A (Puncak): −4^∘C (suhu paling dingin)* Kota B (Dataran Tinggi): 8^∘C* Kota C (Lembah): 16^∘C* Kota D (Pesisir): 29^∘C (suhu paling panas)Selisih suhu udara = Suhu tertinggi - Suhu terendahSelisih = 29^∘C−(−4^∘C)=29+4=33^∘C.Jawaban yang benar adalah C.', NULL, NULL),
-(565, 565, 'Kunci: A, B\n\nAnalisis estimasi dan perhitungan eksak:\n1. Estimasi belanjaan dengan pembulatan ke ribuan terdekat:\n* Sabun:\n* Kecap:\n* Gula:\nEstimasi total = . (Pernyataan A BENAR).\n2. Perhitungan eksak:\n* Sabun =\n* Kecap =\n* Gula =\nTotal eksak = . Nilai ini berada pada rentang Rp124.000,00 sampai Rp126.000,00, bukan Rp130.000,00 sampai Rp135.000,00. (Pernyataan C SALAH).\n3. Evaluasi uang dan kembalian:\nTotal uang Ibu =  (uang mencukupi, Pernyataan B BENAR).\nSisa kembalian = . (Pernyataan D SALAH).\nJawaban yang benar adalah A dan B.', NULL, NULL),
-(566, 566, 'Kunci: BLangkah penyelesaian:1. Tentukan KPK dari periode ketiga petugas (4, 6, 8 hari):   * 4=2^2   * 6=2×3   * 8=2^3   KPK = 2^3×3=8×3=24 hari.   Artinya, mereka akan bertugas bersama setiap 24 hari sekali.2. Tentukan tanggal bertugas berikutnya:   Tanggal awal = 2 Oktober.   Tanggal berikutnya = 2+24=26 Oktober.3. Tentukan hari bertugas berikutnya:   24 hari÷7=3 minggu sisa 3 hari.   3 hari setelah hari Senin adalah hari Kamis (Selasa, Rabu, Kamis).Jadi, mereka bertugas bersama berikutnya pada hari Kamis, 26 Oktober.Jawaban yang benar adalah B.', NULL, NULL),
-(567, 567, 'Kunci: A, C\n\nMenentukan banyak parcel dengan FPB dari 48, 72, dan 96:\n*\n*\n*\nFPB =  paket parcel. (Pernyataan A BENAR).\nMenghitung komposisi toples dalam setiap paket parcel:\n* Kastengel:  toples\n* Nastar:  toples. Pernyataan B menyebutkan 5 toples, sehingga Pernyataan B SALAH.\n* Putri salju:  toples\n* Selisih toples putri salju dan kastengel =  toples. (Pernyataan C BENAR).\n* Total toples kue dalam 1 paket parcel =  toples, bukan 12 toples. (Pernyataan D SALAH).\nJawaban yang benar adalah A dan C.', NULL, NULL),
-(568, 568, 'Kunci: BLangkah-langkah perhitungan:1. Hitung volume air yang masih perlu diisikan:   Volume sisa = Kapasitas maksimum - Volume awal   Volume sisa = 600 liter−450 liter=150 liter.2. Hitung laju pertambahan volume netto (debit netto):   Debit netto = Debit masuk - Debit keluar   Debit netto = 15 liter/menit−5 liter/menit=10 liter/menit.3. Hitung waktu yang diperlukan:   Waktu = Volume sisa/Debit netto=150 liter/10 liter/menit=15 menit.Jawaban yang benar adalah B.', NULL, NULL),
+(565, 565, 'Kunci: A, B\n\nAnalisis estimasi dan perhitungan eksak:
+1. Estimasi belanjaan dengan pembulatan ke ribuan terdekat:
+* Sabun: $3 \\times Rp9.000,00=Rp27.000,00$
+* Kecap: $2 \\times Rp15.000,00=Rp30.000,00$
+* Gula: $4 \\times Rp17.000,00=Rp68.000,00$
+Estimasi total = $Rp27.000+Rp30.000+Rp68.000=Rp125.000,00$. (Pernyataan A BENAR).
+2. Perhitungan eksak:
+* Sabun = $3 \\times 8.950=Rp26.850,00$
+* Kecap = $2 \\times 14.800=Rp29.600,00$
+* Gula = $4 \\times 17.100=Rp68.400,00$
+Total eksak = $26.850+29.600+68.400=Rp124.850,00$. Nilai ini berada pada rentang Rp124.000,00 sampai Rp126.000,00, bukan Rp130.000,00 sampai Rp135.000,00. (Pernyataan C SALAH).
+3. Evaluasi uang dan kembalian:
+Total uang Ibu = $Rp150.000,00>Rp124.850,00$ (uang mencukupi, Pernyataan B BENAR).
+Sisa kembalian = $Rp150.000,00-Rp124.850,00=Rp25.150,00>Rp15.000,00$. (Pernyataan D SALAH).
+Jawaban yang benar adalah A dan B.', NULL, NULL),
+(566, 566, 'Kunci: B\n\nLangkah penyelesaian:
+1. Tentukan KPK dari periode ketiga petugas (4, 6, 8 hari):
+* $4={2}^{2}$
+* $6=2 \\times 3$
+* $8={2}^{3}$
+KPK = ${2}^{3} \\times 3=8 \\times 3=24$ hari.
+Artinya, mereka akan bertugas bersama setiap 24 hari sekali.
+2. Tentukan tanggal bertugas berikutnya:
+Tanggal awal = 2 Oktober.
+Tanggal berikutnya = $2+24=26$ Oktober.
+3. Tentukan hari bertugas berikutnya:
+$24 hari \\div 7=3$ minggu sisa 3 hari.
+3 hari setelah hari Senin adalah hari Kamis (Selasa, Rabu, Kamis).
+Jadi, mereka bertugas bersama berikutnya pada hari Kamis, 26 Oktober.
+Jawaban yang benar adalah B.', NULL, NULL),
+(567, 567, 'Kunci: A, C\n\nMenentukan banyak parcel dengan FPB dari 48, 72, dan 96:
+* $48={2}^{4} \\times 3$
+* $72={2}^{3} \\times {3}^{2}$
+* $96={2}^{5} \\times 3$
+FPB = ${2}^{3} \\times 3=8 \\times 3=24$ paket parcel. (Pernyataan A BENAR).
+Menghitung komposisi toples dalam setiap paket parcel:
+* Kastengel: $48 \\div 24=2$ toples
+* Nastar: $72 \\div 24=3$ toples. Pernyataan B menyebutkan 5 toples, sehingga Pernyataan B SALAH.
+* Putri salju: $96 \\div 24=4$ toples
+* Selisih toples putri salju dan kastengel = $4-2=2$ toples. (Pernyataan C BENAR).
+* Total toples kue dalam 1 paket parcel = $2+3+4=9$ toples, bukan 12 toples. (Pernyataan D SALAH).
+Jawaban yang benar adalah A dan C.', NULL, NULL),
+(568, 568, 'Kunci: B\n\nLangkah-langkah perhitungan:
+1. Hitung volume air yang masih perlu diisikan:
+Volume sisa = Kapasitas maksimum - Volume awal
+Volume sisa = $600 liter-450 liter=150 liter$.
+2. Hitung laju pertambahan volume netto (debit netto):
+Debit netto = Debit masuk - Debit keluar
+Debit netto = $15 liter/menit-5 liter/menit=10 liter/menit$.
+3. Hitung waktu yang diperlukan:
+Waktu = $\\frac{Volume sisa}{Debit netto}=\\frac{150 liter}{10 liter/menit}=15 menit$.
+Jawaban yang benar adalah B.', NULL, NULL),
 (569, 569, 'Kunci: CGunakan konsep proporsi (perbandingan senilai):Faktor pengali porsi = Porsi target/Porsi awal=30/12=2,5 kali.Kebutuhan tepung terigu = 300 gram×2,5=750 gram.(Alternatif: Tepung per porsi = 300/12=25 gram per porsi. Untuk 30 porsi = 30×25=750 gram).Jawaban yang benar adalah C.', NULL, NULL),
-(570, 570, 'Kunci: A, B\n\nAnalisis rasio efisiensi bahan bakar:\n* Efisiensi per liter = . (Pernyataan A BENAR).\n* Kebutuhan bensin untuk jarak 180 km = . (Pernyataan B BENAR).\n* Jarak tempuh dengan 25 liter bensin = , bukan 375 km. (Pernyataan C SALAH).\n* Rasio sebenarnya adalah 1 liter bensin untuk setiap 12 km perjalanan, bukan 15 km per liter. (Pernyataan D SALAH).\nJawaban yang benar adalah A dan B.', NULL, NULL),
-(571, 571, 'Kunci: BGunakan konsep perbandingan senilai:1. Hitung harga satuan telur per kilogram:   Harga per kg = Rp126.000,00/4,5 kg=Rp28.000,00 per kg.2. Hitung harga untuk 12 kg telur:   Biaya 12 kg = 12 kg×Rp28.000,00/kg=Rp336.000,00.Jawaban yang benar adalah B.', NULL, NULL),
-(572, 572, 'Kunci: A, B\n\nAnalisis perbandingan berbalik nilai ():\n* Jarak = . (Pernyataan A BENAR).\n* Pada kecepatan 80 km/jam: Waktu = . (Pernyataan B BENAR).\n* Pada waktu tempuh 4,8 jam: Kecepatan yang harus dipertahankan adalah , bukan 40 km/jam. (Pernyataan C SALAH).\n* Pada perbandingan berbalik nilai, jika kecepatan menjadi dua kali lipat (), waktu tempuh menjadi setengahnya (), bukan bertambah menjadi 8 jam. (Pernyataan D SALAH).\nJawaban yang benar adalah A dan B.', NULL, NULL),
-(573, 573, 'Kunci: ALangkah-langkah penyelesaian:1. Tentukan mobil paling hemat dari diagram batang:   * Mobil P: 12,5 km/liter   * Mobil Q: 16,0 km/liter (paling hemat karena mampu menempuh jarak terjauh per 1 liter bensin)   * Mobil R: 10,0 km/liter   * Mobil S: 14,5 km/liter2. Hitung volume bensin yang dibutuhkan Mobil Q:   Volume bensin = Jarak total/Efisiensi Mobil Q   Volume bensin = 240 km/16,0 km/liter=15 liter.Jawaban yang benar adalah A.', NULL, NULL),
-(574, 574, 'Kunci: A, D\n\nHitung massa jenis () masing-masing cairan:\n*\n*\n*\n*\nEvaluasi pernyataan:\n* Pernyataan A BENAR: Nilai terkecil adalah Cairan Y ().\n* Pernyataan B SALAH: Zat dengan massa jenis paling besar akan berada di lapisan terbawah (Cairan X dengan ), bukan Cairan Y yang justru paling ringan ().\n* Pernyataan C SALAH: , sehingga massa jenis W lebih kecil dari Z.\n* Pernyataan D BENAR: Rasio .\nJawaban yang benar adalah A dan D.', NULL, NULL),
-(575, 575, 'Kunci: BLangkah-langkah perhitungan:1. Hitung konsumsi energi per hari:   * Lampu = 5×20 W×10 jam=1.000 Wh=1,0 kWh.   * Kulkas = 1×100 W×24 jam=2.400 Wh=2,4 kWh.   * Total per hari = 1,0 kWh+2,4 kWh=3,4 kWh per hari.2. Hitung total konsumsi selama 30 hari:   Total kWh sebulan = 3,4 kWh×30=102 kWh.3. Hitung tagihan listrik:   Biaya = 102 kWh×Rp1.500,00/kWh=Rp153.000,00.Jawaban yang benar adalah B.', NULL, NULL),
-(576, 576, 'Kunci: A, B\n\nAnalisis keuangan pedagang:\n* Biaya beli buah = .\n* Total modal = Biaya beli + Ongkos angkut = . (Pernyataan A BENAR).\n* Semangka terjual = .\n* Penerimaan kotor penjualan = . (Pernyataan B BENAR).\n* Laba bersih = Penerimaan - Total modal = , bukan Rp300.000,00. (Pernyataan C SALAH).\n* Karena laba bernilai positif (Rp250.000,00), pedagang tidak mengalami kerugian. (Pernyataan D SALAH).\nJawaban yang benar adalah A dan B.', NULL, NULL),
+(570, 570, 'Kunci: A, B\n\nAnalisis rasio efisiensi bahan bakar:
+* Efisiensi per liter = $\\frac{Jarak tempuh}{Bensin terpakai}=\\frac{96 km}{8 liter}=12 km/liter$. (Pernyataan A BENAR).
+* Kebutuhan bensin untuk jarak 180 km = $\\frac{180 km}{12 km/liter}=15 liter$. (Pernyataan B BENAR).
+* Jarak tempuh dengan 25 liter bensin = $25 liter \\times 12 km/liter=300 km$, bukan 375 km. (Pernyataan C SALAH).
+* Rasio sebenarnya adalah 1 liter bensin untuk setiap 12 km perjalanan, bukan 15 km per liter. (Pernyataan D SALAH).
+Jawaban yang benar adalah A dan B.', NULL, NULL),
+(571, 571, 'Kunci: B\n\nGunakan konsep perbandingan senilai:
+1. Hitung harga satuan telur per kilogram:
+Harga per kg = $\\frac{Rp126.000,00}{4,5 kg}=Rp28.000,00$ per kg.
+2. Hitung harga untuk 12 kg telur:
+Biaya 12 kg = $12 kg \\times Rp28.000,00/kg=Rp336.000,00$.
+Jawaban yang benar adalah B.', NULL, NULL),
+(572, 572, 'Kunci: A, B\n\nAnalisis perbandingan berbalik nilai ($Jarak=Kecepatan \\times Waktu=konstan$):
+* Jarak = $60 km/jam \\times 4 jam=240 km$. (Pernyataan A BENAR).
+* Pada kecepatan 80 km/jam: Waktu = $\\frac{240 km}{80 km/jam}=3 jam$. (Pernyataan B BENAR).
+* Pada waktu tempuh 4,8 jam: Kecepatan yang harus dipertahankan adalah $\\frac{240 km}{4,8 jam}=50 km/jam$, bukan 40 km/jam. (Pernyataan C SALAH).
+* Pada perbandingan berbalik nilai, jika kecepatan menjadi dua kali lipat ($120 km/jam$), waktu tempuh menjadi setengahnya ($2 jam$), bukan bertambah menjadi 8 jam. (Pernyataan D SALAH).
+Jawaban yang benar adalah A dan B.', NULL, NULL),
+(573, 573, 'Kunci: A\n\nLangkah-langkah penyelesaian:
+1. Tentukan mobil paling hemat dari diagram batang:
+* Mobil P: 12,5 km/liter
+* Mobil Q: 16,0 km/liter (paling hemat karena mampu menempuh jarak terjauh per 1 liter bensin)
+* Mobil R: 10,0 km/liter
+* Mobil S: 14,5 km/liter
+2. Hitung volume bensin yang dibutuhkan Mobil Q:
+Volume bensin = $\\frac{Jarak total}{Efisiensi Mobil Q}$
+Volume bensin = $\\frac{240 km}{16,0 km/liter}=15 liter$.
+Jawaban yang benar adalah A.', NULL, NULL),
+(574, 574, 'Kunci: A, D\n\nHitung massa jenis ($ρ=\\frac{m}{V}$) masing-masing cairan:
+* ${ρ}_{W}=\\frac{180}{200}=0,90{g/cm}^{3}$
+* ${ρ}_{X}=\\frac{250}{200}=1,25{g/cm}^{3}$
+* ${ρ}_{Y}=\\frac{210}{300}=0,70{g/cm}^{3}$
+* ${ρ}_{Z}=\\frac{100}{100}=1,00{g/cm}^{3}$
+Evaluasi pernyataan:
+* Pernyataan A BENAR: Nilai terkecil adalah Cairan Y ($0,70{g/cm}^{3}$).
+* Pernyataan B SALAH: Zat dengan massa jenis paling besar akan berada di lapisan terbawah (Cairan X dengan $1,25{g/cm}^{3}$), bukan Cairan Y yang justru paling ringan ($0,70{g/cm}^{3}$).
+* Pernyataan C SALAH: ${ρ}_{W}=0,90{g/cm}^{3}<{ρ}_{Z}=1,00{g/cm}^{3}$, sehingga massa jenis W lebih kecil dari Z.
+* Pernyataan D BENAR: Rasio ${ρ}_{Y}:{ρ}_{Z}=0,70:1,00=70:100=7:10$.
+Jawaban yang benar adalah A dan D.', NULL, NULL),
+(575, 575, 'Kunci: B\n\nLangkah-langkah perhitungan:
+1. Hitung konsumsi energi per hari:
+* Lampu = $5 \\times 20 W \\times 10 jam=1.000 Wh=1,0 kWh$.
+* Kulkas = $1 \\times 100 W \\times 24 jam=2.400 Wh=2,4 kWh$.
+* Total per hari = $1,0 kWh+2,4 kWh=3,4 kWh$ per hari.
+2. Hitung total konsumsi selama 30 hari:
+Total kWh sebulan = $3,4 kWh \\times 30=102 kWh$.
+3. Hitung tagihan listrik:
+Biaya = $102 kWh \\times Rp1.500,00/kWh=Rp153.000,00$.
+Jawaban yang benar adalah B.', NULL, NULL),
+(576, 576, 'Kunci: A, B\n\nAnalisis keuangan pedagang:
+* Biaya beli buah = $100 kg \\times Rp6.000,00=Rp600.000,00$.
+* Total modal = Biaya beli + Ongkos angkut = $Rp600.000+Rp50.000=Rp650.000,00$. (Pernyataan A BENAR).
+* Semangka terjual = $100 kg-10 kg=90 kg$.
+* Penerimaan kotor penjualan = $90 kg \\times Rp10.000,00=Rp900.000,00$. (Pernyataan B BENAR).
+* Laba bersih = Penerimaan - Total modal = $Rp900.000,00-Rp650.000,00=Rp250.000,00$, bukan Rp300.000,00. (Pernyataan C SALAH).
+* Karena laba bernilai positif (Rp250.000,00), pedagang tidak mengalami kerugian. (Pernyataan D SALAH).
+Jawaban yang benar adalah A dan B.', NULL, NULL),
 (577, 577, 'Kunci: BBerdasarkan grafik, hubungan antara kecepatan (v) dan waktu (t) memenuhi persamaan perbandingan berbalik nilai:v×t=180 km (jarak konstan).Jika waktu tempuh t=2,5 jam, maka kecepatan yang diperlukan:v=180/2,5=180/5/2=180×2/5=36×2=72 km/jam.Jawaban yang benar adalah B.', NULL, NULL),
-(578, 578, 'Kunci: A, C\n\nAnalisis estimasi:\n* Efisiensi  dibulatkan ke satuan terdekat menjadi  (bukan 10 km/L), sehingga estimasi bensin yang wajar adalah , bukan 44 liter. (Pernyataan B SALAH).\n* Nilai eksak bensin = , yang berada di antara 40 dan 42 liter. (Pernyataan A BENAR).\n* Estimasi biaya = , berada pada rentang Rp530.000,00 hingga Rp550.000,00. (Pernyataan C BENAR).\n* Karena total biaya sekitar Rp537.000,00, uang Rp400.000,00 tidak mencukupi. (Pernyataan D SALAH).\nJawaban yang benar adalah A dan C.', NULL, NULL),
+(578, 578, 'Kunci: A, C\n\nAnalisis estimasi:
+* Efisiensi $10,8 km/L$ dibulatkan ke satuan terdekat menjadi $11 km/L$ (bukan 10 km/L), sehingga estimasi bensin yang wajar adalah $\\frac{440}{11}=40 liter$, bukan 44 liter. (Pernyataan B SALAH).
+* Nilai eksak bensin = $\\frac{438}{10,8}=40,555… liter$, yang berada di antara 40 dan 42 liter. (Pernyataan A BENAR).
+* Estimasi biaya = $40,56 liter \\times Rp13.250,00=Rp537.420,00$, berada pada rentang Rp530.000,00 hingga Rp550.000,00. (Pernyataan C BENAR).
+* Karena total biaya sekitar Rp537.000,00, uang Rp400.000,00 tidak mencukupi. (Pernyataan D SALAH).
+Jawaban yang benar adalah A dan C.', NULL, NULL),
 (579, 579, 'Kunci: CLakukan pembagian kapasitas total dengan ukuran per foto menggunakan notasi ilmiah:Jumlah foto = 3,2×10^10/4,8×10^6Jumlah foto = 3,2/4,8×10^10−6Jumlah foto = 2/3×10^4=0,6667×10^4≈6.667 foto.Tuliskan ke dalam bentuk notasi ilmiah:6.667≈6,7×10^3 foto.Jawaban yang benar adalah C.', NULL, NULL),
-(580, 580, 'Kunci: A, B\n\nAnalisis perbandingan senilai kebutuhan pakan:\n* Konsumsi per ekor =  per ekor per hari = 70 gram. (Pernyataan A BENAR).\n* Jumlah ayam sekarang =  ekor.\n* Kebutuhan pakan harian untuk 700 ekor =  per hari. (Pernyataan B BENAR).\n* Tambahan pakan harian =  per hari, bukan 20 kg. (Pernyataan C SALAH).\n* Total pakan sebulan (30 hari) = , bukan 1.050 kg. (Pernyataan D SALAH).\nJawaban yang benar adalah A dan B.', NULL, NULL),
-(581, 581, 'Kunci: BLangkah-langkah analisis beban kerja:1. Hitung total beban kerja proyek (dalam satuan orang-hari):   Beban kerja total = 40 hari×18 pekerja=720 orang-hari.2. Hitung beban kerja yang telah diselesaikan pada 16 hari pertama:   Pekerjaan selesai = 16 hari×18 pekerja=288 orang-hari.3. Hitung sisa beban kerja yang belum selesai:   Sisa beban kerja = 720−288=432 orang-hari.4. Hitung sisa hari kerja efektif yang tersedia:   Waktu terpakai = 16 hari (kerja) + 6 hari (terhenti) = 22 hari.   Sisa hari kerja = 40 hari−22 hari=18 hari kerja.5. Hitung total pekerja yang dibutuhkan pada 18 hari sisa:   Pekerja dibutuhkan = Sisa beban kerja/Sisa hari=432/18=24 orang.6. Hitung pekerja tambahan yang harus direkrut:   Pekerja tambahan = 24 orang−18 orang awal=6 orang pekerja tambahan.Jawaban yang benar adalah B.', NULL, NULL),
-(582, 582, 'Kunci: A, B\n\nAnalisis daya tahan pakan:\n1. Beban pakan total =  satuan porsi harian. (Pernyataan A BENAR).\n2. Pakan yang telah terkonsumsi dalam 4 hari pertama =  porsi.\nSisa pakan yang tersedia di gudang =  porsi.\n3. Jumlah sapi yang tersisa setelah penjualan =  ekor sapi.\n4. Lama sisa pakan bertahan =  hari lagi. (Pernyataan B BENAR).\n5. Total hari pakan bertahan sejak hari pertama =  hari, bukan 26 hari. (Pernyataan C SALAH).\n6. Awalnya direncanakan 16 hari. Karena bertahan 22 hari, pakan tersebut bertahan 6 hari LEBIH LAMA, bukan lebih cepat. (Pernyataan D SALAH).\nJawaban yang benar adalah A dan B.', NULL, NULL),
-(583, 583, 'Kunci: A, B\n\nAnalisis fungsi tarif:\n* Tarif Kilat () =\n* Tarif Nyaman () =\nTitik impas (perpotongan grafik): .\nPada : Tarif = . (Pernyataan B BENAR).\nEvaluasi pernyataan:\n* Untuk : Layanan Kilat lebih murah karena tarif dasar lebih rendah (garis Kilat berada di bawah garis Nyaman). (Pernyataan A BENAR).\n* Untuk :\nKilat =\nNyaman =\nPenghematan dengan Layanan Nyaman = , bukan Rp7.000,00. (Pernyataan C SALAH).\n* Untuk , Layanan Nyaman lebih murah, sehingga Pernyataan D SALAH.\nJawaban yang benar adalah A dan B.', NULL, NULL),
-(584, 584, 'Kunci: CLangkah-langkah penalaran matematis:1. Tentukan faktorisasi prima dari bilangan pembagi (120):   120=2^3×3^1×5^1.2. Syarat agar N habis dibagi 120:   Eksponen prima N harus memenuhi: a≥3, b≥1, c≥1.3. Syarat agar N merupakan bilangan kuadrat sempurna:   Semua eksponen faktorisasi prima dari N harus berupa bilangan bulat GENAP non-negatif.4. Tentukan eksponen genap terkecil yang memenuhi syarat batas:   * a adalah bilangan genap terkecil yang ≥3, maka a=4.   * b adalah bilangan genap terkecil yang ≥1, maka b=2.   * c adalah bilangan genap terkecil yang ≥1, maka c=2.5. Hitung nilai bilangan N:   N=2^4×3^2×5^2=16×9×25=144×25=3.600.   (Verifikasi: √(3600)=60 (kuadrat sempurna) dan 3.600÷120=30 (habis dibagi)).Jawaban yang benar adalah C.', NULL, NULL),
-(585, 585, 'Kunci: ALangkah-langkah penalaran teoritis:1. Misalkan p=14x dan q=14y dengan FPB(x,y)=1 (relatif prima) dan x<y.2. Rumus KPK dua bilangan: KPK(p,q)=14×x×y=420.   x×y=420/14=30.3. Hubungan penjumlahan: p+q=14x+14y=14(x+y)=154.   x+y=154/14=11.4. Cari pasangan bilangan asli (x,y) yang memenuhi x+y=11 dan x×y=30:   Pasangan faktor dari 30: (1, 30), (2, 15), (3, 10), (5, 6).   Pasangan yang menghasilkan jumlah 11 adalah x=5 dan y=6 (karena 5+6=11 dan 5×6=30).   FPB(5,6)=1 (memenuhi syarat saling prima).5. Hitung nilai p dan q:   p=14×5=70   q=14×6=846. Hitung selisihnya:   q−p=84−70=14.Jawaban yang benar adalah A.', NULL, NULL),
-(586, 586, 'Kunci: A, C\n\nAnalisis teori bilangan faktor pembagi:\n1. Rumus total faktor pembagi dari  adalah :\nTotal faktor =  faktor. (Pernyataan A BENAR).\n2. Faktor bernilai ganjil diperoleh jika tidak memuat faktor prima 2 (eksponen 2 bernilai 0):\nFaktor ganjil =  faktor (yaitu 1, 3, 9, 5, 15, 45), bukan 10 buah. (Pernyataan B SALAH).\n3. Faktor kelipatan 10 harus memuat sekurang-kurangnya faktor  dan :\nBanyak faktor kelipatan 10 =  faktor. (Pernyataan C BENAR).\n4. Karena terdapat 6 faktor ganjil, maka tidak semua faktor bernilai genap. (Pernyataan D SALAH).\nJawaban yang benar adalah A dan C.', NULL, NULL),
-(587, 587, 'Kunci: CLangkah penalaran batas pengukuran:1. Tentukan batas nilai panjang (p) dan lebar (l) sebenarnya:   * 23,5 m≤p<24,5 m   * 14,5 m≤l<15,5 m2. Hitung luas maksimum yang mungkin (L_maks):   L_maks=p_maks×l_maks=24,5 m×15,5 m=379,75 m^2.3. Hitung luas minimum yang mungkin (L_min):   L_min=p_min×l_min=23,5 m×14,5 m=340,75 m^2.4. Hitung selisih antara luas maksimum dan minimum:   Selisih = L_maks−L_min=379,75 m^2−340,75 m^2=39,00 m^2.Jawaban yang benar adalah C.', NULL, NULL),
-(588, 588, 'Kunci: A, B\n\nEvaluasi matematis atas klaim penghematan energi:\n1. Analisis daya:\n* Daya lampu awal =\n* Daya lampu baru =\n* Penghematan daya = . (Pernyataan A BENAR).\n2. Analisis energi harian:\n* Penghematan energi per hari =  per hari. (Pernyataan B BENAR).\n3. Analisis penghematan tahunan (365 hari):\n* Total kWh dihemat setahun = .\n* Total biaya dihemat = .\n* Karena , maka klaim brosur terbukti valid dan penghematan jauh melebihi Rp500.000,00. (Pernyataan C SALAH, Pernyataan D SALAH).\nJawaban yang benar adalah A dan B.', NULL, NULL),
-(589, 589, 'Kunci: BLangkah-langkah penalaran rasio mekanik:1. Hitung rasio putaran roda belakang terhadap putaran pedal:   Rasio gir = Banyak gigi depan/Banyak gigi belakang=48/16=3.   Artinya, setiap 1 putaran penuh pedal akan memutar roda belakang sebanyak 3 putaran penuh.2. Hitung keliling roda sepeda (panjang lintasan dalam 1 kali putaran roda):   Diameter d=70 cm=0,7 meter.   Keliling roda = π×d=22/7×0,7 m=2,2 meter.3. Hitung jarak tempuh untuk 1 putaran pedal:   Jarak tempuh = 3 putaran roda×2,2 meter per putaran=6,6 meter.Jawaban yang benar adalah B.', NULL, NULL),
-(590, 590, 'Kunci: A, C\n\nAnalisis campuran larutan:\n1. Hitung kandungan alkohol murni:\n* Dari Larutan A =  alkohol murni.\n* Dari Larutan B =  alkohol murni.\n* Total alkohol murni = . (Pernyataan A BENAR).\n2. Hitung total volume larutan gabungan:\n* Volume total = .\n3. Hitung konsentrasi akhir campuran:\n* Konsentrasi = , bukan 25%. (Pernyataan B SALAH).\n4. Hitung rasio alkohol terhadap air:\n* Volume air murni = .\n* Rasio alkohol : air = . (Pernyataan C BENAR).\n5. Nilai rata-rata langsung  tidak tepat karena volume awal berbeda. (Pernyataan D SALAH).\nJawaban yang benar adalah A dan C.', NULL, NULL),
+(580, 580, 'Kunci: A, B\n\nAnalisis perbandingan senilai kebutuhan pakan:
+* Konsumsi per ekor = $\\frac{35 kg}{500 ekor}=0,07 kg$ per ekor per hari = 70 gram. (Pernyataan A BENAR).
+* Jumlah ayam sekarang = $500+200=700$ ekor.
+* Kebutuhan pakan harian untuk 700 ekor = $700 \\times 0,07 kg=49 kg$ per hari. (Pernyataan B BENAR).
+* Tambahan pakan harian = $49 kg-35 kg=14 kg$ per hari, bukan 20 kg. (Pernyataan C SALAH).
+* Total pakan sebulan (30 hari) = $49 kg/hari \\times 30 hari=1.470 kg$, bukan 1.050 kg. (Pernyataan D SALAH).
+Jawaban yang benar adalah A dan B.', NULL, NULL),
+(581, 581, 'Kunci: B\n\nLangkah-langkah analisis beban kerja:
+1. Hitung total beban kerja proyek (dalam satuan orang-hari):
+Beban kerja total = $40 hari \\times 18 pekerja=720 orang-hari$.
+2. Hitung beban kerja yang telah diselesaikan pada 16 hari pertama:
+Pekerjaan selesai = $16 hari \\times 18 pekerja=288 orang-hari$.
+3. Hitung sisa beban kerja yang belum selesai:
+Sisa beban kerja = $720-288=432 orang-hari$.
+4. Hitung sisa hari kerja efektif yang tersedia:
+Waktu terpakai = 16 hari (kerja) + 6 hari (terhenti) = 22 hari.
+Sisa hari kerja = $40 hari-22 hari=18 hari kerja$.
+5. Hitung total pekerja yang dibutuhkan pada 18 hari sisa:
+Pekerja dibutuhkan = $\\frac{Sisa beban kerja}{Sisa hari}=\\frac{432}{18}=24 orang$.
+6. Hitung pekerja tambahan yang harus direkrut:
+Pekerja tambahan = $24 orang-18 orang awal=6 orang pekerja tambahan$.
+Jawaban yang benar adalah B.', NULL, NULL),
+(582, 582, 'Kunci: A, B\n\nAnalisis daya tahan pakan:
+1. Beban pakan total = $30 sapi \\times 16 hari=480$ satuan porsi harian. (Pernyataan A BENAR).
+2. Pakan yang telah terkonsumsi dalam 4 hari pertama = $30 sapi \\times 4 hari=120$ porsi.
+Sisa pakan yang tersedia di gudang = $480-120=360$ porsi.
+3. Jumlah sapi yang tersisa setelah penjualan = $30 sapi-10 sapi=20$ ekor sapi.
+4. Lama sisa pakan bertahan = $\\frac{360}{20}=18$ hari lagi. (Pernyataan B BENAR).
+5. Total hari pakan bertahan sejak hari pertama = $4 hari+18 hari=22$ hari, bukan 26 hari. (Pernyataan C SALAH).
+6. Awalnya direncanakan 16 hari. Karena bertahan 22 hari, pakan tersebut bertahan 6 hari LEBIH LAMA, bukan lebih cepat. (Pernyataan D SALAH).
+Jawaban yang benar adalah A dan B.', NULL, NULL),
+(583, 583, 'Kunci: A, B\n\nAnalisis fungsi tarif:
+* Tarif Kilat (${T}_{K}$) = $10.000+3.500x$
+* Tarif Nyaman (${T}_{N}$) = $16.000+2.500x$
+Titik impas (perpotongan grafik): $10.000+3.500x=16.000+2.500x⟹1.000x=6.000⟹x=6 km$.
+Pada $x=6 km$: Tarif = $10.000+(3.500 \\times 6)=Rp31.000,00$. (Pernyataan B BENAR).
+Evaluasi pernyataan:
+* Untuk $x<6 km$: Layanan Kilat lebih murah karena tarif dasar lebih rendah (garis Kilat berada di bawah garis Nyaman). (Pernyataan A BENAR).
+* Untuk $x=10 km$:
+Kilat = $10.000+35.000=Rp45.000,00$
+Nyaman = $16.000+25.000=Rp41.000,00$
+Penghematan dengan Layanan Nyaman = $Rp45.000-Rp41.000=Rp4.000,00$, bukan Rp7.000,00. (Pernyataan C SALAH).
+* Untuk $x>6 km$, Layanan Nyaman lebih murah, sehingga Pernyataan D SALAH.
+Jawaban yang benar adalah A dan B.', NULL, NULL),
+(584, 584, 'Kunci: C\n\nLangkah-langkah penalaran matematis:
+1. Tentukan faktorisasi prima dari bilangan pembagi (120):
+$120={2}^{3} \\times {3}^{1} \\times {5}^{1}$.
+2. Syarat agar $N$ habis dibagi 120:
+Eksponen prima $N$ harus memenuhi: $a \\ge 3$, $b \\ge 1$, $c \\ge 1$.
+3. Syarat agar $N$ merupakan bilangan kuadrat sempurna:
+Semua eksponen faktorisasi prima dari $N$ harus berupa bilangan bulat GENAP non-negatif.
+4. Tentukan eksponen genap terkecil yang memenuhi syarat batas:
+* $a$ adalah bilangan genap terkecil yang $\\ge 3$, maka $a=4$.
+* $b$ adalah bilangan genap terkecil yang $\\ge 1$, maka $b=2$.
+* $c$ adalah bilangan genap terkecil yang $\\ge 1$, maka $c=2$.
+5. Hitung nilai bilangan $N$:
+$N={2}^{4} \\times {3}^{2} \\times {5}^{2}=16 \\times 9 \\times 25=144 \\times 25=3.600$.
+(Verifikasi: $\\sqrt{3600}=60$ (kuadrat sempurna) dan $3.600 \\div 120=30$ (habis dibagi)).
+Jawaban yang benar adalah C.', NULL, NULL),
+(585, 585, 'Kunci: A\n\nLangkah-langkah penalaran teoritis:
+1. Misalkan $p=14x$ dan $q=14y$ dengan $FPB(x,y)=1$ (relatif prima) dan $x<y$.
+2. Rumus KPK dua bilangan: $KPK(p,q)=14 \\times x \\times y=420$.
+$x \\times y=\\frac{420}{14}=30$.
+3. Hubungan penjumlahan: $p+q=14x+14y=14(x+y)=154$.
+$x+y=\\frac{154}{14}=11$.
+4. Cari pasangan bilangan asli ($x,y$) yang memenuhi $x+y=11$ dan $x \\times y=30$:
+Pasangan faktor dari 30: (1, 30), (2, 15), (3, 10), (5, 6).
+Pasangan yang menghasilkan jumlah 11 adalah $x=5$ dan $y=6$ (karena $5+6=11$ dan $5 \\times 6=30$).
+$FPB(5,6)=1$ (memenuhi syarat saling prima).
+5. Hitung nilai $p$ dan $q$:
+$p=14 \\times 5=70$
+$q=14 \\times 6=84$
+6. Hitung selisihnya:
+$q-p=84-70=14$.
+Jawaban yang benar adalah A.', NULL, NULL),
+(586, 586, 'Kunci: A, C\n\nAnalisis teori bilangan faktor pembagi:
+1. Rumus total faktor pembagi dari ${2}^{a} \\times {3}^{b} \\times {5}^{c}$ adalah $(a+1)(b+1)(c+1)$:
+Total faktor = $(4+1)(2+1)(1+1)=5 \\times 3 \\times 2=30$ faktor. (Pernyataan A BENAR).
+2. Faktor bernilai ganjil diperoleh jika tidak memuat faktor prima 2 (eksponen 2 bernilai 0):
+Faktor ganjil = $(1) \\times (2+1)(1+1)=6$ faktor (yaitu 1, 3, 9, 5, 15, 45), bukan 10 buah. (Pernyataan B SALAH).
+3. Faktor kelipatan 10 harus memuat sekurang-kurangnya faktor ${2}^{1}$ dan ${5}^{1}$:
+Banyak faktor kelipatan 10 = $4 \\times 3 \\times 1=12$ faktor. (Pernyataan C BENAR).
+4. Karena terdapat 6 faktor ganjil, maka tidak semua faktor bernilai genap. (Pernyataan D SALAH).
+Jawaban yang benar adalah A dan C.', NULL, NULL),
+(587, 587, 'Kunci: C\n\nLangkah penalaran batas pengukuran:
+1. Tentukan batas nilai panjang ($p$) dan lebar ($l$) sebenarnya:
+* $23,5 m \\le p<24,5 m$
+* $14,5 m \\le l<15,5 m$
+2. Hitung luas maksimum yang mungkin (${L}_{maks}$):
+${L}_{maks}={p}_{maks} \\times {l}_{maks}=24,5 m \\times 15,5 m=379,75\\text{ m}^2$.
+3. Hitung luas minimum yang mungkin (${L}_{min}$):
+${L}_{min}={p}_{min} \\times {l}_{min}=23,5 m \\times 14,5 m=340,75\\text{ m}^2$.
+4. Hitung selisih antara luas maksimum dan minimum:
+Selisih = ${L}_{maks}-{L}_{min}=379,75\\text{ m}^2-340,75\\text{ m}^2=39,00\\text{ m}^2$.
+Jawaban yang benar adalah C.', NULL, NULL),
+(588, 588, 'Kunci: A, B\n\nEvaluasi matematis atas klaim penghematan energi:
+1. Analisis daya:
+* Daya lampu awal = $10 \\times 60 W=600 W$
+* Daya lampu baru = $10 \\times 8 W=80 W$
+* Penghematan daya = $600 W-80 W=520 W=0,52 kW$. (Pernyataan A BENAR).
+2. Analisis energi harian:
+* Penghematan energi per hari = $0,52 kW \\times 8 jam=4,16 kWh$ per hari. (Pernyataan B BENAR).
+3. Analisis penghematan tahunan (365 hari):
+* Total kWh dihemat setahun = $4,16 \\times 365=1.518,4 kWh$.
+* Total biaya dihemat = $1.518,4 \\times Rp1.500,00=Rp2.277.600,00$.
+* Karena $Rp2.277.600,00>Rp700.000,00$, maka klaim brosur terbukti valid dan penghematan jauh melebihi Rp500.000,00. (Pernyataan C SALAH, Pernyataan D SALAH).
+Jawaban yang benar adalah A dan B.', NULL, NULL),
+(589, 589, 'Kunci: B\n\nLangkah-langkah penalaran rasio mekanik:
+1. Hitung rasio putaran roda belakang terhadap putaran pedal:
+Rasio gir = $\\frac{Banyak gigi depan}{Banyak gigi belakang}=\\frac{48}{16}=3$.
+Artinya, setiap 1 putaran penuh pedal akan memutar roda belakang sebanyak 3 putaran penuh.
+2. Hitung keliling roda sepeda (panjang lintasan dalam 1 kali putaran roda):
+Diameter $d=70 cm=0,7 meter$.
+Keliling roda = $\\pi \\times d=(\\frac{22}{7}) \\times 0,7 m=2,2 meter$.
+3. Hitung jarak tempuh untuk 1 putaran pedal:
+Jarak tempuh = $3 putaran roda \\times 2,2 meter per putaran=6,6 meter$.
+Jawaban yang benar adalah B.', NULL, NULL),
+(590, 590, 'Kunci: A, C\n\nAnalisis campuran larutan:
+1. Hitung kandungan alkohol murni:
+* Dari Larutan A = $20\\% \\times 300\\text{ mL} = 60\\text{ mL}$ alkohol murni.
+* Dari Larutan B = $50\\% \\times 200\\text{ mL} = 100\\text{ mL}$ alkohol murni.
+* Total alkohol murni = $60\\text{ mL} + 100\\text{ mL} = 160\\text{ mL}$. (Pernyataan A BENAR).
+2. Hitung total volume larutan gabungan:
+* Volume total = $300\\text{ mL} + 200\\text{ mL} = 500\\text{ mL}$.
+3. Hitung konsentrasi akhir campuran:
+* Konsentrasi = $(\\frac{160}{500}) \\times 100\\% = 32\\%$, bukan 25%. (Pernyataan B SALAH).
+4. Hitung rasio alkohol terhadap air:
+* Volume air murni = $500\\text{ mL} - 160\\text{ mL} = 340\\text{ mL}$.
+* Rasio alkohol : air = $160 : 340 = 8 : 17$. (Pernyataan C BENAR).
+5. Nilai rata-rata langsung $35\\%$ tidak tepat karena volume awal berbeda. (Pernyataan D SALAH).
+Jawaban yang benar adalah A dan C.', NULL, NULL),
 (591, 591, 'Kunci: AGunakan metode perkalian dengan bentuk sekawannya (rasionalisasi pembilang):Bentuk umum setiap bilangan adalah √(n+4)−√(n).Kalikan dengan sekawan √(n+4)+√(n)/√(n+4)+√(n):√(n+4)−√(n)=(n+4)−n/√(n+4)+√(n)=4/√(n+4)+√(n).Perhatikan bahwa pembilang dari keempat bilangan bernilai konstan, yaitu 4.Semakin besar nilai n, maka penyebut √(n+4)+√(n) akan semakin besar, sehingga nilai pecahannya justru akan semakin KECIL.* Penyebut P: √(11)+√(7) (paling kecil)* Penyebut Q: √(15)+√(11)* Penyebut R: √(19)+√(15)* Penyebut S: √(23)+√(19) (paling besar)Karena penyebut P adalah yang terkecil, maka nilai pecahan P=4/√(11)+√(7) adalah yang PALING BESAR di antara semuanya.Jawaban yang benar adalah A.', NULL, NULL),
-(592, 592, 'Kunci: A, B\n\nAnalisis penyamakan eksponen:\nCari FPB dari eksponen ketiga bilangan: .\nUbah basis ketiga bilangan dengan mempertahankan pangkat 20 di luar kurung:\n*\n*\n*\nKarena , maka  atau .\nEvaluasi pernyataan:\n* Pernyataan A BENAR:  adalah yang terbesar.\n* Pernyataan B BENAR: Urutan dari terkecil adalah .\n* Pernyataan C SALAH: Bilangan yang paling kecil adalah , bukan .\n* Pernyataan D SALAH: Karena , maka  lebih kecil daripada , bukan lebih besar.\nJawaban yang benar adalah A dan B.', NULL, NULL),
-(593, 593, 'Kunci: CLangkah-langkah pemodelan aljabar bilangan bulat:1. Tentukan banyak soal yang tidak dijawab:   Soal kosong = 50 butir−45 butir=5 butir soal.   Skor dari soal kosong = 5×(−1)=−5 poin.2. Misalkan:   Banyak jawaban benar = B   Banyak jawaban salah = 45−B3. Susun persamaan total skor:   Total skor=(B×4)+[(45−B)×(−2)]+(−5)=127   4B−90+2B−5=127   6B−95=127   6B=127+95   6B=222   B=222/6=37 butir.Verifikasi:* Benar: 37×4=148* Salah: (45−37)×(−2)=8×(−2)=−16* Kosong: 5×(−1)=−5* Total = 148−16−5=127 (sesuai).Jawaban yang benar adalah C.', NULL, NULL),
-(594, 594, 'Kunci: A, C\n\nAnalisis skala denah (1 : 150 artinya 1 cm mewakili 1,5 meter sebenarnya):\n1. Ruang A (Aula Utama):\nPanjang = ; Lebar = .\nLuas sebenarnya = . (Pernyataan A BENAR).\n2. Ruang B (Ruang Rapat):\nPanjang = ; Lebar = .\nLuas sebenarnya = , bukan . (Pernyataan B SALAH).\n3. Anggaran ubin granit Ruang B:\nBiaya = . (Pernyataan C BENAR).\n4. Rasio luas Aula Utama terhadap Ruang Rapat adalah , bukan . (Pernyataan D SALAH).\nJawaban yang benar adalah A dan C.', NULL, NULL),
-(595, 595, 'Kunci: A, B\n\nAnalisis laju pengisian (bagian kolam per jam):\n* Laju Pompa 1 =  bagian/jam\n* Laju Pompa 2 =  bagian/jam (waktu tercepat, maka debit terbesar). (Pernyataan A BENAR).\n* Laju Pompa 3 =  bagian/jam\nEvaluasi skenario gabungan:\n1. Ketiga pompa bekerja bersama:\nLaju gabungan =  bagian per jam.\nWaktu pengisian =  jam penuh. (Pernyataan B BENAR).\n2. Hanya Pompa 1 dan Pompa 2 bekerja bersama:\nLaju gabungan =  bagian per jam.\nWaktu pengisian = , bukan 3 jam 15 menit. (Pernyataan C SALAH).\n3. Waktu kerja bersama (2 jam) lebih singkat daripada Pompa 2 sendirian (4 jam). (Pernyataan D SALAH).\nJawaban yang benar adalah A dan B.', NULL, NULL),
+(592, 592, 'Kunci: A, B\n\nAnalisis penyamakan eksponen:
+Cari FPB dari eksponen ketiga bilangan: $FPB(60,40,20)=20$.
+Ubah basis ketiga bilangan dengan mempertahankan pangkat 20 di luar kurung:
+* $x={2}^{60}=({2}^{3}{)}^{20}={8}^{20}$
+* $y={3}^{40}=({3}^{2}{)}^{20}={9}^{20}$
+* $z={5}^{20}=({5}^{1}{)}^{20}={5}^{20}$
+Karena $5<8<9$, maka ${5}^{20}<{8}^{20}<{9}^{20}$ atau $z<x<y$.
+Evaluasi pernyataan:
+* Pernyataan A BENAR: $y={9}^{20}$ adalah yang terbesar.
+* Pernyataan B BENAR: Urutan dari terkecil adalah $z<x<y$.
+* Pernyataan C SALAH: Bilangan yang paling kecil adalah $z={5}^{20}$, bukan $x={8}^{20}$.
+* Pernyataan D SALAH: Karena ${8}^{20}<{9}^{20}$, maka $x$ lebih kecil daripada $y$, bukan lebih besar.
+Jawaban yang benar adalah A dan B.', NULL, NULL),
+(593, 593, 'Kunci: C\n\nLangkah-langkah pemodelan aljabar bilangan bulat:
+1. Tentukan banyak soal yang tidak dijawab:
+Soal kosong = $50 butir-45 butir=5 butir soal$.
+Skor dari soal kosong = $5 \\times (-1)=-5$ poin.
+2. Misalkan:
+Banyak jawaban benar = $B$
+Banyak jawaban salah = $45-B$
+3. Susun persamaan total skor:
+$Total skor=(B \\times 4)+[(45-B) \\times (-2)]+(-5)=127$
+$4B-90+2B-5=127$
+$6B-95=127$
+$6B=127+95$
+$6B=222$
+$B=\\frac{222}{6}=37$ butir.
+Verifikasi:
+* Benar: $37 \\times 4=148$
+* Salah: $(45-37) \\times (-2)=8 \\times (-2)=-16$
+* Kosong: $5 \\times (-1)=-5$
+* Total = $148-16-5=127$ (sesuai).
+Jawaban yang benar adalah C.', NULL, NULL),
+(594, 594, 'Kunci: A, C\n\nAnalisis skala denah (1 : 150 artinya 1 cm mewakili 1,5 meter sebenarnya):
+1. Ruang A (Aula Utama):
+Panjang = $5 \\times 1,5=7,5 m$; Lebar = $5 \\times 1,5=7,5 m$.
+Luas sebenarnya = $7,5 \\times 7,5=56,25\\text{ m}^2$. (Pernyataan A BENAR).
+2. Ruang B (Ruang Rapat):
+Panjang = $3 \\times 1,5=4,5 m$; Lebar = $3 \\times 1,5=4,5 m$.
+Luas sebenarnya = $4,5 \\times 4,5=20,25\\text{ m}^2$, bukan $30,50\\text{ m}^2$. (Pernyataan B SALAH).
+3. Anggaran ubin granit Ruang B:
+Biaya = $20,25\\text{ m}^2 \\times Rp200.000,00/\\text{ m}^2=Rp4.050.000,00$. (Pernyataan C BENAR).
+4. Rasio luas Aula Utama terhadap Ruang Rapat adalah $25:9$, bukan $5:3$. (Pernyataan D SALAH).
+Jawaban yang benar adalah A dan C.', NULL, NULL),
+(595, 595, 'Kunci: A, B\n\nAnalisis laju pengisian (bagian kolam per jam):
+* Laju Pompa 1 = $\\frac{1}{6}$ bagian/jam
+* Laju Pompa 2 = $\\frac{1}{4}$ bagian/jam (waktu tercepat, maka debit terbesar). (Pernyataan A BENAR).
+* Laju Pompa 3 = $\\frac{1}{12}$ bagian/jam
+Evaluasi skenario gabungan:
+1. Ketiga pompa bekerja bersama:
+Laju gabungan = $\\frac{1}{6}+\\frac{1}{4}+\\frac{1}{12}=\\frac{6}{12}=\\frac{1}{2}$ bagian per jam.
+Waktu pengisian = $2$ jam penuh. (Pernyataan B BENAR).
+2. Hanya Pompa 1 dan Pompa 2 bekerja bersama:
+Laju gabungan = $\\frac{1}{6}+\\frac{1}{4}=\\frac{5}{12}$ bagian per jam.
+Waktu pengisian = $\\frac{12}{5} jam=2,4 jam=2 jam 24 menit$, bukan 3 jam 15 menit. (Pernyataan C SALAH).
+3. Waktu kerja bersama (2 jam) lebih singkat daripada Pompa 2 sendirian (4 jam). (Pernyataan D SALAH).
+Jawaban yang benar adalah A dan B.', NULL, NULL),
 (596, 596, 'Kunci: BLakukan pembagian massa total tetesan air dengan massa satu molekul air:Jumlah molekul = Massa 1 tetes/Massa 1 molekulJumlah molekul = 6,0×10^−2/3,0×10^−23Sesuai dengan sifat perpangkatan eksponen pada pembagian:= 6,0/3,0×10^−2−(−23)= 2,0×10^−2+23= 2,0×10^21 molekul air.Jawaban yang benar adalah B.', NULL, NULL),
-(597, 597, 'Kunci: A, C\n\nAnalisis KPK dari interval waktu kedip:\n1. Faktorisasi prima masing-masing interval:\n*\n*\n*\ndetik (1 menit). (Pernyataan A BENAR).\n2. Waktu nyala bersama kedua:\n, bukan pukul 19.32.00 WIB. (Pernyataan B SALAH).\n3. Frekuensi nyala bersama dalam 15 menit ():\nFrekuensi =  kali. (Pernyataan C BENAR).\n4. KPK dari Lampu Merah (12) dan Lampu Hijau (20) adalah 60 detik, bukan 30 detik. (Pernyataan D SALAH).\nJawaban yang benar adalah A dan C.', NULL, NULL),
-(598, 598, 'Kunci: ALangkah-langkah penalaran kurva proyek:1. Hitung total volume kerja awal (orang-hari):   Total volume = 60 hari×15 pekerja=900 orang-hari.2. Hitung volume kerja yang sudah selesai pada hari ke-20:   Volume selesai = 20 hari×15 pekerja=300 orang-hari (setara dengan 33,33%).3. Hitung sisa volume kerja yang harus diselesaikan:   Sisa volume = 900−300=600 orang-hari.4. Hitung sisa waktu kalender efektif:   Mulai hari ke-30 hingga hari ke-60, waktu tersisa = 60−30=30 hari kalender.5. Hitung kebutuhan total pekerja pada sisa 30 hari:   Total pekerja = Sisa volume/Sisa hari=600/30=20 orang pekerja.6. Hitung pekerja tambahan yang harus didatangkan:   Pekerja tambahan = 20 orang−15 orang pekerja awal=5 orang.Jawaban yang benar adalah A.', NULL, NULL),
-(599, 599, 'Kunci: A, B\n\nPemodelan matematika fungsi eksponensial:\nFungsi populasi: , dengan  dan periode .\nEvaluasi skenario waktu:\n1. Untuk :\n* Banyak siklus pembelahan  kali pembelahan. (Pernyataan A BENAR).\n* . (Pernyataan B BENAR).\n2. Untuk :\n* Banyak siklus  kali pembelahan.\n* .\n* Tulis dalam notasi ilmiah: , bukan  sel. (Pernyataan C SALAH).\n3. Pertumbuhan ini merupakan deret geometri/eksponensial, bukan pertumbuhan linier. (Pernyataan D SALAH).\nJawaban yang benar adalah A dan B.', NULL, NULL),
-(600, 600, 'Kunci: CLangkah-langkah penalaran laju perubahan debit:1. Tentukan laju pengosongan per menit masing-masing pipa:   * Pipa A mengosongkan 1/30 bagian tangki per menit.   * Pipa B mengosongkan 1/20 bagian tangki per menit.2. Tentukan laju pengosongan gabungan kedua pipa saat bekerja bersama-sama:   Laju gabungan = 1/30+1/20   Samakan penyebut ke KPK dari 30 dan 20, yaitu 60:   Laju gabungan = 2/60+3/60=5/60=1/12 bagian tangki per menit.3. Tentukan waktu total yang dibutuhkan hingga tangki kosong penuh:   Waktu = 1/1/12=12 menit.Jawaban yang benar adalah C.', NULL, NULL),
+(597, 597, 'Kunci: A, C\n\nAnalisis KPK dari interval waktu kedip:
+1. Faktorisasi prima masing-masing interval:
+* $12={2}^{2} \\times 3$
+* $15=3 \\times 5$
+* $20={2}^{2} \\times 5$
+$KPK(12,15,20)={2}^{2} \\times 3 \\times 5=60$ detik (1 menit). (Pernyataan A BENAR).
+2. Waktu nyala bersama kedua:
+$19.30.00+60 detik=19.31.00 WIB$, bukan pukul 19.32.00 WIB. (Pernyataan B SALAH).
+3. Frekuensi nyala bersama dalam 15 menit ($15 \\times 60=900 detik$):
+Frekuensi = $\\frac{15 menit}{1 menit}=15$ kali. (Pernyataan C BENAR).
+4. KPK dari Lampu Merah (12) dan Lampu Hijau (20) adalah 60 detik, bukan 30 detik. (Pernyataan D SALAH).
+Jawaban yang benar adalah A dan C.', NULL, NULL),
+(598, 598, 'Kunci: A\n\nLangkah-langkah penalaran kurva proyek:
+1. Hitung total volume kerja awal (orang-hari):
+Total volume = $60 hari \\times 15 pekerja=900 orang-hari$.
+2. Hitung volume kerja yang sudah selesai pada hari ke-20:
+Volume selesai = $20 \\text{ hari} \\times 15 \\text{ pekerja} = 300 \\text{ orang-hari}$ (setara dengan $33{,}33\\%$).
+3. Hitung sisa volume kerja yang harus diselesaikan:
+Sisa volume = $900-300=600 orang-hari$.
+4. Hitung sisa waktu kalender efektif:
+Mulai hari ke-30 hingga hari ke-60, waktu tersisa = $60-30=30$ hari kalender.
+5. Hitung kebutuhan total pekerja pada sisa 30 hari:
+Total pekerja = $\\frac{Sisa volume}{Sisa hari}=\\frac{600}{30}=20$ orang pekerja.
+6. Hitung pekerja tambahan yang harus didatangkan:
+Pekerja tambahan = $20 orang-15 orang pekerja awal=5$ orang.
+Jawaban yang benar adalah A.', NULL, NULL),
+(599, 599, 'Kunci: A, B\n\nPemodelan matematika fungsi eksponensial:
+Fungsi populasi: $N(t)={N}_{0} \\times {2}^{\\frac{t}{T}}$, dengan ${N}_{0}=200$ dan periode $T=20 menit$.
+Evaluasi skenario waktu:
+1. Untuk $t=2 jam=120 menit$:
+* Banyak siklus pembelahan $n=\\frac{120}{20}=6$ kali pembelahan. (Pernyataan A BENAR).
+* $N(2 jam)=200 \\times {2}^{6}=200 \\times 64=12.800 sel$. (Pernyataan B BENAR).
+2. Untuk $t=3 jam=180 menit$:
+* Banyak siklus $n=\\frac{180}{20}=9$ kali pembelahan.
+* $N(3 jam)=200 \\times {2}^{9}=200 \\times 512=102.400 sel$.
+* Tulis dalam notasi ilmiah: $102.400=1,024 \\times {10}^{5} sel$, bukan $5,12 \\times {10}^{4}$ sel. (Pernyataan C SALAH).
+3. Pertumbuhan ini merupakan deret geometri/eksponensial, bukan pertumbuhan linier. (Pernyataan D SALAH).
+Jawaban yang benar adalah A dan B.', NULL, NULL),
+(600, 600, 'Kunci: C\n\nLangkah-langkah penalaran laju perubahan debit:
+1. Tentukan laju pengosongan per menit masing-masing pipa:
+* Pipa A mengosongkan $\\frac{1}{30}$ bagian tangki per menit.
+* Pipa B mengosongkan $\\frac{1}{20}$ bagian tangki per menit.
+2. Tentukan laju pengosongan gabungan kedua pipa saat bekerja bersama-sama:
+Laju gabungan = $\\frac{1}{30}+\\frac{1}{20}$
+Samakan penyebut ke KPK dari 30 dan 20, yaitu 60:
+Laju gabungan = $\\frac{2}{60}+\\frac{3}{60}=\\frac{5}{60}=\\frac{1}{12}$ bagian tangki per menit.
+3. Tentukan waktu total yang dibutuhkan hingga tangki kosong penuh:
+Waktu = $\\frac{1}{\\frac{1}{12}}=12$ menit.
+Jawaban yang benar adalah C.', NULL, NULL),
 (601, 601, 'Jawaban: CPertidaksamaan ditandai oleh ungkapan seperti “tidak boleh lebih dari”, “paling sedikit”, atau “kurang dari”. Pilihan C dapat ditulis x ≤ 500, sedangkan pilihan lainnya menyatakan kesamaan (persamaan).', NULL, NULL),
 (602, 602, 'Jawaban: DPersamaan linear satu variabel hanya memuat satu variabel berpangkat 1. Pilihan D memenuhi syarat tersebut. A dan E berpangkat 2, B memuat dua variabel, dan C memuat variabel di penyebut.', NULL, NULL),
 (603, 603, 'Jawaban: A4x − 2x = 9 + 72x = 16x = 8.', NULL, NULL),
@@ -3191,9 +3604,9 @@ INSERT INTO `question_explanations` (`id`, `question_id`, `explanation_text`, `r
 (681, 681, 'Jawaban: CPembahasan:Total harga buku = 4 x X = 4x. Total harga pensil = 3 x Y = 3y.Total pembayaran = 4x + 3y.', NULL, NULL),
 (682, 682, 'Jawaban: APembahasan:Sisa uang = Uang awal - Total belanjaan = R - 2b', NULL, NULL),
 (683, 683, 'Jawaban: BPembahasan:Dua kali p ditambah 7 > 2p + 7 Tiga kali p dikurangi 4 > 3p - 4.Persamaan: 2p + 7 = 3p - 4.', NULL, NULL),
-(684, 684, 'Jawaban: APembahasan:Lebar = x. Panjang = x + 5.Luas = panjang x lebar = (x + 5) . x = x^2 + 5x.', NULL, NULL),
+(684, 684, 'Kunci: A\n\nLebar $= x$. Panjang $= x + 5$.\nLuas $= \\text{panjang} \\times \\text{lebar} = (x + 5) \\times x = x^2 + 5x$.\nJadi model aljabar untuk luas kebun adalah Opsi A.', NULL, NULL),
 (685, 685, 'Jawaban: BPembahasan:Umur Ani sekarang = a + n.Umur Ibu sekarang = 4 x Umur Ani sekarang = 4(a + n', NULL, NULL),
-(686, 686, 'Jawaban: CPembahasan:Total biaya Y = Tarif awal + (Tarif per km x Jarak) = Ro + t . k', NULL, NULL),
+(686, 686, 'Kunci: C\n\nTotal biaya $Y = \\text{Tarif awal} + (\\text{Tarif per km} \\times \\text{Jarak}) = R_0 + t \\cdot k$.\nJadi rumus yang benar adalah $Y = R_0 + t \\cdot k$ (Opsi C).', NULL, NULL),
 (687, 687, 'Jawaban: APembahasan:Siswa I = x. Siswa II = 2x. Siswa III = M - (x + 2x) = M - 3x.', NULL, NULL),
 (688, 688, 'Jawaban: BPembahasan:Substitusi x = 5: Panjang = 2(5) + 3 = 13 m. Lebar = 5 - 1 = 4 m. Luas = 13x 4 = 52 m^2.', NULL, NULL),
 (689, 689, 'Jawaban: BPembahasan:Total belanja = 3x + 2y.Uang kembalian = Uang bayar -Total belanja = 200.000 - (3x + 2y)', NULL, NULL),
@@ -3210,22 +3623,25 @@ INSERT INTO `question_explanations` (`id`, `question_id`, `explanation_text`, `r
 (700, 700, 'Jawaban: APembahasan: Jika s = 12 km, maka B(12) = 12 / 12 = 1 liter. Artinya 1 liter bensin menempuh jarak 12 km', NULL, NULL),
 (701, 701, 'Jawaban: APembahasan:C = 2(3x - 2y + 5) - (2x + 4y - 3)C = (6x - 4y + 10) - 2x - 4y + 3C = (6x - 2x) + (-4y - 4y) + (10 + 3) = 4x - 8y + 13', NULL, NULL),
 (702, 702, 'Jawaban: BPembahasan:K = 2(panjang+lebar) K = 2((3x + 2) + (x - 1)) K = 2(4x + 1) = 8x + 2', NULL, NULL),
-(703, 703, 'Jawaban: BPembahasan:Menggunakan identitas aljabar selisih dua kuadrat: x^2 - y^2 = (x + y)(x – y)36 = (x + y) . 4 > (x + y) = 36/4 = 9.', NULL, NULL),
+(703, 703, 'Kunci: B\n\nMenggunakan identitas aljabar selisih dua kuadrat:
+$x^2 - y^2 = (x + y)(x - y)$
+$36 = (x + y) \\cdot 4 \\implies (x + y) = \\frac{36}{4} = 9$.', NULL, NULL),
 (704, 704, 'Jawaban: APembahasan:Pembilang ^2+x-6 = (x+3)(x-2). Jika penyebut adalah x^2-4x+4 = (x-2)^2, pembagiannya memberikan x+3 / x-2.', NULL, NULL),
 (705, 705, 'Jawaban: APembahasan:Gunakan identitas (a + b)^2 = a^2 + 2ab + b^2 7^2 = a^2 + 2(10) + b^249 = a^2 + 20 + b^2 > a^2 + b^2 = 49 - 20 = 29', NULL, NULL),
 (706, 706, 'Jawaban: BPembahasan:Luas 2 – Luas 1 = 39 (x + 3)^2 - x^2 = 39(x^2 + 6x + 9) - x^2 = 39 6x + 9 = 39 > 6x = 30 > x = 5.', NULL, NULL),
 (707, 707, 'Jawaban: APembahasan:Umur Andi sekarang = x, umur Ayah = 3x. Umur Andi 5 tahun lagi = x + 5,Umur Ayah 5 tahun lagi = 3x + 5. Jumlah umur 5 tahun lagi = (x + 5) + (3x + 5) = 4x + 10. Persamaan: 4x + 10 = 58 > 4x = 48 > x = 12.', NULL, NULL),
 (708, 708, 'Jawaban: APembahasan:Air keluar = 4(2x - 3) = 8x - 12. Volume awal (y) = Air keluar + Sisa air y = (8x - 12) + 15 = 8x + 3.', NULL, NULL),
 (709, 709, 'Jawaban: CPembahasan:Misal bilangan tersebut: n, n+1, n+2. Jumlah = 3n + 3 = 45 > 3n = 42 > n = 14. Bilangan terbesar = n + 2 = 14 + 2 = 16.', NULL, NULL),
-(710, 710, 'Jawaban: APembahasan:Besar diskon = x/100 .  H Harga bayar = H – x/100 . H = H (1 – x/100', NULL, NULL),
+(710, 710, 'Kunci: A\n\n$\\text{Besar diskon} = \\frac{x}{100} \\cdot H$
+$\\text{Harga bayar} = H - \\frac{x}{100} \\cdot H = H \\left(1 - \\frac{x}{100}\\right)$', NULL, NULL),
 (711, 711, 'Jawaban: APembahasan: Pada langkah 1, perkalian -2(x - 5) menghasilkan -2x + 10 (bukan -2x - 10). Jadi kesalahan ada pada Langkah 1', NULL, NULL),
-(712, 712, 'Jawaban: APembahasan: 6x^2y / 2x = (6/2) . (x^2/x) . y = 3xy Budi Benar', NULL, NULL),
+(712, 712, 'Kunci: A\n\n$\\frac{6x^2y}{2x} = \\left(\\frac{6}{2}\\right) \\cdot \\left(\\frac{x^2}{x}\\right) \\cdot y = 3xy$, sehingga jawaban Budi benar.\nJadi jawaban yang benar adalah A.', NULL, NULL),
 (713, 713, 'Jawaban: BPembahasan: Penjabaran (a + b)^2 = (a + b)(a + b) = a^2 + ab + ba + b^2 = a^2 + 2ab + b^2. Pernyataan awal mengabaikan suku tengah 2ab.', NULL, NULL),
 (714, 714, 'Jawaban: APembahasan: Dua bilangan yang jika dijumlahkan bernilai -5 dan dikalikan bernilai 6 adalah -2 dan -3. Maka faktorsasi yang benar adalah (x - 2)(x - 3).', NULL, NULL),
 (715, 715, 'Jawaban: CPembahasan: Pola umum (a - b)(a + b) = a^2 - b^2. Untuk (2x - 5)(2x + 5) = (2x)^2 - (5)^2 = 4x^2 - 25', NULL, NULL),
 (716, 716, 'Jawaban: BPembahasan: Jika pembagi (penyebut) x + 2 makin besar, maka nilai pecahan 1/x+2 akan semakin kecil dan mendekati 0', NULL, NULL),
 (717, 717, 'Jawaban: BPembahasan: Karena (q - p) = -(p - q), maka: p – q / q - p = p – q / -(p - q) = -1.', NULL, NULL),
-(718, 718, 'Jawaban: APembahasan:   S_1 = 1 = 1^2  S_2 = 1 + 3 = 4 = 2^2  S_3 = 1 + 3 + 5 = 9 = 3^2Generalisasi bentuk umum jumlah n suku pertama bilangan ganjil adalah n^2', NULL, NULL),
+(718, 718, 'Kunci: A\n\n$S_1 = 1 = 1^2$\n$S_2 = 1 + 3 = 4 = 2^2$\n$S_3 = 1 + 3 + 5 = 9 = 3^2$\nGeneralisasi bentuk umum jumlah $n$ suku pertama bilangan ganjil adalah $n^2$.\nJadi jawaban yang benar adalah A.', NULL, NULL),
 (719, 719, 'Jawaban: APembahasan: Suku ke-1 = 1(x + 2) Suku ke-2 = 2(x + 2) = 2x + 4 Suku ke-3 = 3(x + 2) = 3x + 6 Suku ke-n = n(x + 2) = nx + 2n', NULL, NULL),
 (720, 720, 'Jawaban: BPembahasan: (n + 1)^2 - n^2 = (n^2 + 2n + 1) - n^2 = 2n + 1.(Bentuk 2n + 1 ini menunjukkan bahwa selisih kuadrat dua bilangan berurutan selalu menghasilkan bilangan ganjil)', NULL, NULL),
 (721, 721, 'Pembahasan: - Kunci Jawaban: C- Pembahasan: Substitusikan x = 4 ke dalam f(x) = 3x - 2, sehingga f(4) = 3(4) - 2 = 12 - 2 = 10. Opsi A (8) muncul jika siswa keliru menghitung 3 × 4 = 12 lalu salah kurang menjadi 4 lalu ditambah operasi lain; opsi B (9) jika siswa salah kurang satu angka; opsi D (14) jika siswa keliru menjumlahkan 3(4) + 2.', NULL, NULL),
@@ -3333,7 +3749,7 @@ INSERT INTO `question_explanations` (`id`, `question_id`, `explanation_text`, `r
 (823, 823, 'CGunakan eliminasi: U8 → a + 7b = 31, dan U3 → a + 2b = 11.Dikurangkan jadi 5b = 20 → b = 4. Substitusi dapat a = 3.Maka U20 = a + 19b = 3 + 19(4) = 3 + 76 = 79.', NULL, NULL),
 (824, 824, 'AMencari suku ke-n jika diketahui Sn rumusnya adalah Un = Sn - Sn-1.U10 = S10 - S9 = (10² + 2(10)) - (9² + 2(9)) = (100 + 20) - (81 + 18) = 120 - 99 = 21.', NULL, NULL),
 (825, 825, 'CMisalkan sisi-sisinya (a-b), a, dan (a+b). Keliling = 3a = 24 → a = 8.Berdasarkan Pythagoras: (8-b)² + 8² = (8+b)². Kalau dihitung didapat b = 2. Sisi miringnya adalah yang terpanjang (8+b) = 8+2 = 10 cm.', NULL, NULL),
-(826, 826, 'BBilangan ganjil antara 10 dan 50 adalah 11, 13, ..., 49. Ini deret aritmetika dengan a=11, b=2. Cari n dulu:Un = 49 → 11 + (n-1)2 = 49 → 2n + 9 = 49 → 2n = 40 → n = 20.S20 = 20/2 × (11 + 49) = 10 × 60 = 600.', NULL, NULL),
+(826, 826, 'Kunci: B\n\nBilangan ganjil antara 10 dan 50 adalah $11,13,\\ldots ,49$. Ini deret aritmetika dengan $a=11$, $b=2$. Cari $n$ dulu:$$U_n=49\\rightarrow 11+(n-1)2=49\\rightarrow 2n+9=49$$$$2n=40\\rightarrow n=20$$$$S_{20}=\\frac{20}{2}\\times (11+49)=10\\times 60=600$$', NULL, NULL),
 (827, 827, 'CMari hitung bertahap. Awal = 100.Jam ke-2: (100 × 2) - 50 = 150.Jam ke-4: (150 × 2) - 50 = 250.Jam ke-6: (250 × 2) - 50 = 450 bakteri.', NULL, NULL),
 (828, 828, 'CDeret ini memiliki a = 2, r = 2. Sn = a(rⁿ - 1)/(r - 1) → 254 = 2(2ⁿ - 1)/1 → 127 = 2ⁿ - 1 → 128 = 2ⁿ. Diperoleh n = 7.', NULL, NULL),
 (829, 829, 'CMisalkan bilangannya a/r, a, a×r. Hasil kali = a³ = 216 → a = 6.Jumlah = 6/r + 6 + 6r = 26 → 6/r + 6r = 20 → 3/r + 3r = 10 → 3r² - 10r + 3 = 0. Diperoleh r = 3 atau r = 1/3.Bilangannya 2, 6, 18. Yang terbesar adalah 18.', NULL, NULL),
@@ -3363,7 +3779,7 @@ INSERT INTO `question_explanations` (`id`, `question_id`, `explanation_text`, `r
 (853, 853, 'Jawaban: DFaktor skala 2 berarti setiap panjang sisi dikalikan 2. Jadi 7 × 2 = 14 cm.', NULL, NULL),
 (854, 854, 'Kunci: C, D\n\nKubus memiliki $6$ sisi persegi. Susunan persegi yang tepat akan membentuk jaring-jaring kubus. Jadi, jawaban yang tepat adalah C, D.', NULL, NULL),
 (855, 855, 'Jawaban: BPrisma segitiga memiliki 2 sisi segitiga dan 3 sisi persegi panjang, total 5 sisi.', NULL, NULL),
-(856, 856, 'Jawaban: A, EJaring prisma segitiga terdiri dari dua segitiga kongruen dan tiga persegi panjang.', NULL, NULL),
+(856, 856, 'Kunci: A, D\n\nJaring-jaring prisma segitiga dan prisma segitiga tegak terdiri dari dua segitiga kongruen dan tiga persegi panjang.', NULL, NULL),
 (857, 857, 'Jawaban: CSetiap balok memiliki 12 rusuk.', NULL, NULL),
 (858, 858, 'Kunci: C, D\n\nBalok memiliki $6$ sisi, $8$ titik sudut, dan $12$ rusuk. Jadi, jawaban yang tepat adalah C, D.', NULL, NULL),
 (859, 859, 'Jawaban: BPada persegi panjang, sisi yang berhadapan sama panjang dan sejajar.', NULL, NULL),
@@ -3426,7 +3842,10 @@ INSERT INTO `question_explanations` (`id`, `question_id`, `explanation_text`, `r
 (916, 916, 'Jawaban: A(x, y) → (kx, ky) dengan k = ½: (½ × 8, ½ × (−6)) = (4, −3).', NULL, NULL),
 (917, 917, 'Jawaban: CRefleksi terhadap titik asal: (x, y) → (−x, −y). Jadi K′ = (3, 8).', NULL, NULL),
 (918, 918, 'Kunci: A, B\n\nTranslasi, refleksi, dan rotasi adalah transformasi isometri (mempertahankan bentuk dan ukuran).\n- Pernyataan A dan B benar karena ukuran dan bentuk bangun selalu tetap (kongruen).\n- Pernyataan C salah karena bangun bayangan tidak membesar.\n- Pernyataan D salah karena jarak antartitik selalu tetap, tidak bertambah dua kali lipat.', NULL, NULL),
-(919, 919, 'Kunci: A, C\n\n- Opsi A benar: Refleksi sumbu-x memetakan (x, y) menjadi (x, -y), sehingga (2, 3) menjadi (2, -3).\n- Opsi B salah: Refleksi sumbu-y menghasilkan (-x, y) = (-2, 3).\n- Opsi C benar: Translasi (1, 1) menghasilkan (2 + 1, 3 + 1) = (3, 4).\n- Opsi D salah: Rotasi  pusat O menghasilkan (-x, -y) = (-2, -3), bukan (2, 3).', NULL, NULL),
+(919, 919, 'Kunci: A, C\n\n- Opsi A benar: Refleksi sumbu-x memetakan (x, y) menjadi (x, -y), sehingga (2, 3) menjadi (2, -3).
+- Opsi B salah: Refleksi sumbu-y menghasilkan (-x, y) = (-2, 3).
+- Opsi C benar: Translasi (1, 1) menghasilkan (2 + 1, 3 + 1) = (3, 4).
+- Opsi D salah: Rotasi $180^\\circ$ pusat O menghasilkan (-x, -y) = (-2, -3), bukan (2, 3).', NULL, NULL),
 (920, 920, 'Jawaban: A, BA dan B benar. C salah karena k = 1 membuat bangun tidak berubah. D salah karena kongruen hanya terjadi bila k = 1; untuk k lain bangun hanya sebangun.', NULL, NULL),
 (921, 921, 'Jawaban: CKe kanan 4 satuan berarti x + 4, ke bawah 2 satuan berarti y − 2 (translasi (4, −2)). Posisi baru: (2 + 4, 3 − 2) = (6, 1).', NULL, NULL),
 (922, 922, 'Jawaban: ARefleksi terhadap sumbu-y: (x, y) → (−x, y). Jadi bayangan lampu berada di (3, 4).', NULL, NULL),
@@ -3445,9 +3864,19 @@ INSERT INTO `question_explanations` (`id`, `question_id`, `explanation_text`, `r
 (935, 935, 'Jawaban: DRotasi 270° berlawanan arah jarum jam sama dengan rotasi 90° searah jarum jam: (x, y) → (y, −x). Jadi (−2, 5) → (5, 2).', NULL, NULL),
 (936, 936, 'Jawaban: BRefleksi terhadap y = k: y′ = 2k − y = 2(−1) − 4 = −6, sedangkan x tetap. Jadi (3, −6).', NULL, NULL),
 (937, 937, 'Jawaban: B, CA′ = (1, 3), sehingga A salah. B′ = (4, 3) dan C′ = (4, 6) benar. Translasi tidak mengubah ukuran, jadi luasnya tetap (4,5 satuan luas); D salah.', NULL, NULL),
-(938, 938, 'Kunci: A, C\n\nDilatasi dengan faktor skala k = 2 memetakan setiap koordinat (x, y) menjadi (2x, 2y).\n- Opsi A benar: .\n- Opsi B salah: , bukan (5, 2).\n- Opsi C benar: .\n- Opsi D salah: Luas segitiga semula =  ×   satuan luas. Luas bayangan = 3 ×  2² = 12 satuan luas, bukan 6 satuan luas.', NULL, NULL),
-(939, 939, 'Kunci: A, B\n\n- Opsi A benar: Refleksi sumbu-x memetakan (x, y) menjadi (x, -y) = (-3, -2).\n- Opsi B benar: Refleksi sumbu-y memetakan (x, y) menjadi (-x, y) = (3, 2).\n- Opsi C salah: Rotasi  pusat O memetakan (x, y) menjadi (-x, -y) = (3, -2).\n- Opsi D salah: Translasi (-1, -1) menghasilkan (-3 - 1, 2 - 1) = (-4, 1), bukan (-2, 3).', NULL, NULL),
-(940, 940, 'Kunci: A, C\n\n- Opsi A benar: .\n- Opsi B salah: , bukan (2, 3).\n- Opsi C benar: Panjang AB = ² + (6-2)² ) =  = 5 satuan, dan translasi tidak mengubah panjang ruas garis.\n- Opsi D salah: Translasi tidak memutar arah garis sehingga A\'B\' selalu sejajar dengan AB, bukan tegak lurus.', NULL, NULL),
+(938, 938, 'Kunci: A, C\n\nDilatasi dengan faktor skala k = 2 memetakan setiap koordinat (x, y) menjadi (2x, 2y).
+- Opsi A benar: $P^\prime = (2 \\times 1, 2 \\times 1) = (2, 2)$.
+- Opsi B salah: $Q^\prime = (2 \\times 3, 2 \\times 1) = (6, 2)$, bukan (5, 2).
+- Opsi C benar: $R^\prime = (2 \\times 1, 2 \\times 4) = (2, 8)$.
+- Opsi D salah: Luas segitiga semula = $\\frac{1}{2} \\times 2 \\times 3 = 3$ satuan luas. Luas bayangan = $3 \\times 2^2 = 12$ satuan luas, bukan 6 satuan luas.', NULL, NULL),
+(939, 939, 'Kunci: A, B\n\n- Opsi A benar: Refleksi sumbu-x memetakan (x, y) menjadi (x, -y) = (-3, -2).
+- Opsi B benar: Refleksi sumbu-y memetakan (x, y) menjadi (-x, y) = (3, 2).
+- Opsi C salah: Rotasi $180^\\circ$ pusat O memetakan (x, y) menjadi (-x, -y) = (3, -2).
+- Opsi D salah: Translasi (-1, -1) menghasilkan (-3 - 1, 2 - 1) = (-4, 1), bukan (-2, 3).', NULL, NULL),
+(940, 940, 'Kunci: A, C\n\n- Opsi A benar: $A^\prime = (1 - 2, 2 + 3) = (-1, 5)$.
+- Opsi B salah: $B^\prime = (4 - 2, 6 + 3) = (2, 9)$, bukan (2, 3).
+- Opsi C benar: Panjang $AB = \\sqrt{(4 - 1)^2 + (6 - 2)^2} = \\sqrt{9 + 16} = 5$ satuan, dan translasi tidak mengubah panjang ruas garis.
+- Opsi D salah: Translasi tidak memutar arah garis sehingga A\'B\' selalu sejajar dengan AB, bukan tegak lurus.', NULL, NULL),
 (941, 941, 'Jawaban: B(2, 3) → (2, −3) → (−2, −3). Secara umum (x, y) → (x, −y) → (−x, −y), yaitu rotasi 180° pusat O. Translasi (−4, −6) hanya cocok untuk titik A; untuk titik (1, 1) hasilnya (−3, −5), bukan (−1, −1).', NULL, NULL),
 (942, 942, 'Jawaban: CTelusuri mundur. Sebelum refleksi sumbu-y titiknya (5, 1). Sebelum translasi: (5 − 3, 1 − (−2)) = (2, 3). Jadi a = 2, b = 3, dan a + b = 5.', NULL, NULL),
 (943, 943, 'Jawaban: ARotasi 90° berlawanan arah jarum jam: (x, y) → (−y, x) = (−6, 4), cocok. Pilihan lain menghasilkan (6, −4), (4, −6), dan (6, 4).', NULL, NULL),
@@ -3462,10 +3891,20 @@ INSERT INTO `question_explanations` (`id`, `question_id`, `explanation_text`, `r
 (952, 952, 'Jawaban: DDua translasi berurutan dijumlahkan: (2 + (−5), −3 + 1) = (−3, −2).', NULL, NULL),
 (953, 953, 'Jawaban: CRefleksi terhadap garis y = −x: (x, y) → (−y, −x) = (−5, −2), cocok. Garis y = x memberi (5, 2), sumbu-y memberi (−2, 5), dan sumbu-x memberi (2, −5).', NULL, NULL),
 (954, 954, 'Jawaban: ADilatasi mengubah panjang sisi, tetapi tidak mengubah besar sudut karena bangun bayangan sebangun dengan bangun semula.', NULL, NULL),
-(955, 955, 'Kunci: A, C\n\n- Opsi A benar: Rotasi  pusat O memetakan (x, y) menjadi (-x, -y), sehingga (2, 5) menjadi (-2, -5).\n- Opsi B salah: Hasil refleksi sumbu-x dari (-2, -5) adalah (-2, 5), bukan (2, -5).\n- Opsi C benar: Transformasi gabungan memetakan , yang setara dengan refleksi terhadap sumbu-y.\n- Opsi D salah: Rotasi dan refleksi merupakan isometri sehingga luasnya tetap sama, tidak berubah menjadi dua kali lipat.', NULL, NULL),
-(956, 956, 'Kunci: A, C\n\nPanjang dan lebar bayangan adalah 6 ×   = 3 cm dan 4 ×   = 2 cm.\n- Opsi A benar: Keliling bayangan = 2 ×  (3 + 2) = 10 cm.\n- Opsi B salah: Luas bayangan =  cm^2, bukan .\n- Opsi C benar: Perbandingan panjang dan lebar tetap 3 : 2.\n- Opsi D salah: Bayangan hasil dilatasi selalu sebangun dengan bangun semula.', NULL, NULL),
+(955, 955, 'Kunci: A, C\n\n- Opsi A benar: Rotasi $180^\\circ$ pusat O memetakan (x, y) menjadi (-x, -y), sehingga (2, 5) menjadi (-2, -5).
+- Opsi B salah: Hasil refleksi sumbu-x dari (-2, -5) adalah (-2, 5), bukan (2, -5).
+- Opsi C benar: Transformasi gabungan memetakan $(x)→(-x,-y)→(-x,y)$, yang setara dengan refleksi terhadap sumbu-y.
+- Opsi D salah: Rotasi dan refleksi merupakan isometri sehingga luasnya tetap sama, tidak berubah menjadi dua kali lipat.', NULL, NULL),
+(956, 956, 'Kunci: A, C\n\nPanjang dan lebar bayangan adalah 6 ×  $\\frac{1}{2}$ = 3 cm dan 4 ×  $\\frac{1}{2}$ = 2 cm.
+- Opsi A benar: Keliling bayangan = 2 ×  (3 + 2) = 10 cm.
+- Opsi B salah: Luas bayangan = $3 \\times 2=6$ cm^2, bukan $12\\text{ cm}^2$.
+- Opsi C benar: Perbandingan panjang dan lebar tetap 3 : 2.
+- Opsi D salah: Bayangan hasil dilatasi selalu sebangun dengan bangun semula.', NULL, NULL),
 (957, 957, 'Jawaban: B, CA′ = (3, 4), sehingga A salah. Pada refleksi, titik dan bayangannya berjarak sama dari garis cermin (B benar) dan ruas penghubungnya tegak lurus garis cermin (C benar; gradien AA′ = −1). Titik tengah AA′ = (7/2, 7/2) terletak pada garis y = x, sehingga D salah.', NULL, NULL),
-(958, 958, 'Kunci: A, C\n\n- Opsi A benar: Rotasi  berlawanan arah jarum jam memetakan (x, y) menjadi (-y, x) = (-4, -3).\n- Opsi B salah: Rotasi  searah jarum jam memetakan (x, y) menjadi (y, -x) = (4, 3).\n- Opsi C benar: Jarak OB = ² + 4^2 ) =  = 5 satuan, dan rotasi mempertahankan jarak ke titik pusat.\n- Opsi D salah: Dua rotasi  berlawanan arah setara dengan rotasi , menghasilkan (-x, -y) = (3, -4), bukan (3, 4).', NULL, NULL),
+(958, 958, 'Kunci: A, C\n\n- Opsi A benar: Rotasi $90^\\circ$ berlawanan arah jarum jam memetakan (x, y) menjadi (-y, x) = (-4, -3).
+- Opsi B salah: Rotasi $90^\\circ$ searah jarum jam memetakan (x, y) menjadi (y, -x) = (4, 3).
+- Opsi C benar: Jarak OB = $\\sqrt{(-3)^2 + 4^2} = \\sqrt{9+16} = 5$ satuan, dan rotasi mempertahankan jarak ke titik pusat.
+- Opsi D salah: Dua rotasi $90^\\circ$ berlawanan arah setara dengan rotasi $180^\\circ$, menghasilkan (-x, -y) = (3, -4), bukan (3, 4).', NULL, NULL),
 (959, 959, 'Jawaban: A, BDilatasi: (4, 8); translasi: (0, 9). Titik dengan x = 0 terletak pada sumbu-y, bukan di kuadran mana pun. Bila dibalik: (2 − 4, 4 + 1) = (−2, 5) lalu dilatasi menjadi (−4, 10), berbeda dari (0, 9).', NULL, NULL),
 (960, 960, 'Jawaban: A, BTranslasi, rotasi, dan refleksi mempertahankan panjang sisi dan luas, sehingga C dan D salah. Dilatasi dengan k = 2 memperbesar ukuran sehingga bayangan sebangun, bukan kongruen.', NULL, NULL),
 (961, 961, 'Kunci Jawaban: BPembahasan: Luas persegi panjang = panjang × lebar = 18 × 12 = 216 m².', NULL, NULL),
@@ -3540,7 +3979,10 @@ INSERT INTO `question_explanations` (`id`, `question_id`, `explanation_text`, `r
 (1030, 1030, 'Kunci Jawaban: CPembahasan:Banyaknya siswa yang berjalan kaki dihitung dengan mengalikan persentase terhadap total seluruh siswa:Banyak siswa = 25% × 160 orangBanyak siswa = (25 / 100) × 160 = 0,25 × 160 = 40 orang.Jadi, ada 40 orang siswa yang berjalan kaki menuju sekolah (Opsi C).', NULL, NULL),
 (1031, 1031, 'Kunci Jawaban: BPembahasan:Perhatikan kata kunci: \'di atas KKM\', artinya nilai yang dicari adalah nilai yang lebih besar dari 75 (nilai 75 tidak dihitung karena sama dengan KKM, bukan di atas KKM).Nilai di atas 75 adalah nilai 80, 90, dan 100.- Siswa dengan nilai 80 = 10 orang- Siswa dengan nilai 90 = 7 orang- Siswa dengan nilai 100 = 5 orangJumlah siswa = 10 + 7 + 5 = 22 orang.Jadi, banyak siswa yang nilainya di atas KKM adalah 22 orang (Opsi B).', NULL, NULL),
 (1032, 1032, 'Kunci Jawaban: BPembahasan:Mari kita hitung perubahan penjualan antarhari yang berurutan:- Senin ke Selasa: 75 - 50 = 25 (mengalami kenaikan)- Selasa ke Rabu: 45 - 75 = -30 (mengalami penurunan sebesar 30 buku)- Rabu ke Kamis: 60 - 45 = 15 (mengalami kenaikan)- Kamis ke Jumat: 40 - 60 = -20 (mengalami penurunan sebesar 20 buku)Penurunan terbesar terjadi dari hari Selasa ke hari Rabu, yaitu berkurang sebanyak 30 buku (Opsi B).', NULL, NULL),
-(1033, 1033, 'Kunci Jawaban: CPembahasan:- Data kuantitatif adalah data berbentuk angka numerik.  * Diskrit: diperoleh dari hasil menghitung/membilang berupa bilangan bulat utuh, seperti banyaknya saudara kandung (0, 1, 2, 3, dst).  * Kontinu: diperoleh dari hasil mengukur yang nilainya bisa berupa desimal, seperti berat badan (contoh: 45,5 kg).- Data kualitatif adalah data berupa kategori/sifat (seperti warna tas dan tingkat kepuasan).Jadi, data kuantitatif diskrit adalah nomor (3) (Opsi C).', NULL, NULL),
+(1033, 1033, 'Kunci: C\n\n- Data kuantitatif diskrit diperoleh dari proses mencacah/menghitung berupa bilangan bulat utuh ${0,1,2,3,…}$, seperti banyaknya saudara kandung (nomor 3).
+- Berat badan adalah data kuantitatif kontinu (hasil pengukuran desimal).
+- Warna tas dan tingkat kepuasan adalah data kualitatif.
+Jadi, data kuantitatif diskrit adalah nomor (3).', NULL, NULL),
 (1034, 1034, 'Kunci Jawaban: BPembahasan:Langkah 1: Kalikan setiap nilai dengan frekuensinya:- 6 × 2 = 12- 7 × 3 = 21- 8 × 3 = 24- 9 × 2 = 18Langkah 2: Jumlahkan seluruh perkalian nilai (Sigma f.x):Total nilai = 12 + 21 + 24 + 18 = 75Langkah 3: Hitung total frekuensi (Sigma f):Total siswa = 2 + 3 + 3 + 2 = 10Langkah 4: Hitung rata-rata:Rata-rata = 75 / 10 = 7,5.Jadi, nilai rata-rata kuis adalah 7,5 (Opsi B).', NULL, NULL),
 (1035, 1035, 'Kunci Jawaban: BPembahasan:Banyak data (n) = 11.Median (Q2) membagi data menjadi dua kelompok yang sama banyak:Letak Q2 = datum ke-(11 + 1)/2 = datum ke-6, yaitu 155 cm.Kelompok data di sebelah kiri median (separuh bawah) terdiri dari 5 data:145, 148, 150, 152, 153Kuartil bawah (Q1) adalah nilai tengah dari kelompok data separuh bawah tersebut:Letak Q1 = datum ke-(5 + 1)/2 = datum ke-3 dari kelompok bawah, yaitu 150 cm.Jadi, kuartil bawah (Q1) adalah 150 cm (Opsi B).', NULL, NULL),
 (1036, 1036, 'Kunci Jawaban: CPembahasan:Median (Q2) adalah datum ke-6 = 155 cm.Kelompok data di sebelah kanan median (separuh atas) terdiri dari 5 data:156, 158, 160, 162, 165Kuartil atas (Q3) adalah nilai tengah dari kelompok data separuh atas tersebut:Letak Q3 = datum ke-3 dari kelompok atas, yaitu 160 cm.Jadi, kuartil atas (Q3) adalah 160 cm (Opsi C).', NULL, NULL),
@@ -3575,7 +4017,10 @@ INSERT INTO `question_explanations` (`id`, `question_id`, `explanation_text`, `r
 (1065, 1065, 'Kunci Jawaban: BPembahasan:Langkah 1: Bandingkan ukuran pemusatan dan ukuran penyebaran kedua atlet:- Kedua atlet memiliki rata-rata performa sama (85 poin).- Ukuran penyebaran (Jangkauan dan Simpangan Kuartil) mengukur variasi/dispersi kestabilan hasil tembakan.Langkah 2: Analisis stabilitas:- Atlet A memiliki jangkauan 6 dan simpangan kuartil 1,5 (sangat kecil), artinya tembakan Atlet A selalu konsisten mendekati angka 85 pada setiap sesi latihan.- Atlet B memiliki jangkauan 22 dan simpangan kuartil 5,5 (sangat besar), artinya tembakan Atlet B fluktuatif (kadang sangat tinggi, kadang anjlok sangat rendah).Langkah 3: Kesimpulan:Dalam kompetisi resmi, kestabilan performa (konsistensi) sangat diutamakan untuk meminimalkan risiko kegagalan fatal. Oleh karena itu, Atlet A lebih layak dipilih (Opsi B).', NULL, NULL),
 (1066, 1066, 'Kunci Jawaban: Pernyataan 1 dan Pernyataan 2 BenarPembahasan:- Analisis Pernyataan 1 (BENAR): Rata-rata (mean) adalah representasi agregat kelompok. Rata-rata kelas 82 tidak menjamin seluruh siswa berada di atas 75.- Analisis Pernyataan 2 (BENAR): Keberadaan nilai ekstrim tinggi pada beberapa siswa dapat mendongkrak rata-rata ke atas meskipun ada siswa lain yang memperoleh nilai 50 atau 60 (di bawah KKM).- Analisis Pernyataan 3 (SALAH): Nilai rata-rata tidak selalu sama dengan nilai setiap siswa dalam populasi kelas.- Analisis Pernyataan 4 (SALAH): Nilai rata-rata tidak menjadi pembatas mutlak bagi nilai terendah individu.Jadi, centanglah Pernyataan 1 dan Pernyataan 2.', NULL, NULL),
 (1067, 1067, 'Kunci Jawaban: Pernyataan 1 dan Pernyataan 2 BenarPembahasan:Perhitungan kuantitas masing-masing kantin:1. Kantin Sehat (300 transaksi): Jajanan bergizi = 80% × 300 = 240; Makanan kemasan = 20% × 300 = 60.2. Kantin Pojok (500 transaksi): Jajanan bergizi = 40% × 500 = 200; Makanan kemasan = 60% × 500 = 300.- Analisis Pernyataan 1 (BENAR): 240 transaksi (Kantin Sehat) > 200 transaksi (Kantin Pojok).- Analisis Pernyataan 2 (BENAR): Total bergizi = 240 + 200 = 440. Total seluruh transaksi = 300 + 500 = 800. Persentase = (440 / 800) × 100% = 55%.- Analisis Pernyataan 3 (SALAH): Total kemasan = 60 + 300 = 360 transaksi (bukan 500).- Analisis Pernyataan 4 (SALAH): Jajanan bergizi di Kantin Pojok adalah 200 transaksi (300 adalah makanan kemasan).Jadi, centanglah Pernyataan 1 dan Pernyataan 2.', NULL, NULL),
-(1068, 1068, 'Kunci Jawaban: BPembahasan:Langkah 1: Tentukan nilai x menggunakan persamaan rata-rata:Total Frekuensi = 4 + x + 6 + 2 = 12 + xTotal Nilai = (7 × 4) + (8 × x) + (9 × 6) + (10 × 2) = 28 + 8x + 54 + 20 = 102 + 8xRata-rata = 8,25:(102 + 8x) / (12 + x) = 8,25102 + 8x = 8,25(12 + x)102 + 8x = 99 + 8,25x102 - 99 = 8,25x - 8x3 = 0,25x  -->  x = 3 / 0,25 = 12.Langkah 2: Tentukan Median:Total data = 12 + 12 = 24 (genap).Median terletak antara datum ke-12 dan datum ke-13.- Nilai 7: datum ke-1 s.d ke-4- Nilai 8: datum ke-5 s.d ke-(4 + 12) = ke-16Karena datum ke-12 dan datum ke-13 sama-sama bernilai 8, maka:Median = (8 + 8) / 2 = 8.Jadi, nilai x = 12 dan Median = 8 (Opsi B).', NULL, NULL),
+(1068, 1068, 'Kunci: B\n\nLangkah 1: Tentukan nilai $x$ menggunakan persamaan rata-rata:
+$Total Frekuensi=4+x+6+2=12+x$$∑f·x=(7 \\times 4)+(8 \\times x)+(9 \\times 6)+(10 \\times 2)=28+8x+54+20=102+8x$$\\frac{102+8x}{12+x}=8,25$$102+8x=8,25(12+x)=99+8,25x$$102-99=8,25x-8x⟹3=0,25x⟹x=12$Langkah 2: Tentukan Median ($n=12+12=24$, genap):
+Median adalah rata-rata datum ke-$12$dan ke-$13$.
+- Nilai$7$: datum ke-$1$s.d ke-$4$- Nilai$8$: datum ke-$5$s.d ke-$16$Karena datum ke-$12$dan ke-$13$bernilai$8$, maka:$Median=\\frac{8+8}{2}=8$Jadi, nilai$x=12$dan$Median=8$.', NULL, NULL),
 (1069, 1069, 'Kunci Jawaban: BPembahasan:Langkah 1: Pahami definisi statistika:- Modus adalah nilai dengan frekuensi kemunculan terbanyak relatif dibanding nilai lainnya (dalam hal ini angka 1 muncul 3 kali, angka lain 1 kali).- Namun, \'modus\' tidak otomatis berarti \'mayoritas\' (> 50%).Langkah 2: Periksa proporsi data:- Siswa yang belajar 1 jam = 3 orang dari 9 orang = 33,3%.- Siswa yang belajar lebih dari 1 jam (4 s.d 9 jam) = 6 orang dari 9 orang = 66,7% (dua pertiga siswa).Langkah 3: Kesimpulan:Menyimpulkan bahwa sebagian besar siswa belajar 1 jam adalah bentuk sesat pikir generalisasi data yang keliru (Opsi B).', NULL, NULL),
 (1070, 1070, 'Kunci Jawaban: CPembahasan:Langkah 1: Susun seluruh data (9 bilangan) dari terkecil ke terbesar:5, 12, 14, 15, 18, 20, 22, 25, 40Langkah 2: Hitung letak median baru (n = 9, ganjil):Letak median = datum ke-(9 + 1)/2 = datum ke-5.Langkah 3: Periksa datum ke-5:Datum ke-1: 5Datum ke-2: 12Datum ke-3: 14Datum ke-4: 15Datum ke-5: 18Median baru tetaplah 18.Langkah 4: Konsep penalaran: Jika kita menambahkan 2 data baru di mana satu data terletak di sebelah kiri median (< 18) dan satu data terletak di sebelah kanan median (> 18), maka posisi keseimbangan nilai tengah (median) tidak akan bergeser. Jadi, median tetap bernilai 18 (Opsi C).', NULL, NULL),
 (1071, 1071, 'Kunci Jawaban: CPembahasan:Langkah 1: Hitung kuota peserta yang berhak lolos ke semifinal:Kuota lolos = 20% × 200 orang = 40 orang peringkat teratasLangkah 2: Akumulasikan frekuensi mulai dari kelompok skor tertinggi (dari atas ke bawah):- Rentang skor 90 - 100: ada 20 orang (peringkat 1 s.d ke-20)- Rentang skor 80 - 89: ada 50 orang (peringkat 21 s.d ke-70)Langkah 3: Evaluasi kuota:Kuota 40 orang terpenuhi oleh 20 orang di kelompok 90-100 dan 20 orang teratas di kelompok 80-89.Dengan demikian, batas ambang bawah peserta yang lolos berada di dalam kelompok rentang skor 80 - 89 (Opsi C).', NULL, NULL),
@@ -3605,7 +4050,10 @@ INSERT INTO `question_explanations` (`id`, `question_id`, `explanation_text`, `r
 (1095, 1095, 'Jawaban: BCara Pengerjaan:1. Identifikasi komposisi 1 set kartu bridge.2. Terdapat 4 jenis/simbol utama: Hati (merah), Wajik (merah), Sekop (hitam), dan Keriting (hitam).3. Masing-masing simbol memiliki tepat 13 kartu (As, 2, 3, 4, 5, 6, 7, 8, 9, 10, Jack, Queen, King).4. Hitung totalnya: 4 jenis × 13 kartu = 52 kartu.', NULL, NULL),
 (1096, 1096, 'Kunci: A, B\n\n- Opsi A benar: Nilai peluang P(A) selalu memenuhi 0 ≤ P(A) ≤ 1.\n- Opsi B benar: Kejadian pasti (kepastian) memiliki nilai peluang tepat 1.\n- Opsi C salah: Peluang tidak pernah bernilai negatif.\n- Opsi D salah: Peluang kejadian mustahil bernilai 0, bukan -1.', NULL, NULL),
 (1097, 1097, 'Kunci: A, C\n\nRuang sampel pelemparan sebuah dadu adalah S = {1, 2, 3, 4, 5, 6}.\nKejadian munculnya bilangan genap adalah {2, 4, 6}.\n- Opsi A (2) dan C (4) benar karena merupakan bilangan genap pada dadu.\n- Opsi B (3) dan D (5) salah karena merupakan bilangan ganjil.', NULL, NULL),
-(1098, 1098, 'Kunci: A, B\n\n- Opsi A benar: Dadu bersisi enam hanya memiliki angka 1 sampai 6, sehingga muncul angka 8 adalah mustahil (peluang = 0).\n- Opsi B benar: Kotak hanya berisi bola biru sehingga terambil bola merah adalah mustahil (peluang = 0).\n- Opsi C salah: Pelemparan koin memiliki peluang  untuk muncul sisi angka (mungkin terjadi).\n- Opsi D salah: Matahari terbit dari timur adalah kejadian pasti (peluang = 1), bukan kejadian mustahil.', NULL, NULL),
+(1098, 1098, 'Kunci: A, B\n\n- Opsi A benar: Dadu bersisi enam hanya memiliki angka 1 sampai 6, sehingga muncul angka 8 adalah mustahil (peluang = 0).
+- Opsi B benar: Kotak hanya berisi bola biru sehingga terambil bola merah adalah mustahil (peluang = 0).
+- Opsi C salah: Pelemparan koin memiliki peluang $\\frac{1}{2}$ untuk muncul sisi angka (mungkin terjadi).
+- Opsi D salah: Matahari terbit dari timur adalah kejadian pasti (peluang = 1), bukan kejadian mustahil.', NULL, NULL),
 (1099, 1099, 'Jawaban: A dan DCara Pengerjaan:- Opsi A (1 dadu): Banyak ruang sampel = 6. (Sesuai)- Opsi B (2 koin): Banyak ruang sampel = 2 × 2 = 4. (Tidak sesuai)- Opsi C (Huruf vokal): Ada 5 huruf yaitu A, I, U, E, O. Ruang sampel = 5. (Tidak sesuai)- Opsi D (Setengah tahun pertama): Terdiri dari Jan, Feb, Mar, Apr, Mei, Jun. Total 6 bulan. (Sesuai)', NULL, NULL),
 (1100, 1100, 'Kunci: A, B\n\n- Opsi A (Ruang sampel) dan B (Titik sampel) benar karena merupakan istilah fundamental dalam materi peluang.\n- Opsi C (Sudut siku-siku) dan D (Hipotenusa) salah karena merupakan istilah dalam materi geometri segitiga.', NULL, NULL),
 (1101, 1101, 'Jawaban: BCara Pengerjaan:1. Tentukan total ruang sampel 3 koin: n(S) = 2 × 2 × 2 = 8.2. Daftarkan semua titik sampel: {AAA, AAG, AGA, GAA, AGG, GAG, GGA, GGG}.3. Cari kejadian munculnya 2 Angka dan 1 Gambar: {AAG, AGA, GAA}. n(A) = 3.4. Hitung peluang: P(A) = n(A) / n(S) = 3/8.', NULL, NULL),
@@ -3623,11 +4071,31 @@ INSERT INTO `question_explanations` (`id`, `question_id`, `explanation_text`, `r
 (1113, 1113, 'Jawaban: BCara Pengerjaan:1. Total kelereng: n(S) = 4 + 6 = 10.2. Kelereng biru: n(B) = 4. Peluang terambil biru: P(B) = 4/10 = 2/5.3. Peluang BUKAN biru = 1 - P(B) = 1 - 2/5 = 3/5.4. (Cara cepat: "Bukan biru" berarti "Hitam". Kelereng hitam ada 6. P = 6/10 = 3/5).', NULL, NULL),
 (1114, 1114, 'Jawaban: ACara Pengerjaan:1. Total pertandingan (N) = 40.2. Frekuensi Menang = 24. Maka Frekuensi Kalah = 40 - 24 = 16.3. Peluang empirik kalah = (Frekuensi Kalah) / (Total Pertandingan).4. P(Kalah) = 16 / 40. Sederhanakan (bagi dengan 8) menjadi 2/5.', NULL, NULL),
 (1115, 1115, 'Jawaban: CCara Pengerjaan:1. Total baris kode: n(S) = 100.2. Baris yang error: n(E) = 5. Maka baris yang berjalan normal (tidak error) = 100 - 5 = 95.3. Peluang terpilihnya baris normal = 95 / 100.4. Sederhanakan pecahan (bagi 5): 19/20.', NULL, NULL),
-(1116, 1116, 'Kunci: A, B\n\nRuang sampel dua koin: S = {AA, AG, GA, GG}, n(S) = 4.\n- Opsi A benar: Muncul dua Gambar (GG) ada 1 titik sampel, sehingga P(GG) = 1/4.\n- Opsi B benar: Minimal satu Angka = {AA, AG, GA} (3 titik sampel), sehingga peluangnya 3/4.\n- Opsi C salah: Sisi berbeda = {AG, GA}, peluangnya  = , bukan 3/4.\n- Opsi D salah: Frekuensi harapan dua sisi Gambar pada 40 lemparan adalah  ×  40 = 10 kali, bukan 20 kali.', NULL, NULL),
-(1117, 1117, 'Kunci: A, B\n\nRuang sampel dadu: S = {1, 2, 3, 4, 5, 6}, n(S) = 6.\n- Opsi A benar: Mata dadu ganjil = {1, 3, 5}, peluangnya  = 1/2.\n- Opsi B benar: Faktor dari 6 = {1, 2, 3, 6}, peluangnya  = 2/3.\n- Opsi C salah: Mata dadu lebih dari 6 adalah kejadian mustahil sehingga peluangnya 0, bukan 1/6.\n- Opsi D salah: Mata dadu prima = {2, 3, 5}, peluangnya  = , bukan 1/3.', NULL, NULL),
-(1118, 1118, 'Kunci: A, B\n\nRumus frekuensi harapan: Fh = P(A) ×  N.\n- Opsi A benar: Fh =  ×  36 = 6 kali.\n- Opsi B benar: Fh =  ×  72 = 12 kali.\n- Opsi C salah: Fh =  ×  18 = 3 kali, bukan 2 kali.\n- Opsi D salah: Fh =  ×  30 = 5 kali, bukan 10 kali.', NULL, NULL),
-(1119, 1119, 'Kunci: A, B\n\nTotal kartu bridge n(S) = 52.\n- Opsi A benar: Ada 4 kartu As, sehingga peluangnya  = 1/13.\n- Opsi B benar: Ada 26 kartu merah (13 Hati + 13 Wajik), sehingga peluangnya  = 1/2.\n- Opsi C salah: Ada 12 kartu bergambar (4 Jack, 4 Queen, 4 King), peluangnya  = , bukan 1/13.\n- Opsi D salah: Kartu Sekop ada 13 buah, peluangnya  = , bukan 1/2.', NULL, NULL),
-(1120, 1120, 'Kunci: A, B\n\nTotal bola n(S) = 3 + 4 + 5 = 12.\n- Opsi A benar: Bola Merah ada 3, sehingga peluangnya  = 1/4.\n- Opsi B benar: Bola Biru ada 4, sehingga peluangnya  = 1/3.\n- Opsi C salah: Bola Kuning ada 5, sehingga peluangnya , bukan 1/2.\n- Opsi D salah: Bola Hijau tidak ada di dalam kotak (kejadian mustahil), sehingga peluangnya 0, bukan 1/12.', NULL, NULL),
+(1116, 1116, 'Kunci: A, B\n\nRuang sampel dua koin: S = {AA, AG, GA, GG}, n(S) = 4.
+- Opsi A benar: Muncul dua Gambar (GG) ada 1 titik sampel, sehingga P(GG) = 1/4.
+- Opsi B benar: Minimal satu Angka = {AA, AG, GA} (3 titik sampel), sehingga peluangnya 3/4.
+- Opsi C salah: Sisi berbeda = {AG, GA}, peluangnya $\\frac{2}{4}$ = $\\frac{1}{2}$, bukan 3/4.
+- Opsi D salah: Frekuensi harapan dua sisi Gambar pada 40 lemparan adalah $\\frac{1}{4}$ ×  40 = 10 kali, bukan 20 kali.', NULL, NULL),
+(1117, 1117, 'Kunci: A, B\n\nRuang sampel dadu: S = {1, 2, 3, 4, 5, 6}, n(S) = 6.
+- Opsi A benar: Mata dadu ganjil = {1, 3, 5}, peluangnya $\\frac{3}{6}$ = 1/2.
+- Opsi B benar: Faktor dari 6 = {1, 2, 3, 6}, peluangnya $\\frac{4}{6}$ = 2/3.
+- Opsi C salah: Mata dadu lebih dari 6 adalah kejadian mustahil sehingga peluangnya 0, bukan 1/6.
+- Opsi D salah: Mata dadu prima = {2, 3, 5}, peluangnya $\\frac{3}{6}$ = $\\frac{1}{2}$, bukan 1/3.', NULL, NULL),
+(1118, 1118, 'Kunci: A, B\n\nRumus frekuensi harapan: Fh = P(A) ×  N.
+- Opsi A benar: Fh = $\\frac{1}{6}$ ×  36 = 6 kali.
+- Opsi B benar: Fh = $\\frac{1}{6}$ ×  72 = 12 kali.
+- Opsi C salah: Fh = $\\frac{1}{6}$ ×  18 = 3 kali, bukan 2 kali.
+- Opsi D salah: Fh = $\\frac{1}{6}$ ×  30 = 5 kali, bukan 10 kali.', NULL, NULL),
+(1119, 1119, 'Kunci: A, B\n\nTotal kartu bridge n(S) = 52.
+- Opsi A benar: Ada 4 kartu As, sehingga peluangnya $\\frac{4}{52}$ = 1/13.
+- Opsi B benar: Ada 26 kartu merah (13 Hati + 13 Wajik), sehingga peluangnya $\\frac{26}{52}$ = 1/2.
+- Opsi C salah: Ada 12 kartu bergambar (4 Jack, 4 Queen, 4 King), peluangnya $\\frac{12}{52}$ = $\\frac{3}{13}$, bukan 1/13.
+- Opsi D salah: Kartu Sekop ada 13 buah, peluangnya $\\frac{13}{52}$ = $\\frac{1}{4}$, bukan 1/2.', NULL, NULL),
+(1120, 1120, 'Kunci: A, B\n\nTotal bola n(S) = 3 + 4 + 5 = 12.
+- Opsi A benar: Bola Merah ada 3, sehingga peluangnya $\\frac{3}{12}$ = 1/4.
+- Opsi B benar: Bola Biru ada 4, sehingga peluangnya $\\frac{4}{12}$ = 1/3.
+- Opsi C salah: Bola Kuning ada 5, sehingga peluangnya $\\frac{5}{12}$, bukan 1/2.
+- Opsi D salah: Bola Hijau tidak ada di dalam kotak (kejadian mustahil), sehingga peluangnya 0, bukan 1/12.', NULL, NULL),
 (1121, 1121, 'Jawaban: CCara Pengerjaan:1. Analisis kondisi awal: n(S) = 8, dengan 5 Merah dan 3 Biru.2. Kondisi setelah pengambilan pertama: 1 kelereng merah diambil dan tidak dikembalikan.3. Sisa kelereng di kotak: Merah menjadi 4 (5-1), Biru tetap 3. Total kelereng n(S) baru = 7.4. Peluang terambilnya merah pada pengambilan kedua: P(Merah) = 4/7.', NULL, NULL),
 (1122, 1122, 'Jawaban: CCara Pengerjaan:1. Ruang sampel 2 dadu = 36.2. Jumlah genap terbentuk dari (Genap+Genap) atau (Ganjil+Ganjil). Terdapat 18 titik sampel.3. Jumlah ganjil terbentuk dari (Genap+Ganjil) atau (Ganjil+Genap). Terdapat 18 titik sampel.4. Karena peluang Andi (18/36 = 1/2) sama dengan peluang Budi (18/36 = 1/2), maka permainan tersebut adil.', NULL, NULL),
 (1123, 1123, 'Jawaban: CCara Pengerjaan:1. Pahami konsep kejadian saling bebas (independen).2. Hasil lemparan koin masa lalu tidak memiliki pengaruh sama sekali terhadap lemparan koin di masa depan.3. Koin tidak memiliki "ingatan" untuk menyeimbangkan dirinya sendiri. Oleh karena itu, peluang muncul Angka atau Gambar pada lemparan ke-6 akan selalu tetap 1/2.', NULL, NULL),
@@ -3643,8 +4111,23 @@ INSERT INTO `question_explanations` (`id`, `question_id`, `explanation_text`, `r
 (1133, 1133, 'Jawaban: DCara Pengerjaan:1. Asumsi dasar: Rasio ikan bertanda pada tangkapan kedua sama dengan rasio ikan bertanda pada populasi total.2. Peluang (rasio) dari tangkapan kedua = Ikan bertanda / Total tangkapan = 4/40 = 1/10.3. Terapkan rasio ke populasi total (N): 50 / N = 1/10.4. Kalikan silang: 1×N=50×10→N=500.', NULL, NULL),
 (1134, 1134, 'Jawaban: CCara Pengerjaan:1. Analisis syarat: "penjumlahan bilangan genap". Genap = (Genap+Genap) atau (Ganjil+Ganjil).2. Angka tersedia: Genap {2,4}, Ganjil {1,3,5}.3. Pasangan Genap+Genap = (2,4) → 1 cara.4. Pasangan Ganjil+Ganjil = (1,3), (1,5), (3,5) → 3 cara. Total ruang sampel bersyarat = 4 cara.5. Kejadian yang ditanya (keduanya ganjil) ada 3 cara. Maka peluangnya 3/4.', NULL, NULL),
 (1135, 1135, 'Jawaban: BCara Pengerjaan:1. Misalkan probabilitas satu angka genap adalah x.2. Karena probabilitas ganjil 2 kali lipatnya, maka probabilitas satu angka ganjil adalah 2x.3. Total dadu ada 3 ganjil dan 3 genap. Total peluang = 1.4. Persamaan: 3(2x)+3(x)=1→6x+3x=1→9x=1→x=1/9.5. Angka 2 adalah genap (yang probabilitasnya x), maka P(2) = 1/9.', NULL, NULL),
-(1136, 1136, 'Kunci: A, B\n\n- Opsi A benar: Peluang merah Kotak B =  = 0,8, sedangkan Kotak A =  = 0,4. Jadi Kotak B lebih besar peluangnya.\n- Opsi B benar: Jika digabung, total bola merah = 2 + 4 = 6 dan total seluruh bola = 5 + 5 = 10. Peluang merah gabungan =  = 3/5.\n- Opsi C salah: Peluang terambil bola putih di Kotak B hanya  (lebih kecil daripada Kotak A yang ).\n- Opsi D salah: Peluang merah Kotak A () sama dengan setengah dari Kotak B (), bukan sepertiga.', NULL, NULL),
-(1137, 1137, 'Kunci: B, C\n\n- Opsi A salah: Fluktuasi acak pada percobaan empirik adalah hal normal dan tidak membuktikan dadu cacat.\n- Opsi B benar: Peluang teoretik selalu bernilai tetap, yaitu , dengan frekuensi harapan  ×  600 = 100 kali.\n- Opsi C benar: Deviasi antara frekuensi empirik (110) dan teoretik (100) sangat wajar dalam eksperimen nyata.\n- Opsi D salah: Berdasarkan Hukum Bilangan Besar (Law of Large Numbers), semakin banyak lemparan maka rasio empirik akan semakin mendekati , bukan menjauhi.', NULL, NULL),
-(1138, 1138, 'Kunci: A, B\n\n- Opsi A benar: Ruang sampel mula-mula ada 8. Karena diketahui minimal muncul satu Gambar, titik sampel (AAA) gugur, tersisa 7 titik sampel.\n- Opsi B benar: Karena minimal ada satu Gambar, kejadian ketiga koin bernilai Angka (AAA) mustahil terjadi (peluang = 0).\n- Opsi C salah: Peluang tepat dua Angka pada ruang sampel baru adalah , bukan 3/8.\n- Opsi D salah: Peluang tepat tiga Gambar (GGG) menjadi , bukan 1/8.', NULL, NULL),
-(1139, 1139, 'Kunci: A, B\n\n- Opsi A benar: Total awal 4 kelereng (2 Merah, 2 Hitam). Peluang terambil Merah =  =  dan Hitam =  = 1/2.\n- Opsi B benar: Jika kelereng pertama Merah terambil, sisa di kotak adalah 1 Merah dan 2 Hitam (total 3). Peluang Hitam kedua = 2/3.\n- Opsi C salah: Pengambilan tanpa pengembalian mengubah ruang sampel dan peluang berikutnya, sehingga kedua kejadian saling bergantung (tidak bebas).\n- Opsi D salah: Ruang sampel berkurang dari 4 menjadi 3 kelereng.', NULL, NULL),
-(1140, 1140, 'Kunci: A, B\n\n- Opsi A benar: KPK dari 2 dan 3 adalah 6, sehingga jumlah kelereng bulat paling sedikit adalah 6 kelereng.\n- Opsi B benar: Peluang kelereng Kuning = 1 - ( + ) = 1 -  = 1/6.\n- Opsi C salah: Pada desain 6 kelereng, jumlah Merah =  ×  6 = 3 dan Biru =  ×  6 = 2, bukan 2 Merah dan 3 Biru.\n- Opsi D salah: Jumlah peluang Merah dan Biru adalah , sehingga masih menyisakan peluang  untuk Kuning.', NULL, NULL);
+(1136, 1136, 'Kunci: A, B\n\n- Opsi A benar: Peluang merah Kotak B = $\\frac{4}{5}$ = 0,8, sedangkan Kotak A = $\\frac{2}{5}$ = 0,4. Jadi Kotak B lebih besar peluangnya.
+- Opsi B benar: Jika digabung, total bola merah = 2 + 4 = 6 dan total seluruh bola = 5 + 5 = 10. Peluang merah gabungan = $\\frac{6}{10}$ = 3/5.
+- Opsi C salah: Peluang terambil bola putih di Kotak B hanya $\\frac{1}{5}$ (lebih kecil daripada Kotak A yang $\\frac{3}{5}$).
+- Opsi D salah: Peluang merah Kotak A ($\\frac{2}{5}$) sama dengan setengah dari Kotak B ($\\frac{4}{5}$), bukan sepertiga.', NULL, NULL),
+(1137, 1137, 'Kunci: B, C\n\n- Opsi A salah: Fluktuasi acak pada percobaan empirik adalah hal normal dan tidak membuktikan dadu cacat.
+- Opsi B benar: Peluang teoretik selalu bernilai tetap, yaitu $\\frac{1}{6}$, dengan frekuensi harapan $\\frac{1}{6}$ ×  600 = 100 kali.
+- Opsi C benar: Deviasi antara frekuensi empirik (110) dan teoretik (100) sangat wajar dalam eksperimen nyata.
+- Opsi D salah: Berdasarkan Hukum Bilangan Besar (Law of Large Numbers), semakin banyak lemparan maka rasio empirik akan semakin mendekati $\\frac{1}{6}$, bukan menjauhi.', NULL, NULL),
+(1138, 1138, 'Kunci: A, B\n\n- Opsi A benar: Ruang sampel mula-mula ada 8. Karena diketahui minimal muncul satu Gambar, titik sampel (AAA) gugur, tersisa 7 titik sampel.
+- Opsi B benar: Karena minimal ada satu Gambar, kejadian ketiga koin bernilai Angka (AAA) mustahil terjadi (peluang = 0).
+- Opsi C salah: Peluang tepat dua Angka pada ruang sampel baru adalah $\\frac{3}{7}$, bukan 3/8.
+- Opsi D salah: Peluang tepat tiga Gambar (GGG) menjadi $\\frac{1}{7}$, bukan 1/8.', NULL, NULL),
+(1139, 1139, 'Kunci: A, B\n\n- Opsi A benar: Total awal 4 kelereng (2 Merah, 2 Hitam). Peluang terambil Merah = $\\frac{2}{4}$ = $\\frac{1}{2}$ dan Hitam = $\\frac{2}{4}$ = 1/2.
+- Opsi B benar: Jika kelereng pertama Merah terambil, sisa di kotak adalah 1 Merah dan 2 Hitam (total 3). Peluang Hitam kedua = 2/3.
+- Opsi C salah: Pengambilan tanpa pengembalian mengubah ruang sampel dan peluang berikutnya, sehingga kedua kejadian saling bergantung (tidak bebas).
+- Opsi D salah: Ruang sampel berkurang dari 4 menjadi 3 kelereng.', NULL, NULL),
+(1140, 1140, 'Kunci: A, B\n\n- Opsi A benar: KPK dari 2 dan 3 adalah 6, sehingga jumlah kelereng bulat paling sedikit adalah 6 kelereng.
+- Opsi B benar: Peluang kelereng Kuning = 1 - ($\\frac{1}{2}$ + $\\frac{1}{3}$) = 1 - $\\frac{5}{6}$ = 1/6.
+- Opsi C salah: Pada desain 6 kelereng, jumlah Merah = $\\frac{1}{2}$ ×  6 = 3 dan Biru = $\\frac{1}{3}$ ×  6 = 2, bukan 2 Merah dan 3 Biru.
+- Opsi D salah: Jumlah peluang Merah dan Biru adalah $\\frac{5}{6}$, sehingga masih menyisakan peluang $\\frac{1}{6}$ untuk Kuning.', NULL, NULL);
