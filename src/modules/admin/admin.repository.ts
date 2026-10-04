@@ -613,8 +613,8 @@ export class AdminRepository {
             count: number;
         }>>(
             `SELECT 
-                COALESCE(m.name, 'Materi Terpadu') AS material,
-                COALESCE(cl.level_name, 'L1') AS level,
+                COALESCE(m.title, 'Materi Terpadu') AS material,
+                COALESCE(cl.name, 'L1') AS level,
                 COUNT(*) AS count
              FROM simulation_questions sq
              JOIN question_banks qb ON qb.id = sq.question_id
@@ -622,7 +622,7 @@ export class AdminRepository {
              LEFT JOIN materials m ON m.id = sm.material_id
              LEFT JOIN cognitive_levels cl ON cl.id = qb.cognitive_level_id
              WHERE sq.simulation_id = ?
-             GROUP BY COALESCE(m.name, 'Materi Terpadu'), COALESCE(cl.level_name, 'L1')
+             GROUP BY COALESCE(m.title, 'Materi Terpadu'), COALESCE(cl.name, 'L1')
              ORDER BY material ASC, level ASC`,
             [packageId]
         );
