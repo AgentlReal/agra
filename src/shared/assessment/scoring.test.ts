@@ -58,18 +58,18 @@ describe("Assessment Scoring Unit Tests", () => {
                 selectedIncorrectCount: 0,
             });
             expect(result.score).toBe(0.5);
-            expect(result.isCorrect).toBe(false); // isCorrect = false karena belum sepenuhnya tuntas, tapi mendapatkan separuh nilai
+            expect(result.isCorrect).toBe(true);
         });
 
-        it("harus memberi nilai 0.00 jika memilih 1 jawaban benar tetapi juga memilih 1 jawaban salah", () => {
+        it("harus memberi nilai 0.50 jika memilih 1 jawaban benar dan 1 jawaban salah", () => {
             const result = scoreQuestion({
                 questionFormat: "COMPLEX_CHOICE",
                 totalCorrectOptions: 2,
                 selectedCorrectCount: 1,
                 selectedIncorrectCount: 1,
             });
-            expect(result.score).toBe(0.0);
-            expect(result.isCorrect).toBe(false);
+            expect(result.score).toBe(0.5);
+            expect(result.isCorrect).toBe(true);
         });
 
         it("harus memberi nilai 0.00 jika hanya memilih jawaban salah", () => {

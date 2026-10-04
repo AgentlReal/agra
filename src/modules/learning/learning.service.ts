@@ -363,6 +363,7 @@ export class LearningService {
                     selected_option_ids: [],
                     correct_option_ids: [],
                     is_correct: Boolean(r.is_answer_correct),
+                    score: Number(r.score ?? (r.is_answer_correct ? 1 : 0)),
                     time_spent_seconds: Number(r.time_spent_seconds || 0),
                     explanation_text: r.explanation_text || "",
                     reasoning_guide: r.reasoning_guide || "",

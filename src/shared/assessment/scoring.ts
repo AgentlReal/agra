@@ -17,7 +17,7 @@ export interface QuestionEvalResult {
  * - SINGLE_CHOICE: 1 benar dan 0 salah -> 1.00 (benar), lainnya -> 0.00 (salah)
  * - COMPLEX_CHOICE:
  *   - >= 2 benar dan 0 salah -> 1.00 (benar)
- *   - 1 benar dan 0 salah -> 0.50 (nilai setengah, isCorrect: false)
+ *   - 1 benar dan 0 salah -> 0.50 (nilai setengah, isCorrect: true)
  *   - lainnya (ada salah atau 0 benar) -> 0.00 (salah)
  */
 export function scoreQuestion(input: QuestionEvalInput): QuestionEvalResult {
@@ -28,9 +28,8 @@ export function scoreQuestion(input: QuestionEvalInput): QuestionEvalResult {
     if (isComplex) {
         if (selectedCorrect >= 2 && selectedIncorrect === 0) {
             return { score: 1.0, isCorrect: true };
-        } else if (selectedCorrect === 1 && selectedIncorrect === 0) {
-            // Ketika 1 yang benar dan tidak ada yang salah maka diberi nilai setengah (0.50)
-            return { score: 0.5, isCorrect: false };
+        } else if (selectedCorrect === 1) {
+            return { score: 0.5, isCorrect: true };
         } else {
             return { score: 0.0, isCorrect: false };
         }
