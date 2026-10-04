@@ -103,6 +103,7 @@ export interface M04_QuestionReviewItem {
     selected_option_ids: number[];
     correct_option_ids: number[];
     is_correct: boolean;
+    score?: number;
     time_spent_seconds: number;
     explanation_text: string;
     reasoning_guide: string;

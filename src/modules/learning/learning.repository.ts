@@ -530,6 +530,7 @@ export class LearningRepository {
         stimulus_image_url: string | null;
         question_image_url: string | null;
         is_answer_correct: number;
+        score: number;
         time_spent_seconds: number;
         explanation_text: string | null;
         reasoning_guide: string | null;
@@ -551,6 +552,7 @@ export class LearningRepository {
                 stm.stimulus_text,
                 stm.stimulus_image_url AS stimulus_image_url,
                 qb.question_image_url AS question_image_url,
+                COALESCE(sa.score, 0.00) AS score,
                 COALESCE(sa.is_correct, 0) AS is_answer_correct,
                 COALESCE(sa.time_spent_seconds, 0) AS time_spent_seconds,
                 qe.explanation_text,
