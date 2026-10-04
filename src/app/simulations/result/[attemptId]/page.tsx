@@ -42,9 +42,11 @@ export default function SimulationResultPage({ params }: { params: Promise<{ att
   const score = result?.score ?? result?.totalScore ?? 0;
   const isPassed = Boolean(result?.isPassed ?? result?.is_passed);
   const correct = result?.correctAnswers ?? result?.correct_answers ?? 0;
+  const formattedCorrect = Number.isInteger(Number(correct)) ? correct : Number(correct).toFixed(1);
   const total = result?.totalQuestions ?? result?.total_questions ?? 30;
   const earnedXp = result?.earnedXp ?? result?.xpEarned ?? result?.xp_earned ?? 0;
-  const wrongCount = total - correct;
+  const wrongCount = Math.max(0, total - correct);
+  const formattedWrong = Number.isInteger(Number(wrongCount)) ? wrongCount : Number(wrongCount).toFixed(1);
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F8FAFC] text-slate-800 font-sans">
@@ -110,7 +112,7 @@ export default function SimulationResultPage({ params }: { params: Promise<{ att
                   Selamat! Kamu Lulus Capstone Simulasi TKA
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl">
-                  Performa penalaranmu pada asesmen capstone 30 soal telah mencapai batas standar kelulusan (&ge; 80%). Kesiapanmu menghadapi Asesmen Standar Nasional Kemendikdasmen sudah sangat matang! {earnedXp > 0 ? `(Bonus: +${earnedXp} XP)` : ''}
+                  Performa penalaranmu pada asesmen capstone 30 soal telah mencapai batas standar kelulusan (&ge; 90%). Kesiapanmu menghadapi Asesmen Standar Nasional Kemendikdasmen sudah sangat matang! {earnedXp > 0 ? `(Bonus: +${earnedXp} XP)` : ''}
                 </p>
               </div>
             ) : (
@@ -168,8 +170,8 @@ export default function SimulationResultPage({ params }: { params: Promise<{ att
                     <CheckCircle2 className="h-3.5 w-3.5" />
                     <span>Jawaban Tepat</span>
                   </div>
-                  <div className="text-xl font-bold text-emerald-700">{correct} Butir</div>
-                  <p className="text-[11px] text-emerald-600 mt-0.5">{Math.round((correct / total) * 100)}% Akurasi</p>
+                  <div className="text-xl font-bold text-emerald-700">{formattedCorrect} Butir</div>
+                  <p className="text-[11px] text-emerald-600 mt-0.5">{Math.round((Number(correct) / total) * 100)}% Akurasi</p>
                 </div>
 
                 <div className="bg-amber-50/60 border border-amber-200/80 rounded-2xl p-4">
@@ -177,7 +179,7 @@ export default function SimulationResultPage({ params }: { params: Promise<{ att
                     <RotateCcw className="h-3.5 w-3.5 text-amber-600" />
                     <span>Perlu Penguatan</span>
                   </div>
-                  <div className="text-xl font-bold text-amber-800">{wrongCount} Butir</div>
+                  <div className="text-xl font-bold text-amber-800">{formattedWrong} Butir</div>
                   <p className="text-[11px] text-amber-700 mt-0.5">Dapat ditinjau ulang</p>
                 </div>
 
@@ -186,8 +188,8 @@ export default function SimulationResultPage({ params }: { params: Promise<{ att
                     <BarChart3 className="h-3.5 w-3.5 text-blue-600" />
                     <span>Standar TKA</span>
                   </div>
-                  <div className="text-xl font-bold text-blue-700">80%</div>
-                  <p className="text-[11px] text-blue-600 mt-0.5">Batas Minimal Lulus</p>
+                  <div className="text-xl font-bold text-blue-700">90%</div>
+                  <p className="text-[11px] text-blue-600 mt-0.5">Batas Minimal Lulus (27 Soal)</p>
                 </div>
               </div>
 

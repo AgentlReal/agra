@@ -42,6 +42,8 @@ interface ReviewItem {
   isCorrect: boolean;
   score?: number;
   explanation: string;
+  reasoningGuide?: string | null;
+  referenceUrl?: string | null;
 }
 
 export default function SimulationReviewPage({ params }: { params: Promise<{ attemptId: string }> }) {
@@ -113,7 +115,21 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
 
             const rawScore = typeof q.score === 'number' ? q.score : typeof q.point === 'number' ? q.point : null;
             const isCorrect = Boolean(q.is_correct ?? q.isCorrect);
-            const score = rawScore !== null ? rawScore : (isCorrect ? 1 : 0);
+            let score = rawScore !== null ? rawScore : (isCorrect ? 1 : 0);
+
+            if (rawScore === null && !isCorrect && questionFormat === 'COMPLEX_CHOICE') {
+              const selectedIds = Array.isArray(q.selected_option_ids) ? q.selected_option_ids : [];
+              const correctIds = Array.isArray(q.correct_option_ids) && q.correct_option_ids.length > 0
+                ? q.correct_option_ids
+                : mappedOptions.filter((o: any) => o.isCorrect).map((o: any) => o.id);
+
+              const selectedCorrectCount = selectedIds.filter((id: number) => correctIds.includes(id)).length;
+              const selectedIncorrectCount = selectedIds.filter((id: number) => !correctIds.includes(id)).length;
+
+              if (selectedCorrectCount === 1 && selectedIncorrectCount === 0) {
+                score = 0.5;
+              }
+            }
 
             const sessionQuestionId = q.session_question_id ?? q.id;
             if (!sessionQuestionId) {
@@ -133,7 +149,13 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
               correctAnswer,
               isCorrect,
               score,
-              explanation: q.explanation_text || q.explanation || q.reasoning_guide || 'Pembahasan kunci penalaran butir soal ini telah diverifikasi.',
+              explanation:
+                q.explanation_text ||
+                q.explanation ||
+                q.reasoning_guide ||
+                'Pembahasan kunci penalaran butir soal ini telah diverifikasi.',
+              reasoningGuide: q.reasoning_guide || null,
+              referenceUrl: q.reference_url || null,
             };
           });
           setQuestions(qs);
@@ -148,9 +170,10 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
       .finally(() => setLoading(false));
   }, [attemptId]);
 
+  const totalScore = questions.reduce((acc, q) => acc + (q.score ?? (q.isCorrect ? 1 : 0)), 0);
   const correctCount = questions.filter((q) => q.isCorrect).length;
   const reviewCount = questions.length - correctCount;
-  const isAllPassed = (correctCount / (questions.length || 30)) >= 0.8;
+  const isAllPassed = (totalScore / (questions.length || 30)) >= 0.9;
 
   const currentQ = questions[currentIndex];
 
@@ -239,7 +262,7 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
                   Simulasi Tuntas: {correctCount} dari {questions.length} Butir Benar
                 </h2>
                 <p className="text-xs text-slate-600">
-                  Kamu berhasil melampaui kriteria kelulusan 80%. Tinjau pembahasan nalar butir soal di bawah ini.
+                  Kamu berhasil melampaui kriteria kelulusan 90% (Standar Nasional Kemendikdasmen). Tinjau pembahasan nalar butir soal di bawah ini.
                 </p>
               </div>
             </div>
@@ -465,14 +488,41 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
                 </div>
 
                 {/* Explanation Card */}
-                <div className="rounded-2xl border border-blue-200 bg-blue-50/50 p-5 sm:p-6 space-y-2.5">
-                  <div className="flex items-center gap-2 text-xs font-bold text-blue-900 uppercase tracking-wider">
-                    <Lightbulb className="h-4 w-4 text-blue-600" />
-                    <span>Kunci Nalar &amp; Langkah Pembahasan Capstone</span>
+                <div className="rounded-2xl border border-blue-200 bg-blue-50/50 p-5 sm:p-6 space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-xs font-bold text-blue-900 uppercase tracking-wider">
+                      <Lightbulb className="h-4 w-4 text-blue-600" />
+                      <span>Kunci Nalar &amp; Langkah Pembahasan Capstone</span>
+                    </div>
+                    <div className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                      <FormattedContent content={currentQ.explanation} />
+                    </div>
                   </div>
-                  <div className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
-                    <FormattedContent content={currentQ.explanation} />
-                  </div>
+
+                  {currentQ.reasoningGuide && (
+                    <div className="pt-3 border-t border-blue-200/60 space-y-1.5">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
+                        <Sparkles className="h-3.5 w-3.5 text-amber-600" />
+                        <span>Panduan Berpikir Kritis (Reasoning Guide):</span>
+                      </div>
+                      <div className="text-xs text-slate-600 leading-relaxed">
+                        <FormattedContent content={currentQ.reasoningGuide} />
+                      </div>
+                    </div>
+                  )}
+
+                  {currentQ.referenceUrl && (
+                    <div className="pt-2 text-xs">
+                      <a
+                        href={currentQ.referenceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 underline font-semibold inline-flex items-center gap-1"
+                      >
+                        <span>Rujukan Materi Pembelajaran</span> &rarr;
+                      </a>
+                    </div>
+                  )}
                 </div>
 
               </div>
