@@ -9,7 +9,6 @@ import { useAuth } from '@/lib/auth-context';
 import { api } from '@/lib/api-client';
 import { 
   Sparkles, 
-  Flame, 
   BookOpen, 
   ShieldCheck, 
   Lock, 
@@ -43,7 +42,6 @@ export default function DashboardPage() {
             avatarUrl: data.student.avatar?.imageUrl || data.student.avatarUrl || user?.avatarUrl,
             avatarId: data.student.avatar?.id || user?.avatarId,
             totalXp: data.student.totalXp ?? data.student.total_xp ?? user?.totalXp,
-            currentStreak: data.student.currentStreak ?? data.student.current_streak ?? user?.currentStreak,
           });
         }
       })
@@ -137,14 +135,6 @@ export default function DashboardPage() {
                     <div>
                       <p className="text-[10px] text-amber-700 uppercase font-semibold">Total XP Belajar</p>
                       <p className="text-sm font-extrabold text-slate-900">{student?.totalXp ?? user?.totalXp ?? 0} XP</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2.5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 shadow-2xs">
-                    <Flame className="h-5 w-5 text-amber-500" />
-                    <div>
-                      <p className="text-[10px] text-amber-700 uppercase font-semibold">Aktif Belajar</p>
-                      <p className="text-sm font-extrabold text-slate-900">{user?.currentStreak ?? 0} Hari</p>
                     </div>
                   </div>
                 </div>

@@ -35,7 +35,7 @@ interface CognitiveLevelItem {
 const LEVEL_CONFIGS = [
   {
     levelNumber: 1,
-    name: 'Level 1: Pemahaman & Pengetahuan (C1-C2)',
+    name: 'Level 1: Pemahaman & Pengetahuan',
     category: 'Recall & Faktual',
     description: 'Mengenali konsep dasar, istilah matematis/literasi, dan prosedur operasi langsung.',
     xpReward: 50,
@@ -43,7 +43,7 @@ const LEVEL_CONFIGS = [
   },
   {
     levelNumber: 2,
-    name: 'Level 2: Aplikasi & Prosedural (C3-C4)',
+    name: 'Level 2: Aplikasi & Prosedural',
     category: 'Penerapan Konsep',
     description: 'Menerapkan prosedur multi-langkah dan pemecahan masalah kontekstual sehari-hari.',
     xpReward: 75,
@@ -51,7 +51,7 @@ const LEVEL_CONFIGS = [
   },
   {
     levelNumber: 3,
-    name: 'Level 3: Penalaran & Analisis (C5-C6)',
+    name: 'Level 3: Penalaran & Analisis',
     category: 'HOTS & Problem Solving',
     description: 'Menganalisis skenario baru, mengevaluasi validitas strategi, dan penarikan simpulan.',
     xpReward: 100,
@@ -235,7 +235,7 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
                               <span className="text-[11px] font-semibold text-slate-500">
                                 Skor Tertinggi:{' '}
                                 <span className={lvl.isPassed ? 'text-emerald-700 font-bold' : 'text-slate-800 font-bold'}>
-                                  {lvl.highestScore}%
+                                  {lvl.highestScore}
                                 </span>
                               </span>
                             )}
