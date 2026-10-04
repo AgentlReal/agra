@@ -10,7 +10,7 @@ import {
     RecallReviewResponse,
     RecallReviewItem,
 } from "./recall.types";
-import { NotFoundError, BadRequestError, AppError } from "@/shared/errors/app-error";
+import { NotFoundError, BadRequestError, ConflictError } from "@/shared/errors/app-error";
 
 export class RecallService {
     constructor(private readonly repo = new RecallRepository()) {}
@@ -25,6 +25,17 @@ export class RecallService {
     }
 
     async startRecallAttempt(userId: string): Promise<StartRecallAttemptResponse> {
+        const [isProfilePassed, latestAttempt] = await Promise.all([
+            this.repo.isUserRecallPassed ? this.repo.isUserRecallPassed(userId) : Promise.resolve(false),
+            this.repo.getLatestAttempt(userId),
+        ]);
+        if (isProfilePassed || (latestAttempt && Boolean(latestAttempt.is_passed))) {
+            throw new ConflictError(
+                "Siswa sudah lulus Recall Test sebelumnya",
+                "RECALL_ALREADY_PASSED"
+            );
+        }
+
         const active = await this.repo.findActiveSession(userId);
         if (active) {
             return {
@@ -182,12 +193,12 @@ export class RecallService {
             xpEarned: 0,
             subjectResults: [
                 {
-                    subjectId: 1,
+                    subjectId: res.mathSubjectId ?? 1,
                     correctAnswers: Number(res.mathCorrect),
                     totalQuestions: Number(res.mathTotal || 15),
                 },
                 {
-                    subjectId: 2,
+                    subjectId: res.bahasaSubjectId ?? 2,
                     correctAnswers: Number(res.bahasaCorrect),
                     totalQuestions: Number(res.bahasaTotal || 15),
                 },
@@ -209,12 +220,12 @@ export class RecallService {
             xpEarned: 0,
             subjectResults: [
                 {
-                    subjectId: 1,
+                    subjectId: scores.mathSubjectId ?? 1,
                     correctAnswers: Number(scores.mathCorrect),
                     totalQuestions: Number(scores.mathTotal || 15),
                 },
                 {
-                    subjectId: 2,
+                    subjectId: scores.bahasaSubjectId ?? 2,
                     correctAnswers: Number(scores.bahasaCorrect),
                     totalQuestions: Number(scores.bahasaTotal || 15),
                 },

@@ -1,4 +1,5 @@
 import { query, execute, withTransaction } from "@/shared/db";
+import { BadRequestError } from "@/shared/errors/app-error";
 import {
     K09_AdminProfile,
     K10_QuestionBankStock,
@@ -387,13 +388,36 @@ export class AdminRepository {
             }
 
             if (input.options && input.options.length > 0) {
-                await conn.execute(`DELETE FROM question_options WHERE question_id = ?`, [questionId]);
+                const [existingOptions] = await conn.query<Array<RowDataPacket & { id: number; option_label: string }>>(
+                    `SELECT id, option_label FROM question_options WHERE question_id = ?`,
+                    [questionId]
+                );
+                const existingMap = new Map(existingOptions.map((o) => [o.option_label, o.id]));
+                const newLabels = new Set(input.options.map((o) => o.option_label));
+
                 for (const opt of input.options) {
-                    await conn.execute(
-                        `INSERT INTO question_options (question_id, option_label, option_text, is_correct)
-                         VALUES (?, ?, ?, ?)`,
-                        [questionId, opt.option_label, opt.option_text, opt.is_correct]
-                    );
+                    const existingId = existingMap.get(opt.option_label);
+                    if (existingId) {
+                        await conn.execute(
+                            `UPDATE question_options 
+                             SET option_text = ?, is_correct = ? 
+                             WHERE id = ?`,
+                            [opt.option_text, opt.is_correct, existingId]
+                        );
+                    } else {
+                        await conn.execute(
+                            `INSERT INTO question_options (question_id, option_label, option_text, is_correct)
+                             VALUES (?, ?, ?, ?)`,
+                            [questionId, opt.option_label, opt.option_text, opt.is_correct]
+                        );
+                    }
+                }
+
+                // Hapus hanya opsi yang labelnya sudah tidak ada di input baru
+                for (const [label, id] of existingMap.entries()) {
+                    if (!newLabels.has(label as any)) {
+                        await conn.execute(`DELETE FROM question_options WHERE id = ?`, [id]);
+                    }
                 }
             }
 
@@ -435,25 +459,12 @@ export class AdminRepository {
     }
 
     async getRandomQuestionsForSimulation(subjectId: number, count = 30): Promise<Array<{ id: number }>> {
-        let rows = await query<Array<RowDataPacket & { id: number }>>(
+        const rows = await query<Array<RowDataPacket & { id: number }>>(
             `SELECT id FROM question_banks 
              WHERE subject_id = ? AND is_active = TRUE AND bank_type = 'SIMULATION' 
              ORDER BY RAND() LIMIT ?`,
             [subjectId, count]
         );
-
-        if (rows.length < count) {
-            const needed = count - rows.length;
-            const existingIds = rows.map((r) => r.id);
-            const notInClause = existingIds.length > 0 ? `AND id NOT IN (${existingIds.join(",")})` : "";
-            const supplementRows = await query<Array<RowDataPacket & { id: number }>>(
-                `SELECT id FROM question_banks 
-                 WHERE subject_id = ? AND is_active = TRUE AND bank_type = 'LEVEL_EXERCISE' ${notInClause}
-                 ORDER BY RAND() LIMIT ?`,
-                [subjectId, needed]
-            );
-            rows = [...rows, ...supplementRows];
-        }
 
         return rows.map((r) => ({ id: r.id }));
     }
@@ -522,6 +533,21 @@ export class AdminRepository {
             const status = input.status || "DRAFT";
             const questions = input.questions || [];
             const packageCode = input.package_code || (input.subject_id === 1 ? "MAT-SIM-01" : "BIN-SIM-01");
+
+            if (questions.length > 0) {
+                const questionIds = questions.map((q) => q.question_id);
+                const [validQuestions] = await conn.query<Array<RowDataPacket & { id: number }>>(
+                    `SELECT id FROM question_banks 
+                     WHERE id IN (?) AND subject_id = ? AND bank_type = 'SIMULATION' AND is_active = TRUE`,
+                    [questionIds, input.subject_id]
+                );
+                if (validQuestions.length !== questionIds.length) {
+                    throw new BadRequestError(
+                        "Semua butir soal dalam paket simulasi harus berasal dari bank SIMULATION, berstatus aktif, dan sesuai dengan mata pelajaran paket.",
+                        "INVALID_PACKAGE_QUESTIONS"
+                    );
+                }
+            }
 
             const [pkgRes] = await conn.execute<ResultSetHeader>(
                 `INSERT INTO simulations 
@@ -665,6 +691,24 @@ export class AdminRepository {
             }
 
             if (input.questions && input.questions.length > 0) {
+                const [pkgRows] = await conn.query<Array<RowDataPacket & { subject_id: number }>>(
+                    `SELECT subject_id FROM simulations WHERE id = ?`,
+                    [packageId]
+                );
+                const targetSubjectId = input.subject_id ?? pkgRows[0]?.subject_id;
+                const questionIds = input.questions.map((q) => q.question_id);
+                const [validQuestions] = await conn.query<Array<RowDataPacket & { id: number }>>(
+                    `SELECT id FROM question_banks 
+                     WHERE id IN (?) AND subject_id = ? AND bank_type = 'SIMULATION' AND is_active = TRUE`,
+                    [questionIds, targetSubjectId]
+                );
+                if (validQuestions.length !== questionIds.length) {
+                    throw new BadRequestError(
+                        "Semua butir soal dalam paket simulasi harus berasal dari bank SIMULATION, berstatus aktif, dan sesuai dengan mata pelajaran paket.",
+                        "INVALID_PACKAGE_QUESTIONS"
+                    );
+                }
+
                 await conn.execute(`DELETE FROM simulation_questions WHERE simulation_id = ?`, [packageId]);
                 for (const q of input.questions) {
                     await conn.execute(

@@ -5,6 +5,10 @@ import {
     StudentAnswerRow,
 } from "@/shared/types/database.types";
 import { RowDataPacket, ResultSetHeader } from "mysql2";
+import { gradeSession } from "@/shared/assessment/scoring";
+import { awardXp } from "@/shared/assessment/xp";
+import { shuffleKeepingStimulusGroups } from "@/shared/assessment/question-selection";
+import { NotFoundError, BadRequestError } from "@/shared/errors/app-error";
 
 export class SimulationRepository {
     async checkEligibility(subjectId: number, userId: string): Promise<{
@@ -162,25 +166,38 @@ export class SimulationRepository {
         attemptNumber: number
     ): Promise<number> {
         return withTransaction(async (conn) => {
-            const [questions] = await conn.query<Array<RowDataPacket & { question_id: number; question_order: number }>>(
-                `SELECT question_id, question_order FROM simulation_questions 
-                 WHERE simulation_id = ? ORDER BY RAND()`,
+            const [pkgRows] = await conn.query<Array<RowDataPacket & { duration_minutes: number; total_questions: number }>>(
+                `SELECT duration_minutes, total_questions FROM simulations WHERE id = ?`,
                 [simulationId]
             );
+            const durationMinutes = pkgRows[0]?.duration_minutes || 75;
+            const totalQuestions = pkgRows[0]?.total_questions || 30;
+
+            const [questions] = await conn.query<Array<RowDataPacket & { question_id: number; question_order: number; stimulus_id: number | null }>>(
+                `SELECT sq.question_id, sq.question_order, qb.stimulus_id
+                 FROM simulation_questions sq
+                 JOIN question_banks qb ON qb.id = sq.question_id
+                 WHERE sq.simulation_id = ?
+                 ORDER BY sq.question_order ASC`,
+                [simulationId]
+            );
+
+            // Acak urutan nomor soal namun tetap menjaga soal berstimulus tetap berurutan (DOC-10 §5.4) (Finding #4)
+            const orderedQuestions = shuffleKeepingStimulusGroups(questions);
 
             const [sessionResult] = await conn.execute<ResultSetHeader>(
                 `INSERT INTO learning_sessions 
                  (user_id, subject_id, session_type, simulation_id, attempt_number, status, total_questions, correct_answers, score, is_passed, remaining_time_seconds, current_question_order, start_time)
-                 VALUES (?, ?, 'SIMULATION', ?, ?, 'IN_PROGRESS', ?, 0, 0.00, FALSE, 4500, 1, NOW())`,
-                [userId, subjectId, simulationId, attemptNumber, questions.length || 30]
+                 VALUES (?, ?, 'SIMULATION', ?, ?, 'IN_PROGRESS', ?, 0, 0.00, FALSE, ?, 1, NOW())`,
+                [userId, subjectId, simulationId, attemptNumber, orderedQuestions.length || totalQuestions, durationMinutes * 60]
             );
             const sessionId = sessionResult.insertId;
 
-            for (let i = 0; i < questions.length; i++) {
+            for (let i = 0; i < orderedQuestions.length; i++) {
                 await conn.execute(
                     `INSERT INTO session_questions (session_id, question_id, question_order)
                      VALUES (?, ?, ?)`,
-                    [sessionId, questions[i].question_id, i + 1]
+                    [sessionId, orderedQuestions[i].question_id, i + 1]
                 );
             }
 
@@ -257,7 +274,8 @@ export class SimulationRepository {
         selectedOptionIds: number[],
         isDoubtful = false,
         timeSpent = 0,
-        currentQuestionOrder?: number
+        currentQuestionOrder?: number,
+        attemptId?: number
     ): Promise<{
         sessionQuestionId: number;
         answeredAt: Date;
@@ -266,11 +284,45 @@ export class SimulationRepository {
         currentQuestionOrder: number;
     }> {
         return withTransaction(async (conn) => {
-            const [sqRows] = await conn.query<Array<RowDataPacket & { session_id: number; question_order: number }>>(
-                `SELECT session_id, question_order FROM session_questions WHERE id = ?`,
-                [sessionQuestionId]
-            );
-            const sessionId = sqRows[0]?.session_id;
+            const querySql = attemptId
+                ? `SELECT sq.session_id, sq.question_id, sq.question_order, ls.start_time, s.duration_minutes
+                   FROM session_questions sq
+                   JOIN learning_sessions ls ON ls.id = sq.session_id
+                   LEFT JOIN simulations s ON s.id = ls.simulation_id
+                   WHERE sq.id = ? AND sq.session_id = ?`
+                : `SELECT sq.session_id, sq.question_id, sq.question_order, ls.start_time, s.duration_minutes
+                   FROM session_questions sq
+                   JOIN learning_sessions ls ON ls.id = sq.session_id
+                   LEFT JOIN simulations s ON s.id = ls.simulation_id
+                   WHERE sq.id = ?`;
+            const queryParams = attemptId ? [sessionQuestionId, attemptId] : [sessionQuestionId];
+
+            const [sqRows] = await conn.query<Array<RowDataPacket & {
+                session_id: number;
+                question_id: number;
+                question_order: number;
+                start_time: Date;
+                duration_minutes: number | null;
+            }>>(querySql, queryParams);
+
+            if (!sqRows[0]) {
+                throw new NotFoundError("Nomor soal tidak terdaftar pada sesi simulasi ini");
+            }
+
+            const sessionId = sqRows[0].session_id;
+            const questionId = sqRows[0].question_id;
+
+            // Validasi: Opsi jawaban harus milik soal tersebut (Finding #7)
+            const uniqueOptionIds = Array.from(new Set(selectedOptionIds));
+            if (uniqueOptionIds.length > 0) {
+                const [validOpts] = await conn.query<Array<RowDataPacket & { id: number }>>(
+                    `SELECT id FROM question_options WHERE question_id = ? AND id IN (?)`,
+                    [questionId, uniqueOptionIds]
+                );
+                if (validOpts.length !== uniqueOptionIds.length) {
+                    throw new BadRequestError("Opsi jawaban tidak valid untuk soal ini");
+                }
+            }
 
             const [existing] = await conn.query<StudentAnswerRow[]>(
                 `SELECT id FROM student_answers WHERE session_question_id = ?`,
@@ -279,7 +331,7 @@ export class SimulationRepository {
 
             let answerId: number;
             const now = new Date();
-            const isSkipped = selectedOptionIds.length === 0;
+            const isSkipped = uniqueOptionIds.length === 0;
 
             if (existing.length > 0) {
                 answerId = existing[0].id;
@@ -302,7 +354,7 @@ export class SimulationRepository {
                 answerId = ins.insertId;
             }
 
-            for (const optId of selectedOptionIds) {
+            for (const optId of uniqueOptionIds) {
                 await conn.execute(
                     `INSERT INTO student_answer_options (student_answer_id, selected_option_id)
                      VALUES (?, ?)`,
@@ -311,26 +363,20 @@ export class SimulationRepository {
             }
 
             let effectiveQuestionOrder = sqRows[0]?.question_order || 1;
-            let remainingSeconds = 4500;
+            const durationMinutes = sqRows[0]?.duration_minutes || 75;
+            let remainingSeconds = durationMinutes * 60;
 
-            if (sessionId) {
-                if (currentQuestionOrder !== undefined) {
-                    await conn.execute(
-                        `UPDATE learning_sessions SET current_question_order = ? WHERE id = ?`,
-                        [currentQuestionOrder, sessionId]
-                    );
-                    effectiveQuestionOrder = currentQuestionOrder;
-                } else {
-                    const [sess] = await conn.query<Array<RowDataPacket & { current_question_order: number; start_time: Date }>>(
-                        `SELECT current_question_order, start_time FROM learning_sessions WHERE id = ?`,
-                        [sessionId]
-                    );
-                    effectiveQuestionOrder = sess[0]?.current_question_order || effectiveQuestionOrder;
-                    if (sess[0]?.start_time) {
-                        const elapsed = Math.floor((Date.now() - new Date(sess[0].start_time).getTime()) / 1000);
-                        remainingSeconds = Math.max(0, 4500 - elapsed);
-                    }
-                }
+            if (sqRows[0]?.start_time) {
+                const elapsed = Math.floor((Date.now() - new Date(sqRows[0].start_time).getTime()) / 1000);
+                remainingSeconds = Math.max(0, durationMinutes * 60 - elapsed);
+            }
+
+            if (sessionId && currentQuestionOrder !== undefined) {
+                await conn.execute(
+                    `UPDATE learning_sessions SET current_question_order = ? WHERE id = ?`,
+                    [currentQuestionOrder, sessionId]
+                );
+                effectiveQuestionOrder = currentQuestionOrder;
             }
 
             return {
@@ -357,93 +403,42 @@ export class SimulationRepository {
         durationMinutesUsed: number;
     }> {
         return withTransaction(async (conn) => {
-            const [evalRows] = await conn.query<Array<RowDataPacket & {
-                session_question_id: number;
-                student_answer_id: number | null;
-                question_format: "SINGLE_CHOICE" | "COMPLEX_CHOICE";
-                total_correct_options: number;
-                selected_correct_count: number;
-                selected_incorrect_count: number;
-                total_selected_count: number;
-            }>>(
-                `SELECT 
-                    sq.id AS session_question_id,
-                    sa.id AS student_answer_id,
-                    qb.question_format,
-                    COUNT(DISTINCT CASE WHEN qo.is_correct = TRUE THEN qo.id END) AS total_correct_options,
-                    COUNT(DISTINCT CASE WHEN qo.is_correct = TRUE AND sao.selected_option_id IS NOT NULL THEN qo.id END) AS selected_correct_count,
-                    COUNT(DISTINCT CASE WHEN qo.is_correct = FALSE AND sao.selected_option_id IS NOT NULL THEN qo.id END) AS selected_incorrect_count,
-                    COUNT(DISTINCT sao.selected_option_id) AS total_selected_count
-                 FROM session_questions sq
-                 JOIN question_banks qb ON qb.id = sq.question_id
-                 LEFT JOIN student_answers sa ON sa.session_question_id = sq.id
-                 LEFT JOIN question_options qo ON qo.question_id = qb.id
-                 LEFT JOIN student_answer_options sao 
-                    ON sao.student_answer_id = sa.id AND sao.selected_option_id = qo.id
-                 WHERE sq.session_id = ?
-                 GROUP BY sq.id, sa.id, qb.question_format`,
+            // Lock session row to prevent race conditions (Finding #15)
+            await conn.query<Array<RowDataPacket & { id: number }>>(
+                `SELECT id FROM learning_sessions WHERE id = ? FOR UPDATE`,
                 [sessionId]
             );
 
-            let correctAnswers = 0;
-            for (const r of evalRows) {
-                const isComplex = r.question_format === "COMPLEX_CHOICE" || Number(r.total_correct_options) > 1;
-                const totalCorrectOptions = Number(r.total_correct_options);
-                const selectedCorrect = Number(r.selected_correct_count);
-                const selectedIncorrect = Number(r.selected_incorrect_count);
-                const totalSelected = Number(r.total_selected_count);
+            // Ambil parameter konfigurasi paket simulasi (duration_minutes, passing_score, xp_reward, subject_id)
+            const [pkgRows] = await conn.query<Array<RowDataPacket & {
+                subject_id: number;
+                duration_minutes: number;
+                passing_score: number;
+                xp_reward: number;
+            }>>(
+                `SELECT subject_id, duration_minutes, passing_score, xp_reward FROM simulations WHERE id = ?`,
+                [simulationId]
+            );
 
-                let questionScore = 0.00;
-                let isCorrect = false;
+            const pkg = pkgRows[0];
+            const pkgDuration = pkg?.duration_minutes || 75;
+            const passingScore = pkg?.passing_score !== undefined ? Number(pkg.passing_score) : 90.00;
+            const xpReward = pkg?.xp_reward !== undefined ? Number(pkg.xp_reward) : 500;
+            const subjectId = pkg?.subject_id;
 
-                if (isComplex) {
-                    if (selectedCorrect >= 2 && selectedIncorrect === 0) {
-                        questionScore = 1.00;
-                        isCorrect = true;
-                    } else if (selectedCorrect === 1) {
-                        // Ketika 1 yang benar maka diberi nilai setengah (0.50)
-                        questionScore = 0.50;
-                        isCorrect = false;
-                    } else {
-                        questionScore = 0.00;
-                        isCorrect = false;
-                    }
-                } else {
-                    if (selectedCorrect === 1 && selectedIncorrect === 0) {
-                        questionScore = 1.00;
-                        isCorrect = true;
-                    } else {
-                        questionScore = 0.00;
-                        isCorrect = false;
-                    }
-                }
-
-                if (r.student_answer_id) {
-                    await conn.execute(
-                        `UPDATE student_answers SET is_correct = ?, score = ? WHERE id = ?`,
-                        [isCorrect, questionScore, r.student_answer_id]
-                    );
-                } else {
-                    await conn.execute(
-                        `INSERT INTO student_answers (session_question_id, score, is_correct, is_flagged, is_skipped, time_spent_seconds, answered_at)
-                         VALUES (?, 0.00, FALSE, FALSE, TRUE, 0, NOW())`,
-                        [r.session_question_id]
-                    );
-                }
-                correctAnswers += questionScore;
-            }
-
-            const totalQuestions = evalRows.length || 30;
-            const numericCorrectAnswers = Number(correctAnswers);
-            const score = Math.round((numericCorrectAnswers / totalQuestions) * 100 * 100) / 100;
-            const isPassed = numericCorrectAnswers >= 27; // Syarat kelulusan simulasi >= 90% (27 benar)
+            // Penilaian bersama menggunakan shared grading helper
+            const grading = await gradeSession(conn, sessionId);
+            const totalQuestions = grading.totalQuestions || 30;
+            const numericCorrectAnswers = Number(grading.correctAnswers);
+            const score = grading.percentageScore;
+            const isPassed = score >= passingScore;
 
             const [sess] = await conn.query<Array<RowDataPacket & { duration_used_sec: number }>>(
                 `SELECT TIMESTAMPDIFF(SECOND, start_time, NOW()) AS duration_used_sec 
                  FROM learning_sessions WHERE id = ?`,
                 [sessionId]
             );
-            const durationMinutesUsed = Math.min(75, Math.ceil((sess[0]?.duration_used_sec || 0) / 60));
+            const durationMinutesUsed = Math.min(pkgDuration, Math.ceil((sess[0]?.duration_used_sec || 0) / 60));
 
             await conn.execute(
                 `UPDATE learning_sessions 
@@ -453,32 +448,32 @@ export class SimulationRepository {
             );
 
             let xpEarned = 0;
-            if (isPassed) {
-                // Periksa apakah reward simulasi pernah diklaim untuk mapel ini
+            if (isPassed && subjectId) {
+                // Periksa apakah reward simulasi pernah diklaim untuk MAPEL ini (Anti-Farming DOC-07) (Finding #14)
                 const [existingXp] = await conn.query<Array<RowDataPacket & { id: number }>>(
-                    `SELECT id FROM xp_transactions 
-                     WHERE user_id = ? AND simulation_id = ? AND transaction_type = 'SIMULATION_COMPLETION'`,
-                    [userId, simulationId]
+                    `SELECT xt.id FROM xp_transactions xt
+                     JOIN simulations s ON s.id = xt.simulation_id
+                     WHERE xt.user_id = ? AND s.subject_id = ? AND xt.transaction_type = 'SIMULATION_COMPLETION'`,
+                    [userId, subjectId]
                 );
 
                 if (existingXp.length === 0) {
-                    xpEarned = 500;
-                    await conn.execute(
-                        `INSERT INTO xp_transactions (user_id, simulation_id, session_id, transaction_type, xp_amount, description)
-                         VALUES (?, ?, ?, 'SIMULATION_COMPLETION', ?, 'Bonus Kelulusan Prima Simulasi Ujian TKA (+500 XP)')`,
-                        [userId, simulationId, sessionId, xpEarned]
-                    );
-
-                    await conn.execute(
-                        `UPDATE user_profiles SET total_xp = total_xp + ? WHERE user_id = ?`,
-                        [xpEarned, userId]
-                    );
+                    xpEarned = xpReward;
+                    // awardXp otomatis menambah total_xp dan memperbarui milestone tier (Finding #6)
+                    await awardXp(conn, {
+                        userId,
+                        simulationId,
+                        sessionId,
+                        transactionType: "SIMULATION_COMPLETION",
+                        amount: xpEarned,
+                        description: `Bonus Kelulusan Prima Simulasi Ujian TKA (+${xpEarned} XP)`,
+                    });
                 }
             }
 
             return {
                 totalQuestions,
-                correctAnswers,
+                correctAnswers: numericCorrectAnswers,
                 score,
                 isPassed,
                 xpEarned,

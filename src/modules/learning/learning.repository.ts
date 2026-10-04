@@ -7,6 +7,9 @@ import {
     StudentAnswerRow,
 } from "@/shared/types/database.types";
 import { RowDataPacket, ResultSetHeader } from "mysql2";
+import { gradeSession } from "@/shared/assessment/scoring";
+import { awardXp } from "@/shared/assessment/xp";
+import { selectUnseenFirst } from "@/shared/assessment/question-selection";
 
 export class LearningRepository {
     async findActiveSession(
@@ -44,18 +47,54 @@ export class LearningRepository {
     async pickQuestions(
         subMaterialId: number,
         cognitiveLevelId: number,
-        limit = 10
+        limit = 10,
+        userId?: string
     ): Promise<QuestionBankRow[]> {
-        // Ambil 10 butir soal dari bank LEVEL_EXERCISE
-        // Soal dengan stimulus wacana yang sama disusun berurutan
-        return query<QuestionBankRow[]>(
+        const candidates = await query<QuestionBankRow[]>(
             `SELECT * FROM question_banks 
              WHERE sub_material_id = ? AND cognitive_level_id = ? 
                AND bank_type = 'LEVEL_EXERCISE' AND is_active = TRUE
-             ORDER BY stimulus_id IS NULL, stimulus_id, RAND()
-             LIMIT ?`,
-            [subMaterialId, cognitiveLevelId, limit]
+             ORDER BY id ASC`,
+            [subMaterialId, cognitiveLevelId]
         );
+
+        if (!userId) {
+            return selectUnseenFirst(candidates, { limit });
+        }
+
+        const lastSeenRows = await query<Array<RowDataPacket & { question_id: number; last_seen_at: Date }>>(
+            `SELECT sq.question_id, MAX(ls.start_time) AS last_seen_at
+             FROM session_questions sq
+             JOIN learning_sessions ls ON ls.id = sq.session_id
+             WHERE ls.user_id = ? AND ls.sub_material_id = ? AND ls.cognitive_level_id = ?
+               AND ls.session_type = 'LEVEL_EXERCISE'
+             GROUP BY sq.question_id`,
+            [userId, subMaterialId, cognitiveLevelId]
+        );
+
+        const lastSeenMap = new Map<number, Date>();
+        for (const row of lastSeenRows) {
+            lastSeenMap.set(row.question_id, row.last_seen_at);
+        }
+
+        const prevAttemptRows = await query<Array<RowDataPacket & { question_id: number }>>(
+            `SELECT sq.question_id
+             FROM session_questions sq
+             JOIN learning_sessions ls ON ls.id = sq.session_id
+             WHERE ls.user_id = ? AND ls.sub_material_id = ? AND ls.cognitive_level_id = ?
+               AND ls.session_type = 'LEVEL_EXERCISE'
+             ORDER BY ls.id DESC
+             LIMIT ?`,
+            [userId, subMaterialId, cognitiveLevelId, limit]
+        );
+
+        const lastAttemptQuestionIds = prevAttemptRows.map((r) => r.question_id);
+
+        return selectUnseenFirst(candidates, {
+            limit,
+            lastSeenMap,
+            lastAttemptQuestionIds,
+        });
     }
 
     async createSession(
@@ -93,6 +132,9 @@ export class LearningRepository {
         question_id: number;
         question_text: string;
         question_format: "SINGLE_CHOICE" | "COMPLEX_CHOICE";
+        stimulus_id: number | null;
+        stimulus_title: string | null;
+        stimulus_subject_id: number | null;
         stimulus_text: string | null;
         stimulus_image_url: string | null;
         question_image_url: string | null;
@@ -107,6 +149,9 @@ export class LearningRepository {
                 qb.id AS question_id,
                 qb.question_text,
                 qb.question_format,
+                stm.id AS stimulus_id,
+                stm.title AS stimulus_title,
+                stm.subject_id AS stimulus_subject_id,
                 stm.stimulus_text,
                 stm.stimulus_image_url AS stimulus_image_url,
                 qb.question_image_url AS question_image_url,
@@ -311,86 +356,18 @@ export class LearningRepository {
         needsRemedial: boolean;
     }> {
         return withTransaction(async (conn) => {
-            // Hitung kebenaran tiap soal
-            const [evalRows] = await conn.query<Array<RowDataPacket & {
-                session_question_id: number;
-                student_answer_id: number | null;
-                question_format: "SINGLE_CHOICE" | "COMPLEX_CHOICE";
-                total_correct_options: number;
-                selected_correct_count: number;
-                selected_incorrect_count: number;
-                total_selected_count: number;
-            }>>(
-                `SELECT 
-                    sq.id AS session_question_id,
-                    sa.id AS student_answer_id,
-                    qb.question_format,
-                    COUNT(DISTINCT CASE WHEN qo.is_correct = TRUE THEN qo.id END) AS total_correct_options,
-                    COUNT(DISTINCT CASE WHEN qo.is_correct = TRUE AND sao.selected_option_id IS NOT NULL THEN qo.id END) AS selected_correct_count,
-                    COUNT(DISTINCT CASE WHEN qo.is_correct = FALSE AND sao.selected_option_id IS NOT NULL THEN qo.id END) AS selected_incorrect_count,
-                    COUNT(DISTINCT sao.selected_option_id) AS total_selected_count
-                 FROM session_questions sq
-                 JOIN question_banks qb ON qb.id = sq.question_id
-                 LEFT JOIN student_answers sa ON sa.session_question_id = sq.id
-                 LEFT JOIN question_options qo ON qo.question_id = qb.id
-                 LEFT JOIN student_answer_options sao 
-                    ON sao.student_answer_id = sa.id AND sao.selected_option_id = qo.id
-                 WHERE sq.session_id = ?
-                 GROUP BY sq.id, sa.id, qb.question_format`,
+            // Lock session row to prevent race conditions (Finding #15)
+            await conn.query<Array<RowDataPacket & { id: number }>>(
+                `SELECT id FROM learning_sessions WHERE id = ? FOR UPDATE`,
                 [sessionId]
             );
 
-            let correctAnswers = 0;
-            for (const r of evalRows) {
-                const isComplex = r.question_format === "COMPLEX_CHOICE" || Number(r.total_correct_options) > 1;
-                const totalCorrectOptions = Number(r.total_correct_options);
-                const selectedCorrect = Number(r.selected_correct_count);
-                const selectedIncorrect = Number(r.selected_incorrect_count);
-                const totalSelected = Number(r.total_selected_count);
+            // Hitung kebenaran tiap soal menggunakan shared grading helper
+            const grading = await gradeSession(conn, sessionId);
 
-                let questionScore = 0.00;
-                let isCorrect = false;
-
-                if (isComplex) {
-                    if (selectedCorrect >= 2 && selectedIncorrect === 0) {
-                        questionScore = 1.00;
-                        isCorrect = true;
-                    } else if (selectedCorrect === 1) {
-                        // Ketika 1 yang benar maka diberi nilai setengah (0.50)
-                        questionScore = 0.50;
-                        isCorrect = false;
-                    } else {
-                        questionScore = 0.00;
-                        isCorrect = false;
-                    }
-                } else {
-                    if (selectedCorrect === 1 && selectedIncorrect === 0) {
-                        questionScore = 1.00;
-                        isCorrect = true;
-                    } else {
-                        questionScore = 0.00;
-                        isCorrect = false;
-                    }
-                }
-
-                if (r.student_answer_id) {
-                    await conn.execute(
-                        `UPDATE student_answers SET is_correct = ?, score = ? WHERE id = ?`,
-                        [isCorrect, questionScore, r.student_answer_id]
-                    );
-                } else {
-                    await conn.execute(
-                        `INSERT INTO student_answers (session_question_id, score, is_correct, is_flagged, is_skipped, time_spent_seconds, answered_at)
-                         VALUES (?, 0.00, FALSE, FALSE, TRUE, 0, NOW())`,
-                        [r.session_question_id]
-                    );
-                }
-                correctAnswers += questionScore;
-            }
-
-            const totalQuestions = evalRows.length || 10;
-            const numericCorrectAnswers = Number(correctAnswers);
-            const score = Math.round((numericCorrectAnswers / totalQuestions) * 100 * 100) / 100;
+            const totalQuestions = grading.totalQuestions || 10;
+            const numericCorrectAnswers = Number(grading.correctAnswers);
+            const score = grading.percentageScore;
             const isPassed = numericCorrectAnswers >= 9; // Syarat >= 9 dari 10 (90%)
             const needsRemedial = !isPassed;
 
@@ -402,10 +379,10 @@ export class LearningRepository {
                 [numericCorrectAnswers, score, isPassed, sessionId]
             );
 
-            // Ambil / inisialisasi student_sub_material_progress
+            // Ambil / inisialisasi student_sub_material_progress dengan FOR UPDATE
             const [progRows] = await conn.query<StudentSubMaterialProgressRow[]>(
                 `SELECT * FROM student_sub_material_progress 
-                 WHERE user_id = ? AND sub_material_id = ?`,
+                 WHERE user_id = ? AND sub_material_id = ? FOR UPDATE`,
                 [userId, subMaterialId]
             );
 
@@ -432,17 +409,37 @@ export class LearningRepository {
             let l2Status = prog.level_2_status;
             let l3Status = prog.level_3_status;
 
+            const wasLevelAlreadyCompleted =
+                (levelNumber === 1 && l1Status === "COMPLETED") ||
+                (levelNumber === 2 && l2Status === "COMPLETED") ||
+                (levelNumber === 3 && l3Status === "COMPLETED");
+
             if (levelNumber === 1) {
-                l1Score = Math.max(l1Score, correctAnswers);
-                l1Status = isPassed ? "COMPLETED" : "NEEDS_REMEDIAL";
-                if (isPassed && l2Status === "LOCKED") l2Status = "AVAILABLE";
+                l1Score = Math.max(l1Score, numericCorrectAnswers);
+                if (isPassed) {
+                    l1Status = "COMPLETED";
+                    if (l2Status === "LOCKED") l2Status = "AVAILABLE";
+                } else if (l1Status !== "COMPLETED") {
+                    // Finding #1: Jangan menimpa status jika sudah COMPLETED sebelumnya
+                    l1Status = "NEEDS_REMEDIAL";
+                }
             } else if (levelNumber === 2) {
-                l2Score = Math.max(l2Score, correctAnswers);
-                l2Status = isPassed ? "COMPLETED" : "NEEDS_REMEDIAL";
-                if (isPassed && l3Status === "LOCKED") l3Status = "AVAILABLE";
+                l2Score = Math.max(l2Score, numericCorrectAnswers);
+                if (isPassed) {
+                    l2Status = "COMPLETED";
+                    if (l3Status === "LOCKED") l3Status = "AVAILABLE";
+                } else if (l2Status !== "COMPLETED") {
+                    // Finding #1: Jangan menimpa status jika sudah COMPLETED sebelumnya
+                    l2Status = "NEEDS_REMEDIAL";
+                }
             } else if (levelNumber === 3) {
-                l3Score = Math.max(l3Score, correctAnswers);
-                l3Status = isPassed ? "COMPLETED" : "NEEDS_REMEDIAL";
+                l3Score = Math.max(l3Score, numericCorrectAnswers);
+                if (isPassed) {
+                    l3Status = "COMPLETED";
+                } else if (l3Status !== "COMPLETED") {
+                    // Finding #1: Jangan menimpa status jika sudah COMPLETED sebelumnya
+                    l3Status = "NEEDS_REMEDIAL";
+                }
             }
 
             const totalCumulative = l1Score + l2Score + l3Score;
@@ -452,14 +449,17 @@ export class LearningRepository {
             let xpEarned = 0;
             let masteryBonusEarned = 0;
 
-            // Beri XP kelulusan level
-            if (isPassed) {
+            // Beri XP kelulusan level HANYA saat pertama kali lulus (Anti-Farming DOC-06) (Finding #2)
+            if (isPassed && !wasLevelAlreadyCompleted) {
                 xpEarned = xpRewardLevel;
-                await conn.execute(
-                    `INSERT INTO xp_transactions (user_id, sub_material_id, session_id, transaction_type, xp_amount, description)
-                     VALUES (?, ?, ?, 'LEVEL_COMPLETION', ?, ?)`,
-                    [userId, subMaterialId, sessionId, xpEarned, `Kelulusan Level ${levelNumber}`]
-                );
+                await awardXp(conn, {
+                    userId,
+                    subMaterialId,
+                    sessionId,
+                    transactionType: "LEVEL_COMPLETION",
+                    amount: xpEarned,
+                    description: `Kelulusan Level ${levelNumber}`,
+                });
             }
 
             // Beri bonus Mastery +250 XP (Hanya 1x seumur hidup via flag is_xp_awarded)
@@ -467,11 +467,13 @@ export class LearningRepository {
             if (isMastered && !isXpAwarded) {
                 masteryBonusEarned = 250;
                 isXpAwarded = true;
-                await conn.execute(
-                    `INSERT INTO xp_transactions (user_id, sub_material_id, transaction_type, xp_amount, description)
-                     VALUES (?, ?, 'SUB_MATERIAL_MASTERY', ?, 'Bonus Puncak Dual-Condition Mastery (+250 XP)')`,
-                    [userId, subMaterialId, masteryBonusEarned]
-                );
+                await awardXp(conn, {
+                    userId,
+                    subMaterialId,
+                    transactionType: "SUB_MATERIAL_MASTERY",
+                    amount: masteryBonusEarned,
+                    description: "Bonus Puncak Dual-Condition Mastery (+250 XP)",
+                });
             }
 
             // Perbarui student_sub_material_progress
@@ -498,35 +500,6 @@ export class LearningRepository {
                 ]
             );
 
-            // Tambahkan total XP di user_profiles dan update tier jika naik tingkat
-            const totalXpToAdd = xpEarned + masteryBonusEarned;
-            if (totalXpToAdd > 0) {
-                await conn.execute(
-                    `UPDATE user_profiles SET total_xp = total_xp + ? WHERE user_id = ?`,
-                    [totalXpToAdd, userId]
-                );
-
-                // Cek apakah naik milestone tier
-                const [prof] = await conn.query<Array<RowDataPacket & { total_xp: number }>>(
-                    `SELECT total_xp FROM user_profiles WHERE user_id = ?`,
-                    [userId]
-                );
-                const currentTotalXp = prof[0]?.total_xp || 0;
-
-                const [newTier] = await conn.query<Array<RowDataPacket & { id: number }>>(
-                    `SELECT id FROM milestone_tiers 
-                     WHERE ? >= min_xp AND (? <= max_xp OR max_xp IS NULL)
-                     ORDER BY tier_number DESC LIMIT 1`,
-                    [currentTotalXp, currentTotalXp]
-                );
-                if (newTier[0]) {
-                    await conn.execute(
-                        `UPDATE user_profiles SET current_milestone_tier_id = ? WHERE user_id = ?`,
-                        [newTier[0].id, userId]
-                    );
-                }
-            }
-
             let nextLevelUnlocked: number | null = null;
             if (isPassed && levelNumber < 3) {
                 nextLevelUnlocked = levelNumber + 1;
@@ -534,7 +507,7 @@ export class LearningRepository {
 
             return {
                 totalQuestions,
-                correctAnswers,
+                correctAnswers: numericCorrectAnswers,
                 score,
                 isPassed,
                 xpEarned,
@@ -550,10 +523,14 @@ export class LearningRepository {
         session_question_id: number;
         question_order: number;
         question_text: string;
+        stimulus_id: number | null;
+        stimulus_title: string | null;
+        stimulus_subject_id: number | null;
         stimulus_text: string | null;
         stimulus_image_url: string | null;
         question_image_url: string | null;
         is_answer_correct: number;
+        time_spent_seconds: number;
         explanation_text: string | null;
         reasoning_guide: string | null;
         reference_url: string | null;
@@ -568,10 +545,14 @@ export class LearningRepository {
                 sq.id AS session_question_id,
                 sq.question_order,
                 qb.question_text,
+                stm.id AS stimulus_id,
+                stm.title AS stimulus_title,
+                stm.subject_id AS stimulus_subject_id,
                 stm.stimulus_text,
                 stm.stimulus_image_url AS stimulus_image_url,
                 qb.question_image_url AS question_image_url,
                 COALESCE(sa.is_correct, 0) AS is_answer_correct,
+                COALESCE(sa.time_spent_seconds, 0) AS time_spent_seconds,
                 qe.explanation_text,
                 qe.reasoning_guide,
                 qe.reference_url,

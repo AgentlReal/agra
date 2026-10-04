@@ -37,15 +37,16 @@ export class SimulationService {
         }
     }
 
-    private calculateTiming(startTime: Date | string): M05_SimulationTiming {
+    private calculateTiming(startTime: Date | string, durationMinutes = 75): M05_SimulationTiming {
         const now = Date.now();
         const start = new Date(startTime).getTime();
-        const deadline = new Date(start + 75 * 60 * 1000);
+        const duration = durationMinutes || 75;
+        const deadline = new Date(start + duration * 60 * 1000);
         const remainingSeconds = Math.max(0, Math.floor((deadline.getTime() - now) / 1000));
 
         return {
             server_time: new Date(now).toISOString(),
-            duration_minutes: 75,
+            duration_minutes: duration,
             deadline_at: deadline.toISOString(),
             remaining_seconds: remainingSeconds,
         };
@@ -90,7 +91,9 @@ export class SimulationService {
         // Cek apakah ada sesi simulasi aktif
         const active = await this.repo.findActiveSession(subjectId, userId);
         if (active) {
-            const timing = this.calculateTiming(active.start_time);
+            const activePkg = await this.repo.getPackageById(active.simulation_id || 0);
+            const duration = activePkg?.duration_minutes || 75;
+            const timing = this.calculateTiming(active.start_time, duration);
             if (timing.remaining_seconds <= 0) {
                 await this.repo.evaluateAndCompleteSession(
                     active.id,
@@ -99,13 +102,12 @@ export class SimulationService {
                     "TIMEOUT"
                 );
             } else {
-                const pkg = await this.repo.getPackageById(active.simulation_id || 0);
                 return {
                     attempt_id: active.id,
                     package_id: active.simulation_id || 0,
-                    package_title: pkg?.title || "Simulasi CBT Mandiri",
+                    package_title: activePkg?.title || "Simulasi CBT Mandiri",
                     attempt_number: active.attempt_number || 1,
-                    total_questions: 30,
+                    total_questions: (active.total_questions || activePkg?.total_questions || 30) as 30,
                     timing,
                 };
             }
@@ -122,14 +124,14 @@ export class SimulationService {
 
         const sessionId = await this.repo.createSession(userId, subjectId, pkg.id, attemptNumber);
         const session = await this.repo.getSessionById(sessionId, userId);
-        const timing = this.calculateTiming(session?.start_time || new Date());
+        const timing = this.calculateTiming(session?.start_time || new Date(), pkg.duration_minutes || 75);
 
         return {
             attempt_id: sessionId,
             package_id: pkg.id,
             package_title: pkg.title,
             attempt_number: attemptNumber,
-            total_questions: 30,
+            total_questions: (session?.total_questions || pkg.total_questions || 30) as 30,
             timing,
         };
     }
@@ -142,10 +144,11 @@ export class SimulationService {
             throw new NotFoundError("Sesi simulasi tidak ditemukan atau bukan milik siswa aktif");
         }
 
-        const timing = this.calculateTiming(session.start_time);
+        const pkg = await this.repo.getPackageById(session.simulation_id || 0);
+        const timing = this.calculateTiming(session.start_time, pkg?.duration_minutes || 75);
         let status = session.status as "IN_PROGRESS" | "COMPLETED";
 
-        // Jika waktu 75m habis dan sesi masih IN_PROGRESS, auto-submit sesi dengan alasan TIMEOUT
+        // Jika waktu habis dan sesi masih IN_PROGRESS, auto-submit sesi dengan alasan TIMEOUT
         if (timing.remaining_seconds === 0 && session.status === "IN_PROGRESS") {
             await this.repo.evaluateAndCompleteSession(
                 attemptId,
@@ -156,7 +159,6 @@ export class SimulationService {
             status = "COMPLETED";
         }
 
-        const pkg = await this.repo.getPackageById(session.simulation_id || 0);
         const answeredCount = await this.repo.countAnsweredQuestions(attemptId);
         const doubtfulCount = await this.repo.countDoubtfulAnswers(attemptId);
 
@@ -227,7 +229,7 @@ export class SimulationService {
             package_title: pkg?.title || "Simulasi CBT Mandiri",
             attempt_number: session.attempt_number || 1,
             status,
-            total_questions: 30,
+            total_questions: (session.total_questions || pkg?.total_questions || 30) as 30,
             answered_count: answeredCount,
             doubtful_count: doubtfulCount,
             current_question_order: session.current_question_order || 1,
@@ -255,7 +257,8 @@ export class SimulationService {
             );
         }
 
-        const timing = this.calculateTiming(session.start_time);
+        const pkg = await this.repo.getPackageById(session.simulation_id || 0);
+        const timing = this.calculateTiming(session.start_time, pkg?.duration_minutes || 75);
         if (timing.remaining_seconds <= 0) {
             await this.repo.evaluateAndCompleteSession(
                 attemptId,
@@ -264,7 +267,7 @@ export class SimulationService {
                 "TIMEOUT"
             );
             throw new ConflictError(
-                "TIME_EXPIRED - Batas waktu 75 menit ujian telah habis. Jawaban otomatis dikumpulkan.",
+                `TIME_EXPIRED - Batas waktu ${pkg?.duration_minutes || 75} menit ujian telah habis. Jawaban otomatis dikumpulkan.`,
                 "TIME_EXPIRED"
             );
         }
@@ -283,7 +286,8 @@ export class SimulationService {
             input.selected_option_ids,
             input.is_doubtful,
             input.time_spent_seconds,
-            input.current_question_order
+            input.current_question_order,
+            attemptId
         );
 
         return {
@@ -309,7 +313,8 @@ export class SimulationService {
             );
         }
 
-        const timing = this.calculateTiming(session.start_time);
+        const pkg = await this.repo.getPackageById(session.simulation_id || 0);
+        const timing = this.calculateTiming(session.start_time, pkg?.duration_minutes || 75);
         const submissionType = timing.remaining_seconds <= 0 ? "TIMEOUT" : "MANUAL";
 
         await this.repo.evaluateAndCompleteSession(
@@ -330,8 +335,9 @@ export class SimulationService {
             throw new NotFoundError("Sesi simulasi tidak ditemukan");
         }
 
+        const pkg = await this.repo.getPackageById(session.simulation_id || 0);
         if (session.status === "IN_PROGRESS") {
-            const timing = this.calculateTiming(session.start_time);
+            const timing = this.calculateTiming(session.start_time, pkg?.duration_minutes || 75);
             if (timing.remaining_seconds <= 0) {
                 await this.repo.evaluateAndCompleteSession(
                     attemptId,
@@ -347,7 +353,6 @@ export class SimulationService {
             );
         }
 
-        const pkg = await this.repo.getPackageById(session.simulation_id || 0);
         const totalXp = await this.repo.getUserTotalXp(userId);
         const xpEarned = await this.repo.getSessionXpEarned(attemptId);
 
@@ -357,7 +362,7 @@ export class SimulationService {
             package_title: pkg?.title || "Simulasi CBT Mandiri",
             score: Number(session.score),
             correct_answers: Number(session.correct_answers),
-            total_questions: 30,
+            total_questions: (session.total_questions || pkg?.total_questions || 30) as 30,
             is_passed: Boolean(session.is_passed),
             xp_earned: xpEarned,
             total_xp: totalXp,
@@ -375,8 +380,10 @@ export class SimulationService {
             throw new NotFoundError("Sesi simulasi tidak ditemukan");
         }
 
+        const pkg = await this.repo.getPackageById(session.simulation_id || 0);
+
         if (session.status !== "COMPLETED") {
-            const timing = this.calculateTiming(session.start_time);
+            const timing = this.calculateTiming(session.start_time, pkg?.duration_minutes || 75);
             if (timing.remaining_seconds <= 0) {
                 await this.repo.evaluateAndCompleteSession(
                     attemptId,
@@ -392,7 +399,6 @@ export class SimulationService {
             }
         }
 
-        const pkg = await this.repo.getPackageById(session.simulation_id || 0);
         const rows = await this.repo.getReviewQuestions(attemptId);
 
         const reviewMap = new Map<number, M05_SimulationQuestionReviewItem>();
@@ -446,7 +452,7 @@ export class SimulationService {
         return {
             attempt_id: session.id,
             package_title: pkg?.title || "Simulasi CBT Mandiri",
-            total_questions: 30,
+            total_questions: (session.total_questions || pkg?.total_questions || 30) as 30,
             correct_answers: Number(session.correct_answers),
             reviews: Array.from(reviewMap.values()),
         };
