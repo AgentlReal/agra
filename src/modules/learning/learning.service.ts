@@ -189,7 +189,10 @@ export class LearningService {
             throw new NotFoundError("Sesi latihan tidak ditemukan", "NOT_FOUND");
         }
         if (session.status !== "IN_PROGRESS") {
-            throw new BadRequestError("Sesi pengerjaan sudah selesai atau tidak aktif");
+            throw new BadRequestError(
+                "SESSION_CLOSED - Sesi pengerjaan sudah selesai atau tidak aktif",
+                "SESSION_CLOSED"
+            );
         }
 
         if (dto.selected_option_ids && dto.selected_option_ids.length > 2) {

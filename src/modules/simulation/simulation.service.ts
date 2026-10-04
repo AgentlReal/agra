@@ -25,7 +25,7 @@ export class SimulationService {
         private readonly repo = new SimulationRepository(),
         private readonly curriculumRepo = new CurriculumRepository(),
         private readonly profileRepo = new ProfileRepository()
-    ) {}
+    ) { }
 
     private async ensureStudentProfile(userId: string): Promise<void> {
         const profile = await this.profileRepo.findRawProfile(userId);
@@ -198,20 +198,20 @@ export class SimulationService {
                     options: [],
                     saved_answer: ans
                         ? {
-                              selected_option_ids: ans.selected_option_ids,
-                              is_doubtful: ans.is_doubtful,
-                              is_skipped: ans.is_skipped,
-                              time_spent_seconds: ans.time_spent_seconds,
-                          }
+                            selected_option_ids: ans.selected_option_ids,
+                            is_doubtful: ans.is_doubtful,
+                            is_skipped: ans.is_skipped,
+                            time_spent_seconds: ans.time_spent_seconds,
+                        }
                         : null,
                     stimulus: r.stimulus_id
                         ? {
-                              id: r.stimulus_id,
-                              subject_id: r.stimulus_subject_id || 0,
-                              title: r.stimulus_title || "",
-                              stimulus_text: r.stimulus_text || "",
-                              stimulus_image_url: r.stimulus_image_url,
-                          }
+                            id: r.stimulus_id,
+                            subject_id: r.stimulus_subject_id || 0,
+                            title: r.stimulus_title || "",
+                            stimulus_text: r.stimulus_text || "",
+                            stimulus_image_url: r.stimulus_image_url,
+                        }
                         : null,
                 });
             }
@@ -421,12 +421,12 @@ export class SimulationService {
                     reference_url: r.reference_url,
                     stimulus: r.stimulus_id
                         ? {
-                              id: r.stimulus_id,
-                              subject_id: r.stimulus_subject_id || 0,
-                              title: r.stimulus_title || "",
-                              stimulus_text: r.stimulus_text || "",
-                              stimulus_image_url: r.stimulus_image_url,
-                          }
+                            id: r.stimulus_id,
+                            subject_id: r.stimulus_subject_id || 0,
+                            title: r.stimulus_title || "",
+                            stimulus_text: r.stimulus_text || "",
+                            stimulus_image_url: r.stimulus_image_url,
+                        }
                         : null,
                 });
             }
