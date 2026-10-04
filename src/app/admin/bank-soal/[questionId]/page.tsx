@@ -79,8 +79,9 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
     const rawLevel = q.cognitiveLevelId || q.cognitive_level_id || '1';
     const parsedLevel = String(rawLevel).replace('L', '');
     setCognitiveLevel(['1', '2', '3'].includes(parsedLevel) ? parsedLevel : '1');
+    const format = q.questionFormat || q.question_format || q.type || '';
     setQuestionType(
-      (q.questionFormat || q.question_format) === 'COMPLEX_CHOICE' ? 'PG_KOMPLEKS' : 'PG_TUNGGAL'
+      format === 'COMPLEX_CHOICE' || format === 'PG_KOMPLEKS' ? 'PG_KOMPLEKS' : 'PG_TUNGGAL'
     );
     setStimulus(
       typeof q.stimulus === 'string'

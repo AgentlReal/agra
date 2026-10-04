@@ -24,6 +24,7 @@ export default function AdminBankSoalPage() {
   const [subjectFilter, setSubjectFilter] = useState<string>('ALL');
   const [levelFilter, setLevelFilter] = useState<string>('ALL');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  const [typeFilter, setTypeFilter] = useState<'ALL' | 'SINGLE_CHOICE' | 'COMPLEX_CHOICE'>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const [questions, setQuestions] = useState<any[]>([]);
@@ -40,7 +41,7 @@ export default function AdminBankSoalPage() {
   // Reset page when filters change
   useEffect(() => {
     setPage(1);
-  }, [bankType, subjectFilter, levelFilter, statusFilter]);
+  }, [bankType, subjectFilter, levelFilter, statusFilter, typeFilter]);
 
   useEffect(() => {
     fetchStock();
@@ -141,6 +142,11 @@ export default function AdminBankSoalPage() {
   };
 
   const filteredQuestions = questions.filter((q) => {
+    if (typeFilter !== 'ALL') {
+      const isComplex = q.type === 'COMPLEX_CHOICE' || q.type === 'PG_KOMPLEKS';
+      if (typeFilter === 'COMPLEX_CHOICE' && !isComplex) return false;
+      if (typeFilter === 'SINGLE_CHOICE' && isComplex) return false;
+    }
     if (!searchQuery) return true;
     return (
       q.questionText?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -293,6 +299,16 @@ export default function AdminBankSoalPage() {
               <option value="ACTIVE">Aktif</option>
               <option value="INACTIVE">Nonaktif</option>
             </select>
+
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value as any)}
+              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 focus:border-purple-600 focus:outline-none shadow-xs"
+            >
+              <option value="ALL">Semua Tipe Soal</option>
+              <option value="SINGLE_CHOICE">Pilihan Tunggal</option>
+              <option value="COMPLEX_CHOICE">Pilihan Ganda Kompleks</option>
+            </select>
           </div>
         </div>
 
@@ -345,9 +361,15 @@ export default function AdminBankSoalPage() {
                         </span>
                       </td>
                       <td className="py-3.5 px-4 whitespace-nowrap">
-                        <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700 border border-slate-200">
-                          {q.type === 'PG_KOMPLEKS' ? 'Pilihan Kompleks (MCMA)' : 'Pilihan Tunggal'}
-                        </span>
+                        {q.type === 'COMPLEX_CHOICE' || q.type === 'PG_KOMPLEKS' ? (
+                          <span className="rounded-md bg-purple-50 px-2 py-0.5 text-[10px] font-semibold text-purple-700 border border-purple-200">
+                            Pilihan Ganda Kompleks
+                          </span>
+                        ) : (
+                          <span className="rounded-md bg-sky-50 px-2 py-0.5 text-[10px] font-semibold text-sky-700 border border-sky-200">
+                            Pilihan Tunggal
+                          </span>
+                        )}
                       </td>
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         {q.isActive ? (

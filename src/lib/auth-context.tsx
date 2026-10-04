@@ -26,7 +26,7 @@ interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (token?: string, user?: User) => void;
+  login: (token?: string, user?: User) => Promise<void> | void;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
   updateUser: (updates: Partial<User>) => void;
@@ -106,16 +106,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     fetchSessionAndProfile();
   }, [fetchSessionAndProfile]);
 
-  const login = (newToken?: string, newUser?: User) => {
+  const login = async (newToken?: string, newUser?: User) => {
     if (newToken) {
       setToken(newToken);
       localStorage.setItem('agra_token', newToken);
     }
     if (newUser) {
       setUser(newUser);
-    } else {
-      fetchSessionAndProfile();
     }
+    await fetchSessionAndProfile();
   };
 
   const logout = async () => {
@@ -130,9 +129,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     await fetchSessionAndProfile();
-  };
+  }, [fetchSessionAndProfile]);
 
   const updateUser = (updates: Partial<User>) => {
     setUser((prev) => (prev ? { ...prev, ...updates } : null));

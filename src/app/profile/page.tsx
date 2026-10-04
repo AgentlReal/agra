@@ -41,6 +41,7 @@ export default function ProfilePage() {
   const { user, updateUser, logout } = useAuth();
 
   const [name, setName] = useState(user?.name || '');
+  const [profile, setProfile] = useState<any>(null);
   const [savingName, setSavingName] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
@@ -88,8 +89,22 @@ export default function ProfilePage() {
       .get()
       .then((res: any) => {
         const pData = res?.data || res;
-        if (pData?.avatar?.id) {
-          setSelectedAvatarId(pData.avatar.id);
+        if (pData) {
+          setProfile(pData);
+          if (pData?.avatar?.id) {
+            setSelectedAvatarId(pData.avatar.id);
+          }
+          if (pData.name) {
+            setName(pData.name);
+          }
+          updateUser({
+            name: pData.name || user?.name,
+            avatarUrl: pData.avatar?.imageUrl || pData.avatarUrl || user?.avatarUrl,
+            avatarId: pData.avatar?.id || user?.avatarId,
+            totalXp: pData.totalXp ?? pData.total_xp ?? user?.totalXp ?? 0,
+            currentStreak: pData.currentStreak ?? pData.current_streak ?? user?.currentStreak ?? 0,
+            grade: pData.grade || user?.grade,
+          });
         }
       })
       .catch(() => {});
@@ -106,7 +121,7 @@ export default function ProfilePage() {
   }, [user]);
 
   // Determine current mastery tier
-  const currentXp = user?.totalXp ?? 0;
+  const currentXp = profile?.totalXp ?? profile?.total_xp ?? user?.totalXp ?? 0;
   const currentTier = MASTERY_TIERS.find((t) => currentXp >= t.minXp && currentXp <= t.maxXp) || MASTERY_TIERS[0];
   const nextTier = MASTERY_TIERS.find((t) => t.level === currentTier.level + 1);
   const xpProgress = nextTier 
@@ -132,12 +147,20 @@ export default function ProfilePage() {
       if (selectedAvatarId) {
         await api.profile.updateAvatar(selectedAvatarId);
         const chosen = avatars.find((a) => a.id === selectedAvatarId);
+        const chosenUrl = chosen?.imageUrl || chosen?.image_url;
+        setProfile((prev: any) => ({
+          ...prev,
+          name: name.trim(),
+          avatar: chosen ? { ...chosen, imageUrl: chosenUrl } : prev?.avatar,
+          avatarUrl: chosenUrl,
+        }));
         updateUser({ 
           name: name.trim(),
           avatarId: selectedAvatarId,
-          avatarUrl: chosen?.imageUrl || chosen?.image_url
+          avatarUrl: chosenUrl
         });
       } else {
+        setProfile((prev: any) => ({ ...prev, name: name.trim() }));
         updateUser({ name: name.trim() });
       }
       setEditModalOpen(false);
@@ -203,8 +226,8 @@ export default function ProfilePage() {
               <div className="flex items-start gap-4">
                 <div className="relative">
                   <UserAvatar
-                    src={user?.avatarUrl}
-                    name={user?.name || user?.username}
+                    src={profile?.avatar?.imageUrl || profile?.avatarUrl || user?.avatarUrl}
+                    name={profile?.name || user?.name || user?.username}
                     size="xl"
                     rounded="full"
                     className="ring-4 ring-blue-50"
@@ -212,7 +235,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <h2 className="text-xl font-bold text-slate-900 truncate">
-                    {user?.name || user?.username || 'Siswa'}
+                    {profile?.name || user?.name || user?.username || 'Siswa'}
                   </h2>
                   <div className="flex items-center gap-1.5 text-xs text-slate-500 font-mono mt-0.5">
                     <span>@{user?.username || '-'}</span>
@@ -220,10 +243,10 @@ export default function ProfilePage() {
                       Terverifikasi
                     </span>
                   </div>
-                  {user?.grade ? (
+                  {(profile?.grade || user?.grade) ? (
                     <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-100 px-3 py-0.5 text-xs font-semibold text-blue-700">
                       <GraduationCap className="h-3.5 w-3.5" />
-                      <span>Kelas {user.grade} SMP (Fase D)</span>
+                      <span>Kelas {profile?.grade || user?.grade} SMP (Fase D)</span>
                     </div>
                   ) : null}
                 </div>
