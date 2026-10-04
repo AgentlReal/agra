@@ -6,6 +6,7 @@ import {
     StudentAnswerRow,
 } from "@/shared/types/database.types";
 import { RowDataPacket, ResultSetHeader } from "mysql2";
+import { gradeSession } from "@/shared/assessment/scoring";
 
 export class RecallRepository {
     async findActiveSession(userId: string): Promise<LearningSessionRow | null> {
@@ -37,20 +38,33 @@ export class RecallRepository {
         return rows[0] || null;
     }
 
+    async isUserRecallPassed(userId: string): Promise<boolean> {
+        const rows = await query<Array<RowDataPacket & { is_recall_passed: number }>>(
+            `SELECT is_recall_passed FROM user_profiles WHERE user_id = ?`,
+            [userId]
+        );
+        return Boolean(rows[0]?.is_recall_passed);
+    }
+
     async pickRecallQuestions(matCount = 15, binCount = 15): Promise<QuestionBankRow[]> {
-        // Ambil soal MAT (subject_id = 1) dan BIN (subject_id = 2) dari bank RECALL
+        const subjects = await query<Array<RowDataPacket & { id: number; code: string }>>(
+            `SELECT id, code FROM subjects WHERE code IN ('MAT', 'BIN')`
+        );
+        const matId = subjects.find((s) => s.code === "MAT")?.id ?? 1;
+        const binId = subjects.find((s) => s.code === "BIN")?.id ?? 2;
+
         const matQuestions = await query<QuestionBankRow[]>(
             `SELECT * FROM question_banks 
-             WHERE bank_type = 'RECALL' AND subject_id = 1 AND is_active = TRUE
+             WHERE bank_type = 'RECALL' AND subject_id = ? AND is_active = TRUE
              ORDER BY RAND() LIMIT ?`,
-            [matCount]
+            [matId, matCount]
         );
 
         const binQuestions = await query<QuestionBankRow[]>(
             `SELECT * FROM question_banks 
-             WHERE bank_type = 'RECALL' AND subject_id = 2 AND is_active = TRUE
+             WHERE bank_type = 'RECALL' AND subject_id = ? AND is_active = TRUE
              ORDER BY RAND() LIMIT ?`,
-            [binCount]
+            [binId, binCount]
         );
 
         return [...matQuestions, ...binQuestions];
@@ -285,109 +299,46 @@ export class RecallRepository {
         mathTotal: number;
         bahasaCorrect: number;
         bahasaTotal: number;
+        mathSubjectId?: number;
+        bahasaSubjectId?: number;
     }> {
         return withTransaction(async (conn) => {
-            // Evaluasi All-or-Nothing setiap butir soal
-            const [evalRows] = await conn.query<Array<RowDataPacket & {
-                session_question_id: number;
-                student_answer_id: number | null;
-                subject_id: number;
-                question_format: "SINGLE_CHOICE" | "COMPLEX_CHOICE";
-                total_correct_options: number;
-                selected_correct_count: number;
-                selected_incorrect_count: number;
-                total_selected_count: number;
-            }>>(
-                `SELECT 
-                    sq.id AS session_question_id,
-                    sa.id AS student_answer_id,
-                    qb.subject_id,
-                    qb.question_format,
-                    COUNT(DISTINCT CASE WHEN qo.is_correct = TRUE THEN qo.id END) AS total_correct_options,
-                    COUNT(DISTINCT CASE WHEN qo.is_correct = TRUE AND sao.selected_option_id IS NOT NULL THEN qo.id END) AS selected_correct_count,
-                    COUNT(DISTINCT CASE WHEN qo.is_correct = FALSE AND sao.selected_option_id IS NOT NULL THEN qo.id END) AS selected_incorrect_count,
-                    COUNT(DISTINCT sao.selected_option_id) AS total_selected_count
-                 FROM session_questions sq
-                 JOIN question_banks qb ON qb.id = sq.question_id
-                 LEFT JOIN student_answers sa ON sa.session_question_id = sq.id
-                 LEFT JOIN question_options qo ON qo.question_id = qb.id
-                 LEFT JOIN student_answer_options sao 
-                    ON sao.student_answer_id = sa.id AND sao.selected_option_id = qo.id
-                 WHERE sq.session_id = ?
-                 GROUP BY sq.id, sa.id, qb.subject_id, qb.question_format`,
-                [sessionId]
+            const [sessionLock] = await conn.execute<LearningSessionRow[]>(
+                `SELECT * FROM learning_sessions WHERE id = ? AND user_id = ? FOR UPDATE`,
+                [sessionId, userId]
             );
-
-            let mathCorrect = 0;
-            let mathTotal = 0;
-            let bahasaCorrect = 0;
-            let bahasaTotal = 0;
-            let totalCorrect = 0;
-
-            for (const r of evalRows) {
-                const isComplex = r.question_format === "COMPLEX_CHOICE" || Number(r.total_correct_options) > 1;
-                const totalCorrectOptions = Number(r.total_correct_options);
-                const selectedCorrect = Number(r.selected_correct_count);
-                const selectedIncorrect = Number(r.selected_incorrect_count);
-                const totalSelected = Number(r.total_selected_count);
-
-                let questionScore = 0.00;
-                let isCorrect = false;
-
-                if (isComplex) {
-                    if (selectedCorrect >= 2 && selectedIncorrect === 0) {
-                        questionScore = 1.00;
-                        isCorrect = true;
-                    } else if (selectedCorrect === 1) {
-                        // Ketika 1 yang benar maka diberi nilai setengah (0.50)
-                        questionScore = 0.50;
-                        isCorrect = false;
-                    } else {
-                        questionScore = 0.00;
-                        isCorrect = false;
-                    }
-                } else {
-                    if (selectedCorrect === 1 && selectedIncorrect === 0) {
-                        questionScore = 1.00;
-                        isCorrect = true;
-                    } else {
-                        questionScore = 0.00;
-                        isCorrect = false;
-                    }
-                }
-
-                if (r.student_answer_id) {
-                    await conn.execute(
-                        `UPDATE student_answers SET is_correct = ?, score = ? WHERE id = ?`,
-                        [isCorrect, questionScore, r.student_answer_id]
-                    );
-                } else {
-                    await conn.execute(
-                        `INSERT INTO student_answers (session_question_id, score, is_correct, is_flagged, is_skipped, time_spent_seconds, answered_at)
-                         VALUES (?, 0.00, FALSE, FALSE, TRUE, 0, NOW())`,
-                        [r.session_question_id]
-                    );
-                }
-                totalCorrect += questionScore;
-
-                if (r.subject_id === 1) {
-                    mathTotal++;
-                    mathCorrect += questionScore;
-                } else if (r.subject_id === 2) {
-                    bahasaTotal++;
-                    bahasaCorrect += questionScore;
-                }
+            if (!sessionLock[0]) {
+                throw new NotFoundError("Sesi Recall tidak ditemukan");
+            }
+            if (sessionLock[0].status === "COMPLETED") {
+                const subScores = await this.getSubjectScores(sessionId);
+                return {
+                    totalQuestions: sessionLock[0].total_questions,
+                    correctAnswers: Number(sessionLock[0].correct_answers),
+                    score: Number(sessionLock[0].score),
+                    isPassed: Boolean(sessionLock[0].is_passed),
+                    ...subScores,
+                };
             }
 
-            const totalQuestions = evalRows.length || 30;
-            const score = Math.round((totalCorrect / totalQuestions) * 100 * 100) / 100;
-            const isPassed = totalCorrect >= 27; // Ambang kelulusan Recall V6 adalah 27/30 (90%) sesuai API.yaml
+            const [subjectRows] = await conn.query<Array<RowDataPacket & { id: number; code: string }>>(
+                `SELECT id, code FROM subjects WHERE code IN ('MAT', 'BIN')`
+            );
+            const matId = subjectRows.find((s) => s.code === "MAT")?.id ?? 1;
+            const binId = subjectRows.find((s) => s.code === "BIN")?.id ?? 2;
+
+            // Evaluasi setiap butir soal menggunakan gradeSession (0.50 partial credit untuk COMPLEX_CHOICE)
+            const grading = await gradeSession(conn, sessionId);
+            const mathData = grading.subjectBreakdown.get(matId) || { correct: 0, total: 15 };
+            const binData = grading.subjectBreakdown.get(binId) || { correct: 0, total: 15 };
+
+            const isPassed = grading.totalScore >= 27; // Ambang kelulusan Recall V6 adalah 27/30 (90%) sesuai API.yaml
 
             await conn.execute(
                 `UPDATE learning_sessions 
                  SET status = 'COMPLETED', submission_type = 'MANUAL', correct_answers = ?, score = ?, is_passed = ?, end_time = NOW()
                  WHERE id = ?`,
-                [totalCorrect, score, isPassed, sessionId]
+                [grading.totalScore, grading.percentageScore, isPassed, sessionId]
             );
 
             if (isPassed) {
@@ -400,25 +351,34 @@ export class RecallRepository {
             }
 
             return {
-                totalQuestions,
-                correctAnswers: totalCorrect,
-                score,
+                totalQuestions: grading.totalQuestions || 30,
+                correctAnswers: grading.totalScore,
+                score: grading.percentageScore,
                 isPassed,
-                mathCorrect,
-                mathTotal,
-                bahasaCorrect,
-                bahasaTotal,
+                mathCorrect: mathData.correct,
+                mathTotal: mathData.total,
+                bahasaCorrect: binData.correct,
+                bahasaTotal: binData.total,
+                mathSubjectId: matId,
+                bahasaSubjectId: binId,
             };
         });
     }
-
 
     async getSubjectScores(sessionId: number): Promise<{
         mathCorrect: number;
         mathTotal: number;
         bahasaCorrect: number;
         bahasaTotal: number;
+        mathSubjectId?: number;
+        bahasaSubjectId?: number;
     }> {
+        const subjects = await query<Array<RowDataPacket & { id: number; code: string }>>(
+            `SELECT id, code FROM subjects WHERE code IN ('MAT', 'BIN')`
+        );
+        const matId = subjects.find((s) => s.code === "MAT")?.id ?? 1;
+        const binId = subjects.find((s) => s.code === "BIN")?.id ?? 2;
+
         const rows = await query<Array<RowDataPacket & {
             subject_id: number;
             total_score: number;
@@ -435,13 +395,15 @@ export class RecallRepository {
              GROUP BY qb.subject_id`,
             [sessionId]
         );
-        const mathRow = rows.find((r) => Number(r.subject_id) === 1);
-        const bahasaRow = rows.find((r) => Number(r.subject_id) === 2);
+        const mathRow = rows.find((r) => Number(r.subject_id) === matId);
+        const bahasaRow = rows.find((r) => Number(r.subject_id) === binId);
         return {
             mathCorrect: Number(mathRow?.total_score || 0),
             mathTotal: Number(mathRow?.total_questions || 15),
             bahasaCorrect: Number(bahasaRow?.total_score || 0),
             bahasaTotal: Number(bahasaRow?.total_questions || 15),
+            mathSubjectId: matId,
+            bahasaSubjectId: binId,
         };
     }
 

@@ -69,7 +69,7 @@ export class LearningService {
 
         const attemptCount = await this.repo.countAttempts(userId, subMaterialId, level.id);
         const isRemedial = attemptCount > 0;
-        const questions = await this.repo.pickQuestions(subMaterialId, level.id, 10);
+        const questions = await this.repo.pickQuestions(subMaterialId, level.id, 10, userId);
 
         if (questions.length < 10) {
             throw new BadRequestError(
@@ -128,14 +128,21 @@ export class LearningService {
                     options: [],
                     selected_option_ids: ans?.selected || [],
                     is_skipped: ans?.isSkipped || false,
-                    stimulus: r.stimulus_text ? {
+                    stimulus: r.stimulus_id ? {
+                        id: r.stimulus_id,
+                        subject_id: r.stimulus_subject_id || 1,
+                        title: r.stimulus_title || "",
+                        content_text: r.stimulus_text || "",
+                        source_citation: null,
+                        image_url: r.stimulus_image_url || null,
+                    } : (r.stimulus_text ? {
                         id: 0,
-                        subject_id: 2,
+                        subject_id: 1,
                         title: "",
                         content_text: r.stimulus_text,
                         source_citation: null,
                         image_url: r.stimulus_image_url || null,
-                    } : null,
+                    } : null),
                 });
             }
 
@@ -353,7 +360,7 @@ export class LearningService {
                     selected_option_ids: [],
                     correct_option_ids: [],
                     is_correct: Boolean(r.is_answer_correct),
-                    time_spent_seconds: 30,
+                    time_spent_seconds: Number(r.time_spent_seconds || 0),
                     explanation_text: r.explanation_text || "",
                     reasoning_guide: r.reasoning_guide || "",
                     reference_url: r.reference_url || null,
