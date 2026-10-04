@@ -56,7 +56,7 @@ export default function LoginPage() {
         throw new Error('Gagal mendapatkan sesi pengguna.');
       }
 
-      login(token, {
+      await login(token, {
         id: authUser.id,
         name: authUser.name || authUser.username || '',
         username: authUser.username || authUser.email?.split('@')[0] || '',

@@ -111,7 +111,6 @@ export default function CreateQuestionPage() {
 
   const handleToggleComplexKey = (key: string) => {
     if (complexKeys.includes(key)) {
-      if (complexKeys.length <= 1) return; // at least 1 key
       setComplexKeys(complexKeys.filter((k) => k !== key));
     } else {
       if (complexKeys.length >= 2) return; // exactly 2 keys max
@@ -457,9 +456,20 @@ export default function CreateQuestionPage() {
 
           {/* Options & Answer Keys */}
           <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 space-y-4 shadow-sm">
-            <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2">
-              3. Opsi Alternatif & Kunci Jawaban
-            </h3>
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+              <h3 className="text-sm font-bold text-slate-900">
+                3. Opsi Alternatif & Kunci Jawaban
+              </h3>
+              {questionType === 'PG_KOMPLEKS' && (
+                <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold border ${
+                  complexKeys.length === 2
+                    ? 'bg-purple-50 text-purple-700 border-purple-200'
+                    : 'bg-amber-50 text-amber-700 border-amber-200'
+                }`}>
+                  {complexKeys.length}/2 Kunci Dipilih {complexKeys.length === 2 ? '✓' : '(Pilih 2)'}
+                </span>
+              )}
+            </div>
             <p className="text-[11px] text-slate-500">
               {questionType === 'PG_TUNGGAL'
                 ? 'Pilih satu radio button pada opsi yang menjadi kunci jawaban benar.'

@@ -24,7 +24,7 @@ import { UserAvatar } from '@/components/common/UserAvatar';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
@@ -37,6 +37,15 @@ export default function DashboardPage() {
       .then((res: any) => {
         const data = res?.data || res;
         setDashboardData(data);
+        if (data?.student) {
+          updateUser({
+            name: data.student.name || user?.name,
+            avatarUrl: data.student.avatar?.imageUrl || data.student.avatarUrl || user?.avatarUrl,
+            avatarId: data.student.avatar?.id || user?.avatarId,
+            totalXp: data.student.totalXp ?? data.student.total_xp ?? user?.totalXp,
+            currentStreak: data.student.currentStreak ?? data.student.current_streak ?? user?.currentStreak,
+          });
+        }
       })
       .catch((err: any) => {
         console.error('Failed to load dashboard:', err);

@@ -233,7 +233,7 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
 
   const answeredCount = Object.values(answers).filter((a) => a && a.length > 0).length;
   const unansweredCount = questions.length - answeredCount;
-  const currentProgressPercent = questions.length > 0 ? Math.round(((currentIndex + 1) / questions.length) * 100) : 0;
+  const answeredProgressPercent = questions.length > 0 ? Math.round((answeredCount / questions.length) * 100) : 0;
 
   if (loading) {
     return (
@@ -298,15 +298,15 @@ export default function LearningExamPage({ params }: { params: Promise<{ attempt
             {/* Top Progress Indicator */}
             <div className="hidden md:flex flex-col items-end gap-1 min-w-[200px]">
               <div className="flex items-center justify-between w-full text-[11px] text-slate-500">
-                <span className="font-semibold text-slate-700">Progres Pengerjaan</span>
+                <span className="font-semibold text-slate-700">Progres Jawaban</span>
                 <span className="font-bold text-blue-600">
-                  Soal {currentIndex + 1} dari {questions.length} ({currentProgressPercent}%)
+                  {answeredCount} dari {questions.length} Terjawab ({answeredProgressPercent}%)
                 </span>
               </div>
               <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden border border-slate-200/60">
                 <div
                   className="h-full rounded-full bg-blue-600 transition-all duration-300"
-                  style={{ width: `${currentProgressPercent}%` }}
+                  style={{ width: `${answeredProgressPercent}%` }}
                 />
               </div>
             </div>

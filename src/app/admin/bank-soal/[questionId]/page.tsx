@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { AdminNav } from '@/components/layout/AdminNav';
 import { Footer } from '@/components/layout/Footer';
 import { api } from '@/lib/api-client';
+import { useAuth } from '@/lib/auth-context';
 import { 
   ArrowLeft, 
   Upload, 
@@ -19,9 +20,35 @@ import {
 import FormattedContent from '@/components/common/FormattedContent';
 import OptionRenderer from '@/components/common/OptionRenderer';
 
+const SUBMATERIAL_MAP: Record<number, { title: string; material: string }> = {
+  1: { title: 'Bilangan Real', material: 'Bilangan' },
+  2: { title: 'Persamaan & Pertidaksamaan Linier', material: 'Aljabar' },
+  3: { title: 'Bentuk Aljabar', material: 'Aljabar' },
+  4: { title: 'Relasi dan Fungsi', material: 'Aljabar' },
+  5: { title: 'Barisan dan Deret', material: 'Aljabar' },
+  6: { title: 'Objek Geometri', material: 'Geometri & Pengukuran' },
+  7: { title: 'Transformasi Geometri', material: 'Geometri & Pengukuran' },
+  8: { title: 'Pengukuran', material: 'Geometri & Pengukuran' },
+  9: { title: 'Data (Statistika)', material: 'Data & Peluang' },
+  10: { title: 'Peluang (Probabilitas)', material: 'Data & Peluang' },
+  11: { title: 'Pemahaman Tekstual (Teks Informasi)', material: 'Teks Informasi' },
+  12: { title: 'Pemahaman Inferensial (Teks Informasi)', material: 'Teks Informasi' },
+  13: { title: 'Evaluasi dan Apresiasi (Teks Informasi)', material: 'Teks Informasi' },
+  14: { title: 'Pemahaman Tekstual (Teks Fiksi)', material: 'Teks Fiksi' },
+  15: { title: 'Pemahaman Inferensial (Teks Fiksi)', material: 'Teks Fiksi' },
+  16: { title: 'Evaluasi dan Apresiasi (Teks Fiksi)', material: 'Teks Fiksi' },
+};
+
 export default function EditQuestionPage({ params }: { params: Promise<{ questionId: string }> }) {
   const router = useRouter();
   const { questionId } = use(params);
+  const { user, role, isLoading: authLoading, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (!authLoading && (!isAuthenticated || (role !== 'TIM_KURIKULUM' && user?.role !== 'TIM_KURIKULUM'))) {
+      router.push('/dashboard');
+    }
+  }, [authLoading, isAuthenticated, role, user, router]);
 
   const [bankType, setBankType] = useState('LATIHAN');
   const [subjectId, setSubjectId] = useState('1');
@@ -73,14 +100,17 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
   const populateData = (q: any) => {
     setBankType(q.bankType || q.bank_type || 'LEVEL_EXERCISE');
     setSubjectId(String(q.subjectId || q.subject_id || 1));
-    setMaterialName(q.materialName || q.material_name || '');
-    setSubmaterialName(q.submaterialName || q.sub_material_name || '');
-    setSubmaterialId(q.sub_material_id || q.subMaterialId || null);
+    const subId = q.sub_material_id || q.subMaterialId || null;
+    const subMeta = subId ? SUBMATERIAL_MAP[subId] : null;
+    setSubmaterialId(subId);
+    setMaterialName(q.materialName || q.material_name || subMeta?.material || '');
+    setSubmaterialName(q.submaterialName || q.sub_material_name || subMeta?.title || '');
     const rawLevel = q.cognitiveLevelId || q.cognitive_level_id || '1';
     const parsedLevel = String(rawLevel).replace('L', '');
     setCognitiveLevel(['1', '2', '3'].includes(parsedLevel) ? parsedLevel : '1');
+    const format = q.questionFormat || q.question_format || q.type || '';
     setQuestionType(
-      (q.questionFormat || q.question_format) === 'COMPLEX_CHOICE' ? 'PG_KOMPLEKS' : 'PG_TUNGGAL'
+      format === 'COMPLEX_CHOICE' || format === 'PG_KOMPLEKS' ? 'PG_KOMPLEKS' : 'PG_TUNGGAL'
     );
     setStimulus(
       typeof q.stimulus === 'string'
@@ -111,6 +141,7 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
         setComplexKeys(correctList);
       } else if (correctList.length === 1) {
         setSingleKey(correctList[0]);
+        setComplexKeys([correctList[0]]);
       }
     }
     setExplanation(
@@ -149,7 +180,6 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
 
   const handleToggleComplexKey = (key: string) => {
     if (complexKeys.includes(key)) {
-      if (complexKeys.length <= 1) return;
       setComplexKeys(complexKeys.filter((k) => k !== key));
     } else {
       if (complexKeys.length >= 2) return; // Exactly 2 keys max
@@ -219,6 +249,10 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
       setSubmitting(false);
     }
   };
+
+  if (!authLoading && (!isAuthenticated || (role !== 'TIM_KURIKULUM' && user?.role !== 'TIM_KURIKULUM'))) {
+    return null;
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F8FAFC]">
@@ -386,9 +420,20 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
             </div>
 
             <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-7 space-y-4 shadow-sm">
-              <h3 className="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2">
-                3. Pilihan Jawaban
-              </h3>
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <h3 className="text-sm font-bold text-slate-900">
+                  3. Pilihan Jawaban
+                </h3>
+                {questionType === 'PG_KOMPLEKS' && (
+                  <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                    complexKeys.length === 2 
+                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                      : 'bg-amber-50 text-amber-700 border border-amber-200'
+                  }`}>
+                    {complexKeys.length}/2 Kunci Dipilih
+                  </span>
+                )}
+              </div>
               <p className="text-[11px] text-slate-500">
                 {questionType === 'PG_TUNGGAL'
                   ? 'Pilih satu radio button pada opsi yang menjadi kunci jawaban benar.'

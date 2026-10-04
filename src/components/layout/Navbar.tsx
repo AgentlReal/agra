@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
@@ -21,9 +21,15 @@ import { UserAvatar } from '@/components/common/UserAvatar';
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
-  const { user, role, logout } = useAuth();
+  const { user, role, logout, refreshUser } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    if (user && role === 'SISWA') {
+      refreshUser();
+    }
+  }, [pathname, refreshUser]);
 
   const navLinks = [
     { label: 'Dasbor', href: '/dashboard', icon: Sparkles },
