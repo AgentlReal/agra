@@ -42,11 +42,19 @@ export default function RecallResultPage({ params }: { params: Promise<{ attempt
 
   const isPassed = Boolean(result?.isPassed ?? result?.is_passed);
   const totalQuestions = result?.totalQuestions ?? result?.total_questions ?? 30;
-  const totalCorrect = result?.totalCorrect ?? result?.total_correct ?? (result?.score ? Math.round((result.score / 100) * totalQuestions) : 0);
+  const totalCorrect =
+    result?.correctAnswers ??
+    result?.correct_answers ??
+    result?.totalCorrect ??
+    result?.total_correct ??
+    (result?.score ? Math.round((result.score / 100) * totalQuestions) : 0);
   const formattedCorrect = Number.isInteger(Number(totalCorrect)) ? totalCorrect : Number(totalCorrect).toFixed(1);
-  const wrongCount = totalQuestions - totalCorrect;
+  const wrongCount = Math.max(0, totalQuestions - totalCorrect);
   const formattedWrong = Number.isInteger(Number(wrongCount)) ? wrongCount : Number(wrongCount).toFixed(1);
-  const score = result?.score ?? (totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0);
+  const score =
+    result?.totalScore ??
+    result?.score ??
+    (totalQuestions > 0 ? Math.round((Number(totalCorrect) / totalQuestions) * 100) : 0);
   const earnedXp = result?.earnedXp ?? result?.xpEarned ?? result?.xp_earned ?? 0;
 
   return (
@@ -185,13 +193,15 @@ export default function RecallResultPage({ params }: { params: Promise<{ attempt
                 </Link>
 
                 <div className="w-full sm:w-auto flex items-center gap-2.5">
-                  <Link
-                    href="/recall"
-                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
-                  >
-                    <RotateCcw className="h-3.5 w-3.5" />
-                    <span>Ulangi Pretest</span>
-                  </Link>
+                  {!isPassed && (
+                    <Link
+                      href="/recall"
+                      className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+                    >
+                      <RotateCcw className="h-3.5 w-3.5" />
+                      <span>Ulangi Pretest</span>
+                    </Link>
+                  )}
 
                   <Link
                     href="/curriculum"

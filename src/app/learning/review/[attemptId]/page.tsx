@@ -42,6 +42,8 @@ interface ReviewItem {
   isCorrect: boolean;
   score?: number;
   explanation: string;
+  reasoningGuide?: string | null;
+  referenceUrl?: string | null;
 }
 
 export default function LearningReviewPage({ params }: { params: Promise<{ attemptId: string }> }) {
@@ -127,7 +129,14 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
               correctAnswer,
               isCorrect: Boolean(q.is_correct ?? q.isCorrect),
               score: q.score,
-              explanation: q.explanation || q.discussion || 'Kunci pemecahan butir soal latihan ini telah diverifikasi.',
+              explanation:
+                q.explanation_text ||
+                q.explanation ||
+                q.reasoning_guide ||
+                q.discussion ||
+                'Kunci pemecahan butir soal latihan ini telah diverifikasi.',
+              reasoningGuide: q.reasoning_guide || null,
+              referenceUrl: q.reference_url || null,
             };
           });
           setQuestions(qs);
@@ -390,14 +399,41 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
               </div>
 
               {/* Solution / Explanation Box */}
-              <div className="rounded-2xl border border-blue-200 bg-blue-50/40 p-5 sm:p-6 space-y-2">
-                <div className="flex items-center gap-2 text-xs font-bold text-blue-900 uppercase tracking-wider">
-                  <Lightbulb className="h-4 w-4 text-blue-600" />
-                  <span>Pembahasan Solusi &amp; Konsep Kunci:</span>
+              <div className="rounded-2xl border border-blue-200 bg-blue-50/40 p-5 sm:p-6 space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-bold text-blue-900 uppercase tracking-wider">
+                    <Lightbulb className="h-4 w-4 text-blue-600" />
+                    <span>Pembahasan Solusi &amp; Konsep Kunci:</span>
+                  </div>
+                  <div className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal pt-1">
+                    <FormattedContent content={currentQ.explanation} />
+                  </div>
                 </div>
-                <div className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal pt-1">
-                  <FormattedContent content={currentQ.explanation} />
-                </div>
+
+                {currentQ.reasoningGuide && (
+                  <div className="pt-3 border-t border-blue-200/60 space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
+                      <Sparkles className="h-3.5 w-3.5 text-amber-600" />
+                      <span>Panduan Berpikir Kritis (Reasoning Guide):</span>
+                    </div>
+                    <div className="text-xs text-slate-600 leading-relaxed">
+                      <FormattedContent content={currentQ.reasoningGuide} />
+                    </div>
+                  </div>
+                )}
+
+                {currentQ.referenceUrl && (
+                  <div className="pt-2 text-xs">
+                    <a
+                      href={currentQ.referenceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 underline font-semibold inline-flex items-center gap-1"
+                    >
+                      <span>Rujukan Materi Pembelajaran</span> &rarr;
+                    </a>
+                  </div>
+                )}
               </div>
 
               {/* Bottom Pagination Buttons */}
