@@ -66,9 +66,15 @@ export default function ProfilePage() {
   const [xpTransactions, setXpTransactions] = useState<any[]>([]);
   const [loadingXp, setLoadingXp] = useState(true);
 
+  // Sync initial name from auth context
   useEffect(() => {
-    if (user?.name) setName(user.name);
+    if (user?.name && !name) {
+      setName(user.name);
+    }
+  }, [user?.name, name]);
 
+  // Fetch initial profile data on mount
+  useEffect(() => {
     // Fetch avatars
     api.profile
       .getAvatars()
@@ -98,12 +104,11 @@ export default function ProfilePage() {
             setName(pData.name);
           }
           updateUser({
-            name: pData.name || user?.name,
-            avatarUrl: pData.avatar?.imageUrl || pData.avatarUrl || user?.avatarUrl,
-            avatarId: pData.avatar?.id || user?.avatarId,
-            totalXp: pData.totalXp ?? pData.total_xp ?? user?.totalXp ?? 0,
-            currentStreak: pData.currentStreak ?? pData.current_streak ?? user?.currentStreak ?? 0,
-            grade: pData.grade || user?.grade,
+            name: pData.name,
+            avatarUrl: pData.avatar?.imageUrl || pData.avatarUrl,
+            avatarId: pData.avatar?.id,
+            totalXp: pData.totalXp ?? pData.total_xp ?? 0,
+            grade: pData.grade,
           });
         }
       })
@@ -118,7 +123,7 @@ export default function ProfilePage() {
       })
       .catch((err) => console.error('Failed to load XP transactions:', err))
       .finally(() => setLoadingXp(false));
-  }, [user]);
+  }, []);
 
   // Determine current mastery tier
   const currentXp = profile?.totalXp ?? profile?.total_xp ?? user?.totalXp ?? 0;
