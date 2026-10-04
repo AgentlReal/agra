@@ -65,11 +65,27 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
   const [failedSaveIndices, setFailedSaveIndices] = useState<number[]>([]);
   const [showSubmitWarningModal, setShowSubmitWarningModal] = useState(false);
 
+  // BFCache protection
+  useEffect(() => {
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        window.location.reload();
+      }
+    };
+    window.addEventListener('pageshow', handlePageShow);
+    return () => window.removeEventListener('pageshow', handlePageShow);
+  }, []);
+
   // Initialize questions
   useEffect(() => {
     api.recall
       .getAttempt(attemptId)
       .then((res: any) => {
+        const attemptStatus = res?.status || res?.data?.status || res?.attempt?.status;
+        if (attemptStatus === 'COMPLETED') {
+          router.replace(`/recall/result/${attemptId}`);
+          return;
+        }
         const rawQs = res?.questions || res?.data?.questions;
         if (Array.isArray(rawQs) && rawQs.length > 0) {
           const qs: QuestionItem[] = rawQs.map((q: any, i: number) => {
@@ -215,6 +231,25 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
       setSaveError((prev) => (prev?.questionNumber === qIndex + 1 ? null : prev));
     } catch (err: any) {
       console.error('Autosave failed:', err);
+      const isClosed =
+        err.code === 'SESSION_CLOSED' ||
+        err.code === 'TIME_EXPIRED' ||
+        err.status === 409 ||
+        err.message?.includes('SESSION_CLOSED') ||
+        err.message?.includes('TIME_EXPIRED');
+
+      if (isClosed) {
+        setSaveError({
+          message: 'Sesi asesmen telah selesai atau ditutup. Mengalihkan ke evaluasi hasil...',
+          status: err.status || 409,
+          questionNumber: qIndex + 1,
+        });
+        setTimeout(() => {
+          router.replace(`/recall/result/${attemptId}`);
+        }, 1200);
+        return;
+      }
+
       setFailedSaveIndices((prev) => (prev.includes(qIndex) ? prev : [...prev, qIndex]));
       setSaveError({
         message: err.message || 'Gagal menyimpan jawaban ke server.',
@@ -246,7 +281,7 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
     setSubmitting(true);
     try {
       await api.recall.submit(attemptId);
-      router.push(`/recall/result/${attemptId}`);
+      router.replace(`/recall/result/${attemptId}`);
     } catch (err: any) {
       alert(err.message || 'Gagal mengirim jawaban Recall.');
       setSubmitting(false);

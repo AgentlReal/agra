@@ -73,10 +73,26 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
   const [failedSaveIndices, setFailedSaveIndices] = useState<number[]>([]);
   const [showSubmitWarningModal, setShowSubmitWarningModal] = useState(false);
 
+  // BFCache protection
+  useEffect(() => {
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        window.location.reload();
+      }
+    };
+    window.addEventListener('pageshow', handlePageShow);
+    return () => window.removeEventListener('pageshow', handlePageShow);
+  }, []);
+
   useEffect(() => {
     api.simulation
       .getAttempt(attemptId)
       .then((res: any) => {
+        const attemptStatus = res?.status || res?.data?.status || res?.attempt?.status;
+        if (attemptStatus === 'COMPLETED') {
+          router.replace(`/simulations/result/${attemptId}`);
+          return;
+        }
         if (res?.timing?.remaining_seconds) {
           setTimeLeft(res.timing.remaining_seconds);
         } else if (res?.remainingTimeSeconds) {
@@ -207,7 +223,7 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
           .catch(() => {})
           .finally(() => {
             setTimeout(() => {
-              router.push(`/simulations/result/${attemptId}`);
+              router.replace(`/simulations/result/${attemptId}`);
             }, 600);
           });
       } else {
@@ -245,6 +261,25 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
       setSaveError((prev) => (prev?.questionNumber === qIndex + 1 ? null : prev));
     } catch (err: any) {
       console.error('Simulation autosave failed:', err);
+      const isClosed =
+        err.code === 'SESSION_CLOSED' ||
+        err.code === 'TIME_EXPIRED' ||
+        err.status === 409 ||
+        err.message?.includes('SESSION_CLOSED') ||
+        err.message?.includes('TIME_EXPIRED');
+
+      if (isClosed) {
+        setSaveError({
+          message: 'Sesi simulasi telah berakhir atau ditutup. Mengalihkan ke evaluasi hasil...',
+          status: err.status || 409,
+          questionNumber: qIndex + 1,
+        });
+        setTimeout(() => {
+          router.replace(`/simulations/result/${attemptId}`);
+        }, 1200);
+        return;
+      }
+
       setFailedSaveIndices((prev) => (prev.includes(qIndex) ? prev : [...prev, qIndex]));
       setSaveError({
         message: err.message || 'Gagal menyimpan jawaban simulasi ke server.',
@@ -302,9 +337,14 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
     setSubmitting(true);
     try {
       await api.simulation.submit(attemptId);
-      router.push(`/simulations/result/${attemptId}`);
-    } catch {
-      router.push(`/simulations/result/${attemptId}`);
+      router.replace(`/simulations/result/${attemptId}`);
+    } catch (err: any) {
+      if (err.code === 'SIMULATION_ALREADY_SUBMITTED' || err.status === 409) {
+        router.replace(`/simulations/result/${attemptId}`);
+      } else {
+        alert(err.message || 'Gagal mengirimkan ujian simulasi. Periksa koneksi internet Anda.');
+        setSubmitting(false);
+      }
     }
   };
 
