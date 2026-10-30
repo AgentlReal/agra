@@ -30,6 +30,9 @@ export const questionFilterQuerySchema = z.object({
             return undefined;
         }, z.boolean().optional())
         .optional(),
+    status: z.enum(["DRAFT", "PENDING_REVIEW", "ACTIVE", "INACTIVE", "REVISION"]).optional(),
+    q: z.string().trim().optional(),
+    search: z.string().trim().optional(),
     page: z.coerce.number().int().min(1, "Halaman (page) minimal 1").default(1),
     limit: z.coerce.number().int().min(1, "Limit minimal 1").max(100, "Limit maksimal 100").default(20),
 });
@@ -275,10 +278,21 @@ export const toggleQuestionStatusSchema = z
     .object({
         is_active: booleanField("is_active").optional(),
         isActive: booleanField("isActive").optional(),
+        status: z.enum(["DRAFT", "PENDING_REVIEW", "ACTIVE", "INACTIVE", "REVISION"]).optional(),
+        revision_notes: z.string().trim().optional(),
+        notes: z.string().trim().optional(),
     })
-    .transform((data) => ({
-        is_active: data.is_active ?? data.isActive ?? true,
-    }));
+    .transform((data) => {
+        let isActive = data.is_active ?? data.isActive;
+        if (isActive === undefined && data.status) {
+            isActive = data.status === "ACTIVE";
+        }
+        return {
+            is_active: isActive ?? true,
+            status: data.status,
+            revision_notes: data.revision_notes ?? data.notes ?? null,
+        };
+    });
 
 export type ToggleQuestionStatusInput = z.infer<typeof toggleQuestionStatusSchema>;
 
@@ -456,6 +470,10 @@ export const packageIdParamSchema = z.object({
 export type PackageIdParamInput = z.infer<typeof packageIdParamSchema>;
 
 export const paginationQuerySchema = paginationSchema;
+
+export const simulationPackageFilterQuerySchema = paginationSchema.extend({
+    subject_id: z.coerce.number().int().optional(),
+});
 
 export type PaginationQueryInput = z.infer<typeof paginationQuerySchema>;
 

@@ -7,14 +7,14 @@ import {
 } from "./profile.schema";
 import { validateBody, validateQuery } from "@/shared/utils/validator";
 import { successResponse, jsonResponse, errorResponse } from "@/shared/utils/response";
-import { requireAuth } from "../auth/auth.guard";
+import { requireRole } from "../auth/auth.guard";
 
 export class ProfileController {
     constructor(private readonly service = new ProfileService()) {}
 
     async getProfile() {
         try {
-            const { user } = await requireAuth();
+            const { user } = await requireRole("SISWA");
             const data = await this.service.getProfile(user.id);
             return successResponse(data);
         } catch (error) {
@@ -24,7 +24,7 @@ export class ProfileController {
 
     async completeProfile(req: Request) {
         try {
-            const { user } = await requireAuth();
+            const { user } = await requireRole("SISWA");
             const dto = await validateBody(req, completeProfileSchema, {
                 defaultCode: "VALIDATION_ERROR",
                 statusCode: 400,
@@ -38,7 +38,7 @@ export class ProfileController {
 
     async updateProfile(req: Request) {
         try {
-            const { user } = await requireAuth();
+            const { user } = await requireRole("SISWA");
             const dto = await validateBody(req, updateProfileNameSchema, {
                 defaultCode: "VALIDATION_ERROR",
                 statusCode: 422,
@@ -52,7 +52,7 @@ export class ProfileController {
 
     async getAvatars() {
         try {
-            const { user } = await requireAuth();
+            const { user } = await requireRole("SISWA");
             const data = await this.service.getAvatars(user.id);
             return successResponse(data);
         } catch (error) {
@@ -62,7 +62,7 @@ export class ProfileController {
 
     async updateAvatar(req: Request) {
         try {
-            const { user } = await requireAuth();
+            const { user } = await requireRole("SISWA");
             const dto = await validateBody(req, updateAvatarSchema, {
                 defaultCode: "INVALID_AVATAR_ID",
                 statusCode: 400,
@@ -80,7 +80,7 @@ export class ProfileController {
 
     async getXpTransactions(req: Request) {
         try {
-            const { user } = await requireAuth();
+            const { user } = await requireRole("SISWA");
             const pagination = validateQuery(req, xpPaginationSchema);
             const result = await this.service.getXpTransactions(user.id, pagination.page, pagination.limit);
             return successResponse(result);
@@ -91,7 +91,7 @@ export class ProfileController {
 
     async getDashboard() {
         try {
-            const { user } = await requireAuth();
+            const { user } = await requireRole("SISWA");
             const data = await this.service.getDashboard(user.id);
             return successResponse(data);
         } catch (error) {

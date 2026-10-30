@@ -93,6 +93,19 @@ export class AdminRepository {
             whereClauses.push("qb.is_active = ?");
             params.push(filter.is_active);
         }
+        if (filter.status) {
+            if (filter.status === "ACTIVE") {
+                whereClauses.push("qb.is_active = TRUE");
+            } else if (filter.status === "DRAFT" || filter.status === "INACTIVE") {
+                whereClauses.push("qb.is_active = FALSE");
+            }
+        }
+
+        const searchKeyword = filter.q || filter.search;
+        if (searchKeyword) {
+            whereClauses.push("(qb.question_text LIKE ? OR EXISTS (SELECT 1 FROM question_explanations qe WHERE qe.question_id = qb.id AND qe.explanation_text LIKE ?))");
+            params.push(`%${searchKeyword}%`, `%${searchKeyword}%`);
+        }
 
         const whereSql = whereClauses.length > 0 ? "WHERE " + whereClauses.join(" AND ") : "";
 
@@ -172,10 +185,11 @@ export class AdminRepository {
             }
 
             const questionImageUrl = input.question_image_url ?? input.stimulus_image_url ?? null;
+            const isActive = input.is_active ?? (input.status === "DRAFT" ? false : true);
             const [qbRes] = await conn.execute<ResultSetHeader>(
                 `INSERT INTO question_banks 
                  (subject_id, sub_material_id, cognitive_level_id, stimulus_id, bank_type, question_format, question_text, question_image_url, is_active)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, TRUE)`,
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                     input.subject_id,
                     input.sub_material_id || null,
@@ -185,6 +199,7 @@ export class AdminRepository {
                     input.question_format,
                     input.question_text,
                     questionImageUrl,
+                    isActive,
                 ]
             );
             const questionId = qbRes.insertId;
@@ -454,8 +469,14 @@ export class AdminRepository {
         });
     }
 
-    async toggleQuestionStatus(questionId: number, isActive: boolean): Promise<void> {
+    async toggleQuestionStatus(questionId: number, isActive: boolean, revisionNotes?: string | null): Promise<void> {
         await execute(`UPDATE question_banks SET is_active = ? WHERE id = ?`, [isActive, questionId]);
+        if (revisionNotes) {
+            await execute(
+                `UPDATE question_explanations SET reasoning_guide = ? WHERE question_id = ?`,
+                [revisionNotes, questionId]
+            );
+        }
     }
 
     async getRandomQuestionsForSimulation(subjectId: number, count = 30): Promise<Array<{ id: number }>> {
@@ -469,16 +490,20 @@ export class AdminRepository {
         return rows.map((r) => ({ id: r.id }));
     }
 
-    async listSimulationPackages(page = 1, limit = 20): Promise<{
+    async listSimulationPackages(page = 1, limit = 20, subjectId?: number): Promise<{
         items: (K11_SimulationPackageSummary & { subjectName?: string; participantsCount?: number; averageScore?: number })[];
         totalItems: number;
     }> {
+        const whereSql = subjectId ? `WHERE s.subject_id = ?` : "";
+        const countParams = subjectId ? [subjectId] : [];
         const countRows = await query<Array<RowDataPacket & { total: number }>>(
-            `SELECT COUNT(*) AS total FROM simulations`
+            `SELECT COUNT(*) AS total FROM simulations s ${whereSql}`,
+            countParams
         );
         const totalItems = countRows[0]?.total || 0;
 
         const offset = (page - 1) * limit;
+        const queryParams = subjectId ? [subjectId, limit, offset] : [limit, offset];
         const rows = await query<Array<RowDataPacket & {
             id: number;
             subject_id: number;
@@ -502,9 +527,10 @@ export class AdminRepository {
                 (SELECT COALESCE(AVG(ls.score), 0) FROM learning_sessions ls WHERE ls.simulation_id = s.id AND ls.status = 'COMPLETED') AS avg_score
              FROM simulations s
              LEFT JOIN subjects subj ON subj.id = s.subject_id
+             ${whereSql}
              ORDER BY s.id DESC 
              LIMIT ? OFFSET ?`,
-            [limit, offset]
+            queryParams
         );
 
         const items = rows.map((r) => ({
@@ -549,16 +575,18 @@ export class AdminRepository {
                 }
             }
 
+            const isActive = input.is_active ?? (status === "ACTIVE");
             const [pkgRes] = await conn.execute<ResultSetHeader>(
                 `INSERT INTO simulations 
                  (subject_id, title, package_code, duration_minutes, total_questions, passing_score, xp_reward, status, is_active)
-                 VALUES (?, ?, ?, 75, ?, 90.00, 500, ?, TRUE)`,
+                 VALUES (?, ?, ?, 75, ?, 90.00, 500, ?, ?)`,
                 [
                     input.subject_id,
                     input.title,
                     packageCode,
                     questions.length || 30,
                     status,
+                    isActive,
                 ]
             );
             const packageId = pkgRes.insertId;

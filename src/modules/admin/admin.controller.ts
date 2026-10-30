@@ -11,6 +11,7 @@ import {
     updateSimulationPackageStatusSchema,
     packageIdParamSchema,
     paginationQuerySchema,
+    simulationPackageFilterQuerySchema,
 } from "./admin.schema";
 import { validateBody, validateParams, validateQuery } from "@/shared/utils/validator";
 import { jsonResponse, errorResponse } from "@/shared/utils/response";
@@ -100,10 +101,10 @@ export class AdminController {
 
     async toggleQuestionStatus(req: Request, params: unknown) {
         try {
-            await requireRole("TIM_KURIKULUM");
+            await requireRole(["TIM_KURIKULUM", "SUPERADMIN"]);
             const { questionId } = validateParams(params, questionIdParamSchema);
             const dto = await validateBody(req, toggleQuestionStatusSchema, { style: "status" });
-            const data = await this.service.toggleQuestionStatus(questionId, dto.is_active);
+            const data = await this.service.toggleQuestionStatus(questionId, dto.is_active, dto.revision_notes);
             return jsonResponse(data, 200);
         } catch (error) {
             return errorResponse(error, "status");
@@ -175,9 +176,9 @@ export class AdminController {
 
     async listSimulationPackages(req: Request) {
         try {
-            await requireRole("TIM_KURIKULUM");
-            const { page, limit } = validateQuery(req, paginationQuerySchema);
-            const data = await this.service.listSimulationPackages(page, limit);
+            await requireRole(["TIM_KURIKULUM", "SUPERADMIN"]);
+            const { page, limit, subject_id } = validateQuery(req, simulationPackageFilterQuerySchema);
+            const data = await this.service.listSimulationPackages(page, limit, subject_id);
             return jsonResponse(data, 200);
         } catch (error) {
             return errorResponse(error, "status");

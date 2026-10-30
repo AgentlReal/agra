@@ -1,4 +1,4 @@
-export type UserRole = "SISWA" | "TIM_KURIKULUM";
+export type UserRole = "SISWA" | "TIM_KURIKULUM" | "SUPERADMIN";
 
 export interface AuthenticatedUser {
     id: string;

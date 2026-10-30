@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { AppError } from "../errors/app-error";
+import { logger } from "./logger";
 
 export interface ApiResponse<T = unknown> {
     success: boolean;
@@ -41,6 +42,18 @@ export function jsonResponse<T>(data: T, status = 200, headers?: HeadersInit) {
 
 export function errorResponse(error: unknown, style: "m01" | "status" = "m01") {
     if (error instanceof AppError) {
+        if (error.statusCode >= 500) {
+            logger.error(`[AppError ${error.statusCode}] ${error.message}`, error, {
+                code: error.code,
+                statusCode: error.statusCode,
+            });
+        } else {
+            logger.warn(`[AppWarn ${error.statusCode}] ${error.message}`, {
+                code: error.code,
+                statusCode: error.statusCode,
+            });
+        }
+
         if (style === "status") {
             return NextResponse.json(
                 {
@@ -65,7 +78,7 @@ export function errorResponse(error: unknown, style: "m01" | "status" = "m01") {
         );
     }
 
-    console.error("Unhandled Error:", error);
+    logger.error("Unhandled Server Error", error);
     if (style === "status") {
         return NextResponse.json(
             {

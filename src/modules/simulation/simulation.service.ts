@@ -19,6 +19,7 @@ import {
     ConflictError,
     BadRequestError,
 } from "@/shared/errors/app-error";
+import { shuffleOptionsDeterministically } from "@/shared/assessment/option-shuffling";
 
 export class SimulationService {
     constructor(
@@ -223,6 +224,11 @@ export class SimulationService {
             });
         }
 
+        const questions = Array.from(questionMap.values()).map((q) => ({
+            ...q,
+            options: shuffleOptionsDeterministically(q.options, session.id, q.session_question_id),
+        }));
+
         return {
             attempt_id: session.id,
             package_id: session.simulation_id || 0,
@@ -234,7 +240,7 @@ export class SimulationService {
             doubtful_count: doubtfulCount,
             current_question_order: session.current_question_order || 1,
             timing,
-            questions: Array.from(questionMap.values()),
+            questions,
         };
     }
 
@@ -449,12 +455,17 @@ export class SimulationService {
             }
         }
 
+        const reviews = Array.from(reviewMap.values()).map((rev) => ({
+            ...rev,
+            options: shuffleOptionsDeterministically(rev.options, session.id, rev.session_question_id),
+        }));
+
         return {
             attempt_id: session.id,
             package_title: pkg?.title || "Simulasi CBT Mandiri",
             total_questions: (session.total_questions || pkg?.total_questions || 30) as 30,
             correct_answers: Number(session.correct_answers),
-            reviews: Array.from(reviewMap.values()),
+            reviews,
         };
     }
 }

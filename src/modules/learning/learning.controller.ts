@@ -8,14 +8,14 @@ import {
 } from "./learning.schema";
 import { validateBody, validateParams } from "@/shared/utils/validator";
 import { jsonResponse, errorResponse } from "@/shared/utils/response";
-import { requireAuth } from "../auth/auth.guard";
+import { requireRole } from "../auth/auth.guard";
 
 export class LearningController {
     constructor(private readonly service = new LearningService()) {}
 
     async startAttempt(req: Request, params: unknown) {
         try {
-            const { user } = await requireAuth();
+            const { user } = await requireRole("SISWA");
             const { level_id } = validateParams(params, startLevelAttemptParamSchema);
             const body = await validateBody(req, startLevelAttemptBodySchema, { style: "status" });
             const { session, isResume } = await this.service.startAttempt(
@@ -31,7 +31,7 @@ export class LearningController {
 
     async getAttempt(params: unknown) {
         try {
-            const { user } = await requireAuth();
+            const { user } = await requireRole("SISWA");
             const { attempt_id } = validateParams(params, learningAttemptParamSchema);
             const data = await this.service.getAttempt(attempt_id, user.id);
             return jsonResponse(data);
@@ -42,7 +42,7 @@ export class LearningController {
 
     async saveAnswer(req: Request, params: unknown) {
         try {
-            const { user } = await requireAuth();
+            const { user } = await requireRole("SISWA");
             const { attempt_id, session_question_id } = validateParams(params, learningAnswerParamSchema);
             const dto = await validateBody(req, saveLearningAnswerSchema, { style: "status" });
             const data = await this.service.saveAnswer(attempt_id, session_question_id, user.id, dto);
@@ -54,7 +54,7 @@ export class LearningController {
 
     async submitAttempt(params: unknown) {
         try {
-            const { user } = await requireAuth();
+            const { user } = await requireRole("SISWA");
             const { attempt_id } = validateParams(params, learningAttemptParamSchema);
             const data = await this.service.submitAttempt(attempt_id, user.id);
             return jsonResponse(data);
@@ -65,7 +65,7 @@ export class LearningController {
 
     async getResult(params: unknown) {
         try {
-            const { user } = await requireAuth();
+            const { user } = await requireRole("SISWA");
             const { attempt_id } = validateParams(params, learningAttemptParamSchema);
             const data = await this.service.getResult(attempt_id, user.id);
             return jsonResponse(data);
@@ -76,7 +76,7 @@ export class LearningController {
 
     async getReview(params: unknown) {
         try {
-            const { user } = await requireAuth();
+            const { user } = await requireRole("SISWA");
             const { attempt_id } = validateParams(params, learningAttemptParamSchema);
             const data = await this.service.getReview(attempt_id, user.id);
             return jsonResponse(data);
