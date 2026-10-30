@@ -75,6 +75,8 @@ export interface K10_QuestionInput {
     question_text: string;
     stimulus_image_url?: string | null;
     question_image_url?: string | null;
+    is_active?: boolean;
+    status?: "DRAFT" | "PENDING_REVIEW" | "ACTIVE" | "INACTIVE" | "REVISION";
     options: K10_QuestionInputOption[];
     explanation: {
         explanation_text: string;
@@ -98,6 +100,9 @@ export interface K10_QuestionUpdateInput {
     question_text?: string;
     stimulus_image_url?: string | null;
     question_image_url?: string | null;
+    is_active?: boolean;
+    status?: "DRAFT" | "PENDING_REVIEW" | "ACTIVE" | "INACTIVE" | "REVISION";
+    revision_notes?: string | null;
     options?: K10_QuestionInputOption[];
     explanation?: {
         explanation_text: string;
@@ -125,6 +130,9 @@ export interface K10_QuestionFilter {
     level?: number;
     type?: "SINGLE_CHOICE" | "COMPLEX_CHOICE";
     is_active?: boolean;
+    status?: "DRAFT" | "PENDING_REVIEW" | "ACTIVE" | "INACTIVE" | "REVISION";
+    q?: string;
+    search?: string;
     page?: number;
     limit?: number;
 }
@@ -185,6 +193,7 @@ export interface K11_SimulationPackageInput {
     package_code?: string;
     questions?: K11_SimulationPackageQuestionItem[];
     status?: "DRAFT" | "ACTIVE" | "ARCHIVED";
+    is_active?: boolean;
 }
 
 export interface K11_SimulationPackageUpdateInput {

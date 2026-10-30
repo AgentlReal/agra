@@ -11,6 +11,7 @@ import {
     RecallReviewItem,
 } from "./recall.types";
 import { NotFoundError, BadRequestError, ConflictError } from "@/shared/errors/app-error";
+import { shuffleOptionsDeterministically } from "@/shared/assessment/option-shuffling";
 
 export class RecallService {
     constructor(private readonly repo = new RecallRepository()) {}
@@ -126,6 +127,11 @@ export class RecallService {
             });
         }
 
+        const questions = Array.from(questionMap.values()).map((q) => ({
+            ...q,
+            options: shuffleOptionsDeterministically(q.options, session.id, q.session_question_id),
+        }));
+
         return {
             attemptId: session.id,
             subjectId: null,
@@ -133,7 +139,7 @@ export class RecallService {
             totalQuestions: session.total_questions,
             answeredCount,
             currentQuestionOrder: session.current_question_order,
-            questions: Array.from(questionMap.values()),
+            questions,
         };
     }
 
@@ -294,9 +300,14 @@ export class RecallService {
             }
         }
 
+        const reviews = Array.from(map.values()).map((rev) => ({
+            ...rev,
+            options: shuffleOptionsDeterministically(rev.options, session.id, rev.session_question_id),
+        }));
+
         return {
             attemptId: session.id,
-            reviews: Array.from(map.values()),
+            reviews,
         };
     }
 }

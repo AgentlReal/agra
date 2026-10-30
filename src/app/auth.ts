@@ -7,6 +7,9 @@ import { validatePasswordRules } from "@/shared/utils/validator";
 
 export const auth = betterAuth({
     baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+    rateLimit: {
+        enabled: false,
+    },
     user: {
         modelName: "users",
         additionalFields: {
@@ -21,6 +24,9 @@ export const auth = betterAuth({
         enabled: true,
         minPasswordLength: 6,
         maxPasswordLength: 12,
+        sendResetPassword: async ({ user, url, token }) => {
+            console.log(`[AUTH] Kirim token reset sandi ke ${user.email} (token: ${token}) - URL: ${url}`);
+        },
     },
     plugins: [
         username({
@@ -85,6 +91,24 @@ export const auth = betterAuth({
                             );
                         } catch (e) {
                             console.error("Gagal auto-create profile siswa:", e);
+                        }
+                    }
+                },
+            },
+        },
+        session: {
+            create: {
+                after: async (session) => {
+                    if (session?.userId && session?.id) {
+                        try {
+                            const pool = auth.options.database as any;
+                            // Pembatasan sesi bersamaan (BK-05: Single-Session Concurrency Control)
+                            await pool.query(
+                                "DELETE FROM session WHERE userId = ? AND id != ?",
+                                [session.userId, session.id]
+                            );
+                        } catch (e) {
+                            console.error("Gagal mencabut sesi lama:", e);
                         }
                     }
                 },

@@ -6,6 +6,7 @@ import {
     AvatarListItemDto,
     XpTransactionDto,
     DashboardResponseDto,
+    DashboardNextActionDto,
 } from "./profile.types";
 import { BadRequestError, ConflictError } from "@/shared/errors/app-error";
 
@@ -181,6 +182,42 @@ export class ProfileService {
 
         // Tentukan nextAction berdasarkan capaian siswa
         const isRecallPassed = await this.repo.findRawProfile(userId).then(p => Boolean(p?.is_recall_passed));
+        const activePos = isRecallPassed ? await this.repo.getUserActiveLearningPosition?.(userId) : null;
+
+        const defaultNextAction: DashboardNextActionDto = {
+            priority: 1,
+            type: "NEXT_LEVEL",
+            title: "Lanjutkan Latihan Submateri",
+            subjectCode: "MAT",
+            materialId: 1,
+            submaterialId: 1,
+            levelId: 1,
+            route: "/submateri.html?id=1",
+        };
+
+        const nextAction: DashboardNextActionDto = !isRecallPassed
+            ? {
+                  priority: 1,
+                  type: "RECALL",
+                  title: "Mulai Asesmen Diagnostik",
+                  subjectCode: null,
+                  materialId: null,
+                  submaterialId: null,
+                  levelId: null,
+                  route: "/recall.html",
+              }
+            : activePos
+            ? {
+                  priority: 1,
+                  type: activePos.type as any,
+                  title: activePos.title,
+                  subjectCode: activePos.subjectCode,
+                  materialId: activePos.materialId,
+                  submaterialId: activePos.submaterialId,
+                  levelId: activePos.levelId,
+                  route: activePos.route,
+              }
+            : defaultNextAction;
 
         return {
             student: {
@@ -191,32 +228,12 @@ export class ProfileService {
                 milestoneProgress: profile.milestoneProgress,
             },
             subjects: subjectsProgress,
-            nextAction: !isRecallPassed
-                ? {
-                      priority: 1,
-                      type: "RECALL",
-                      title: "Mulai Asesmen Diagnostik",
-                      subjectCode: null,
-                      materialId: null,
-                      submaterialId: null,
-                      levelId: null,
-                      route: "/recall.html",
-                  }
-                : {
-                      priority: 1,
-                      type: "NEXT_LEVEL",
-                      title: "Lanjutkan Latihan Submateri",
-                      subjectCode: "MAT",
-                      materialId: 1,
-                      submaterialId: 1,
-                      levelId: 1,
-                      route: "/submateri.html?id=1",
-                  },
+            nextAction,
             curriculumStatus: {
-                activeSubjectCode: "MAT",
-                activeMaterialId: 1,
-                activeSubmaterialId: 1,
-                activeLevelId: 1,
+                activeSubjectCode: activePos ? activePos.subjectCode : "MAT",
+                activeMaterialId: activePos ? activePos.materialId : 1,
+                activeSubmaterialId: activePos ? activePos.submaterialId : 1,
+                activeLevelId: activePos ? activePos.levelId : 1,
             },
         };
     }

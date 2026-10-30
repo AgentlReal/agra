@@ -143,4 +143,81 @@ export class ProfileRepository {
             [userId]
         );
     }
+
+    async getUserActiveLearningPosition(userId: string): Promise<{
+        subjectCode: "MAT" | "BIN";
+        materialId: number;
+        submaterialId: number;
+        levelId: number;
+        type: "NEXT_LEVEL" | "REMEDIAL" | "RESUME" | "SIMULATION";
+        title: string;
+        route: string;
+    } | null> {
+        const activeRows = await query<any[]>(
+            `SELECT ls.id, ls.sub_material_id, ls.cognitive_level_id, sm.material_id, s.code AS subject_code
+             FROM learning_sessions ls
+             JOIN sub_materials sm ON sm.id = ls.sub_material_id
+             JOIN materials m ON m.id = sm.material_id
+             JOIN subjects s ON s.id = m.subject_id
+             WHERE ls.user_id = ? AND ls.status = 'IN_PROGRESS' AND ls.session_type = 'LEVEL_PRACTICE'
+             ORDER BY ls.id DESC LIMIT 1`,
+            [userId]
+        );
+        if (activeRows.length > 0) {
+            const active = activeRows[0];
+            return {
+                subjectCode: active.subject_code,
+                materialId: active.material_id,
+                submaterialId: active.sub_material_id,
+                levelId: active.cognitive_level_id,
+                type: "NEXT_LEVEL",
+                title: "Lanjutkan Sesi Latihan Aktif",
+                route: `/submaterials/${active.sub_material_id}`,
+            };
+        }
+
+        const nextRows = await query<any[]>(
+            `SELECT sm.id AS sub_material_id, sm.material_id, s.code AS subject_code,
+                    sp.level_1_status, sp.level_2_status, sp.level_3_status
+             FROM sub_materials sm
+             JOIN materials m ON m.id = sm.material_id
+             JOIN subjects s ON s.id = m.subject_id
+             LEFT JOIN student_sub_material_progress sp ON sp.sub_material_id = sm.id AND sp.user_id = ?
+             WHERE sm.is_active = TRUE AND (sp.is_mastered IS NULL OR sp.is_mastered = FALSE)
+             ORDER BY s.id ASC, m.order_index ASC, sm.order_index ASC
+             LIMIT 1`,
+            [userId]
+        );
+
+        if (nextRows.length > 0) {
+            const nextPos = nextRows[0];
+            let levelNumber = 1;
+            let isRemedial = false;
+            if (nextPos.level_3_status === "NEEDS_REMEDIAL") {
+                levelNumber = 3;
+                isRemedial = true;
+            } else if (nextPos.level_2_status === "COMPLETED") {
+                levelNumber = 3;
+            } else if (nextPos.level_1_status === "COMPLETED") {
+                levelNumber = 2;
+            }
+
+            const clRows = await query<any[]>(
+                `SELECT id FROM cognitive_levels WHERE level_number = ? LIMIT 1`,
+                [levelNumber]
+            );
+
+            return {
+                subjectCode: nextPos.subject_code,
+                materialId: nextPos.material_id,
+                submaterialId: nextPos.sub_material_id,
+                levelId: clRows[0]?.id || levelNumber,
+                type: "NEXT_LEVEL",
+                title: isRemedial ? "Remedial Level Submateri" : "Lanjutkan Latihan Submateri",
+                route: `/submaterials/${nextPos.sub_material_id}`,
+            };
+        }
+
+        return null;
+    }
 }

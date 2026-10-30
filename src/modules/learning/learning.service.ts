@@ -11,6 +11,7 @@ import {
     M04_SubMaterialMasteryProgress,
 } from "./learning.types";
 import { NotFoundError, BadRequestError, AppError } from "@/shared/errors/app-error";
+import { shuffleOptionsDeterministically } from "@/shared/assessment/option-shuffling";
 
 export class LearningService {
     constructor(
@@ -35,6 +36,21 @@ export class LearningService {
         const subMaterial = await this.curriculumRepo.getSubMaterialById(subMaterialId);
         if (!subMaterial) {
             throw new NotFoundError("Submateri tidak ditemukan", "NOT_FOUND");
+        }
+
+        // Validasi penguncian sekuensial submateri prasyarat (BK-02)
+        if (subMaterial.prerequisite_sub_material_id) {
+            const prereqProgress = await this.curriculumRepo.getSingleSubMaterialProgress(
+                userId,
+                subMaterial.prerequisite_sub_material_id
+            );
+            if (!prereqProgress || !Boolean(prereqProgress.is_mastered)) {
+                throw new AppError(
+                    "Submateri prasyarat belum tuntas dikuasai (Dual-Condition Mastery).",
+                    403,
+                    "PREREQUISITE_LOCKED"
+                );
+            }
         }
 
         const level = await this.repo.getCognitiveLevelById(levelId);
@@ -161,6 +177,11 @@ export class LearningService {
                 : subMaterial?.level_3_name;
         const levelName = customLevelName || level?.name || "Pemahaman";
 
+        const questions = Array.from(questionMap.values()).map((q) => ({
+            ...q,
+            options: shuffleOptionsDeterministically(q.options, session.id, q.session_question_id),
+        }));
+
         return {
             attempt_id: session.id,
             sub_material_id: session.sub_material_id!,
@@ -174,7 +195,7 @@ export class LearningService {
             total_questions: 10,
             answered_count: answeredCount,
             current_question_order: session.current_question_order,
-            questions: Array.from(questionMap.values()),
+            questions,
         };
     }
 
@@ -389,13 +410,18 @@ export class LearningService {
             }
         }
 
+        const reviews = Array.from(map.values()).map((rev) => ({
+            ...rev,
+            options: shuffleOptionsDeterministically(rev.options, session.id, rev.session_question_id),
+        }));
+
         return {
             attempt_id: session.id,
             level_number: (level?.level_number || 1) as 1 | 2 | 3,
             level_name: levelName,
             total_questions: 10,
             correct_answers: Number(session.correct_answers),
-            reviews: Array.from(map.values()),
+            reviews,
         };
     }
 }

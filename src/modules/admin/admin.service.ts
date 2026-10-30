@@ -215,17 +215,17 @@ export class AdminService {
         return updated;
     }
 
-    async toggleQuestionStatus(questionId: number, isActive: boolean): Promise<K10_Question> {
+    async toggleQuestionStatus(questionId: number, isActive: boolean, revisionNotes?: string | null): Promise<K10_Question> {
         await this.getQuestionDetail(questionId);
-        await this.repo.toggleQuestionStatus(questionId, isActive);
+        await this.repo.toggleQuestionStatus(questionId, isActive, revisionNotes);
         return this.getQuestionDetail(questionId);
     }
 
-    async listSimulationPackages(page = 1, limit = 20): Promise<{
+    async listSimulationPackages(page = 1, limit = 20, subjectId?: number): Promise<{
         data: K11_SimulationPackageSummary[];
         pagination: K10_Pagination;
     }> {
-        const { items, totalItems } = await this.repo.listSimulationPackages(page, limit);
+        const { items, totalItems } = await this.repo.listSimulationPackages(page, limit, subjectId);
         const totalPages = Math.ceil(totalItems / limit) || 1;
 
         return {
