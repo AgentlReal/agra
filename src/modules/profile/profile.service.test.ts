@@ -231,7 +231,7 @@ describe("ProfileService Unit Tests", () => {
             const res = await service.getDashboard("user-1");
 
             expect(res.nextAction.type).toBe("RECALL");
-            expect(res.nextAction.route).toBe("/recall.html");
+            expect(res.nextAction.route).toBe("/recall");
             expect(res.subjects[0].masteryPercent).toBe(0);
             expect(res.subjects[0].simulationUnlocked).toBe(false);
         });

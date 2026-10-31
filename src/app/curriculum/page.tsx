@@ -40,7 +40,7 @@ export default function CurriculumIndexPage() {
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3.5 py-1 text-xs font-semibold text-blue-700 mb-2">
             <BookOpen className="h-4 w-4" />
-            <span>Struktur Kurikulum Resmi Fase D (SMP/MTs)</span>
+            <span>Struktur Kurikulum Resmi SMP/MTs</span>
           </div>
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Mata Pelajaran TKA SMP</h1>
           <p className="mt-1 text-sm text-slate-500">

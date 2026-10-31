@@ -45,7 +45,14 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
   const { user, role, isLoading: authLoading, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    if (!authLoading && (!isAuthenticated || (role !== 'TIM_KURIKULUM' && user?.role !== 'TIM_KURIKULUM'))) {
+    const isAuthorized =
+      isAuthenticated &&
+      (role === 'TIM_KURIKULUM' ||
+        user?.role === 'TIM_KURIKULUM' ||
+        role === 'SUPERADMIN' ||
+        user?.role === 'SUPERADMIN');
+
+    if (!authLoading && !isAuthorized) {
       router.push('/dashboard');
     }
   }, [authLoading, isAuthenticated, role, user, router]);
@@ -57,6 +64,8 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
   const [submaterialId, setSubmaterialId] = useState<number | null>(null);
   const [cognitiveLevel, setCognitiveLevel] = useState('L1');
   const [questionType, setQuestionType] = useState<'PG_TUNGGAL' | 'PG_KOMPLEKS'>('PG_TUNGGAL');
+  const [status, setStatus] = useState<string>('ACTIVE');
+  const [revisionNotes, setRevisionNotes] = useState<string>('');
 
   const [stimulus, setStimulus] = useState('');
   const [imageUrl, setImageUrl] = useState('');
@@ -150,6 +159,8 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
         q.explanation_text ||
         (typeof q.explanation === 'string' ? q.explanation : '')
     );
+    setStatus(q.status || (q.is_active || q.isActive ? 'ACTIVE' : 'DRAFT'));
+    setRevisionNotes(q.revision_notes || q.revisionNotes || q.notes || '');
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -250,7 +261,85 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
     }
   };
 
-  if (!authLoading && (!isAuthenticated || (role !== 'TIM_KURIKULUM' && user?.role !== 'TIM_KURIKULUM'))) {
+  const handleResubmitForReview = async () => {
+    if (!questionText.trim()) {
+      setErrorMsg('Teks pertanyaan wajib diisi.');
+      return;
+    }
+    if (options.some((opt) => !opt.text.trim())) {
+      setErrorMsg('Harap lengkapi seluruh alternatif pilihan jawaban A sampai D.');
+      return;
+    }
+    if (questionType === 'PG_KOMPLEKS' && complexKeys.length !== 2) {
+      setErrorMsg('Pilihan Ganda Kompleks harus memiliki tepat 2 kunci jawaban yang benar.');
+      return;
+    }
+
+    setSubmitting(true);
+    setErrorMsg('');
+
+    const question_format = questionType === 'PG_KOMPLEKS' ? 'COMPLEX_CHOICE' : 'SINGLE_CHOICE';
+    const formattedOptions = options.map((opt) => ({
+      option_label: opt.key,
+      option_text: opt.text,
+      is_correct:
+        questionType === 'PG_KOMPLEKS'
+          ? complexKeys.includes(opt.key)
+          : singleKey === opt.key,
+    }));
+
+    const normalizedBankType =
+      bankType === 'LATIHAN'
+        ? 'LEVEL_EXERCISE'
+        : bankType === 'SIMULASI'
+        ? 'SIMULATION'
+        : bankType;
+
+    const isRecall = normalizedBankType === 'RECALL';
+
+    const payload: any = {
+      bank_type: normalizedBankType,
+      subject_id: Number(subjectId),
+      question_format,
+      question_text: questionText,
+      options: formattedOptions,
+      status: 'PENDING_REVIEW',
+      explanation: {
+        explanation_text: explanation?.trim() || 'Pembahasan soal terlampir pada kunci jawaban.',
+      },
+      stimulus: stimulus?.trim()
+        ? {
+            title: `Wacana - ${questionText.slice(0, 30)}`,
+            stimulus_text: stimulus,
+            stimulus_image_url: imageUrl || null,
+          }
+        : null,
+      stimulus_image_url: imageUrl || null,
+      question_image_url: imageUrl || null,
+      sub_material_id: isRecall ? null : (submaterialId || 1),
+      cognitive_level_id: isRecall ? null : (Number(cognitiveLevel) || 1),
+    };
+
+    try {
+      await api.admin.updateQuestion(questionId, payload);
+      await api.admin.updateQuestionReviewStatus(questionId, { status: 'PENDING_REVIEW' });
+      setSuccessMsg('Butir soal berhasil diperbarui dan diajukan ulang ke Antrean Validasi!');
+      setTimeout(() => router.push('/admin/bank-soal'), 1500);
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Gagal mengajukan ulang butir soal.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const isAuthorized =
+    isAuthenticated &&
+    (role === 'TIM_KURIKULUM' ||
+      user?.role === 'TIM_KURIKULUM' ||
+      role === 'SUPERADMIN' ||
+      user?.role === 'SUPERADMIN');
+
+  if (!authLoading && !isAuthorized) {
     return null;
   }
 
@@ -281,6 +370,26 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Revision Feedback Alert [FE-23] */}
+            {status === 'REVISION' && (
+              <div className="rounded-2xl border border-amber-300 bg-amber-50 p-5 text-xs text-amber-900 shadow-2xs space-y-2">
+                <div className="flex items-center gap-2 font-bold text-amber-800 text-sm">
+                  <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
+                  <span>Butir Soal Ini Memerlukan Perbaikan / Revisi</span>
+                </div>
+                {revisionNotes ? (
+                  <div className="bg-white/80 p-3.5 rounded-xl border border-amber-200 text-xs leading-relaxed space-y-1">
+                    <p className="font-bold text-amber-900">Catatan dari Peninjau / Validator:</p>
+                    <p className="text-slate-800">{revisionNotes}</p>
+                  </div>
+                ) : (
+                  <p className="text-amber-800">
+                    Silakan perbaiki konten butir pertanyaan atau alternatif jawaban sesuai pedoman sebelum mengajukan ulang.
+                  </p>
+                )}
+              </div>
+            )}
+
             {errorMsg && (
               <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-800 flex items-center gap-2">
                 <AlertCircle className="h-4 w-4 shrink-0 text-amber-600" />
@@ -590,17 +699,29 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex flex-wrap items-center justify-end gap-3 pt-4 border-t border-slate-200">
               <Link
                 href="/admin/bank-soal"
-                className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer shadow-xs"
+                className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer shadow-2xs"
               >
                 Batal
               </Link>
+
+              {status === 'REVISION' && (
+                <button
+                  type="button"
+                  onClick={handleResubmitForReview}
+                  disabled={submitting}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 px-5 py-2.5 text-xs font-bold text-amber-900 shadow-2xs cursor-pointer disabled:opacity-50"
+                >
+                  <span>Kirim Ulang untuk Peninjauan</span>
+                </button>
+              )}
+
               <button
                 type="submit"
                 disabled={submitting}
-                className="btn-tactile-primary rounded-xl px-6 py-2.5 text-xs font-bold text-white shadow-xs cursor-pointer disabled:opacity-50"
+                className="btn-tactile-primary rounded-xl px-6 py-2.5 text-xs font-bold text-white shadow-2xs cursor-pointer disabled:opacity-50"
               >
                 {submitting ? 'Menyimpan...' : 'Perbarui Soal'}
               </button>

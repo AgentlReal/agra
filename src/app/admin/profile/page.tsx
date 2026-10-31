@@ -16,6 +16,14 @@ import {
 export default function AdminProfilePage() {
   const { user, role, isLoading, isAuthenticated, updateUser } = useAuth();
 
+  const isSuperAdmin = role === 'SUPERADMIN' || user?.role === 'SUPERADMIN';
+  const isAuthorized =
+    isAuthenticated &&
+    (role === 'TIM_KURIKULUM' ||
+      user?.role === 'TIM_KURIKULUM' ||
+      role === 'SUPERADMIN' ||
+      user?.role === 'SUPERADMIN');
+
   const [name, setName] = useState(user?.name || '');
   const [savingName, setSavingName] = useState(false);
   const [nameSuccess, setNameSuccess] = useState(false);
@@ -68,7 +76,7 @@ export default function AdminProfilePage() {
     setChangingPass(true);
     try {
       await api.auth.changePassword(currentPassword, newPassword);
-      setPassSuccess('Kata sandi Tim Kurikulum berhasil diubah.');
+      setPassSuccess('Kata sandi berhasil diubah.');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -79,7 +87,7 @@ export default function AdminProfilePage() {
     }
   };
 
-  if (!isLoading && (!isAuthenticated || (role !== 'TIM_KURIKULUM' && user?.role !== 'TIM_KURIKULUM'))) {
+  if (!isLoading && !isAuthorized) {
     return null;
   }
 
@@ -91,13 +99,13 @@ export default function AdminProfilePage() {
         <div>
           <div className="inline-flex items-center gap-1.5 text-xs text-purple-700 font-bold mb-1">
             <UserCheck className="h-4 w-4" />
-            <span>Manajemen Akun Kurikulum</span>
+            <span>Manajemen Akun {isSuperAdmin ? 'SuperAdmin' : 'Kurikulum'}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-            Profil Tim Kurikulum
+            {isSuperAdmin ? 'Profil SuperAdmin' : 'Profil Tim Kurikulum'}
           </h1>
           <p className="mt-1 text-xs text-slate-600">
-            Kelola nama penanggung jawab kurikulum dan kredensial keamanan akun admin.
+            Kelola nama penanggung jawab dan kredensial keamanan akun administratif platform.
           </p>
         </div>
 

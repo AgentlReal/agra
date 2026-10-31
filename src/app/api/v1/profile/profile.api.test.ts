@@ -159,7 +159,7 @@ describe("Profile & Dashboard API Endpoints", () => {
                     materialId: 1,
                     submaterialId: 1,
                     levelId: 1,
-                    route: "/submateri.html?id=1",
+                    route: "/submaterials/1",
                 },
                 curriculumStatus: {
                     activeSubjectCode: "MAT",

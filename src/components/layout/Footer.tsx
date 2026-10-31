@@ -12,13 +12,13 @@ export const Footer: React.FC = () => {
               <AppLogo size={18} />
             </div>
             <span className="text-sm font-semibold text-slate-800">
-              AGRA Platform TKA SMP (Fase D)
+              AGRA Platform TKA SMP
             </span>
           </div>
 
           <div className="flex items-center gap-2 text-xs text-slate-600 bg-white/80 border border-slate-200/80 rounded-full px-3 py-1 shadow-2xs">
             <ShieldCheck className="h-4 w-4 text-emerald-600" />
-            <span>Standar Asesmen Ramah Siswa (Safe-to-Fail) Kurikulum Kemendikdasmen</span>
+            <span>Standar Asesmen Kurikulum Kemendikdasmen</span>
           </div>
 
           <div className="text-xs text-slate-500">
