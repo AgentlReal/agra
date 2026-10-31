@@ -21,8 +21,8 @@ export async function GET() {
             query<any[]>(
                 `SELECT 
                     COUNT(*) as total_packages,
-                    SUM(CASE WHEN status = 'PUBLISHED' OR is_active = TRUE THEN 1 ELSE 0 END) as active_packages,
-                    SUM(CASE WHEN status = 'DRAFT' OR is_active = FALSE THEN 1 ELSE 0 END) as draft_packages
+                    SUM(CASE WHEN status IN ('ACTIVE', 'PUBLISHED') THEN 1 ELSE 0 END) as active_packages,
+                    SUM(CASE WHEN status = 'DRAFT' THEN 1 ELSE 0 END) as draft_packages
                  FROM simulations`
             ),
         ]);

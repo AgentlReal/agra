@@ -1,8 +1,11 @@
 import { NextRequest } from "next/server";
 import { requireRole } from "@/modules/auth/auth.guard";
-import { query } from "@/shared/db";
+import { query, withTransaction } from "@/shared/db";
 import { jsonResponse, errorResponse } from "@/shared/utils/response";
 import { BadRequestError } from "@/shared/errors/app-error";
+import { hashPassword } from "better-auth/crypto";
+import { validatePasswordRules } from "@/shared/utils/validator";
+import crypto from "crypto";
 
 export async function GET(req: NextRequest) {
     try {
@@ -33,14 +36,19 @@ export async function POST(req: NextRequest) {
     try {
         await requireRole("SUPERADMIN");
         const body = await req.json();
-        const { name, email, username, role } = body;
+        const { name, email, username, role, password } = body;
 
-        if (!name || !email || !role) {
-            throw new BadRequestError("Nama, email, dan role wajib diisi.", "VALIDATION_ERROR");
+        if (!name || !email || !role || !password) {
+            throw new BadRequestError("Nama, email, role, dan password wajib diisi.", "VALIDATION_ERROR");
         }
 
         if (!["TIM_KURIKULUM", "SUPERADMIN"].includes(role)) {
             throw new BadRequestError("Role harus TIM_KURIKULUM atau SUPERADMIN.", "INVALID_ROLE");
+        }
+
+        const passwordCheck = validatePasswordRules(password);
+        if (!passwordCheck.isValid) {
+            throw new BadRequestError(passwordCheck.message || "Format password tidak valid.", "INVALID_PASSWORD");
         }
 
         // Insert or check duplicate
@@ -49,18 +57,29 @@ export async function POST(req: NextRequest) {
             throw new BadRequestError("Email atau username sudah terdaftar.", "DUPLICATE_USER");
         }
 
-        const userId = `usr_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-        await query(
-            `INSERT INTO users (id, name, email, username, role, emailVerified, createdAt, updatedAt)
-             VALUES (?, ?, ?, ?, ?, TRUE, NOW(), NOW())`,
-            [userId, name, email, username || email.split("@")[0], role]
-        );
+        const userId = crypto.randomUUID();
+        const accountId = crypto.randomUUID();
+        const hashedPassword = await hashPassword(password);
+
+        await withTransaction(async (conn) => {
+            await conn.execute(
+                `INSERT INTO users (id, name, email, username, role, emailVerified, createdAt, updatedAt)
+                 VALUES (?, ?, ?, ?, ?, TRUE, NOW(), NOW())`,
+                [userId, name.trim(), email.trim(), (username || email.split("@")[0]).trim(), role]
+            );
+
+            await conn.execute(
+                `INSERT INTO account (id, accountId, providerId, userId, password, createdAt, updatedAt)
+                 VALUES (?, ?, 'credential', ?, ?, NOW(), NOW())`,
+                [accountId, userId, userId, hashedPassword]
+            );
+        });
 
         return jsonResponse(
             {
                 success: true,
                 message: "Pengguna berhasil dibuat.",
-                data: { id: userId, name, email, role },
+                data: { id: userId, name: name.trim(), email: email.trim(), role },
             },
             201
         );
