@@ -2,7 +2,7 @@ import { CurriculumService } from "./curriculum.service";
 import { subjectParamSchema, subMaterialParamSchema } from "./curriculum.schema";
 import { validateParams } from "@/shared/utils/validator";
 import { jsonResponse, errorResponse } from "@/shared/utils/response";
-import { requireAuth } from "../auth/auth.guard";
+import { requireAuth, requireRole } from "../auth/auth.guard";
 
 export class CurriculumController {
     constructor(private readonly service = new CurriculumService()) {}
@@ -18,7 +18,7 @@ export class CurriculumController {
 
     async getCurriculum(params: unknown) {
         try {
-            const { user } = await requireAuth();
+            const { user } = await requireRole("SISWA");
             const { subjectId } = validateParams(params, subjectParamSchema);
             const data = await this.service.getSubjectCurriculum(subjectId, user.id);
             return jsonResponse(data);
@@ -29,7 +29,7 @@ export class CurriculumController {
 
     async getSubMaterialProgress(params: unknown) {
         try {
-            const { user } = await requireAuth();
+            const { user } = await requireRole("SISWA");
             const { submaterialId } = validateParams(params, subMaterialParamSchema);
             const data = await this.service.getSubMaterialProgress(submaterialId, user.id);
             return jsonResponse(data);

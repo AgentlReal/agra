@@ -3,6 +3,8 @@ import { requireRole } from "@/modules/auth/auth.guard";
 import { query } from "@/shared/db";
 import { jsonResponse, errorResponse } from "@/shared/utils/response";
 import { BadRequestError, NotFoundError } from "@/shared/errors/app-error";
+import { hashPassword } from "better-auth/crypto";
+import { validatePasswordRules } from "@/shared/utils/validator";
 
 export async function PATCH(
     req: NextRequest,
@@ -12,7 +14,7 @@ export async function PATCH(
         await requireRole("SUPERADMIN");
         const { userId } = await params;
         const body = await req.json();
-        const { role, name } = body;
+        const { role, name, password } = body;
 
         const users = await query<any[]>(`SELECT id FROM users WHERE id = ?`, [userId]);
         if (users.length === 0) {
@@ -35,12 +37,23 @@ export async function PATCH(
             paramsList.push(name);
         }
 
-        if (updates.length === 0) {
+        if (password) {
+            const passwordCheck = validatePasswordRules(password);
+            if (!passwordCheck.isValid) {
+                throw new BadRequestError(passwordCheck.message || "Format password tidak valid.", "INVALID_PASSWORD");
+            }
+            const hashedPassword = await hashPassword(password);
+            await query(`UPDATE account SET password = ?, updatedAt = NOW() WHERE userId = ?`, [hashedPassword, userId]);
+        }
+
+        if (updates.length === 0 && !password) {
             throw new BadRequestError("Tidak ada data yang diperbarui.", "NO_UPDATES");
         }
 
-        paramsList.push(userId);
-        await query(`UPDATE users SET ${updates.join(", ")}, updatedAt = NOW() WHERE id = ?`, paramsList);
+        if (updates.length > 0) {
+            paramsList.push(userId);
+            await query(`UPDATE users SET ${updates.join(", ")}, updatedAt = NOW() WHERE id = ?`, paramsList);
+        }
 
         return jsonResponse({
             success: true,
@@ -64,7 +77,7 @@ export async function DELETE(
             throw new NotFoundError("Pengguna tidak ditemukan.", "NOT_FOUND");
         }
 
-        await query(`DELETE FROM user WHERE id = ?`, [userId]);
+        await query(`DELETE FROM users WHERE id = ?`, [userId]);
 
         return jsonResponse({
             success: true,

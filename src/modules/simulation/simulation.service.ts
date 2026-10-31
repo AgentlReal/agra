@@ -121,6 +121,12 @@ export class SimulationService {
         }
 
         const previousAttempts = await this.repo.countAttempts(userId, subjectId);
+        if (previousAttempts >= 2) {
+            throw new ForbiddenError(
+                "CBT_QUOTA_EXCEEDED - Kesempatan ujian simulasi mandiri telah mencapai batas maksimal (2 kali)",
+                "CBT_QUOTA_EXCEEDED"
+            );
+        }
         const attemptNumber = previousAttempts + 1;
 
         const sessionId = await this.repo.createSession(userId, subjectId, pkg.id, attemptNumber);

@@ -25,7 +25,7 @@ export class AdminController {
 
     async getProfile() {
         try {
-            const { user } = await requireRole("TIM_KURIKULUM");
+            const { user } = await requireRole(["TIM_KURIKULUM", "SUPERADMIN"]);
             const data = await this.service.getProfile(user.id);
             return jsonResponse(data, 200);
         } catch (error) {
@@ -35,7 +35,7 @@ export class AdminController {
 
     async updateProfile(req: Request) {
         try {
-            const { user } = await requireRole("TIM_KURIKULUM");
+            const { user } = await requireRole(["TIM_KURIKULUM", "SUPERADMIN"]);
             const dto = await validateBody(req, adminProfileUpdateSchema, { style: "status" });
             const data = await this.service.updateProfile(user.id, dto.name);
             return jsonResponse(data, 200);
@@ -46,7 +46,7 @@ export class AdminController {
 
     async getQuestionStock() {
         try {
-            await requireRole("TIM_KURIKULUM");
+            await requireRole(["TIM_KURIKULUM", "SUPERADMIN"]);
             const data = await this.service.getQuestionStock();
             return jsonResponse(data, 200);
         } catch (error) {
@@ -56,7 +56,7 @@ export class AdminController {
 
     async listQuestions(req: Request) {
         try {
-            await requireRole("TIM_KURIKULUM");
+            await requireRole(["TIM_KURIKULUM", "SUPERADMIN"]);
             const filter = validateQuery(req, questionFilterQuerySchema);
             const data = await this.service.listQuestions(filter);
             return jsonResponse(data, 200);
@@ -67,7 +67,7 @@ export class AdminController {
 
     async createQuestion(req: Request) {
         try {
-            await requireRole("TIM_KURIKULUM");
+            await requireRole(["TIM_KURIKULUM", "SUPERADMIN"]);
             const dto = await validateBody(req, createQuestionSchema, { style: "status" });
             const data = await this.service.createQuestion(dto);
             return jsonResponse(data, 201);
@@ -78,7 +78,7 @@ export class AdminController {
 
     async getQuestionDetail(params: unknown) {
         try {
-            await requireRole("TIM_KURIKULUM");
+            await requireRole(["TIM_KURIKULUM", "SUPERADMIN"]);
             const { questionId } = validateParams(params, questionIdParamSchema);
             const data = await this.service.getQuestionDetail(questionId);
             return jsonResponse(data, 200);
@@ -89,7 +89,7 @@ export class AdminController {
 
     async updateQuestion(req: Request, params: unknown) {
         try {
-            await requireRole("TIM_KURIKULUM");
+            await requireRole(["TIM_KURIKULUM", "SUPERADMIN"]);
             const { questionId } = validateParams(params, questionIdParamSchema);
             const dto = await validateBody(req, updateQuestionSchema, { style: "status" });
             const data = await this.service.updateQuestion(questionId, dto);
@@ -113,7 +113,7 @@ export class AdminController {
 
     async uploadQuestionImage(req: Request) {
         try {
-            await requireRole("TIM_KURIKULUM");
+            await requireRole(["TIM_KURIKULUM", "SUPERADMIN"]);
             const contentType = req.headers.get("content-type") || "";
             if (!contentType.includes("multipart/form-data")) {
                 throw new BadRequestError("Content-Type harus berupa multipart/form-data", "INVALID_CONTENT_TYPE");
@@ -187,7 +187,7 @@ export class AdminController {
 
     async createSimulationPackage(req: Request) {
         try {
-            await requireRole("TIM_KURIKULUM");
+            await requireRole(["TIM_KURIKULUM", "SUPERADMIN"]);
             const dto = await validateBody(req, createSimulationPackageSchema, { style: "status" });
             const data = await this.service.createSimulationPackage(dto);
             return jsonResponse(data, 201);
@@ -198,7 +198,7 @@ export class AdminController {
 
     async getSimulationPackage(params: unknown) {
         try {
-            await requireRole("TIM_KURIKULUM");
+            await requireRole(["TIM_KURIKULUM", "SUPERADMIN"]);
             const { packageId } = validateParams(params, packageIdParamSchema);
             const data = await this.service.getSimulationPackage(packageId);
             return jsonResponse(data, 200);
@@ -209,7 +209,7 @@ export class AdminController {
 
     async updateSimulationPackage(req: Request, params: unknown) {
         try {
-            await requireRole("TIM_KURIKULUM");
+            await requireRole(["TIM_KURIKULUM", "SUPERADMIN"]);
             const { packageId } = validateParams(params, packageIdParamSchema);
             const dto = await validateBody(req, updateSimulationPackageSchema, { style: "status" });
             const data = await this.service.updateSimulationPackage(packageId, dto);
@@ -221,7 +221,7 @@ export class AdminController {
 
     async updateSimulationPackageStatus(req: Request, params: unknown) {
         try {
-            await requireRole("TIM_KURIKULUM");
+            await requireRole(["TIM_KURIKULUM", "SUPERADMIN"]);
             const { packageId } = validateParams(params, packageIdParamSchema);
             const dto = await validateBody(req, updateSimulationPackageStatusSchema, { style: "status" });
             const data = await this.service.updateSimulationPackageStatus(packageId, dto.status, dto.is_active);
@@ -233,7 +233,7 @@ export class AdminController {
 
     async getSimulationPackageStats(params: unknown) {
         try {
-            await requireRole("TIM_KURIKULUM");
+            await requireRole(["TIM_KURIKULUM", "SUPERADMIN"]);
             const { packageId } = validateParams(params, packageIdParamSchema);
             const data = await this.service.getSimulationPackageStats(packageId);
             return jsonResponse(data, 200);
