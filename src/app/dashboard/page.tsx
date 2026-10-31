@@ -38,10 +38,21 @@ function normalizeNextActionRoute(rawRoute?: string, type?: string, submaterialI
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, updateUser } = useAuth();
+  const { user, role, isLoading: authLoading, updateUser } = useAuth();
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
+
+  // Route Guard: Unauthenticated to /login, Admin to /admin/dashboard
+  useEffect(() => {
+    if (!authLoading) {
+      if (!user) {
+        router.replace('/login');
+      } else if (role !== 'SISWA') {
+        router.replace('/admin/dashboard');
+      }
+    }
+  }, [authLoading, user, role, router]);
 
   const loadDashboard = () => {
     setLoading(true);
@@ -68,6 +79,10 @@ export default function DashboardPage() {
         }
         if (err.status === 401) {
           router.push('/login');
+          return;
+        }
+        if (err.status === 403) {
+          router.replace('/admin/dashboard');
           return;
         }
         setErrorMsg(err.message || 'Gagal memuat ringkasan belajar dari server.');

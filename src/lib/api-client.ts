@@ -105,6 +105,7 @@ export const api = {
     signOut: () =>
       request<any>('/api/auth/sign-out', {
         method: 'POST',
+        body: JSON.stringify({}),
       }),
     getSession: () => request<any>('/api/auth/get-session'),
     requestPasswordReset: (email: string) =>

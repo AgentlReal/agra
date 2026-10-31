@@ -141,7 +141,7 @@ export const Navbar: React.FC = () => {
                       <GraduationCap className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-slate-800">Recall Practice</p>
+                      <p className="text-xs font-bold text-slate-800">Recall Kemampuanmu</p>
                       <p className="text-[11px] text-slate-500">Latihan pengingatan konsep awal</p>
                     </div>
                   </Link>
@@ -242,19 +242,6 @@ export const Navbar: React.FC = () => {
                   </div>
                 </div>
 
-                {(role === 'TIM_KURIKULUM' || role === 'SUPERADMIN') && (
-                  <div className="py-1">
-                    <Link
-                      href="/admin/dashboard"
-                      onClick={() => setUserDropdownOpen(false)}
-                      className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 transition-colors"
-                    >
-                      <span>Panel Admin Kurikulum</span>
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </Link>
-                  </div>
-                )}
-
                 <div className="border-t border-slate-100 pt-1 mt-1">
                   <Link
                     href="/profile"
@@ -324,7 +311,7 @@ export const Navbar: React.FC = () => {
               className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50"
             >
               <GraduationCap className="h-4 w-4 text-amber-500" />
-              <span>Recall Practice</span>
+              <span>Recall Kemampuanmu</span>
             </Link>
           </div>
 

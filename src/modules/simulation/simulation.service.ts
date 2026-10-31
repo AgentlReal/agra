@@ -61,7 +61,11 @@ export class SimulationService {
             throw new NotFoundError("Mata pelajaran tidak ditemukan");
         }
 
-        const eligibility = await this.repo.checkEligibility(subjectId, userId);
+        const [eligibility, latestCompleted, totalAttempts] = await Promise.all([
+            this.repo.checkEligibility(subjectId, userId),
+            this.repo.getLatestCompletedSession ? this.repo.getLatestCompletedSession(userId, subjectId) : Promise.resolve(null),
+            this.repo.countAttempts ? this.repo.countAttempts(userId, subjectId) : Promise.resolve(0),
+        ]);
         const total = eligibility.total;
         const mastered = eligibility.mastered;
         const isEligible = total > 0 && mastered === total;
@@ -75,6 +79,15 @@ export class SimulationService {
             mastered_sub_materials: mastered,
             completion_percentage: completionPercentage,
             unmastered_sub_materials: eligibility.unmastered,
+            latest_attempt: latestCompleted
+                ? {
+                      id: latestCompleted.id,
+                      final_score: Number(latestCompleted.final_score ?? 0),
+                      is_passed: Boolean(latestCompleted.is_passed),
+                      completed_at: latestCompleted.completed_at ? new Date(latestCompleted.completed_at).toISOString() : null,
+                  }
+                : null,
+            attempts_used: totalAttempts,
         };
     }
 

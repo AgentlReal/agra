@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { useAuth } from '@/lib/auth-context';
 import { api } from '@/lib/api-client';
 import { 
   BookOpen, 
@@ -19,11 +21,23 @@ import {
 } from 'lucide-react';
 
 export default function SubjectCurriculumPage({ params }: { params: Promise<{ subjectId: string }> }) {
+  const router = useRouter();
+  const { user, role, isLoading: authLoading } = useAuth();
   const { subjectId } = use(params);
   const [subject, setSubject] = useState<any>(null);
   const [materials, setMaterials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => {
+    if (!authLoading) {
+      if (!user) {
+        router.replace('/login');
+      } else if (role !== 'SISWA') {
+        router.replace('/admin/dashboard');
+      }
+    }
+  }, [authLoading, user, role, router]);
 
   const loadData = () => {
     setLoading(true);
@@ -53,6 +67,14 @@ export default function SubjectCurriculumPage({ params }: { params: Promise<{ su
       })
       .catch((err: any) => {
         console.error('Failed to load curriculum:', err);
+        if (err.status === 401) {
+          router.replace('/login');
+          return;
+        }
+        if (err.status === 403) {
+          router.replace('/admin/dashboard');
+          return;
+        }
         setErrorMsg(err.message || 'Gagal memuat kurikulum materi dari server.');
       })
       .finally(() => setLoading(false));

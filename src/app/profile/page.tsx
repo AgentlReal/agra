@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { useAuth } from '@/lib/auth-context';
@@ -29,16 +30,28 @@ import {
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 
+// Master data 5 Tingkatan Capaian Prestasi Formatif (SRS DOC-06 / milestone_tiers)
 const MASTERY_TIERS = [
-  { level: 1, name: 'Pemula', minXp: 0, maxXp: 200, desc: 'Memulai pengenalan format asesmen dan diagnostik awal.' },
-  { level: 2, name: 'Pembelajar Tangguh', minXp: 201, maxXp: 500, desc: 'Konsisten menyelesaikan latihan drill Level 1 Pemahaman.' },
-  { level: 3, name: 'Penjelajah Konsep', minXp: 501, maxXp: 1000, desc: 'Menguasai Level 2 Penerapan konsep dan variasi soal.' },
-  { level: 4, name: 'Pemecah Masalah', minXp: 1001, maxXp: 2000, desc: 'Mampu memecahkan soal HOTS Level 3 Penalaran mendalam.' },
-  { level: 5, name: 'Jawara TKA', minXp: 2001, maxXp: 99999, desc: 'Tuntas seluruh materi dan siap mengikuti Simulasi CBT 75 menit.' },
+  { level: 1, name: 'Perintis Belajar', minXp: 0, maxXp: 499, desc: 'Langkah awal memulai penjelajahan kompetensi dan menuntaskan asesmen pembuka.' },
+  { level: 2, name: 'Penjelajah Konsep', minXp: 500, maxXp: 1499, desc: 'Telah menguasai beberapa submateri awal dan menunjukkan konsistensi belajar.' },
+  { level: 3, name: 'Pejuang Penalaran', minXp: 1500, maxXp: 2999, desc: 'Telah menuntaskan sebagian besar submateri pokok dan terbiasa dengan tantangan level 3.' },
+  { level: 4, name: 'Pakar Fase D', minXp: 3000, maxXp: 4999, desc: 'Mendekati penguasaan penuh seluruh materi kurikulum dan siap menghadapi simulasi ujian.' },
+  { level: 5, name: 'Jawara TKA', minXp: 5000, maxXp: 99999, desc: 'Telah menuntaskan seluruh submateri dan meraih skor prima pada simulasi ujian TKA.' },
 ];
 
 export default function ProfilePage() {
-  const { user, updateUser, logout } = useAuth();
+  const router = useRouter();
+  const { user, role, isLoading: authLoading, updateUser, logout } = useAuth();
+
+  useEffect(() => {
+    if (!authLoading) {
+      if (!user) {
+        router.replace('/login');
+      } else if (role !== 'SISWA') {
+        router.replace('/admin/dashboard');
+      }
+    }
+  }, [authLoading, user, role, router]);
 
   const [name, setName] = useState(user?.name || '');
   const [profile, setProfile] = useState<any>(null);
@@ -125,13 +138,28 @@ export default function ProfilePage() {
       .finally(() => setLoadingXp(false));
   }, []);
 
-  // Determine current mastery tier
+  // Determine current mastery tier using official API profile.milestone / milestoneProgress or fallback
   const currentXp = profile?.totalXp ?? profile?.total_xp ?? user?.totalXp ?? 0;
-  const currentTier = MASTERY_TIERS.find((t) => currentXp >= t.minXp && currentXp <= t.maxXp) || MASTERY_TIERS[0];
+  const milestone = profile?.milestone;
+  const milestoneProgress = profile?.milestoneProgress;
+
+  const currentTier = milestone
+    ? {
+        level: milestone.tierNumber ?? milestone.id ?? 1,
+        name: milestone.title || 'Perintis Belajar',
+        minXp: milestone.minXp ?? 0,
+        maxXp: milestone.maxXp ?? 499,
+        desc: MASTERY_TIERS.find((t) => t.level === (milestone.tierNumber ?? milestone.id))?.desc || '',
+      }
+    : MASTERY_TIERS.find((t) => currentXp >= t.minXp && (currentXp <= t.maxXp || t.maxXp === 99999)) || MASTERY_TIERS[0];
+
   const nextTier = MASTERY_TIERS.find((t) => t.level === currentTier.level + 1);
-  const xpProgress = nextTier 
-    ? Math.min(100, Math.max(0, Math.round(((currentXp - currentTier.minXp) / (nextTier.minXp - currentTier.minXp)) * 100)))
-    : 100;
+  const xpProgress = milestoneProgress?.progressPercent ?? (
+    nextTier
+      ? Math.min(100, Math.max(0, Math.round(((currentXp - currentTier.minXp) / (nextTier.minXp - currentTier.minXp)) * 100)))
+      : 100
+  );
+  const xpRemaining = milestoneProgress?.xpRemaining ?? (nextTier ? Math.max(0, nextTier.minXp - currentXp) : 0);
 
   // Password validation rules
   const hasLength = newPassword.length >= 6 && newPassword.length <= 12;
@@ -289,7 +317,7 @@ export default function ProfilePage() {
                   <div className="flex items-center justify-between text-xs text-slate-500 mt-2 font-medium">
                     <span>{currentXp} XP terkumpul</span>
                     {nextTier ? (
-                      <span>Butuh {nextTier.minXp - currentXp} XP lagi ke {nextTier.name}</span>
+                      <span>Butuh {xpRemaining} XP lagi ke {nextTier.name}</span>
                     ) : (
                       <span className="text-emerald-600 font-semibold">Tingkat Maksimum</span>
                     )}
@@ -359,8 +387,8 @@ export default function ProfilePage() {
               {/* Stepper List */}
               <div className="space-y-4">
                 {MASTERY_TIERS.map((tier) => {
-                  const isCompleted = currentXp >= tier.maxXp;
-                  const isCurrent = currentXp >= tier.minXp && currentXp <= tier.maxXp;
+                  const isCompleted = currentXp >= (tier.maxXp === 99999 ? 5000 : tier.maxXp + 1);
+                  const isCurrent = currentTier.level === tier.level;
                   return (
                     <div
                       key={tier.level}
@@ -387,7 +415,7 @@ export default function ProfilePage() {
                         <div className="flex items-center justify-between gap-2">
                           <h4 className="text-sm font-bold text-slate-900">{tier.name}</h4>
                           <span className="text-[11px] font-semibold text-slate-500 font-mono">
-                            {tier.level === 5 ? '> 2.000 XP' : `${tier.minXp} - ${tier.maxXp} XP`}
+                            {tier.level === 5 ? '≥ 5.000 XP' : `${tier.minXp} - ${tier.maxXp} XP`}
                           </span>
                         </div>
                         <p className="text-xs text-slate-600 mt-1 leading-relaxed">{tier.desc}</p>

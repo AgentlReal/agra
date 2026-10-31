@@ -143,7 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(null);
       localStorage.removeItem('agra_token');
       localStorage.removeItem('agra_user');
-      router.push('/login');
+      window.location.href = '/login';
     }
   };
 

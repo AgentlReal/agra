@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { api } from '@/lib/api-client';
+import { useAuth } from '@/lib/auth-context';
 import { 
   GraduationCap, 
   CheckCircle2, 
@@ -31,10 +32,21 @@ interface RecallStatus {
 
 export default function RecallIntroPage() {
   const router = useRouter();
+  const { user, role, isLoading: authLoading } = useAuth();
   const [status, setStatus] = useState<RecallStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => {
+    if (!authLoading) {
+      if (!user) {
+        router.replace('/login');
+      } else if (role !== 'SISWA') {
+        router.replace('/admin/dashboard');
+      }
+    }
+  }, [authLoading, user, role, router]);
 
   const loadStatus = () => {
     setLoading(true);
@@ -47,6 +59,14 @@ export default function RecallIntroPage() {
       })
       .catch((err: any) => {
         console.error('Failed to load recall status:', err);
+        if (err.status === 401) {
+          router.replace('/login');
+          return;
+        }
+        if (err.status === 403) {
+          router.replace('/admin/dashboard');
+          return;
+        }
         setErrorMsg(err.message || 'Gagal memuat status Recall dari server.');
       })
       .finally(() => setLoading(false));
