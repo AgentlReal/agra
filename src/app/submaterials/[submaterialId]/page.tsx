@@ -68,6 +68,10 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
   const [loading, setLoading] = useState(true);
   const [startingLevel, setStartingLevel] = useState<number | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
+  const [prerequisiteModal, setPrerequisiteModal] = useState<{ open: boolean; message: string }>({
+    open: false,
+    message: '',
+  });
 
   const loadProgress = () => {
     setLoading(true);
@@ -102,7 +106,22 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
       })
       .catch((err: any) => {
         console.error('Failed to load submaterial progress:', err);
-        setErrorMsg(err.message || 'Gagal memuat status level latihan dari server.');
+        const isPrereq =
+          err.code === 'PREREQUISITE_LOCKED' ||
+          err.status === 403 ||
+          err.message?.toLowerCase().includes('prasyarat') ||
+          err.message?.toLowerCase().includes('prerequisite');
+
+        if (isPrereq) {
+          setPrerequisiteModal({
+            open: true,
+            message:
+              err.message ||
+              'Submateri ini belum dapat diakses karena terdapat submateri prasyarat yang harus Anda selesaikan terlebih dahulu.',
+          });
+        } else {
+          setErrorMsg(err.message || 'Gagal memuat status level latihan dari server.');
+        }
       })
       .finally(() => setLoading(false));
   };
@@ -133,10 +152,25 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
       }
       router.push(`/learning/exam/${attemptId}`);
     } catch (err: any) {
-      setErrorMsg(
-        err.message ||
-          'Gagal memulai sesi latihan level. Pastikan Anda telah lulus Recall Kemampuanmu dan level prasyarat telah tuntas.'
-      );
+      const isPrereq =
+        err.code === 'PREREQUISITE_LOCKED' ||
+        err.status === 403 ||
+        err.message?.toLowerCase().includes('prasyarat') ||
+        err.message?.toLowerCase().includes('prerequisite');
+
+      if (isPrereq) {
+        setPrerequisiteModal({
+          open: true,
+          message:
+            err.message ||
+            'Terdapat level atau submateri prasyarat yang harus Anda selesaikan terlebih dahulu sebelum memulai level ini.',
+        });
+      } else {
+        setErrorMsg(
+          err.message ||
+            'Gagal memulai sesi latihan level. Pastikan Anda telah lulus Recall Kemampuanmu dan level prasyarat telah tuntas.'
+        );
+      }
     } finally {
       setStartingLevel(null);
     }
@@ -287,6 +321,41 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
           </>
         )}
       </main>
+
+      {/* Prerequisite Locked Modal Dialog [FE-13] */}
+      {prerequisiteModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-md bg-white rounded-3xl border border-amber-200 p-6 sm:p-7 shadow-2xl space-y-5 text-center">
+            <div className="w-14 h-14 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 mx-auto">
+              <Lock className="w-7 h-7" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-lg font-bold text-slate-900">
+                Materi Prasyarat Belum Dituntaskan
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                {prerequisiteModal.message}
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setPrerequisiteModal({ open: false, message: '' })}
+                className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
+              >
+                Tutup
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push('/curriculum')}
+                className="flex-1 btn-tactile-primary py-2.5 px-4 rounded-xl text-xs font-bold text-white transition cursor-pointer"
+              >
+                Pohon Kurikulum
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

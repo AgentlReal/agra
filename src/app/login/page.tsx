@@ -11,12 +11,10 @@ import {
   Eye, 
   EyeOff, 
   ArrowRight, 
-  Sparkles, 
   ShieldCheck, 
   Info,
   AlertCircle,
-  BookOpen,
-  CheckCircle2
+  BookOpen
 } from 'lucide-react';
 import { AppLogo } from '@/components/common/AppLogo';
 import { Footer } from '@/components/layout/Footer';
@@ -56,16 +54,20 @@ export default function LoginPage() {
         throw new Error('Gagal mendapatkan sesi pengguna.');
       }
 
+      const rawRole = authUser.role;
+      const role: 'SUPERADMIN' | 'TIM_KURIKULUM' | 'SISWA' =
+        rawRole === 'SUPERADMIN' ? 'SUPERADMIN' : rawRole === 'TIM_KURIKULUM' ? 'TIM_KURIKULUM' : 'SISWA';
+
       await login(token, {
         id: authUser.id,
         name: authUser.name || authUser.username || '',
         username: authUser.username || authUser.email?.split('@')[0] || '',
         email: authUser.email,
-        role: authUser.role === 'TIM_KURIKULUM' ? 'TIM_KURIKULUM' : 'SISWA',
+        role,
       });
 
-      if (authUser.role === 'TIM_KURIKULUM') {
-        router.push('/admin/bank-soal');
+      if (role === 'SUPERADMIN' || role === 'TIM_KURIKULUM') {
+        router.push('/admin/dashboard');
       } else {
         try {
           await api.profile.get();
@@ -121,41 +123,13 @@ export default function LoginPage() {
           
           {/* Left Hero Column */}
           <div className="lg:col-span-6 space-y-6 lg:pr-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold tracking-wide border border-blue-100">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Platform Asesmen Ramah Siswa (Safe-to-Fail)</span>
-            </div>
-
             <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-extrabold text-slate-900 tracking-tight leading-[1.2]">
-              Ruang Belajar & Simulasi TKA <span className="text-blue-600">SMP Fase D</span>
+              Ruang Belajar & Simulasi TKA <span className="text-blue-600">SMP</span>
             </h1>
 
             <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-              Persiapkan dirimu menghadapi Tes Kemampuan Akademik (TKA) jenjang SMP/MTs dengan latihan formatif bertingkat, evaluasi adaptif, dan simulasi CBT 75 menit berstandar Kemendikdasmen tanpa rasa cemas.
+              Persiapkan dirimu menghadapi Tes Kemampuan Akademik (TKA) jenjang SMP/MTs dengan latihan formatif bertingkat, evaluasi adaptif, dan simulasi CBT 75 menit berstandar Kemendikdasmen.
             </p>
-
-            {/* Feature Highlights */}
-            <div className="space-y-3 pt-2">
-              <div className="flex items-start gap-3 bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs">
-                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 shrink-0">
-                  <CheckCircle2 className="h-4 w-4" />
-                </div>
-                <div>
-                  <h2 className="text-xs font-bold text-slate-800">Evaluasi Formatif 3 Level Kognitif</h2>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Pemahaman konsep, penalaran kontekstual, dan pemecahan masalah HOTS.</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs">
-                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-50 text-amber-600 shrink-0">
-                  <ShieldCheck className="h-4 w-4" />
-                </div>
-                <div>
-                  <h2 className="text-xs font-bold text-slate-800">Safe-to-Fail Learning Environment</h2>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Bebas dari rasa takut salah; setiap remedi dirancang untuk memperkuat pemahamanmu.</p>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Right Form Card Column */}

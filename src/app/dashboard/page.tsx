@@ -21,6 +21,21 @@ import {
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 
+function normalizeNextActionRoute(rawRoute?: string, type?: string, submaterialId?: number): string {
+  if (!rawRoute) {
+    return type === 'RECALL' ? '/recall' : `/submaterials/${submaterialId || 1}`;
+  }
+  if (rawRoute === '/recall.html' || rawRoute === 'recall.html') {
+    return '/recall';
+  }
+  if (rawRoute.startsWith('/submateri.html') || rawRoute.startsWith('submateri.html')) {
+    const idMatch = rawRoute.match(/id=(\d+)/);
+    const id = idMatch ? idMatch[1] : (submaterialId || 1);
+    return `/submaterials/${id}`;
+  }
+  return rawRoute.replace(/\.html$/, '');
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const { user, updateUser } = useAuth();
@@ -67,6 +82,14 @@ export default function DashboardPage() {
   const student = dashboardData?.student || user;
   const subjects = dashboardData?.subjects || [];
   const nextAction = dashboardData?.nextAction;
+  const isRecallPassed =
+    dashboardData?.student?.isRecallPassed ??
+    (dashboardData?.nextAction?.type !== 'RECALL');
+  const nextActionHref = normalizeNextActionRoute(
+    nextAction?.route,
+    nextAction?.type,
+    nextAction?.submaterialId
+  );
 
   return (
     <div className="flex min-h-screen flex-col bg-[#f8fafc]">
@@ -160,7 +183,7 @@ export default function DashboardPage() {
                 </div>
 
                 <Link
-                  href={nextAction.type === 'RECALL' ? '/recall' : `/submaterials/${nextAction.submaterialId || 1}`}
+                  href={nextActionHref}
                   className="btn-tactile-primary inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer"
                 >
                   <span>Mulai Sekarang</span>
@@ -169,22 +192,46 @@ export default function DashboardPage() {
               </div>
             )}
 
-            {/* Subject Mastery Progress Section */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-lg font-bold text-slate-900">Kurikulum & Capaian Belajar</h2>
-                  <p className="text-xs text-slate-500">
-                    Selesaikan 3 level kognitif di setiap submateri untuk membuka Simulasi CBT 75 menit.
+            {/* Subject Mastery Progress Section [FE-11] */}
+            {!isRecallPassed ? (
+              <div className="bg-white rounded-3xl border border-amber-200/90 p-6 sm:p-8 shadow-xs text-center space-y-4">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-50 border border-amber-200 text-amber-700">
+                  <GraduationCap className="h-7 w-7" />
+                </div>
+                <div className="max-w-md mx-auto space-y-1.5">
+                  <h3 className="text-lg font-bold text-slate-900">
+                    Selesaikan Asesmen Recall Terlebih Dahulu
+                  </h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Untuk membuka materi kurikulum dan modul latihan bertingkat, selesaikan 10 butir asesmen pengingatan konsep awal (Recall Kemampuanmu).
                   </p>
                 </div>
-                <Link
-                  href="/curriculum"
-                  className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1"
-                >
-                  Lihat Semua Materi <ChevronRight className="h-4 w-4" />
-                </Link>
+                <div>
+                  <Link
+                    href="/recall"
+                    className="btn-tactile-primary inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold cursor-pointer"
+                  >
+                    <span>Mulai Recall Sekarang</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
               </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-lg font-bold text-slate-900">Kurikulum & Capaian Belajar</h2>
+                    <p className="text-xs text-slate-500">
+                      Selesaikan 3 level kognitif di setiap submateri untuk membuka Simulasi CBT 75 menit.
+                    </p>
+                  </div>
+                  <Link
+                    href="/curriculum"
+                    className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                  >
+                    Lihat Semua Materi <ChevronRight className="h-4 w-4" />
+                  </Link>
+                </div>
 
               {subjects.length === 0 ? (
                 <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-xs">
@@ -284,6 +331,7 @@ export default function DashboardPage() {
                 </div>
               )}
             </div>
+            )}
           </>
         )}
       </main>

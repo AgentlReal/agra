@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { useRouter } from 'next/navigation';
 import { api } from './api-client';
 
-export type UserRole = 'SISWA' | 'TIM_KURIKULUM';
+export type UserRole = 'SISWA' | 'TIM_KURIKULUM' | 'SUPERADMIN';
 
 export interface User {
   id: string;
@@ -38,6 +38,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [sessionExpiredMessage, setSessionExpiredMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleSessionExpired = (e: any) => {
+      // Only prompt if user was currently logged in
+      if (user || localStorage.getItem('agra_token')) {
+        const msg =
+          e?.detail?.message ||
+          'Akun Anda terdeteksi aktif di perangkat atau peramban lain, atau sesi Anda telah kedaluwarsa demi alasan keamanan.';
+        setSessionExpiredMessage(msg);
+      }
+    };
+
+    window.addEventListener('agra:session-expired', handleSessionExpired);
+    return () => {
+      window.removeEventListener('agra:session-expired', handleSessionExpired);
+    };
+  }, [user]);
 
   const fetchSessionAndProfile = useCallback(async () => {
     try {
@@ -51,7 +69,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       const authUser = sessionRes.user;
-      const role: UserRole = authUser.role === 'TIM_KURIKULUM' ? 'TIM_KURIKULUM' : 'SISWA';
+      const rawRole = authUser.role;
+      const role: UserRole =
+        rawRole === 'SUPERADMIN' ? 'SUPERADMIN' : rawRole === 'TIM_KURIKULUM' ? 'TIM_KURIKULUM' : 'SISWA';
 
       const initialUser: User = {
         id: authUser.id,
@@ -137,6 +157,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const role = user?.role || 'SISWA';
 
+  const handleConfirmSessionExpired = async () => {
+    setSessionExpiredMessage(null);
+    await logout();
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -152,6 +177,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }}
     >
       {children}
+
+      {/* Session Expired / Concurrent Login Termination Modal [FE-15] */}
+      {sessionExpiredMessage && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-amber-200 p-6 space-y-4 animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-12 h-12 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 mx-auto">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+            </div>
+            <div className="text-center space-y-2">
+              <h3 className="text-lg font-bold text-slate-800">Sesi Anda Telah Berakhir</h3>
+              <p className="text-sm text-slate-600 leading-relaxed">
+                {sessionExpiredMessage}
+              </p>
+            </div>
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={handleConfirmSessionExpired}
+                className="w-full py-2.5 px-4 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-medium rounded-xl transition shadow-sm text-sm"
+              >
+                Masuk Kembali
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AuthContext.Provider>
   );
 };

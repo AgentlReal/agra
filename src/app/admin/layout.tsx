@@ -5,12 +5,19 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { ShieldAlert, ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { AdminSidebar } from '@/components/layout/AdminSidebar';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, role, isLoading, isAuthenticated } = useAuth();
   const router = useRouter();
 
-  const isAuthorized = isAuthenticated && user && (role === 'TIM_KURIKULUM' || user.role === 'TIM_KURIKULUM');
+  const isAuthorized =
+    isAuthenticated &&
+    user &&
+    (role === 'TIM_KURIKULUM' ||
+      user.role === 'TIM_KURIKULUM' ||
+      role === 'SUPERADMIN' ||
+      user.role === 'SUPERADMIN');
 
   useEffect(() => {
     if (!isLoading && !isAuthorized) {
@@ -45,7 +52,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               Akses Ditolak
             </span>
             <h1 className="text-xl font-extrabold text-slate-900">
-              Area Khusus Tim Kurikulum
+              Area Khusus Tim Kurikulum & Administrator
             </h1>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
               Akun Anda terdaftar sebagai siswa dan tidak memiliki otorisasi untuk mengakses modul kurikulum atau bank soal. Anda akan dialihkan secara otomatis ke dasbor siswa.
@@ -66,5 +73,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  return <>{children}</>;
+  return (
+    <div className="flex min-h-screen bg-[#F8FAFC]">
+      <AdminSidebar />
+      <div className="flex-1 flex flex-col min-w-0">{children}</div>
+    </div>
+  );
 }

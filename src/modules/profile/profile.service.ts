@@ -192,7 +192,7 @@ export class ProfileService {
             materialId: 1,
             submaterialId: 1,
             levelId: 1,
-            route: "/submateri.html?id=1",
+            route: "/submaterials/1",
         };
 
         const nextAction: DashboardNextActionDto = !isRecallPassed
@@ -204,7 +204,7 @@ export class ProfileService {
                   materialId: null,
                   submaterialId: null,
                   levelId: null,
-                  route: "/recall.html",
+                  route: "/recall",
               }
             : activePos
             ? {

@@ -47,6 +47,17 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
       } catch {
         // non-json response
       }
+
+      if (res.status === 401 && typeof window !== 'undefined') {
+        if (!endpoint.includes('/api/auth/get-session') && !endpoint.includes('/api/auth/sign-in')) {
+          window.dispatchEvent(
+            new CustomEvent('agra:session-expired', {
+              detail: { message: errData?.error?.message || errData?.message },
+            })
+          );
+        }
+      }
+
       throw new ApiError(
         errData?.error?.message || errData?.message || `Permintaan gagal dengan status ${res.status}`,
         res.status,
@@ -362,5 +373,77 @@ export const api = {
       }),
     getSimulationPackageStats: (packageId: string | number) =>
       request<any>(`/api/v1/admin/simulation-packages/${packageId}/stats`),
+    getDashboardStats: () => request<any>('/api/v1/admin/dashboard-stats'),
+    getCurriculumTree: () => request<any>('/api/v1/admin/curriculum/metadata-tree'),
+    getSubjects: () => request<any>('/api/v1/admin/curriculum/subjects'),
+    createSubject: (data: { code: string; name: string; description?: string }) =>
+      request<any>('/api/v1/admin/curriculum/subjects', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    createMaterial: (data: {
+      subject_id: number;
+      title?: string;
+      name?: string;
+      order_index?: number;
+      prerequisite_material_id?: number | null;
+    }) =>
+      request<any>('/api/v1/admin/curriculum/materials', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    createSubmaterial: (data: {
+      material_id: number;
+      code: string;
+      title: string;
+      order_index?: number;
+      prerequisite_sub_material_id?: number | null;
+    }) =>
+      request<any>('/api/v1/admin/curriculum/submaterials', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    getUsers: (params?: { role?: string }) => {
+      const qs = params?.role ? `?role=${params.role}` : '';
+      return request<any>(`/api/v1/admin/users${qs}`);
+    },
+    createUser: (data: {
+      name: string;
+      email: string;
+      username?: string;
+      role: 'TIM_KURIKULUM' | 'SUPERADMIN';
+    }) =>
+      request<any>('/api/v1/admin/users', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    updateUser: (userId: string, data: { name?: string; role?: string }) =>
+      request<any>(`/api/v1/admin/users/${userId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      }),
+    deleteUser: (userId: string) =>
+      request<any>(`/api/v1/admin/users/${userId}`, {
+        method: 'DELETE',
+      }),
+    updateQuestionReviewStatus: (
+      questionId: string | number,
+      data: {
+        status?: string;
+        is_active?: boolean;
+        isActive?: boolean;
+        revision_notes?: string;
+        notes?: string;
+      }
+    ) =>
+      request<any>(`/api/v1/admin/questions/${questionId}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      }),
+    importQuestions: (data: { format: 'json' | 'csv'; content?: any; items?: any[] }) =>
+      request<any>('/api/v1/admin/questions/import', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
   },
 };

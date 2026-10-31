@@ -61,7 +61,7 @@ export default function SimulationResultPage({ params }: { params: Promise<{ att
               Dasbor
             </Link>
             <span className="text-slate-300">/</span>
-            <Link href="/simulations" className="hover:text-blue-600 transition-colors">
+            <Link href="/simulations/1" className="hover:text-blue-600 transition-colors">
               Simulasi TKA
             </Link>
             <span className="text-slate-300">/</span>
