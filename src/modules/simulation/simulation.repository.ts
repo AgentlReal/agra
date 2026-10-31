@@ -95,6 +95,16 @@ export class SimulationRepository {
         return rows[0] || null;
     }
 
+    async getLatestCompletedSession(userId: string, subjectId: number): Promise<LearningSessionRow | null> {
+        const rows = await query<LearningSessionRow[]>(
+            `SELECT * FROM learning_sessions 
+             WHERE user_id = ? AND subject_id = ? AND session_type = 'SIMULATION' AND status = 'COMPLETED'
+             ORDER BY id DESC LIMIT 1`,
+            [userId, subjectId]
+        );
+        return rows[0] || null;
+    }
+
     async getSessionById(sessionId: number, userId: string): Promise<LearningSessionRow | null> {
         const rows = await query<LearningSessionRow[]>(
             `SELECT * FROM learning_sessions WHERE id = ? AND user_id = ?`,

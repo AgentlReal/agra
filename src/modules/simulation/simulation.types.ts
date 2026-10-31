@@ -27,6 +27,13 @@ export interface M05_SimulationEligibilityResponse {
     mastered_sub_materials: number;
     completion_percentage: number;
     unmastered_sub_materials: M05_UnmasteredSubMaterial[];
+    latest_attempt?: {
+        id: number;
+        final_score: number;
+        is_passed: boolean;
+        completed_at: string | null;
+    } | null;
+    attempts_used?: number;
 }
 
 export interface M05_StartSimulationResponse {

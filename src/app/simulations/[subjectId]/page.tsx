@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { useAuth } from '@/lib/auth-context';
 import { api } from '@/lib/api-client';
 import { 
   Award, 
@@ -26,12 +27,24 @@ import {
 
 export default function SimulationIntroPage({ params }: { params: Promise<{ subjectId: string }> }) {
   const router = useRouter();
+  const { user, role, isLoading: authLoading } = useAuth();
   const { subjectId } = use(params);
 
   const [eligibility, setEligibility] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  // Route Guard: Unauthenticated to /login, Admin to /admin/dashboard
+  useEffect(() => {
+    if (!authLoading) {
+      if (!user) {
+        router.replace('/login');
+      } else if (role !== 'SISWA') {
+        router.replace('/admin/dashboard');
+      }
+    }
+  }, [authLoading, user, role, router]);
 
   const loadEligibility = () => {
     setLoading(true);
@@ -45,6 +58,14 @@ export default function SimulationIntroPage({ params }: { params: Promise<{ subj
       })
       .catch((err: any) => {
         console.error('Failed to load simulation eligibility:', err);
+        if (err.status === 401) {
+          router.replace('/login');
+          return;
+        }
+        if (err.status === 403 && (role === 'TIM_KURIKULUM' || role === 'SUPERADMIN')) {
+          router.replace('/admin/dashboard');
+          return;
+        }
         setErrorMsg(err.message || 'Gagal memuat status eligibilitas simulasi dari server.');
       })
       .finally(() => setLoading(false));
@@ -77,6 +98,9 @@ export default function SimulationIntroPage({ params }: { params: Promise<{ subj
   };
 
   const isEligible = Boolean(eligibility?.isEligible ?? eligibility?.is_eligible);
+  const latestAttempt = eligibility?.latest_attempt;
+  const attemptsUsed = eligibility?.attempts_used ?? (latestAttempt ? 1 : 0);
+  const quotaExceeded = attemptsUsed >= 2;
   const subjectName =
     eligibility?.subjectName ??
     eligibility?.subject_name ??
@@ -222,8 +246,65 @@ export default function SimulationIntroPage({ params }: { params: Promise<{ subj
                 </ul>
               </div>
 
+              {/* Previous Completed Attempt Card (DEF-FE-03) */}
+              {latestAttempt && (
+                <div className="rounded-2xl border border-blue-200 bg-blue-50/70 p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-3.5">
+                    <div className={`flex h-11 w-11 items-center justify-center rounded-2xl text-white font-extrabold text-sm shrink-0 shadow-2xs ${latestAttempt.is_passed ? 'bg-emerald-600' : 'bg-amber-600'}`}>
+                      {latestAttempt.final_score}%
+                    </div>
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-sm font-bold text-slate-900">
+                          {latestAttempt.is_passed ? 'Selamat! Anda Telah Lulus Ujian CBT' : 'Ujian CBT Selesai Dikerjakan'}
+                        </h4>
+                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${latestAttempt.is_passed ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-amber-100 text-amber-800 border border-amber-200'}`}>
+                          {latestAttempt.is_passed ? 'Lulus Capstone (≥ 90%)' : 'Perlu Penguatan Nalar (< 90%)'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-600">
+                        Skor akhir Anda: <strong className="text-slate-900 font-bold">{latestAttempt.final_score}%</strong> (Standar Nasional Kemendikdasmen). Kesempatan terpakai: {attemptsUsed} dari 2 kali.
+                      </p>
+                    </div>
+                  </div>
+
+                  <Link
+                    href={`/simulations/result/${latestAttempt.id}`}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-2.5 px-4 shadow-xs transition-colors cursor-pointer shrink-0"
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>Lihat Hasil & Pembahasan</span>
+                  </Link>
+                </div>
+              )}
+
               {/* Eligibility & Action Status Box */}
-              {isEligible ? (
+              {quotaExceeded ? (
+                <div className="rounded-2xl border border-slate-200 bg-slate-100/80 p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-3.5">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-200 text-slate-600 shrink-0">
+                      <ShieldCheck className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900">
+                        Batas Kesempatan Ujian Tercapai
+                      </h4>
+                      <p className="text-xs text-slate-500">
+                        Anda telah menggunakan batas maksimal ujian simulasi mandiri (2 dari 2 kali).
+                      </p>
+                    </div>
+                  </div>
+
+                  {latestAttempt && (
+                    <Link
+                      href={`/simulations/result/${latestAttempt.id}`}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-slate-800 text-white font-bold text-xs py-3 px-5 shadow-xs"
+                    >
+                      <span>Tinjau Hasil Terakhir</span>
+                    </Link>
+                  )}
+                </div>
+              ) : isEligible ? (
                 <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="flex items-center gap-3.5">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 shrink-0">
@@ -248,7 +329,7 @@ export default function SimulationIntroPage({ params }: { params: Promise<{ subj
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                     ) : (
                       <>
-                        <span>Mulai Simulasi Sekarang</span>
+                        <span>{latestAttempt ? `Ulangi Simulasi (Sisa: ${2 - attemptsUsed}x)` : 'Mulai Simulasi Sekarang'}</span>
                         <ArrowRight className="h-4 w-4" />
                       </>
                     )}

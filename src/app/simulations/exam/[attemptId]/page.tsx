@@ -189,9 +189,9 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
       .finally(() => setLoading(false));
   }, [attemptId]);
 
-  // Countdown Timer Effect
+  // Countdown Timer Effect (Guarded against missing questions or load error - DEF-FE-09)
   useEffect(() => {
-    if (loading) return;
+    if (loading || questions.length === 0 || errorMsg) return;
 
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
@@ -207,7 +207,7 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [loading]);
+  }, [loading, questions.length, errorMsg]);
 
   const triggerTimeoutSubmission = () => {
     setTimeoutModalOpen(true);

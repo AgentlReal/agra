@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { api } from '@/lib/api-client';
+import { useAuth } from '@/lib/auth-context';
 import { 
   ArrowLeft, 
   Layers, 
@@ -61,6 +62,7 @@ const LEVEL_CONFIGS = [
 
 export default function SubmaterialDetailPage({ params }: { params: Promise<{ submaterialId: string }> }) {
   const router = useRouter();
+  const { user, role, isLoading: authLoading } = useAuth();
   const { submaterialId } = use(params);
 
   const [submaterial, setSubmaterial] = useState<any>(null);
@@ -72,6 +74,16 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
     open: false,
     message: '',
   });
+
+  useEffect(() => {
+    if (!authLoading) {
+      if (!user) {
+        router.replace('/login');
+      } else if (role !== 'SISWA') {
+        router.replace('/admin/dashboard');
+      }
+    }
+  }, [authLoading, user, role, router]);
 
   const loadProgress = () => {
     setLoading(true);
@@ -106,6 +118,10 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
       })
       .catch((err: any) => {
         console.error('Failed to load submaterial progress:', err);
+        if (err.status === 401) {
+          router.replace('/login');
+          return;
+        }
         const isPrereq =
           err.code === 'PREREQUISITE_LOCKED' ||
           err.status === 403 ||
