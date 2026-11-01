@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { api } from '@/lib/api-client';
@@ -48,6 +50,8 @@ interface ReviewItem {
 
 export default function SimulationReviewPage({ params }: { params: Promise<{ attemptId: string }> }) {
   const { attemptId } = use(params);
+  const router = useRouter();
+  const { user, isLoading: authLoading } = useAuth();
   const [questions, setQuestions] = useState<ReviewItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [filter, setFilter] = useState<'all' | 'correct' | 'wrong'>('all');
@@ -56,6 +60,14 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/login');
+    }
+  }, [authLoading, user, router]);
+
+  useEffect(() => {
+    if (authLoading || !user) return;
+    setLoading(true);
     api.simulation
       .getReview(attemptId)
       .then((res: any) => {
@@ -165,10 +177,22 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
       })
       .catch((err: any) => {
         console.error('Failed to load simulation review:', err);
+        if (err?.status === 401 || err?.response?.status === 401) {
+          router.replace('/login');
+          return;
+        }
         setErrorMsg(err.message || 'Gagal memuat pembahasan simulasi dari server.');
       })
       .finally(() => setLoading(false));
-  }, [attemptId]);
+  }, [attemptId, authLoading, user, router]);
+
+  if (authLoading || !user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
 
   const totalScore = questions.reduce((acc, q) => acc + (q.score ?? (q.isCorrect ? 1 : 0)), 0);
   const correctCount = questions.filter((q) => q.isCorrect).length;

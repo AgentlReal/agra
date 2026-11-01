@@ -42,9 +42,11 @@ export default function SimulationIntroPage({ params }: { params: Promise<{ subj
         router.replace('/login');
       } else if (role !== 'SISWA') {
         router.replace('/admin/dashboard');
+      } else {
+        loadEligibility();
       }
     }
-  }, [authLoading, user, role, router]);
+  }, [authLoading, user, role, subjectId, router]);
 
   const loadEligibility = () => {
     setLoading(true);
@@ -70,10 +72,6 @@ export default function SimulationIntroPage({ params }: { params: Promise<{ subj
       })
       .finally(() => setLoading(false));
   };
-
-  useEffect(() => {
-    loadEligibility();
-  }, [subjectId]);
 
   const handleStartSimulation = async () => {
     setStarting(true);
@@ -112,6 +110,14 @@ export default function SimulationIntroPage({ params }: { params: Promise<{ subj
     eligibility?.completionPercentage ??
     eligibility?.completion_percentage ??
     (totalSub > 0 ? Math.round((masteredSub / totalSub) * 100) : 0);
+
+  if (authLoading || !user || role !== 'SISWA') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F8FAFC] text-slate-800 font-sans">

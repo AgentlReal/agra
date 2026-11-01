@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { api } from '@/lib/api-client';
@@ -48,6 +50,8 @@ interface ReviewItem {
 
 export default function LearningReviewPage({ params }: { params: Promise<{ attemptId: string }> }) {
   const { attemptId } = use(params);
+  const router = useRouter();
+  const { user, isLoading: authLoading } = useAuth();
   const [questions, setQuestions] = useState<ReviewItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [levelName, setLevelName] = useState<string | null>(null);
@@ -56,6 +60,14 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/login');
+    }
+  }, [authLoading, user, router]);
+
+  useEffect(() => {
+    if (authLoading || !user) return;
+    setLoading(true);
     api.learning
       .getReview(attemptId)
       .then((res: any) => {
@@ -146,10 +158,22 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
       })
       .catch((err: any) => {
         console.error('Failed to load learning review:', err);
+        if (err?.status === 401 || err?.response?.status === 401) {
+          router.replace('/login');
+          return;
+        }
         setErrorMsg(err.message || 'Gagal memuat review latihan level.');
       })
       .finally(() => setLoading(false));
-  }, [attemptId]);
+  }, [attemptId, authLoading, user, router]);
+
+  if (authLoading || !user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
 
   const correctCount = questions.filter((q) => q.isCorrect).length;
   const reviewCount = questions.length - correctCount;

@@ -43,13 +43,15 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Route Guard: Unauthenticated to /login, Admin to /admin/dashboard
+  // Route Guard & Data Loader
   useEffect(() => {
     if (!authLoading) {
       if (!user) {
         router.replace('/login');
       } else if (role !== 'SISWA') {
         router.replace('/admin/dashboard');
+      } else {
+        loadDashboard();
       }
     }
   }, [authLoading, user, role, router]);
@@ -90,9 +92,13 @@ export default function DashboardPage() {
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => {
-    loadDashboard();
-  }, []);
+  if (authLoading || !user || role !== 'SISWA') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
 
   const student = dashboardData?.student || user;
   const subjects = dashboardData?.subjects || [];

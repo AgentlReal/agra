@@ -81,9 +81,11 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
         router.replace('/login');
       } else if (role !== 'SISWA') {
         router.replace('/admin/dashboard');
+      } else {
+        loadProgress();
       }
     }
-  }, [authLoading, user, role, router]);
+  }, [authLoading, user, role, submaterialId, router]);
 
   const loadProgress = () => {
     setLoading(true);
@@ -142,10 +144,6 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => {
-    loadProgress();
-  }, [submaterialId]);
-
   const handleStartLevel = async (levelNumber: number) => {
     setStartingLevel(levelNumber);
     setErrorMsg('');
@@ -191,6 +189,14 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
       setStartingLevel(null);
     }
   };
+
+  if (authLoading || !user || role !== 'SISWA') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-[#f8fafc]">

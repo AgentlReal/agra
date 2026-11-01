@@ -44,6 +44,8 @@ export default function RecallIntroPage() {
         router.replace('/login');
       } else if (role !== 'SISWA') {
         router.replace('/admin/dashboard');
+      } else {
+        loadStatus();
       }
     }
   }, [authLoading, user, role, router]);
@@ -71,10 +73,6 @@ export default function RecallIntroPage() {
       })
       .finally(() => setLoading(false));
   };
-
-  useEffect(() => {
-    loadStatus();
-  }, []);
 
   const handleStartAttempt = async () => {
     setStarting(true);
@@ -106,6 +104,14 @@ export default function RecallIntroPage() {
       setStarting(false);
     }
   };
+
+  if (authLoading || !user || role !== 'SISWA') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-[#f8fafc]">
