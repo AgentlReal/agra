@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
 import { api } from '@/lib/api-client';
 import { 
   GraduationCap, 
@@ -45,6 +46,7 @@ interface QuestionItem {
 export default function RecallExamPage({ params }: { params: Promise<{ attemptId: string }> }) {
   const router = useRouter();
   const { attemptId } = use(params);
+  const { user, isLoading: authLoading } = useAuth();
 
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -65,6 +67,12 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
   const [failedSaveIndices, setFailedSaveIndices] = useState<number[]>([]);
   const [showSubmitWarningModal, setShowSubmitWarningModal] = useState(false);
 
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/login');
+    }
+  }, [authLoading, user, router]);
+
   // BFCache protection
   useEffect(() => {
     const handlePageShow = (event: PageTransitionEvent) => {
@@ -78,6 +86,8 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
 
   // Initialize questions
   useEffect(() => {
+    if (authLoading || !user) return;
+    setLoading(true);
     api.recall
       .getAttempt(attemptId)
       .then((res: any) => {
@@ -171,10 +181,14 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
       })
       .catch((err: any) => {
         console.error('Failed to load recall attempt:', err);
+        if (err?.status === 401 || err?.response?.status === 401) {
+          router.replace('/login');
+          return;
+        }
         setErrorMsg(err.message || 'Gagal memuat sesi pengerjaan Recall.');
       })
       .finally(() => setLoading(false));
-  }, [attemptId]);
+  }, [attemptId, authLoading, user, router]);
 
   const currentQ = questions[currentIndex];
 
@@ -292,6 +306,14 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
   const doubtfulCount = Object.values(doubtfuls).filter(Boolean).length;
   const unansweredCount = questions.length - answeredCount;
   const answeredProgressPercent = questions.length > 0 ? Math.round((answeredCount / questions.length) * 100) : 0;
+
+  if (authLoading || !user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
 
   if (loading) {
     return (

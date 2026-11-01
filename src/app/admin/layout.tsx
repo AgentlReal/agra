@@ -20,15 +20,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       user.role === 'SUPERADMIN');
 
   useEffect(() => {
-    if (!isLoading && !isAuthorized) {
-      const timeout = setTimeout(() => {
-        router.replace('/dashboard');
-      }, 3000);
-      return () => clearTimeout(timeout);
+    if (!isLoading) {
+      if (!isAuthenticated || !user) {
+        router.replace('/login');
+      } else if (!isAuthorized) {
+        const timeout = setTimeout(() => {
+          router.replace('/dashboard');
+        }, 3000);
+        return () => clearTimeout(timeout);
+      }
     }
-  }, [isLoading, isAuthorized, router]);
+  }, [isLoading, isAuthenticated, user, isAuthorized, router]);
 
-  if (isLoading) {
+  if (isLoading || !isAuthenticated || !user) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-[#f8fafc]">
         <div className="flex flex-col items-center gap-3">

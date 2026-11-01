@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, use, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
 import { api } from '@/lib/api-client';
 import { 
   ShieldCheck, 
@@ -46,6 +47,7 @@ interface QuestionItem {
 export default function SimulationExamPage({ params }: { params: Promise<{ attemptId: string }> }) {
   const router = useRouter();
   const { attemptId } = use(params);
+  const { user, isLoading: authLoading } = useAuth();
 
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -73,6 +75,12 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
   const [failedSaveIndices, setFailedSaveIndices] = useState<number[]>([]);
   const [showSubmitWarningModal, setShowSubmitWarningModal] = useState(false);
 
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/login');
+    }
+  }, [authLoading, user, router]);
+
   // BFCache protection
   useEffect(() => {
     const handlePageShow = (event: PageTransitionEvent) => {
@@ -85,6 +93,8 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
   }, []);
 
   useEffect(() => {
+    if (authLoading || !user) return;
+    setLoading(true);
     api.simulation
       .getAttempt(attemptId)
       .then((res: any) => {
@@ -184,10 +194,14 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
         }
       })
       .catch((err: any) => {
+        if (err?.status === 401 || err?.response?.status === 401) {
+          router.replace('/login');
+          return;
+        }
         setErrorMsg(err.message || 'Gagal memuat butir soal simulasi dari server.');
       })
       .finally(() => setLoading(false));
-  }, [attemptId]);
+  }, [attemptId, authLoading, user, router]);
 
   // Countdown Timer Effect (Guarded against missing questions or load error - DEF-FE-09)
   useEffect(() => {
@@ -362,6 +376,14 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
   const doubtfulCount = Object.values(doubtfuls).filter(Boolean).length;
   const unansweredCount = questions.length - answeredCount;
   const answeredProgressPercent = questions.length > 0 ? Math.round((answeredCount / questions.length) * 100) : 0;
+
+  if (authLoading || !user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
 
   if (loading) {
     return (

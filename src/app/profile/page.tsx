@@ -88,6 +88,8 @@ export default function ProfilePage() {
 
   // Fetch initial profile data on mount
   useEffect(() => {
+    if (authLoading || !user || role !== 'SISWA') return;
+
     // Fetch avatars
     api.profile
       .getAvatars()
@@ -136,7 +138,7 @@ export default function ProfilePage() {
       })
       .catch((err) => console.error('Failed to load XP transactions:', err))
       .finally(() => setLoadingXp(false));
-  }, []);
+  }, [authLoading, user, role]);
 
   // Determine current mastery tier using official API profile.milestone / milestoneProgress or fallback
   const currentXp = profile?.totalXp ?? profile?.total_xp ?? user?.totalXp ?? 0;
@@ -231,6 +233,14 @@ export default function ProfilePage() {
       setChangingPass(false);
     }
   };
+
+  if (authLoading || !user || role !== 'SISWA') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f8fafc]">

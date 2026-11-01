@@ -18,7 +18,7 @@ interface AvatarPreset {
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { user, updateUser } = useAuth();
+  const { user, isLoading: authLoading, updateUser } = useAuth();
   const [selectedGrade, setSelectedGrade] = useState<number>(8);
   const [avatars, setAvatars] = useState<AvatarPreset[]>([]);
   const [selectedAvatarId, setSelectedAvatarId] = useState<number>(1);
@@ -26,6 +26,13 @@ export default function OnboardingPage() {
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/login');
+    }
+  }, [authLoading, user, router]);
+
+  useEffect(() => {
+    if (authLoading || !user) return;
     api.profile
       .getAvatars()
       .then((res: any) => {
@@ -38,9 +45,13 @@ export default function OnboardingPage() {
       })
       .catch((err) => {
         console.error('Failed to load avatars:', err);
+        if (err?.status === 401) {
+          router.replace('/login');
+          return;
+        }
         setErrorMsg('Gagal memuat daftar avatar dari server.');
       });
-  }, []);
+  }, [authLoading, user, router]);
 
   const handleComplete = async () => {
     setLoading(true);
@@ -62,11 +73,23 @@ export default function OnboardingPage() {
       // Proceed to the Gatekeeper diagnostic test (Recall Kemampuanmu)
       router.push('/recall');
     } catch (err: any) {
+      if (err?.status === 401) {
+        router.replace('/login');
+        return;
+      }
       setErrorMsg(err.message || 'Gagal menyimpan profil awal.');
     } finally {
       setLoading(false);
     }
   };
+
+  if (authLoading || !user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f8fafc]">
