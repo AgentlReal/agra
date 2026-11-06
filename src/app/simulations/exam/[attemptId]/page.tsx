@@ -436,7 +436,7 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
                 <span className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight">
                   Simulasi TKA Matematika
                 </span>
-                <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-bold text-blue-700 uppercase tracking-wider">
+                <span className="rounded-full bg-blue-50 border border-blue-200 px-2.5 py-0.5 text-[11px] font-bold text-blue-700">
                   CBT 75 Menit
                 </span>
               </div>
@@ -478,7 +478,7 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
             {/* Submit Button */}
             <button
               onClick={() => setSubmitModalOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2 transition-colors shadow-2xs cursor-pointer"
+              className="btn-tactile-dark inline-flex items-center gap-1.5 rounded-xl font-bold text-xs px-4 py-2 cursor-pointer"
             >
               <CheckCircle2 className="h-4 w-4" />
               <span>Kumpulkan Ujian</span>
@@ -542,9 +542,9 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
             {(currentQ.stimulus || normStimulusImg) && (
               <div className="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-7 shadow-xs space-y-4">
                 <div className="flex flex-wrap items-center gap-2">
-                  <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 text-white px-3 py-1 text-[11px] font-bold tracking-wider uppercase shadow-2xs">
+                  <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 text-white px-3 py-1 text-[11px] font-bold shadow-2xs">
                     <BookOpen className="h-3.5 w-3.5" />
-                    <span>STIMULUS SOAL</span>
+                    <span>Stimulus Soal</span>
                   </div>
                   <div className="inline-flex items-center rounded-full bg-slate-100 text-slate-700 border border-slate-200 px-3 py-1 text-[11px] font-semibold">
                     <span>Numerasi &amp; Pemecahan Masalah</span>
@@ -553,7 +553,7 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
 
                 <div className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-5 space-y-3.5">
                   {currentQ.stimulus && (
-                    <div className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
+                    <div className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal max-w-prose">
                       <FormattedContent content={currentQ.stimulus} />
                     </div>
                   )}
@@ -679,34 +679,45 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
 
               {/* Bottom Question Navigation Toolbar */}
               <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
-                {/* Skip Question (Left) */}
-                <button
-                  onClick={() => setCurrentIndex((prev) => Math.min(questions.length - 1, prev + 1))}
-                  disabled={currentIndex >= questions.length - 1}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
-                >
-                  <FastForward className="h-4 w-4 text-slate-400" />
-                  <span>Lewati Soal Ini</span>
-                </button>
+                {/* Left Controls: Sebelumnya & Lewati */}
+                <div className="w-full sm:w-auto flex items-center gap-2">
+                  <button
+                    onClick={() => setCurrentIndex((prev) => Math.max(0, prev - 1))}
+                    disabled={currentIndex === 0}
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    <span>Sebelumnya</span>
+                  </button>
 
-                {/* Right: Ragu-ragu & Save/Next */}
+                  <button
+                    onClick={() => setCurrentIndex((prev) => Math.min(questions.length - 1, prev + 1))}
+                    disabled={currentIndex >= questions.length - 1}
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+                  >
+                    <FastForward className="h-4 w-4 text-slate-400" />
+                    <span>Lewati Soal</span>
+                  </button>
+                </div>
+
+                {/* Right Controls: Ragu-ragu & Save/Next */}
                 <div className="w-full sm:w-auto flex items-center gap-2.5">
                   <button
                     onClick={handleToggleDoubtful}
                     className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl border px-4 py-2.5 text-xs font-bold transition-all cursor-pointer ${
                       doubtfuls[currentIndex]
-                        ? 'border-amber-400 bg-amber-50 text-amber-800 shadow-2xs'
+                        ? 'btn-tactile-amber border-amber-500'
                         : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300'
                     }`}
                   >
-                    <Flag className={`h-3.5 w-3.5 ${doubtfuls[currentIndex] ? 'text-amber-600 fill-amber-600' : 'text-slate-400'}`} />
+                    <Flag className={`h-3.5 w-3.5 ${doubtfuls[currentIndex] ? 'text-white fill-white' : 'text-slate-400'}`} />
                     <span>{doubtfuls[currentIndex] ? 'Ditandai Ragu-ragu' : 'Ragu-ragu'}</span>
                   </button>
 
                   {currentIndex < questions.length - 1 ? (
                     <button
                       onClick={() => setCurrentIndex((prev) => prev + 1)}
-                      className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                      className="btn-tactile-primary flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold cursor-pointer"
                     >
                       <span>Simpan &amp; Lanjut</span>
                       <ChevronRight className="h-4 w-4" />
@@ -714,7 +725,7 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
                   ) : (
                     <button
                       onClick={() => setSubmitModalOpen(true)}
-                      className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                      className="btn-tactile-secondary flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold cursor-pointer"
                     >
                       <span>Selesaikan Ujian</span>
                       <CheckCircle2 className="h-4 w-4" />
@@ -746,9 +757,9 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
                   ? 'border-amber-300 bg-amber-50 text-amber-900'
                   : 'border-slate-200 bg-slate-50/70 text-slate-900'
               }`}>
-                <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-slate-500">
                   <Clock className={`h-3.5 w-3.5 ${isLowTime ? 'text-amber-600' : 'text-blue-600'}`} />
-                  <span>SISA WAKTU</span>
+                  <span>Sisa Waktu</span>
                 </div>
                 <div className="font-mono text-2xl font-black tracking-wider text-slate-900">
                   {formatTimeFull(timeLeft)}
@@ -762,15 +773,15 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
               <div className="flex items-center justify-between text-[11px] font-semibold text-slate-600 px-1">
                 <div className="flex items-center gap-1.5">
                   <span className="h-3 w-3 rounded-full border border-slate-300 bg-slate-100" />
-                  <span>Belum</span>
+                  <span>Belum ({unansweredCount})</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="h-3 w-3 rounded-full bg-blue-600" />
-                  <span>Sudah</span>
+                  <span>Sudah ({answeredCount})</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="h-3 w-3 rounded-full bg-amber-400" />
-                  <span>Ragu-ragu</span>
+                  <span>Ragu ({doubtfulCount})</span>
                 </div>
               </div>
 
@@ -1016,7 +1027,7 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
               <button
                 type="button"
                 onClick={() => setSubmitModalOpen(false)}
-                className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
+                className="btn-tactile-neutral flex-1 rounded-xl px-4 py-2.5 text-xs font-semibold cursor-pointer"
               >
                 Lanjutkan Ujian
               </button>
@@ -1027,7 +1038,7 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
                   handleSubmit(false);
                 }}
                 disabled={submitting}
-                className="flex-1 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2.5 transition-colors disabled:opacity-50 cursor-pointer"
+                className="btn-tactile-secondary flex-1 rounded-xl font-bold text-xs px-4 py-2.5 disabled:opacity-50 cursor-pointer"
               >
                 {submitting ? 'Mengumpulkan...' : 'Ya, Selesaikan'}
               </button>
@@ -1040,9 +1051,9 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
       {timeoutModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-md p-4 animate-in fade-in duration-200">
           <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-7 sm:p-8 shadow-2xl text-center space-y-5">
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full bg-amber-100 border border-amber-200 px-3.5 py-1 text-xs font-bold text-amber-800 uppercase tracking-wider">
+            <div className="mx-auto inline-flex items-center gap-2 rounded-full bg-amber-100 border border-amber-200 px-3.5 py-1 text-xs font-bold text-amber-800">
               <Clock className="h-3.5 w-3.5 text-amber-700" />
-              <span>SIMULASI SELESAI</span>
+              <span>Simulasi Selesai</span>
             </div>
 
             <div className="space-y-1.5">

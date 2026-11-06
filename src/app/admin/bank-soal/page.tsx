@@ -300,7 +300,7 @@ export default function AdminBankSoalPage() {
             {
               key: 'RECALL',
               title: 'Bank Recall Kemampuan',
-              subtitle: 'Asesmen diagnostik awal 10 butir',
+              subtitle: 'Asesmen diagnostik awal 30 butir',
               current: stockData.recall.current,
               target: stockData.recall.target,
             },

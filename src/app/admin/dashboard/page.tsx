@@ -172,7 +172,7 @@ export default function AdminDashboardPage() {
                 {loading ? '...' : recallBank.total_questions || 0}
               </p>
               <p className="text-[11px] text-amber-700 font-semibold mt-0.5">
-                Asesmen diagnostik awal 10 butir
+                Asesmen diagnostik awal 30 butir
               </p>
             </div>
           </div>

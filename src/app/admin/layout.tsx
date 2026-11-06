@@ -52,7 +52,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           <div className="space-y-2">
-            <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-[11px] font-bold text-amber-800 uppercase tracking-wider">
+            <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-[11px] font-bold text-amber-800">
               Akses Ditolak
             </span>
             <h1 className="text-xl font-extrabold text-slate-900">

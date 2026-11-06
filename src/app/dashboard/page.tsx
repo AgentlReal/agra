@@ -117,16 +117,16 @@ export default function DashboardPage() {
       <Navbar />
 
       <main className="flex-1 py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-8">
-        {/* Error Notification (Safe-to-fail warm amber, red banned) */}
+        {/* Error Notification (Technical & System Error) */}
         {errorMsg && (
-          <div className="flex items-center justify-between rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs sm:text-sm text-amber-900 shadow-2xs">
+          <div className="flex items-center justify-between rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs sm:text-sm text-rose-950 shadow-2xs">
             <div className="flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-amber-600 shrink-0" />
+              <AlertCircle className="h-5 w-5 text-rose-600 shrink-0" />
               <span>{errorMsg}</span>
             </div>
             <button
               onClick={loadDashboard}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-amber-200/80 hover:bg-amber-300 px-3.5 py-1.5 text-xs font-bold text-amber-900 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-rose-200/80 hover:bg-rose-300 px-3.5 py-1.5 text-xs font-bold text-rose-950 transition-colors cursor-pointer"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               <span>Coba Lagi</span>
@@ -177,7 +177,7 @@ export default function DashboardPage() {
                   <div className="flex items-center gap-2.5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 shadow-2xs">
                     <Sparkles className="h-5 w-5 text-amber-500" />
                     <div>
-                      <p className="text-[10px] text-amber-700 uppercase font-semibold">Total XP Belajar</p>
+                      <p className="text-[11px] text-amber-700 font-semibold">Total XP Belajar</p>
                       <p className="text-sm font-extrabold text-slate-900">{student?.totalXp ?? user?.totalXp ?? 0} XP</p>
                     </div>
                   </div>
@@ -224,7 +224,7 @@ export default function DashboardPage() {
                     Selesaikan Asesmen Recall Terlebih Dahulu
                   </h3>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    Untuk membuka materi kurikulum dan modul latihan bertingkat, selesaikan 10 butir asesmen pengingatan konsep awal (Recall Kemampuanmu).
+                    Untuk membuka materi kurikulum dan modul latihan bertingkat, selesaikan 30 butir asesmen pengingatan konsep awal (Recall Kemampuanmu).
                   </p>
                 </div>
                 <div>

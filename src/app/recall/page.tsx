@@ -137,16 +137,16 @@ export default function RecallIntroPage() {
             <span>Kembali ke Dasbor</span>
           </Link>
         </div>
-        {/* Error notification (Safe-to-fail warm amber container, red banned) */}
+        {/* Error notification (Technical & Network Failure) */}
         {errorMsg && (
-          <div className="flex items-center justify-between rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs sm:text-sm text-amber-900 shadow-2xs">
+          <div className="flex items-center justify-between rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs sm:text-sm text-rose-950 shadow-2xs">
             <div className="flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-amber-600 shrink-0" />
+              <AlertCircle className="h-5 w-5 text-rose-600 shrink-0" />
               <span>{errorMsg}</span>
             </div>
             <button
               onClick={loadStatus}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-amber-200/80 hover:bg-amber-300 px-3 py-1.5 text-xs font-bold text-amber-900 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-rose-200/80 hover:bg-rose-300 px-3 py-1.5 text-xs font-bold text-rose-950 transition-colors cursor-pointer"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               <span>Coba Lagi</span>
