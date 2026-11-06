@@ -133,9 +133,9 @@ export default function RecallResultPage({ params }: { params: Promise<{ attempt
             {/* Banner Status (Exact replica of reference-design/recall-kemampuan-lulus-81 & tidak-dq) */}
             {isPassed ? (
               <div className="rounded-3xl border border-emerald-200 bg-emerald-50/80 p-6 sm:p-8 shadow-xs space-y-2">
-                <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 border border-emerald-200 px-3.5 py-1 text-xs font-bold text-emerald-800 uppercase tracking-wider">
+                <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 border border-emerald-200 px-3.5 py-1 text-xs font-bold text-emerald-800">
                   <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                  <span>PRETEST LULUS</span>
+                  <span>Pretest Lulus</span>
                 </div>
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                   Selamat! Kamu Lulus Recall Kemampuanmu
@@ -146,9 +146,9 @@ export default function RecallResultPage({ params }: { params: Promise<{ attempt
               </div>
             ) : (
               <div className="rounded-3xl border border-amber-200 bg-amber-50/80 p-6 sm:p-8 shadow-xs space-y-2">
-                <div className="inline-flex items-center gap-2 rounded-full bg-amber-100 border border-amber-200 px-3.5 py-1 text-xs font-bold text-amber-800 uppercase tracking-wider">
+                <div className="inline-flex items-center gap-2 rounded-full bg-amber-100 border border-amber-200 px-3.5 py-1 text-xs font-bold text-amber-800">
                   <ShieldCheck className="h-4 w-4 text-amber-600" />
-                  <span>SESI REMEDIAL RECALL</span>
+                  <span>Sesi Remedial Recall</span>
                 </div>
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                   Perlu Sesi Remedial Recall Kemampuanmu
@@ -164,7 +164,7 @@ export default function RecallResultPage({ params }: { params: Promise<{ attempt
               
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-6">
                 <div>
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <p className="text-xs font-semibold text-slate-500">
                     Nilai Akurasi Nalar
                   </p>
                   <div className="text-3xl sm:text-4xl font-black text-slate-900 mt-1">

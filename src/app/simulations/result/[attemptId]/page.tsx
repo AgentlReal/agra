@@ -128,9 +128,9 @@ export default function SimulationResultPage({ params }: { params: Promise<{ att
             {/* Status Banner */}
             {isPassed ? (
               <div className="rounded-3xl border border-emerald-200 bg-emerald-50/80 p-6 sm:p-8 shadow-xs space-y-2">
-                <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 border border-emerald-200 px-3.5 py-1 text-xs font-bold text-emerald-800 uppercase tracking-wider">
+                <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 border border-emerald-200 px-3.5 py-1 text-xs font-bold text-emerald-800">
                   <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                  <span>PREDIKSI LULUS SIMULASI STANDAR</span>
+                  <span>Prediksi Lulus Simulasi Standar</span>
                 </div>
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                   Selamat! Kamu Lulus Capstone Simulasi TKA
@@ -141,9 +141,9 @@ export default function SimulationResultPage({ params }: { params: Promise<{ att
               </div>
             ) : (
               <div className="rounded-3xl border border-amber-200 bg-amber-50/80 p-6 sm:p-8 shadow-xs space-y-2">
-                <div className="inline-flex items-center gap-2 rounded-full bg-amber-100 border border-amber-200 px-3.5 py-1 text-xs font-bold text-amber-800 uppercase tracking-wider">
+                <div className="inline-flex items-center gap-2 rounded-full bg-amber-100 border border-amber-200 px-3.5 py-1 text-xs font-bold text-amber-800">
                   <ShieldCheck className="h-4 w-4 text-amber-600" />
-                  <span>REKOMENDASI PENGUATAN MATERI</span>
+                  <span>Rekomendasi Penguatan Materi</span>
                 </div>
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                   Perlu Penguatan Nalar Simulasi TKA
@@ -159,7 +159,7 @@ export default function SimulationResultPage({ params }: { params: Promise<{ att
               
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-6">
                 <div>
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <p className="text-xs font-semibold text-slate-500">
                     Skor Akhir Simulasi
                   </p>
                   <div className="text-3xl sm:text-4xl font-black text-slate-900 mt-1">
@@ -171,7 +171,7 @@ export default function SimulationResultPage({ params }: { params: Promise<{ att
                   <div className="flex items-center gap-2 rounded-2xl bg-amber-50 border border-amber-200/80 px-4 py-2.5 self-start sm:self-auto">
                     <Sparkles className="h-4 w-4 text-amber-500" />
                     <div>
-                      <p className="text-[10px] font-bold text-amber-700 uppercase tracking-wider">Poin Diperoleh</p>
+                      <p className="text-[11px] font-bold text-amber-700">Poin Diperoleh</p>
                       <p className="text-xs font-extrabold text-slate-800">+{earnedXp} XP Belajar</p>
                     </div>
                   </div>

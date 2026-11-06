@@ -277,9 +277,9 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
             {(currentQ.stimulus || normStimulusImg) && (
               <div className="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-7 shadow-xs space-y-4">
                 <div className="flex items-center gap-2">
-                  <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 text-white px-3 py-1 text-[11px] font-bold uppercase tracking-wider shadow-2xs">
+                  <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 text-white px-3 py-1 text-[11px] font-bold shadow-2xs">
                     <BookOpen className="h-3.5 w-3.5" />
-                    <span>STIMULUS BACAAN</span>
+                    <span>Stimulus Bacaan</span>
                   </div>
                   <span className="rounded-full bg-slate-100 text-slate-700 border border-slate-200 px-3 py-1 text-[11px] font-semibold">
                     Konteks Pokok
@@ -325,7 +325,7 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
                   <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-white font-bold text-xs">
                     {currentQ.questionNumber}
                   </span>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-900">
+                  <span className="text-xs font-bold text-slate-900">
                     Soal #{currentQ.questionNumber} dari {questions.length}
                   </span>
                 </div>
@@ -425,7 +425,7 @@ export default function LearningReviewPage({ params }: { params: Promise<{ attem
               {/* Solution / Explanation Box */}
               <div className="rounded-2xl border border-blue-200 bg-blue-50/40 p-5 sm:p-6 space-y-4">
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-bold text-blue-900 uppercase tracking-wider">
+                  <div className="flex items-center gap-2 text-xs font-bold text-blue-900">
                     <Lightbulb className="h-4 w-4 text-blue-600" />
                     <span>Pembahasan Solusi &amp; Konsep Kunci:</span>
                   </div>

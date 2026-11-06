@@ -382,7 +382,7 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
                 {/* Stimulus Context Box (if available) */}
                 {(currentQ.stimulus || normStimulusImg) && (
                   <div className="rounded-2xl border border-blue-100 bg-blue-50/30 p-5 space-y-3.5">
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-blue-800 uppercase tracking-wider">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-blue-800">
                       <BookOpen className="h-3.5 w-3.5 text-blue-600" />
                       <span>Stimulus Bacaan / Konteks Soal</span>
                     </div>
@@ -443,7 +443,7 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
 
                 {/* Options List */}
                 <div className="space-y-3 pt-2">
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  <p className="text-xs font-bold text-slate-500">
                     Pilihan Jawaban:
                   </p>
 
@@ -490,17 +490,17 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
 
                           <div className="shrink-0 self-center">
                             {isCorrectOpt && isStudentOpt && (
-                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 uppercase tracking-wider bg-emerald-100/70 border border-emerald-200 px-2 py-0.5 rounded-md">
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100/70 border border-emerald-200 px-2 py-0.5 rounded-md">
                                 <CheckCircle2 className="h-3 w-3" /> Kunci Benar &bull; Pilihan Anda
                               </span>
                             )}
                             {isCorrectOpt && !isStudentOpt && (
-                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 uppercase tracking-wider bg-emerald-100/70 border border-emerald-200 px-2 py-0.5 rounded-md">
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100/70 border border-emerald-200 px-2 py-0.5 rounded-md">
                                 <CheckCircle2 className="h-3 w-3" /> Kunci Jawaban Benar
                               </span>
                             )}
                             {isStudentOpt && !isCorrectOpt && (
-                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 uppercase tracking-wider bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-md">
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-md">
                                 <RotateCcw className="h-3 w-3" /> Pilihan Anda
                               </span>
                             )}
@@ -514,7 +514,7 @@ export default function SimulationReviewPage({ params }: { params: Promise<{ att
                 {/* Explanation Card */}
                 <div className="rounded-2xl border border-blue-200 bg-blue-50/50 p-5 sm:p-6 space-y-4">
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-xs font-bold text-blue-900 uppercase tracking-wider">
+                    <div className="flex items-center gap-2 text-xs font-bold text-blue-900">
                       <Lightbulb className="h-4 w-4 text-blue-600" />
                       <span>Kunci Nalar &amp; Langkah Pembahasan Capstone</span>
                     </div>
