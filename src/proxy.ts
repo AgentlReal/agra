@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function proxy(request: NextRequest) {
-  const sessionToken = request.cookies.get('better-auth.session_token')?.value;
+  const sessionToken =
+    request.cookies.get('better-auth.session_token')?.value ||
+    request.cookies.get('__Secure-better-auth.session_token')?.value;
   const { pathname } = request.nextUrl;
 
   const isProtectedRoute =
@@ -19,6 +21,10 @@ export function proxy(request: NextRequest) {
   if (isProtectedRoute && !sessionToken) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('redirect', pathname);
+    const errorParam = request.nextUrl.searchParams.get('error');
+    if (errorParam) {
+      loginUrl.searchParams.set('error', errorParam);
+    }
     return NextResponse.redirect(loginUrl);
   }
 

@@ -90,6 +90,33 @@ describe("ProfileService Unit Tests", () => {
             expect(result.milestoneProgress.xpRemaining).toBe(0);
             expect(result.milestoneProgress.progressPercent).toBe(100);
         });
+
+        it("harus mengembalikan hasPassword false dan fallback username untuk akun Google OAuth", async () => {
+            mockRepo.findProfileByUserId!.mockResolvedValue({
+                user_id: "user-google",
+                email: "siswa.google@gmail.com",
+                username: "",
+                name: "Siswa Google",
+                has_password: 0,
+                preset_avatar_id: 1,
+                total_xp: 0,
+                is_recall_passed: 0,
+                avatar_id: 1,
+                avatar_name: "Ksatria Buku",
+                avatar_image_url: "/assets/avatars/ksatria_buku.svg",
+                tier_id: 1,
+                tier_number: 1,
+                tier_title: "Perintis Belajar",
+                tier_min_xp: 0,
+                tier_max_xp: 499,
+                tier_badge_url: "/assets/badges/tier1.svg",
+            });
+
+            const result = await service.getProfile("user-google");
+
+            expect(result.hasPassword).toBe(false);
+            expect(result.username).toBe("siswa.google");
+        });
     });
 
     describe("completeProfile", () => {

@@ -5,6 +5,7 @@ import { jsonResponse, errorResponse } from "@/shared/utils/response";
 import { BadRequestError, NotFoundError } from "@/shared/errors/app-error";
 import { hashPassword } from "better-auth/crypto";
 import { validatePasswordRules } from "@/shared/utils/validator";
+import crypto from "crypto";
 
 export async function PATCH(
     req: NextRequest,
@@ -43,7 +44,20 @@ export async function PATCH(
                 throw new BadRequestError(passwordCheck.message || "Format password tidak valid.", "INVALID_PASSWORD");
             }
             const hashedPassword = await hashPassword(password);
-            await query(`UPDATE account SET password = ?, updatedAt = NOW() WHERE userId = ?`, [hashedPassword, userId]);
+            const existingAccount = await query<any[]>(
+                `SELECT id FROM account WHERE userId = ? AND providerId = 'credential'`,
+                [userId]
+            );
+            if (existingAccount.length > 0) {
+                await query(`UPDATE account SET password = ?, updatedAt = NOW() WHERE id = ?`, [hashedPassword, existingAccount[0].id]);
+            } else {
+                const accountId = crypto.randomUUID();
+                await query(
+                    `INSERT INTO account (id, accountId, providerId, userId, password, createdAt, updatedAt)
+                     VALUES (?, ?, 'credential', ?, ?, NOW(), NOW())`,
+                    [accountId, userId, userId, hashedPassword]
+                );
+            }
         }
 
         if (updates.length === 0 && !password) {

@@ -52,11 +52,27 @@ describe('Server-Side Proxy Route Guard (src/proxy.ts)', () => {
     expect(res.headers.get('location')).toBeNull();
   });
 
+  it('harus meloloskan pengguna dengan __Secure-better-auth.session_token (HTTPS) pada rute terproteksi', () => {
+    const req = new NextRequest('https://agra.sch.id/dashboard');
+    req.cookies.set('__Secure-better-auth.session_token', 'valid-secure-session-token');
+    const res = proxy(req);
+    expect(res.status).toBe(200);
+    expect(res.headers.get('location')).toBeNull();
+  });
+
   it('harus meloloskan rute publik (seperti /login atau /) bagi siapa pun', () => {
     const req = createMockRequest('/login');
     const res = proxy(req);
     expect(res.status).toBe(200);
     expect(res.headers.get('location')).toBeNull();
+  });
+
+  it('harus meneruskan query error verifikasi email saat mengalihkan /onboarding ke /login', () => {
+    const req = createMockRequest('/onboarding?error=TOKEN_EXPIRED');
+    const res = proxy(req);
+    expect(res.status).toBe(307);
+    const location = res.headers.get('location');
+    expect(location).toContain('/login?redirect=%2Fonboarding&error=TOKEN_EXPIRED');
   });
 });
 

@@ -1,14 +1,131 @@
 import { betterAuth } from "better-auth";
 import { username } from "better-auth/plugins"
 import { createAuthMiddleware, APIError } from "better-auth/api";
-import { createPool } from "mysql2/promise";
+import { createPool, RowDataPacket } from "mysql2/promise";
 
 import { validatePasswordRules } from "@/shared/utils/validator";
+import {
+    isSmtpConfigured,
+    sendPasswordResetEmail,
+    sendVerificationEmail,
+} from "@/lib/email";
+
+const authDbPool = createPool({
+    host: process.env.DB_HOST || "localhost",
+    port: Number(process.env.DB_PORT) || 3306,
+    user: process.env.DB_USER || "root",
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    waitForConnections: true,
+    connectionLimit: 10,
+    enableKeepAlive: true,
+    timezone: "+07:00",
+    decimalNumbers: true,
+});
+
+function normalizeDisplayName(rawName: string | undefined | null, email?: string | null): string {
+    const trimmed = (rawName || "").trim();
+    if (trimmed.length >= 3) {
+        const sliced = trimmed.slice(0, 30).trim();
+        return sliced.length >= 3 ? sliced : "Siswa Baru";
+    }
+
+    const emailLocal = (email?.split("@")[0] || "").replace(/[^a-zA-Z0-9 ]/g, " ").trim();
+    if (emailLocal.length >= 3) {
+        return emailLocal.slice(0, 30).trim();
+    }
+
+    return "Siswa Baru";
+}
+
+async function isUsernameTaken(candidate: string): Promise<boolean> {
+    const [rows] = await authDbPool.query<RowDataPacket[]>(
+        "SELECT id FROM users WHERE username = ? LIMIT 1",
+        [candidate]
+    );
+    return Array.isArray(rows) && rows.length > 0;
+}
+
+async function generateUniqueUsername(email?: string | null): Promise<string> {
+    const rawLocal = (email?.split("@")[0] || "siswa").toLowerCase();
+    let sanitized = rawLocal
+        .replace(/[^a-z0-9_]/g, "_")
+        .replace(/_+/g, "_")
+        .replace(/^_+|_+$/g, "");
+
+    if (sanitized.length < 3) {
+        sanitized = sanitized ? `siswa_${sanitized}` : "siswa_baru";
+    }
+
+    let baseCandidate = sanitized.slice(0, 16).replace(/_+$/g, "");
+    if (baseCandidate.length < 3) {
+        baseCandidate = "siswa_baru";
+    }
+
+    try {
+        if (!(await isUsernameTaken(baseCandidate))) {
+            return baseCandidate;
+        }
+
+        const prefix = sanitized.slice(0, 11).replace(/_+$/g, "") || "siswa";
+        for (let attempt = 0; attempt < 10; attempt++) {
+            const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+            const candidate = `${prefix}_${randomSuffix}`.slice(0, 16);
+            if (!(await isUsernameTaken(candidate))) {
+                return candidate;
+            }
+        }
+    } catch (err) {
+        console.error("[AUTH] Gagal memeriksa keunikan username otomatis:", err);
+    }
+
+    const fallbackSuffix = Date.now().toString(36).replace(/[^a-z0-9]/g, "").slice(-8);
+    return `siswa_${fallbackSuffix}`.slice(0, 16);
+}
+
+const isGoogleOAuthConfigured = Boolean(
+    process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+);
+const isEmailVerificationRequired = process.env.REQUIRE_EMAIL_VERIFICATION !== "false";
+
+const fallbackBaseUrl = process.env.BETTER_AUTH_URL || "http://localhost:3000";
+let configuredHost: string | null = null;
+try {
+    configuredHost = new URL(fallbackBaseUrl).host;
+} catch {
+    configuredHost = null;
+}
 
 export const auth = betterAuth({
-    baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+    baseURL: {
+        allowedHosts: [
+            ...(configuredHost ? [configuredHost] : []),
+            ...(process.env.NODE_ENV !== "production"
+                ? ["localhost", "localhost:*", "127.0.0.1", "127.0.0.1:*"]
+                : []),
+        ],
+        fallback: fallbackBaseUrl,
+    },
+    trustedOrigins: [
+        fallbackBaseUrl,
+        ...(process.env.NEXT_PUBLIC_API_URL ? [process.env.NEXT_PUBLIC_API_URL] : []),
+        ...(process.env.NODE_ENV !== "production"
+            ? [
+                  "http://localhost",
+                  "http://localhost:*",
+                  "http://127.0.0.1",
+                  "http://127.0.0.1:*",
+              ]
+            : []),
+    ],
     rateLimit: {
         enabled: false,
+    },
+    account: {
+        accountLinking: {
+            enabled: true,
+            trustedProviders: ["google"],
+        },
     },
     user: {
         modelName: "users",
@@ -17,17 +134,87 @@ export const auth = betterAuth({
                 type: "string",
                 defaultValue: "SISWA",
                 required: false,
+                input: false,
             },
         },
     },
     emailAndPassword: {
         enabled: true,
+        disableSignUp: false,
+        requireEmailVerification: isEmailVerificationRequired,
         minPasswordLength: 6,
         maxPasswordLength: 12,
+        onExistingUserSignUp: async ({ user }, request) => {
+            if (!user.emailVerified) {
+                try {
+                    await auth.api.sendVerificationEmail({
+                        body: {
+                            email: user.email,
+                            callbackURL: "/verify-email-success",
+                        },
+                        headers: request?.headers,
+                    });
+                } catch (err) {
+                    console.error("[AUTH] Gagal mengirim ulang email verifikasi:", err);
+                }
+            }
+        },
         sendResetPassword: async ({ user, url, token }) => {
-            console.log(`[AUTH] Kirim token reset sandi ke ${user.email} (token: ${token}) - URL: ${url}`);
+            await sendPasswordResetEmail({
+                to: user.email,
+                userName: user.name || "Siswa AGRA",
+                resetUrl: url,
+                token,
+            });
         },
     },
+    emailVerification: {
+        sendOnSignUp: isEmailVerificationRequired,
+        sendOnSignIn: true,
+        autoSignInAfterVerification: false,
+        expiresIn: 3600,
+        sendVerificationEmail: async ({ user, url, token }) => {
+            await sendVerificationEmail({
+                to: user.email,
+                userName: user.name || "Siswa AGRA",
+                verificationUrl: url,
+                token,
+            });
+        },
+    },
+    socialProviders: isGoogleOAuthConfigured
+        ? {
+              google: {
+                  clientId: process.env.GOOGLE_CLIENT_ID!,
+                  clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+                  prompt: "select_account",
+                  mapProfileToUser: async (profile) => {
+                      // Bersihkan akun siswa gantung (emailVerified = 0) agar pemilik asli Gmail
+                      // tidak terhalang pencatutan email saat masuk dengan Google OAuth.
+                      if (profile?.email && profile.email_verified !== false) {
+                          try {
+                              const normalizedEmail = profile.email.trim().toLowerCase();
+                              const [rows] = await authDbPool.query<RowDataPacket[]>(
+                                  "SELECT id, emailVerified, role FROM users WHERE email = ? LIMIT 1",
+                                  [normalizedEmail]
+                              );
+                              const existing = rows[0];
+                              if (existing && !existing.emailVerified && existing.role === "SISWA") {
+                                  await authDbPool.query("DELETE FROM user_profiles WHERE user_id = ?", [existing.id]);
+                                  await authDbPool.query("DELETE FROM account WHERE userId = ?", [existing.id]);
+                                  await authDbPool.query("DELETE FROM users WHERE id = ? AND emailVerified = 0", [existing.id]);
+                              }
+                          } catch (err) {
+                              console.error("[AUTH] Gagal membersihkan akun belum terverifikasi:", err);
+                          }
+                      }
+                      return {
+                          image: undefined,
+                      };
+                  },
+              },
+          }
+        : undefined,
     plugins: [
         username({
             displayUsername: false,
@@ -35,7 +222,21 @@ export const auth = betterAuth({
     ],
     hooks: {
         before: createAuthMiddleware(async (ctx) => {
-            if (ctx.path === "/sign-up/email") {
+            if (ctx.path === "/sign-in/social") {
+                const body = (ctx.body && typeof ctx.body === "object") ? (ctx.body as Record<string, unknown>) : undefined;
+                if (body?.provider === "google" && !isGoogleOAuthConfigured) {
+                    throw new APIError("BAD_REQUEST", {
+                        message: "Otorisasi Google belum dikonfigurasi pada server. Pastikan GOOGLE_CLIENT_ID dan GOOGLE_CLIENT_SECRET telah diatur di .env.",
+                        code: "GOOGLE_OAUTH_NOT_CONFIGURED",
+                    });
+                }
+            } else if (ctx.path === "/sign-up/email") {
+                if (process.env.NODE_ENV === "production" && isEmailVerificationRequired && !isSmtpConfigured()) {
+                    throw new APIError("BAD_REQUEST", {
+                        message: "Layanan pengirim email verifikasi belum dikonfigurasi pada server. Silakan gunakan tombol Daftar dengan Akun Google.",
+                        code: "SMTP_NOT_CONFIGURED",
+                    });
+                }
                 const body = (ctx.body && typeof ctx.body === "object") ? (ctx.body as Record<string, unknown>) : undefined;
                 const name = typeof body?.name === "string" ? body.name.trim() : "";
                 if (!name || name.length < 3) {
@@ -48,6 +249,13 @@ export const auth = betterAuth({
                         message: "Nama maksimal 30 karakter.",
                     });
                 }
+                const rawUsername = typeof body?.username === "string" ? body.username.trim().toLowerCase() : "";
+                if (rawUsername && !/^[a-z0-9_]{3,16}$/.test(rawUsername)) {
+                    throw new APIError("BAD_REQUEST", {
+                        message: "Username harus terdiri dari 3 - 16 karakter huruf kecil, angka, atau garis bawah (_).",
+                        code: "INVALID_USERNAME",
+                    });
+                }
                 const passwordCheck = validatePasswordRules(body?.password);
                 if (!passwordCheck.isValid) {
                     throw new APIError("BAD_REQUEST", {
@@ -55,8 +263,24 @@ export const auth = betterAuth({
                         code: "INVALID_PASSWORD",
                     });
                 }
+                const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
+                if (email) {
+                    const [existingRows] = await authDbPool.query<RowDataPacket[]>(
+                        "SELECT id, emailVerified FROM users WHERE email = ? LIMIT 1",
+                        [email]
+                    );
+                    if (existingRows[0]?.emailVerified) {
+                        throw new APIError("BAD_REQUEST", {
+                            message: "Email ini sudah terdaftar dan terverifikasi. Silakan langsung masuk melalui halaman Login.",
+                            code: "USER_ALREADY_EXISTS",
+                        });
+                    }
+                }
                 if (body) {
                     body.name = name;
+                    if (rawUsername) {
+                        body.username = rawUsername;
+                    }
                 }
             } else if (ctx.path === "/change-password" || ctx.path === "/reset-password") {
                 const body = (ctx.body && typeof ctx.body === "object") ? (ctx.body as Record<string, unknown>) : undefined;
@@ -74,18 +298,23 @@ export const auth = betterAuth({
         user: {
             create: {
                 before: async (user) => {
+                    const rawUsername = (user as Record<string, unknown>).username;
+                    const existingUsername = typeof rawUsername === "string" ? rawUsername.trim() : "";
+                    const finalUsername = existingUsername || (await generateUniqueUsername(user.email));
+                    const normalizedName = normalizeDisplayName(user.name, user.email);
+
                     return {
                         data: {
                             ...user,
-                            name: user.name?.trim() || user.name,
+                            name: normalizedName,
+                            username: finalUsername,
                         },
                     };
                 },
                 after: async (user) => {
                     if (user && user.role === "SISWA") {
                         try {
-                            const pool = auth.options.database as any;
-                            await pool.query(
+                            await authDbPool.query(
                                 "INSERT IGNORE INTO user_profiles (user_id, preset_avatar_id, current_milestone_tier_id, total_xp, is_recall_passed) VALUES (?, 1, 1, 0, 0)",
                                 [user.id]
                             );
@@ -101,9 +330,8 @@ export const auth = betterAuth({
                 after: async (session) => {
                     if (session?.userId && session?.id) {
                         try {
-                            const pool = auth.options.database as any;
                             // Pembatasan sesi bersamaan (BK-05: Single-Session Concurrency Control)
-                            await pool.query(
+                            await authDbPool.query(
                                 "DELETE FROM session WHERE userId = ? AND id != ?",
                                 [session.userId, session.id]
                             );
@@ -115,18 +343,7 @@ export const auth = betterAuth({
             },
         },
     },
-    database: createPool({
-        host: process.env.DB_HOST || "localhost",
-        port: Number(process.env.DB_PORT) || 3306,
-        user: process.env.DB_USER || "root",
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-        waitForConnections: true,
-        connectionLimit: 10,
-        enableKeepAlive: true,
-        timezone: "+07:00",
-        decimalNumbers: true,
-    }),
+    database: authDbPool,
 
     secret: process.env.BETTER_AUTH_SECRET,
 });

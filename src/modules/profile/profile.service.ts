@@ -37,8 +37,9 @@ export class ProfileService {
         return {
             id: row.user_id,
             email: row.email,
-            username: row.username,
+            username: row.username || (row.email ? row.email.split("@")[0] : ""),
             name: row.name,
+            hasPassword: row.has_password !== undefined ? Boolean(row.has_password) : true,
             avatar: {
                 id: row.avatar_id || 1,
                 name: row.avatar_name || "Ksatria Buku",

@@ -12,6 +12,7 @@ export interface ProfileJoinRow extends RowDataPacket {
     name: string;
     username: string;
     email: string;
+    has_password?: number;
     total_xp: number;
     is_recall_passed: number;
     avatar_id: number | null;
@@ -30,6 +31,10 @@ export class ProfileRepository {
         const rows = await query<ProfileJoinRow[]>(
             `SELECT 
                 up.user_id, u.name, u.username, u.email, up.total_xp, up.is_recall_passed,
+                EXISTS(
+                    SELECT 1 FROM account a
+                    WHERE a.userId = u.id AND a.providerId = 'credential' AND a.password IS NOT NULL
+                ) AS has_password,
                 pa.id AS avatar_id, pa.name AS avatar_name, pa.image_url AS avatar_image_url,
                 mt.id AS tier_id, mt.tier_number, mt.title AS tier_title, mt.badge_icon_url AS tier_badge_url,
                 mt.min_xp AS tier_min_xp, mt.max_xp AS tier_max_xp
