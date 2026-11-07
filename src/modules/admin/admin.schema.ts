@@ -11,6 +11,7 @@ export const adminProfileUpdateSchema = z.object({
     email: z
         .string()
         .trim()
+        .toLowerCase()
         .email("Format alamat email tidak valid")
         .max(191, "Alamat email maksimal 191 karakter")
         .optional(),

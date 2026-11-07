@@ -49,11 +49,26 @@ export class AdminRepository {
     }
 
     async isEmailTakenByOtherUser(email: string, excludeUserId: string): Promise<boolean> {
-        const rows = await query<Array<RowDataPacket & { id: string }>>(
-            `SELECT id FROM users WHERE email = ? AND id != ? LIMIT 1`,
-            [email.trim().toLowerCase(), excludeUserId]
+        const normalized = email.trim().toLowerCase();
+        const rows = await query<
+            Array<RowDataPacket & { id: string; role: string; emailVerified: number | boolean }>
+        >(
+            `SELECT id, role, emailVerified FROM users WHERE email = ? AND id != ? LIMIT 1`,
+            [normalized, excludeUserId]
         );
-        return rows.length > 0;
+        if (rows.length === 0) {
+            return false;
+        }
+        const existing = rows[0];
+        if (existing.role === "SISWA" && !existing.emailVerified) {
+            await withTransaction(async (conn) => {
+                await conn.execute(`DELETE FROM user_profiles WHERE user_id = ?`, [existing.id]);
+                await conn.execute(`DELETE FROM account WHERE userId = ?`, [existing.id]);
+                await conn.execute(`DELETE FROM users WHERE id = ? AND emailVerified = 0`, [existing.id]);
+            });
+            return false;
+        }
+        return true;
     }
 
     async getQuestionBankStock(): Promise<K10_QuestionBankStock[]> {

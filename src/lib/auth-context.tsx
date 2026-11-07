@@ -88,12 +88,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const profileRes = await api.profile.get();
           const profileData = profileRes.data || profileRes;
           initialUser.name = profileData.name || initialUser.name;
+          initialUser.email = profileData.email || initialUser.email;
           initialUser.username = profileData.username || initialUser.username;
           initialUser.hasPassword = profileData.hasPassword ?? true;
           initialUser.avatarUrl = profileData.avatar?.imageUrl || profileData.avatarUrl || initialUser.avatarUrl;
           initialUser.avatarId = profileData.avatar?.id;
           initialUser.totalXp = profileData.totalXp ?? profileData.total_xp ?? 0;
           initialUser.grade = profileData.grade;
+          initialUser.needsOnboarding = Boolean(profileData.needsOnboarding);
         } catch (profileErr: any) {
           if (profileErr.code === 'PROFILE_INCOMPLETE' || profileErr.status === 409) {
             initialUser.needsOnboarding = true;
@@ -104,6 +106,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const adminRes = await api.admin.getProfile();
           const adminData = adminRes.data || adminRes;
           initialUser.name = adminData.name || initialUser.name;
+          initialUser.email = adminData.email || initialUser.email;
+          initialUser.username = adminData.username || initialUser.username;
           initialUser.hasPassword = adminData.hasPassword ?? true;
           initialUser.avatarUrl = adminData.avatarUrl || '/assets/avatars/avatar-admin.png';
         } catch {
@@ -158,6 +162,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
+    const wasStaff =
+      user?.role === 'SUPERADMIN' ||
+      user?.role === 'TIM_KURIKULUM' ||
+      (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin'));
     try {
       await api.auth.signOut().catch(() => {});
     } finally {
@@ -165,7 +173,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(null);
       localStorage.removeItem('agra_token');
       localStorage.removeItem('agra_user');
-      window.location.href = '/login';
+      window.location.href = wasStaff ? '/login?as=staff' : '/login';
     }
   };
 

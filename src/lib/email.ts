@@ -517,7 +517,10 @@ export function generateStaffInviteEmailHtml(params: SendStaffInviteEmailParams)
     const safeEmail = escapeHtml(params.to);
     const safeInviter = escapeHtml(params.inviterName || "SuperAdmin Platform AGRA");
     const safeLoginUrl = escapeHtml(params.loginUrl);
-    const safeForgotUrl = escapeHtml(params.forgotPasswordUrl || params.loginUrl.replace(/\?.*$/, "").replace(/\/login$/, "/forgot-password"));
+    const safeForgotUrl = escapeHtml(
+        params.forgotPasswordUrl ||
+            params.loginUrl.replace(/\?.*$/, "").replace(/\/login$/, "/forgot-password?as=staff")
+    );
     const roleLabel =
         params.role === "SUPERADMIN"
             ? "SuperAdmin (Pengelola Utama Platform)"
@@ -704,7 +707,7 @@ export function generateStaffInviteEmailText(params: SendStaffInviteEmailParams)
             : "Tim Kurikulum (Penulis & Kurator Bank Soal TKA)";
     const forgotUrl =
         params.forgotPasswordUrl ||
-        params.loginUrl.replace(/\?.*$/, "").replace(/\/login$/, "/forgot-password");
+        params.loginUrl.replace(/\?.*$/, "").replace(/\/login$/, "/forgot-password?as=staff");
 
     return `Halo, ${params.userName || "Rekan Tim AGRA"}!
 

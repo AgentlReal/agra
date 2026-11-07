@@ -4,7 +4,7 @@ import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { api } from '@/lib/api-client';
-import { Lock, Check, AlertCircle, ArrowRight, ShieldCheck, Eye, EyeOff, Sparkles, Sliders } from 'lucide-react';
+import { Lock, AlertCircle, ArrowRight, ShieldCheck, Eye, EyeOff, Sparkles, Sliders } from 'lucide-react';
 import { AppLogo } from '@/components/common/AppLogo';
 import { Footer } from '@/components/layout/Footer';
 
@@ -13,6 +13,8 @@ function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token') || '';
   const errorParam = searchParams.get('error');
+  const isStaffMode = searchParams.get('as') === 'staff';
+  const loginHref = isStaffMode ? '/login?as=staff' : '/login';
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -22,13 +24,13 @@ function ResetPasswordForm() {
   const [errorMsg, setErrorMsg] = useState('');
   const [success, setSuccess] = useState(false);
 
-  React.useEffect(() => {
-    if (errorParam === 'INVALID_TOKEN') {
-      setErrorMsg('Tautan pemulihan kata sandi sudah kedaluwarsa atau pernah digunakan. Silakan ajukan tautan pemulihan baru dari halaman Lupa Kata Sandi.');
-    } else if (!token) {
-      setErrorMsg('Token tautan pemulihan kata sandi tidak ditemukan atau tidak valid. Silakan ajukan permohonan baru dari halaman Lupa Kata Sandi.');
-    }
-  }, [token, errorParam]);
+  const initialTokenError =
+    errorParam === 'INVALID_TOKEN'
+      ? 'Tautan pemulihan kata sandi sudah kedaluwarsa atau pernah digunakan. Silakan ajukan tautan pemulihan baru dari halaman Lupa Kata Sandi.'
+      : !token
+        ? 'Token tautan pemulihan kata sandi tidak ditemukan atau tidak valid. Silakan ajukan permohonan baru dari halaman Lupa Kata Sandi.'
+        : '';
+  const displayedError = errorMsg || initialTokenError;
 
   const hasLength = password.length >= 6 && password.length <= 12;
   const hasUpper = /[A-Z]/.test(password);
@@ -52,9 +54,9 @@ function ResetPasswordForm() {
     try {
       await api.auth.resetPassword(token, password);
       setSuccess(true);
-      setTimeout(() => router.push('/login'), 2000);
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Gagal mengatur ulang kata sandi.');
+      setTimeout(() => router.push(loginHref), 2000);
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : 'Gagal mengatur ulang kata sandi.');
     } finally {
       setLoading(false);
     }
@@ -77,7 +79,7 @@ function ResetPasswordForm() {
           </Link>
 
           <Link
-            href="/login"
+            href={loginHref}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors"
           >
             <span>Masuk</span>
@@ -89,13 +91,19 @@ function ResetPasswordForm() {
         <div className="w-full max-w-lg">
           <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-6 sm:p-8 md:p-10">
             <div className="mb-6">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold tracking-wide mb-3">
+              <div
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wide mb-3 ${
+                  isStaffMode ? 'bg-purple-50 text-purple-700' : 'bg-blue-50 text-blue-600'
+                }`}
+              >
                 <Sparkles className="h-3.5 w-3.5" />
-                <span>ATUR ULANG KATA SANDI</span>
+                <span>{isStaffMode ? 'ATUR KATA SANDI TIM & ADMIN' : 'ATUR ULANG KATA SANDI'}</span>
               </div>
               <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Buat Kata Sandi Baru</h1>
               <p className="text-slate-500 text-xs sm:text-sm mt-1">
-                Masukkan kombinasi sandi baru yang aman untuk akun belajarmu.
+                {isStaffMode
+                  ? 'Masukkan kombinasi sandi baru yang aman untuk akun Tim Kurikulum / SuperAdmin Anda.'
+                  : 'Masukkan kombinasi sandi baru yang aman untuk akun belajarmu.'}
               </p>
             </div>
 
@@ -111,10 +119,10 @@ function ResetPasswordForm() {
               </div>
             ) : (
               <form onSubmit={handleReset} className="space-y-4">
-                {errorMsg && (
+                {displayedError && (
                   <div className="flex items-center gap-2.5 rounded-xl border border-amber-200 bg-amber-50 p-3.5 text-xs text-amber-900">
                     <AlertCircle className="h-4 w-4 text-amber-600 shrink-0" />
-                    <span>{errorMsg}</span>
+                    <span>{displayedError}</span>
                   </div>
                 )}
 

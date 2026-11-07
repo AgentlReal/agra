@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
@@ -230,8 +231,13 @@ export default function ProfilePage() {
         setNewPassword('');
         setConfirmPassword('');
       }, 1500);
-    } catch (err: any) {
-      setPassError(err.message || 'Gagal mengubah kata sandi. Pastikan kata sandi lama Anda benar.');
+    } catch (err: unknown) {
+      const rawMsg = err instanceof Error ? err.message : '';
+      if (rawMsg.toLowerCase().includes('invalid password')) {
+        setPassError('Kata sandi saat ini yang Anda masukkan salah.');
+      } else {
+        setPassError(rawMsg || 'Gagal mengubah kata sandi. Pastikan kata sandi lama Anda benar.');
+      }
     } finally {
       setChangingPass(false);
     }
@@ -361,12 +367,17 @@ export default function ProfilePage() {
                 ) : (
                   <div className="w-full flex items-center justify-between p-3 rounded-xl border border-emerald-200 bg-emerald-50/50 text-left">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 shrink-0">
                         <ShieldCheck className="h-4 w-4" />
                       </div>
                       <div>
                         <p className="text-xs font-bold text-slate-800">Terhubung dengan Akun Google</p>
-                        <p className="text-[11px] text-slate-600">Masuk aman via Google tanpa kata sandi lokal</p>
+                        <p className="text-[11px] text-slate-600 leading-relaxed">
+                          Masuk aman via Google. Ingin membuat kata sandi lokal?{' '}
+                          <Link href="/forgot-password" className="font-semibold text-blue-600 hover:underline">
+                            Atur Kata Sandi
+                          </Link>
+                        </p>
                       </div>
                     </div>
                   </div>

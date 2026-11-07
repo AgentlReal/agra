@@ -29,7 +29,7 @@ function LoginFormContent() {
   const oauthErrorParam = errorParams.length > 0 ? errorParams[errorParams.length - 1] : null;
   const isStaffMode = searchParams.get('as') === 'staff';
 
-  const { login } = useAuth();
+  const { user, isLoading: authLoading, isAuthenticated, login, refreshUser } = useAuth();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -39,6 +39,33 @@ function LoginFormContent() {
   const autoLoginLockRef = useRef(false);
 
   const displayError = errorMsg || formatOAuthErrorMessage(oauthErrorParam);
+
+  useEffect(() => {
+    if (!isStaffMode && typeof document !== 'undefined') {
+      document.cookie = 'agra_staff_login=; path=/; max-age=0; SameSite=Lax';
+    }
+  }, [isStaffMode]);
+
+  useEffect(() => {
+    if (authLoading || loading || !isAuthenticated || !user || oauthErrorParam) return;
+    if (user.role === 'SUPERADMIN' || user.role === 'TIM_KURIKULUM') {
+      const targetAdminPath =
+        redirectParam && redirectParam.startsWith('/admin')
+          ? sanitizeRedirectPath(redirectParam, '/admin/dashboard')
+          : '/admin/dashboard';
+      router.replace(targetAdminPath);
+    } else if (!isStaffMode) {
+      if (user.needsOnboarding) {
+        router.replace('/onboarding');
+      } else {
+        const safeStudentRedirect =
+          redirectParam && !redirectParam.startsWith('/admin')
+            ? sanitizeRedirectPath(redirectParam, '/dashboard')
+            : '/dashboard';
+        router.replace(safeStudentRedirect);
+      }
+    }
+  }, [authLoading, loading, isAuthenticated, user, isStaffMode, redirectParam, oauthErrorParam, router]);
 
   const executeSignIn = async (currentIdentifier: string, currentPassword: string) => {
     if (!currentIdentifier || !currentPassword) {
@@ -50,6 +77,9 @@ function LoginFormContent() {
     setErrorMsg('');
 
     try {
+      if (!isStaffMode && typeof document !== 'undefined') {
+        document.cookie = 'agra_staff_login=; path=/; max-age=0; SameSite=Lax';
+      }
       const isEmail = currentIdentifier.includes('@');
       const res = isEmail
         ? await api.auth.signInEmail(currentIdentifier, currentPassword)
@@ -62,6 +92,7 @@ function LoginFormContent() {
         throw new Error('Gagal mendapatkan sesi pengguna.');
       }
 
+      const wasWaitingVerification = waitingVerification;
       setWaitingVerification(false);
 
       const rawRole = authUser.role;
@@ -74,6 +105,7 @@ function LoginFormContent() {
 
       if (isStaffMode && role === 'SISWA') {
         await api.auth.signOut().catch(() => {});
+        await refreshUser().catch(() => {});
         throw new Error(
           'Akun ini terdaftar sebagai Siswa, bukan Tim Kurikulum atau SuperAdmin. Silakan masuk melalui halaman Masuk Siswa atau hubungi SuperAdmin.'
         );
@@ -93,7 +125,7 @@ function LoginFormContent() {
             ? sanitizeRedirectPath(redirectParam, '/admin/dashboard')
             : '/admin/dashboard';
         router.push(targetAdminPath);
-      } else if (hydratedUser && hydratedUser.needsOnboarding) {
+      } else if (wasWaitingVerification || (hydratedUser && hydratedUser.needsOnboarding)) {
         router.push('/onboarding');
       } else {
         const safeStudentRedirect =
@@ -103,7 +135,14 @@ function LoginFormContent() {
         router.push(safeStudentRedirect);
       }
     } catch (err: unknown) {
-      if (err instanceof ApiError && (err.code === 'EMAIL_NOT_VERIFIED' || err.status === 403)) {
+      const rawMessage = err instanceof Error ? err.message : '';
+      const isUnverifiedEmailError =
+        err instanceof ApiError &&
+        (err.code === 'EMAIL_NOT_VERIFIED' ||
+          rawMessage.toLowerCase().includes('email not verified') ||
+          rawMessage.toLowerCase().includes('belum diverifikasi'));
+
+      if (isUnverifiedEmailError) {
         setWaitingVerification(true);
         autoLoginLockRef.current = false;
         setErrorMsg(
@@ -111,9 +150,18 @@ function LoginFormContent() {
         );
       } else {
         setWaitingVerification(false);
-        const msg =
-          err instanceof Error ? err.message : 'Gagal masuk. Periksa kembali kredensial Anda.';
-        setErrorMsg(msg || 'Gagal masuk. Periksa kembali kredensial Anda.');
+        const lowerMsg = rawMessage.toLowerCase();
+        let friendlyMsg = rawMessage || 'Gagal masuk. Periksa kembali kredensial Anda.';
+        if (
+          lowerMsg.includes('invalid email or password') ||
+          lowerMsg.includes('invalid username or password') ||
+          lowerMsg.includes('invalid password')
+        ) {
+          friendlyMsg = 'Email/username atau kata sandi yang Anda masukkan salah.';
+        } else if (lowerMsg.includes('user not found')) {
+          friendlyMsg = 'Akun dengan email atau username tersebut tidak ditemukan.';
+        }
+        setErrorMsg(friendlyMsg);
       }
     } finally {
       setLoading(false);
@@ -216,14 +264,29 @@ function LoginFormContent() {
           </Link>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500 hidden sm:inline">Belum punya akun?</span>
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors"
-            >
-              <span>Daftar Akun Baru</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
+            {isStaffMode ? (
+              <Link
+                href="/login"
+                onClick={() => {
+                  setErrorMsg('');
+                  setWaitingVerification(false);
+                }}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200/80 transition-colors"
+              >
+                <span>&larr; Halaman Masuk Siswa</span>
+              </Link>
+            ) : (
+              <>
+                <span className="text-xs text-slate-500 hidden sm:inline">Belum punya akun?</span>
+                <Link
+                  href="/register"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors"
+                >
+                  <span>Daftar Akun Baru</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -292,7 +355,15 @@ function LoginFormContent() {
                       ? 'Masuk Tim / Admin dengan Akun Google'
                       : 'Masuk dengan Akun Google'
                   }
-                  redirectPath={redirectParam || (isStaffMode ? '/admin/dashboard' : null)}
+                  redirectPath={
+                    isStaffMode
+                      ? redirectParam && redirectParam.startsWith('/admin')
+                        ? redirectParam
+                        : '/admin/dashboard'
+                      : redirectParam && !redirectParam.startsWith('/admin')
+                        ? redirectParam
+                        : null
+                  }
                   errorCallbackURL={
                     isStaffMode ? '/login?as=staff' : '/login'
                   }
@@ -346,7 +417,7 @@ function LoginFormContent() {
                       <span>Kata Sandi</span>
                     </label>
                     <Link
-                      href="/forgot-password"
+                      href={isStaffMode ? '/forgot-password?as=staff' : '/forgot-password'}
                       className="text-xs text-blue-600 hover:text-blue-700 font-semibold"
                     >
                       Lupa kata sandi?
@@ -418,6 +489,10 @@ function LoginFormContent() {
                   {isStaffMode ? (
                     <Link
                       href="/login"
+                      onClick={() => {
+                        setErrorMsg('');
+                        setWaitingVerification(false);
+                      }}
                       className="text-blue-600 hover:text-blue-700 font-semibold"
                     >
                       &larr; Kembali ke Halaman Masuk Siswa
@@ -425,6 +500,10 @@ function LoginFormContent() {
                   ) : (
                     <Link
                       href="/login?as=staff"
+                      onClick={() => {
+                        setErrorMsg('');
+                        setWaitingVerification(false);
+                      }}
                       className="text-slate-500 hover:text-purple-700 font-semibold transition-colors"
                     >
                       Masuk sebagai Tim Kurikulum / SuperAdmin &rarr;

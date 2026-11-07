@@ -22,6 +22,24 @@ interface UserListRow extends RowDataPacket {
     updatedAt: Date;
 }
 
+async function isStaffUsernameTaken(candidate: string): Promise<boolean> {
+    const rows = await query<RowDataPacket[]>(
+        `SELECT id, emailVerified, role FROM users WHERE username = ? LIMIT 1`,
+        [candidate]
+    );
+    if (rows.length === 0) {
+        return false;
+    }
+    const existing = rows[0];
+    if (!Boolean(existing.emailVerified) && existing.role === "SISWA") {
+        await query(`DELETE FROM user_profiles WHERE user_id = ?`, [existing.id]);
+        await query(`DELETE FROM account WHERE userId = ?`, [existing.id]);
+        await query(`DELETE FROM users WHERE id = ?`, [existing.id]);
+        return false;
+    }
+    return true;
+}
+
 async function resolveUniqueStaffUsername(rawUsername: string | undefined, email: string): Promise<string> {
     if (rawUsername && rawUsername.trim().length > 0) {
         const cleaned = rawUsername.trim().toLowerCase();
@@ -31,11 +49,7 @@ async function resolveUniqueStaffUsername(rawUsername: string | undefined, email
                 "INVALID_USERNAME"
             );
         }
-        const existing = await query<RowDataPacket[]>(
-            `SELECT id FROM users WHERE username = ? LIMIT 1`,
-            [cleaned]
-        );
-        if (existing.length > 0) {
+        if (await isStaffUsernameTaken(cleaned)) {
             throw new BadRequestError("Username tersebut sudah digunakan.", "DUPLICATE_USERNAME");
         }
         return cleaned;
@@ -53,11 +67,7 @@ async function resolveUniqueStaffUsername(rawUsername: string | undefined, email
         baseCandidate = "staf_agra";
     }
 
-    const existingBase = await query<RowDataPacket[]>(
-        `SELECT id FROM users WHERE username = ? LIMIT 1`,
-        [baseCandidate]
-    );
-    if (existingBase.length === 0) {
+    if (!(await isStaffUsernameTaken(baseCandidate))) {
         return baseCandidate;
     }
 
@@ -65,11 +75,7 @@ async function resolveUniqueStaffUsername(rawUsername: string | undefined, email
     for (let attempt = 0; attempt < 10; attempt++) {
         const suffix = Math.floor(1000 + Math.random() * 9000);
         const candidate = `${prefix}_${suffix}`.slice(0, 16);
-        const rows = await query<RowDataPacket[]>(
-            `SELECT id FROM users WHERE username = ? LIMIT 1`,
-            [candidate]
-        );
-        if (rows.length === 0) {
+        if (!(await isStaffUsernameTaken(candidate))) {
             return candidate;
         }
     }
@@ -79,7 +85,7 @@ async function resolveUniqueStaffUsername(rawUsername: string | undefined, email
 
 export async function GET(req: NextRequest) {
     try {
-        await requireRole(["SUPERADMIN", "TIM_KURIKULUM"]);
+        await requireRole("SUPERADMIN");
         const url = new URL(req.url);
         const role = url.searchParams.get("role");
 
@@ -121,7 +127,8 @@ export async function POST(req: NextRequest) {
         const { name, email, username, role, password } = body;
 
         const normalizedEmail = typeof email === "string" ? email.trim().toLowerCase() : "";
-        if (!normalizedEmail || !normalizedEmail.includes("@")) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!normalizedEmail || normalizedEmail.length > 191 || !emailRegex.test(normalizedEmail)) {
             throw new BadRequestError("Alamat email wajib diisi dengan format yang valid.", "VALIDATION_ERROR");
         }
 
@@ -141,33 +148,54 @@ export async function POST(req: NextRequest) {
         }
 
         const existingByEmail = await query<
-            Array<RowDataPacket & { id: string; name: string; email: string; username: string; role: string }>
-        >(`SELECT id, name, email, username, role FROM users WHERE email = ? LIMIT 1`, [normalizedEmail]);
+            Array<
+                RowDataPacket & {
+                    id: string;
+                    name: string;
+                    email: string;
+                    username: string;
+                    role: string;
+                    emailVerified: number | boolean;
+                }
+            >
+        >(
+            `SELECT id, name, email, username, role, emailVerified FROM users WHERE email = ? LIMIT 1`,
+            [normalizedEmail]
+        );
 
         if (existingByEmail.length > 0) {
             const existing = existingByEmail[0];
             if (existing.role === "SISWA") {
-                const targetRoleLabel = role === "SUPERADMIN" ? "SuperAdmin" : "Tim Kurikulum";
-                throw new ConflictError(
-                    `Email ${normalizedEmail} sudah terdaftar sebagai akun Siswa (${existing.name}). Anda dapat mengubah peran akun siswa tersebut menjadi ${targetRoleLabel}.`,
-                    "EMAIL_ALREADY_STUDENT",
-                    {
-                        existingUser: {
-                            id: existing.id,
-                            name: existing.name,
-                            email: existing.email,
-                            username: existing.username,
-                            role: existing.role,
-                        },
-                        targetRole: role,
-                    }
+                if (!existing.emailVerified) {
+                    // Bersihkan akun siswa gantung yang belum pernah diverifikasi (emailVerified = 0)
+                    await withTransaction(async (conn) => {
+                        await conn.execute(`DELETE FROM user_profiles WHERE user_id = ?`, [existing.id]);
+                        await conn.execute(`DELETE FROM account WHERE userId = ?`, [existing.id]);
+                        await conn.execute(`DELETE FROM users WHERE id = ? AND emailVerified = 0`, [existing.id]);
+                    });
+                } else {
+                    const targetRoleLabel = role === "SUPERADMIN" ? "SuperAdmin" : "Tim Kurikulum";
+                    throw new ConflictError(
+                        `Email ${normalizedEmail} sudah terdaftar sebagai akun Siswa (${existing.name}). Anda dapat mengubah peran akun siswa tersebut menjadi ${targetRoleLabel}.`,
+                        "EMAIL_ALREADY_STUDENT",
+                        {
+                            existingUser: {
+                                id: existing.id,
+                                name: existing.name,
+                                email: existing.email,
+                                username: existing.username,
+                                role: existing.role,
+                            },
+                            targetRole: role,
+                        }
+                    );
+                }
+            } else {
+                throw new BadRequestError(
+                    `Email ${normalizedEmail} sudah terdaftar sebagai anggota tim (${existing.role}).`,
+                    "DUPLICATE_USER"
                 );
             }
-
-            throw new BadRequestError(
-                `Email ${normalizedEmail} sudah terdaftar sebagai anggota tim (${existing.role}).`,
-                "DUPLICATE_USER"
-            );
         }
 
         const rawName = typeof name === "string" ? name.trim() : "";
@@ -212,7 +240,7 @@ export async function POST(req: NextRequest) {
             role,
             inviterName: currentAdmin.name || "SuperAdmin Platform AGRA",
             loginUrl: `${origin}/login?as=staff`,
-            forgotPasswordUrl: `${origin}/forgot-password`,
+            forgotPasswordUrl: `${origin}/forgot-password?as=staff`,
         });
 
         return jsonResponse(

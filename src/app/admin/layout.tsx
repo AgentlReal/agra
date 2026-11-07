@@ -22,7 +22,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     if (!isLoading) {
       if (!isAuthenticated || !user) {
-        router.replace('/login');
+        router.replace('/login?as=staff');
       } else if (!isAuthorized) {
         const timeout = setTimeout(() => {
           router.replace('/dashboard');

@@ -44,7 +44,7 @@ export async function POST(
             role: target.role,
             inviterName: currentAdmin.name || "SuperAdmin Platform AGRA",
             loginUrl: `${origin}/login?as=staff`,
-            forgotPasswordUrl: `${origin}/forgot-password`,
+            forgotPasswordUrl: `${origin}/forgot-password?as=staff`,
         });
 
         return jsonResponse({

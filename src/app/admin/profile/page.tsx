@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { AdminNav } from '@/components/layout/AdminNav';
 import { Footer } from '@/components/layout/Footer';
 import { useAuth } from '@/lib/auth-context';
@@ -15,6 +17,7 @@ import {
 } from 'lucide-react';
 
 export default function AdminProfilePage() {
+  const router = useRouter();
   const { user, role, isLoading, isAuthenticated, updateUser } = useAuth();
 
   const isSuperAdmin = role === 'SUPERADMIN' || user?.role === 'SUPERADMIN';
@@ -24,6 +27,16 @@ export default function AdminProfilePage() {
       user?.role === 'TIM_KURIKULUM' ||
       role === 'SUPERADMIN' ||
       user?.role === 'SUPERADMIN');
+
+  useEffect(() => {
+    if (!isLoading) {
+      if (!isAuthenticated || !user) {
+        router.replace('/login?as=staff');
+      } else if (!isAuthorized) {
+        router.replace('/dashboard');
+      }
+    }
+  }, [isLoading, isAuthenticated, user, isAuthorized, router]);
 
   const [nameInput, setNameInput] = useState<string | null>(null);
   const [emailInput, setEmailInput] = useState<string | null>(null);
@@ -93,15 +106,24 @@ export default function AdminProfilePage() {
       setNewPassword('');
       setConfirmPassword('');
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Gagal mengubah kata sandi.';
-      setPassError(msg || 'Gagal mengubah kata sandi.');
+      const rawMsg = err instanceof Error ? err.message : '';
+      const lowerMsg = rawMsg.toLowerCase();
+      if (lowerMsg.includes('invalid password')) {
+        setPassError('Kata sandi saat ini yang Anda masukkan salah.');
+      } else {
+        setPassError(rawMsg || 'Gagal mengubah kata sandi.');
+      }
     } finally {
       setChangingPass(false);
     }
   };
 
-  if (!isLoading && !isAuthorized) {
-    return null;
+  if (isLoading || !isAuthorized) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC]">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-purple-600 border-t-transparent" />
+      </div>
+    );
   }
 
   return (
@@ -208,10 +230,10 @@ export default function AdminProfilePage() {
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed">
                 Akun ini masuk melalui Google dan belum memiliki kata sandi lokal. Jika ingin
-                masuk juga dengan email/username, buat kata sandi lewat tautan{' '}
-                <a href="/forgot-password" className="font-semibold text-purple-700 hover:underline">
+                masuk juga dengan email/username, buat kata sandi lewat halaman{' '}
+                <Link href="/forgot-password?as=staff" className="font-semibold text-purple-700 hover:underline">
                   Lupa Kata Sandi
-                </a>
+                </Link>
                 .
               </p>
             </div>

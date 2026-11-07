@@ -29,7 +29,7 @@ function RegisterFormContent() {
   const redirectParam = searchParams.get('redirect');
   const errorParams = searchParams.getAll('error');
   const oauthErrorParam = errorParams.length > 0 ? errorParams[errorParams.length - 1] : null;
-  const { login } = useAuth();
+  const { user, isLoading: authLoading, isAuthenticated, login } = useAuth();
 
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
@@ -47,6 +47,25 @@ function RegisterFormContent() {
   const [resendCooldown, setResendCooldown] = useState(0);
   const [resendSuccessMsg, setResendSuccessMsg] = useState('');
   const autoLoginLockRef = useRef(false);
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.cookie = 'agra_staff_login=; path=/; max-age=0; SameSite=Lax';
+    }
+  }, []);
+
+  useEffect(() => {
+    if (authLoading || loading || verificationSentTo || !isAuthenticated || !user || oauthErrorParam) {
+      return;
+    }
+    if (user.role === 'SUPERADMIN' || user.role === 'TIM_KURIKULUM') {
+      router.replace('/admin/dashboard');
+    } else if (user.needsOnboarding) {
+      router.replace('/onboarding');
+    } else {
+      router.replace('/dashboard');
+    }
+  }, [authLoading, loading, verificationSentTo, isAuthenticated, user, oauthErrorParam, router]);
 
   useEffect(() => {
     if (resendCooldown <= 0) return;
@@ -78,14 +97,25 @@ function RegisterFormContent() {
         );
         const sessionToken = res?.session?.token || res?.token;
         if (sessionToken && res?.user) {
+          const rawRole = res.user.role;
+          const resolvedRole: 'SUPERADMIN' | 'TIM_KURIKULUM' | 'SISWA' =
+            rawRole === 'SUPERADMIN'
+              ? 'SUPERADMIN'
+              : rawRole === 'TIM_KURIKULUM'
+                ? 'TIM_KURIKULUM'
+                : 'SISWA';
           await login(sessionToken, {
             id: res.user.id,
             name: res.user.name || name.trim(),
             username: res.user.username || username.trim().toLowerCase(),
             email: res.user.email || verificationSentTo,
-            role: 'SISWA',
+            role: resolvedRole,
           });
-          router.push('/onboarding');
+          if (resolvedRole === 'SUPERADMIN' || resolvedRole === 'TIM_KURIKULUM') {
+            router.push('/admin/dashboard');
+          } else {
+            router.push('/onboarding');
+          }
           return;
         }
         router.push('/login');
@@ -204,23 +234,40 @@ function RegisterFormContent() {
 
       const sessionToken = res?.session?.token || res?.token;
       if (sessionToken && res?.user) {
+        const rawRole = res.user.role;
+        const resolvedRole: 'SUPERADMIN' | 'TIM_KURIKULUM' | 'SISWA' =
+          rawRole === 'SUPERADMIN'
+            ? 'SUPERADMIN'
+            : rawRole === 'TIM_KURIKULUM'
+              ? 'TIM_KURIKULUM'
+              : 'SISWA';
         await login(sessionToken, {
           id: res.user.id,
           name: res.user.name || name.trim(),
           username: res.user.username || username.trim().toLowerCase(),
           email: res.user.email || email.trim().toLowerCase(),
-          role: 'SISWA',
+          role: resolvedRole,
         });
-        router.push('/onboarding');
+        if (resolvedRole === 'SUPERADMIN' || resolvedRole === 'TIM_KURIKULUM') {
+          router.push('/admin/dashboard');
+        } else {
+          router.push('/onboarding');
+        }
         return;
       }
 
       setVerificationSentTo(email.trim().toLowerCase());
       setResendCooldown(30);
     } catch (err: unknown) {
-      const msg =
-        err instanceof Error ? err.message : 'Gagal mendaftarkan akun. Silakan coba lagi.';
-      setErrorMsg(msg || 'Gagal mendaftarkan akun. Silakan coba lagi.');
+      const rawMsg = err instanceof Error ? err.message : '';
+      const lowerMsg = rawMsg.toLowerCase();
+      let friendlyMsg = rawMsg || 'Gagal mendaftarkan akun. Silakan coba lagi.';
+      if (lowerMsg.includes('username is already taken')) {
+        friendlyMsg = 'Username ini sudah digunakan oleh pengguna lain. Silakan pilih username lain.';
+      } else if (lowerMsg.includes('user already exists')) {
+        friendlyMsg = 'Email ini sudah terdaftar. Silakan langsung masuk melalui halaman Login.';
+      }
+      setErrorMsg(friendlyMsg);
     } finally {
       setLoading(false);
     }

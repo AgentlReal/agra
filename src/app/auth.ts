@@ -40,10 +40,20 @@ function normalizeDisplayName(rawName: string | undefined | null, email?: string
 
 async function isUsernameTaken(candidate: string): Promise<boolean> {
     const [rows] = await authDbPool.query<RowDataPacket[]>(
-        "SELECT id FROM users WHERE username = ? LIMIT 1",
+        "SELECT id, emailVerified, role FROM users WHERE username = ? LIMIT 1",
         [candidate]
     );
-    return Array.isArray(rows) && rows.length > 0;
+    if (!Array.isArray(rows) || rows.length === 0) {
+        return false;
+    }
+    const existing = rows[0];
+    if (!Boolean(existing.emailVerified) && existing.role === "SISWA") {
+        await authDbPool.query("DELETE FROM user_profiles WHERE user_id = ?", [existing.id]);
+        await authDbPool.query("DELETE FROM account WHERE userId = ?", [existing.id]);
+        await authDbPool.query("DELETE FROM users WHERE id = ?", [existing.id]);
+        return false;
+    }
+    return true;
 }
 
 async function generateUniqueUsername(email?: string | null): Promise<string> {
@@ -153,6 +163,7 @@ export const auth = betterAuth({
         enabled: true,
         disableSignUp: false,
         requireEmailVerification: isEmailVerificationRequired,
+        revokeSessionsOnPasswordReset: true,
         minPasswordLength: 6,
         maxPasswordLength: 12,
         onExistingUserSignUp: async ({ user }, request) => {
@@ -167,6 +178,18 @@ export const auth = betterAuth({
                     });
                 } catch (err) {
                     console.error("[AUTH] Gagal mengirim ulang email verifikasi:", err);
+                }
+            }
+        },
+        onPasswordReset: async ({ user }) => {
+            if (user?.id && !user.emailVerified) {
+                try {
+                    await authDbPool.query(
+                        "UPDATE users SET emailVerified = 1, updatedAt = NOW() WHERE id = ? AND emailVerified = 0",
+                        [user.id]
+                    );
+                } catch (err) {
+                    console.error("[AUTH] Gagal menandai emailVerified saat reset kata sandi:", err);
                 }
             }
         },
@@ -286,20 +309,88 @@ export const auth = betterAuth({
                 const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
                 if (email) {
                     const [existingRows] = await authDbPool.query<RowDataPacket[]>(
-                        "SELECT id, emailVerified FROM users WHERE email = ? LIMIT 1",
+                        "SELECT id, emailVerified, role FROM users WHERE email = ? LIMIT 1",
                         [email]
                     );
-                    if (existingRows[0]?.emailVerified) {
+                    const existingUser = existingRows[0];
+                    if (existingUser?.emailVerified) {
                         throw new APIError("BAD_REQUEST", {
                             message: "Email ini sudah terdaftar dan terverifikasi. Silakan langsung masuk melalui halaman Login.",
                             code: "USER_ALREADY_EXISTS",
                         });
+                    }
+                    // Jika akun siswa belum terverifikasi (emailVerified = 0), bersihkan record gantung
+                    // agar pendaftaran ulang tidak ditolak oleh plugin username dan dapat memperbarui sandi baru.
+                    if (existingUser && !existingUser.emailVerified && existingUser.role === "SISWA") {
+                        await authDbPool.query("DELETE FROM user_profiles WHERE user_id = ?", [existingUser.id]);
+                        await authDbPool.query("DELETE FROM account WHERE userId = ?", [existingUser.id]);
+                        await authDbPool.query("DELETE FROM users WHERE id = ? AND emailVerified = 0", [existingUser.id]);
+                    }
+                }
+                if (rawUsername) {
+                    const [takenRows] = await authDbPool.query<RowDataPacket[]>(
+                        "SELECT id, emailVerified, role FROM users WHERE LOWER(username) = ? LIMIT 1",
+                        [rawUsername]
+                    );
+                    const takenUser = takenRows[0];
+                    if (takenUser) {
+                        if (!takenUser.emailVerified && takenUser.role === "SISWA") {
+                            await authDbPool.query("DELETE FROM user_profiles WHERE user_id = ?", [takenUser.id]);
+                            await authDbPool.query("DELETE FROM account WHERE userId = ?", [takenUser.id]);
+                            await authDbPool.query("DELETE FROM users WHERE id = ? AND emailVerified = 0", [takenUser.id]);
+                        } else {
+                            throw new APIError("BAD_REQUEST", {
+                                message: "Username ini sudah digunakan oleh pengguna lain. Silakan pilih username lain.",
+                                code: "USERNAME_IS_ALREADY_TAKEN",
+                            });
+                        }
                     }
                 }
                 if (body) {
                     body.name = name;
                     if (rawUsername) {
                         body.username = rawUsername;
+                    }
+                }
+            } else if (ctx.path === "/sign-in/email" || ctx.path === "/sign-in/username") {
+                const body = (ctx.body && typeof ctx.body === "object") ? (ctx.body as Record<string, unknown>) : undefined;
+                const identifier =
+                    ctx.path === "/sign-in/email"
+                        ? (typeof body?.email === "string" ? body.email.trim().toLowerCase() : "")
+                        : (typeof body?.username === "string" ? body.username.trim().toLowerCase() : "");
+                if (identifier) {
+                    const [userRows] = await authDbPool.query<RowDataPacket[]>(
+                        ctx.path === "/sign-in/email"
+                            ? `SELECT u.id, u.email, u.role,
+                                      EXISTS(
+                                          SELECT 1 FROM account a
+                                          WHERE a.userId = u.id AND a.providerId = 'credential' AND a.password IS NOT NULL
+                                      ) AS has_password
+                               FROM users u WHERE u.email = ? LIMIT 1`
+                            : `SELECT u.id, u.email, u.role,
+                                      EXISTS(
+                                          SELECT 1 FROM account a
+                                          WHERE a.userId = u.id AND a.providerId = 'credential' AND a.password IS NOT NULL
+                                      ) AS has_password
+                               FROM users u WHERE LOWER(u.username) = ? LIMIT 1`,
+                        [identifier]
+                    );
+                    const matchedUser = userRows[0];
+                    if (matchedUser && isSuperAdminAllowlisted(matchedUser.email) && matchedUser.role !== "SUPERADMIN") {
+                        await authDbPool.query(
+                            "UPDATE users SET role = 'SUPERADMIN', emailVerified = 1, updatedAt = NOW() WHERE id = ?",
+                            [matchedUser.id]
+                        );
+                        matchedUser.role = "SUPERADMIN";
+                    }
+                    if (matchedUser && !matchedUser.has_password) {
+                        const isStaff = matchedUser.role === "SUPERADMIN" || matchedUser.role === "TIM_KURIKULUM";
+                        throw new APIError("BAD_REQUEST", {
+                            message: isStaff
+                                ? "Akun tim ini diaktifkan melalui Undangan Google dan belum memiliki kata sandi lokal. Silakan gunakan tombol 'Masuk dengan Akun Google' atau klik 'Lupa kata sandi?' untuk membuat kata sandi."
+                                : "Akun ini terdaftar melalui Google dan belum memiliki kata sandi lokal. Silakan gunakan tombol 'Masuk dengan Akun Google' atau klik 'Lupa kata sandi?' untuk membuat kata sandi.",
+                            code: "PASSWORD_NOT_SET",
+                        });
                     }
                 }
             } else if (ctx.path === "/change-password" || ctx.path === "/reset-password") {
@@ -319,11 +410,13 @@ export const auth = betterAuth({
             create: {
                 before: async (user, ctx) => {
                     const isAllowlistedSuperAdmin = isSuperAdminAllowlisted(user.email);
+                    const isOAuthCallback = typeof ctx?.path === "string" && ctx.path.startsWith("/callback");
                     const cookieHeader =
                         ctx?.request?.headers?.get("cookie") ||
                         ctx?.headers?.get("cookie") ||
                         "";
-                    const isStaffLoginAttempt = /(?:^|;\s*)agra_staff_login=1(?:;|$)/.test(cookieHeader);
+                    const isStaffLoginAttempt =
+                        isOAuthCallback && /(?:^|;\s*)agra_staff_login=1(?:;|$)/.test(cookieHeader);
 
                     const currentRole =
                         typeof (user as Record<string, unknown>).role === "string"
@@ -358,7 +451,7 @@ export const auth = betterAuth({
                     if (user && user.role === "SISWA") {
                         try {
                             await authDbPool.query(
-                                "INSERT IGNORE INTO user_profiles (user_id, preset_avatar_id, current_milestone_tier_id, total_xp, is_recall_passed) VALUES (?, 1, 1, 0, 0)",
+                                "INSERT IGNORE INTO user_profiles (user_id, preset_avatar_id, current_milestone_tier_id, total_xp, is_recall_passed) VALUES (?, NULL, 1, 0, 0)",
                                 [user.id]
                             );
                         } catch (e) {
@@ -371,13 +464,16 @@ export const auth = betterAuth({
         session: {
             create: {
                 before: async (session, ctx) => {
+                    const isOAuthCallback = typeof ctx?.path === "string" && ctx.path.startsWith("/callback");
                     const cookieHeader =
                         ctx?.request?.headers?.get("cookie") ||
                         ctx?.headers?.get("cookie") ||
                         "";
-                    const isStaffLoginAttempt = /(?:^|;\s*)agra_staff_login=1(?:;|$)/.test(cookieHeader);
+                    const isStaffLoginAttempt =
+                        isOAuthCallback && /(?:^|;\s*)agra_staff_login=1(?:;|$)/.test(cookieHeader);
 
-                    if (isStaffLoginAttempt && session?.userId) {
+                    const hasSuperAdminAllowlist = Boolean(process.env.SUPERADMIN_EMAILS?.trim());
+                    if (session?.userId && (isStaffLoginAttempt || hasSuperAdminAllowlist)) {
                         const [rows] = await authDbPool.query<RowDataPacket[]>(
                             "SELECT id, email, role FROM users WHERE id = ? LIMIT 1",
                             [session.userId]
@@ -389,7 +485,7 @@ export const auth = betterAuth({
                                     "UPDATE users SET role = 'SUPERADMIN', emailVerified = 1, updatedAt = NOW() WHERE id = ?",
                                     [userRow.id]
                                 );
-                            } else if (userRow.role === "SISWA") {
+                            } else if (isStaffLoginAttempt && userRow.role === "SISWA") {
                                 throw new APIError("FORBIDDEN", {
                                     message:
                                         "Akun Google ini terdaftar sebagai akun Siswa, bukan Tim Kurikulum atau SuperAdmin.",

@@ -5,6 +5,7 @@ import { jsonResponse, errorResponse } from "@/shared/utils/response";
 import { BadRequestError, NotFoundError } from "@/shared/errors/app-error";
 import { hashPassword } from "better-auth/crypto";
 import { validatePasswordRules } from "@/shared/utils/validator";
+import { sendStaffInviteEmail } from "@/lib/email";
 import type { RowDataPacket } from "mysql2/promise";
 import crypto from "crypto";
 
@@ -80,25 +81,39 @@ export async function PATCH(
         }
 
         let isEmailChanged = false;
+        let finalTargetEmail = targetUser.email.toLowerCase();
         if (typeof email === "string" && email.trim().length > 0) {
             const normalizedEmail = email.trim().toLowerCase();
-            if (!normalizedEmail.includes("@")) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (normalizedEmail.length > 191 || !emailRegex.test(normalizedEmail)) {
                 throw new BadRequestError("Format alamat email tidak valid.", "INVALID_EMAIL");
             }
             if (normalizedEmail !== targetUser.email.toLowerCase()) {
-                const duplicateRows = await query<RowDataPacket[]>(
-                    `SELECT id FROM users WHERE email = ? AND id != ? LIMIT 1`,
+                const duplicateRows = await query<
+                    Array<RowDataPacket & { id: string; role: string; emailVerified: number | boolean }>
+                >(
+                    `SELECT id, role, emailVerified FROM users WHERE email = ? AND id != ? LIMIT 1`,
                     [normalizedEmail, userId]
                 );
                 if (duplicateRows.length > 0) {
-                    throw new BadRequestError(
-                        "Alamat email tersebut sudah digunakan oleh pengguna lain.",
-                        "EMAIL_ALREADY_USED"
-                    );
+                    const dup = duplicateRows[0];
+                    if (dup.role === "SISWA" && !dup.emailVerified) {
+                        await withTransaction(async (conn) => {
+                            await conn.execute(`DELETE FROM user_profiles WHERE user_id = ?`, [dup.id]);
+                            await conn.execute(`DELETE FROM account WHERE userId = ?`, [dup.id]);
+                            await conn.execute(`DELETE FROM users WHERE id = ? AND emailVerified = 0`, [dup.id]);
+                        });
+                    } else {
+                        throw new BadRequestError(
+                            "Alamat email tersebut sudah digunakan oleh pengguna lain.",
+                            "EMAIL_ALREADY_USED"
+                        );
+                    }
                 }
                 updates.push("email = ?", "emailVerified = TRUE");
                 paramsList.push(normalizedEmail);
                 isEmailChanged = true;
+                finalTargetEmail = normalizedEmail;
             }
         }
 
@@ -132,7 +147,7 @@ export async function PATCH(
             } else if (role === "SISWA" && targetUser.role !== "SISWA") {
                 await conn.execute(
                     `INSERT IGNORE INTO user_profiles (user_id, preset_avatar_id, current_milestone_tier_id, total_xp, is_recall_passed)
-                     VALUES (?, 1, 1, 0, 0)`,
+                     VALUES (?, NULL, 1, 0, 0)`,
                     [userId]
                 );
             }
@@ -176,12 +191,32 @@ export async function PATCH(
             }
         });
 
+        if (isPromotingStudentToStaff && (role === "TIM_KURIKULUM" || role === "SUPERADMIN")) {
+            const origin = new URL(req.url).origin;
+            const targetDisplayName =
+                typeof name === "string" && name.trim().length >= 3
+                    ? name.trim()
+                    : targetUser.name || "Rekan Tim AGRA";
+            await sendStaffInviteEmail({
+                to: finalTargetEmail,
+                userName: targetDisplayName,
+                role,
+                inviterName: currentAdmin.name || "SuperAdmin Platform AGRA",
+                loginUrl: `${origin}/login?as=staff`,
+                forgotPasswordUrl: `${origin}/forgot-password?as=staff`,
+            }).catch((err) => {
+                console.error("[ADMIN USERS] Gagal mengirim email undangan saat promosi peran:", err);
+            });
+        }
+
         return jsonResponse({
             success: true,
             purgedStudentData: shouldPurgeStudentData,
             message: shouldPurgeStudentData
-                ? "Peran pengguna berhasil diperbarui dan data belajar siswa telah dihapus bersih."
-                : "Data pengguna berhasil diperbarui.",
+                ? "Peran pengguna berhasil diperbarui, email undangan staf dikirim, dan data belajar siswa telah dihapus bersih."
+                : isPromotingStudentToStaff
+                  ? "Peran pengguna berhasil diubah menjadi staf dan email undangan telah dikirim."
+                  : "Data pengguna berhasil diperbarui.",
         });
     } catch (error) {
         return errorResponse(error, "status");
