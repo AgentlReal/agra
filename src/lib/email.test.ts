@@ -4,6 +4,8 @@ import {
     isSmtpConfigured,
     generateVerificationEmailHtml,
     generatePasswordResetEmailHtml,
+    generateStaffInviteEmailHtml,
+    generateStaffInviteEmailText,
 } from "./email";
 
 describe("email utility", () => {
@@ -41,6 +43,29 @@ describe("email utility", () => {
         process.env.SMTP_USER = "agra@gmail.com";
         process.env.SMTP_PASSWORD = "abcd efgh ijkl mnop";
         expect(isSmtpConfigured()).toBe(true);
+    });
+
+    it("generates staff invitation email HTML and plain text for TIM_KURIKULUM and SUPERADMIN", () => {
+        const html = generateStaffInviteEmailHtml({
+            to: "guru@gmail.com",
+            userName: "Budi Santoso",
+            role: "TIM_KURIKULUM",
+            inviterName: "Super Administrator",
+            loginUrl: "http://localhost:3002/login?as=staff",
+        });
+        expect(html).toContain("Budi Santoso");
+        expect(html).toContain("Tim Kurikulum");
+        expect(html).toContain("http://localhost:3002/login?as=staff");
+        expect(html).toContain("Tanpa Batas Waktu");
+
+        const text = generateStaffInviteEmailText({
+            to: "admin2@gmail.com",
+            userName: "Admin Dua",
+            role: "SUPERADMIN",
+            loginUrl: "http://localhost:3002/login?as=staff",
+        });
+        expect(text).toContain("SuperAdmin");
+        expect(text).toContain("http://localhost:3002/login?as=staff");
     });
 });
 

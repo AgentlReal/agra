@@ -21,6 +21,9 @@ export function proxy(request: NextRequest) {
   if (isProtectedRoute && !sessionToken) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('redirect', pathname);
+    if (pathname.startsWith('/admin')) {
+      loginUrl.searchParams.set('as', 'staff');
+    }
     const errorParam = request.nextUrl.searchParams.get('error');
     if (errorParam) {
       loginUrl.searchParams.set('error', errorParam);

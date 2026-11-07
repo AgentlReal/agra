@@ -34,6 +34,7 @@ describe('Server-Side Proxy Route Guard (src/proxy.ts)', () => {
     expect(res.status).toBe(307);
     const location = res.headers.get('location');
     expect(location).toContain('/login?redirect=%2Fadmin%2Fdashboard');
+    expect(location).toContain('as=staff');
   });
 
   it('harus me-redirect tamu anonim yang mengakses /onboarding ke /login', () => {

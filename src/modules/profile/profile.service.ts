@@ -8,7 +8,7 @@ import {
     DashboardResponseDto,
     DashboardNextActionDto,
 } from "./profile.types";
-import { BadRequestError, ConflictError } from "@/shared/errors/app-error";
+import { BadRequestError } from "@/shared/errors/app-error";
 
 export class ProfileService {
     constructor(private readonly repo = new ProfileRepository()) {}
@@ -40,6 +40,7 @@ export class ProfileService {
             username: row.username || (row.email ? row.email.split("@")[0] : ""),
             name: row.name,
             hasPassword: row.has_password !== undefined ? Boolean(row.has_password) : true,
+            ...(row.avatar_id === null ? { needsOnboarding: true } : {}),
             avatar: {
                 id: row.avatar_id || 1,
                 name: row.avatar_name || "Ksatria Buku",
@@ -66,21 +67,15 @@ export class ProfileService {
 
     async completeProfile(userId: string, dto: CompleteProfileDto): Promise<StudentProfileDto> {
         const existing = await this.repo.findRawProfile(userId);
-        if (existing) {
-            const avatarId = dto.presetAvatarId || dto.avatarId;
-            if (avatarId) {
-                const avatar = await this.repo.getAvatarById(avatarId);
-                if (avatar && avatar.is_active) {
-                    await this.repo.updateAvatar(userId, avatarId);
-                }
-            }
-            return this.getProfile(userId);
-        }
-
         const avatarId = dto.presetAvatarId || dto.avatarId || 1;
         const avatar = await this.repo.getAvatarById(avatarId);
         if (!avatar || !avatar.is_active) {
             throw new BadRequestError("Avatar preset yang dipilih tidak valid atau tidak aktif");
+        }
+
+        if (existing) {
+            await this.repo.updateAvatar(userId, avatarId);
+            return this.getProfile(userId);
         }
 
         await this.repo.createProfile(userId, avatarId);
@@ -88,7 +83,7 @@ export class ProfileService {
     }
 
     async updateProfileName(userId: string, dto: UpdateProfileNameDto): Promise<StudentProfileDto> {
-        let profile = await this.repo.findRawProfile(userId);
+        const profile = await this.repo.findRawProfile(userId);
         if (!profile) {
             await this.repo.createProfile(userId, 1);
         }
@@ -120,7 +115,7 @@ export class ProfileService {
             throw new BadRequestError("Avatar tidak ditemukan atau tidak aktif");
         }
 
-        let profile = await this.repo.findRawProfile(userId);
+        const profile = await this.repo.findRawProfile(userId);
         if (!profile) {
             await this.repo.createProfile(userId, 1);
         }
@@ -210,7 +205,7 @@ export class ProfileService {
             : activePos
             ? {
                   priority: 1,
-                  type: activePos.type as any,
+                  type: activePos.type as DashboardNextActionDto["type"],
                   title: activePos.title,
                   subjectCode: activePos.subjectCode,
                   materialId: activePos.materialId,

@@ -29,17 +29,23 @@ export default function SubjectCurriculumPage({ params }: { params: Promise<{ su
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
 
+  // Route Guard
   useEffect(() => {
     if (!authLoading) {
       if (!user) {
         router.replace('/login');
       } else if (role !== 'SISWA') {
         router.replace('/admin/dashboard');
-      } else {
-        loadData();
       }
     }
-  }, [authLoading, user, role, subjectId, router]);
+  }, [authLoading, user, role, router]);
+
+  // Data Loader
+  useEffect(() => {
+    if (!authLoading && user && role === 'SISWA') {
+      loadData();
+    }
+  }, [authLoading, user?.id, role, subjectId]);
 
   const loadData = () => {
     setLoading(true);

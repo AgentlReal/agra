@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
@@ -36,61 +36,142 @@ function normalizeNextActionRoute(rawRoute?: string, type?: string, submaterialI
   return rawRoute.replace(/\.html$/, '');
 }
 
+interface DashboardSubjectItem {
+  subjectId?: number;
+  id?: number;
+  subjectCode?: string;
+  subjectName?: string;
+  masteryPercent?: number;
+  masteryPercentage?: number;
+  masteredSubmaterials?: number;
+  completedSubmaterials?: number;
+  totalSubmaterials?: number;
+  simulationUnlocked?: boolean;
+  simulation_unlocked?: boolean;
+}
+
+interface DashboardStudentData {
+  name?: string;
+  avatar?: {
+    id?: number;
+    name?: string;
+    imageUrl?: string;
+  };
+  avatarUrl?: string;
+  totalXp?: number;
+  total_xp?: number;
+  isRecallPassed?: boolean;
+  milestone?: {
+    title?: string;
+    tierName?: string;
+  };
+}
+
+interface DashboardNextAction {
+  type?: string;
+  title?: string;
+  route?: string;
+  submaterialId?: number;
+}
+
+interface DashboardPayload {
+  student?: DashboardStudentData;
+  subjects?: DashboardSubjectItem[];
+  nextAction?: DashboardNextAction;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const { user, role, isLoading: authLoading, updateUser } = useAuth();
-  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Route Guard & Data Loader
+  const applyDashboardPayload = useCallback(
+    (res: { data?: DashboardPayload } & DashboardPayload) => {
+      const data = res?.data || res;
+      setDashboardData(data);
+      if (data?.student) {
+        const nextAvatarUrl = data.student.avatar?.imageUrl || data.student.avatarUrl;
+        const nextTotalXp = data.student.totalXp ?? data.student.total_xp;
+        updateUser({
+          ...(data.student.name ? { name: data.student.name } : {}),
+          ...(nextAvatarUrl ? { avatarUrl: nextAvatarUrl } : {}),
+          ...(data.student.avatar?.id ? { avatarId: data.student.avatar.id } : {}),
+          ...(nextTotalXp !== undefined ? { totalXp: nextTotalXp } : {}),
+        });
+      }
+    },
+    [updateUser]
+  );
+
+  const handleDashboardError = useCallback(
+    (err: unknown) => {
+      console.error('Failed to load dashboard:', err);
+      const apiErr = err as { code?: string; status?: number; message?: string };
+      if (apiErr?.code === 'PROFILE_INCOMPLETE' || apiErr?.status === 409) {
+        router.push('/onboarding');
+        return;
+      }
+      if (apiErr?.status === 401) {
+        router.push('/login');
+        return;
+      }
+      if (apiErr?.status === 403) {
+        router.replace('/admin/dashboard');
+        return;
+      }
+      setErrorMsg(apiErr?.message || 'Gagal memuat ringkasan belajar dari server.');
+    },
+    [router]
+  );
+
+  const loadDashboard = useCallback(() => {
+    setLoading(true);
+    setErrorMsg('');
+    api.dashboard
+      .get()
+      .then(applyDashboardPayload)
+      .catch(handleDashboardError)
+      .finally(() => setLoading(false));
+  }, [applyDashboardPayload, handleDashboardError]);
+
+  // Route Guard
   useEffect(() => {
     if (!authLoading) {
       if (!user) {
         router.replace('/login');
       } else if (role !== 'SISWA') {
         router.replace('/admin/dashboard');
-      } else {
-        loadDashboard();
+      } else if (user.needsOnboarding) {
+        router.replace('/onboarding');
       }
     }
   }, [authLoading, user, role, router]);
 
-  const loadDashboard = () => {
-    setLoading(true);
-    setErrorMsg('');
+  // Data Loader
+  const userId = user?.id;
+  const needsOnboarding = Boolean(user?.needsOnboarding);
+  useEffect(() => {
+    if (authLoading || !userId || role !== 'SISWA' || needsOnboarding) return;
+    let active = true;
     api.dashboard
       .get()
-      .then((res: any) => {
-        const data = res?.data || res;
-        setDashboardData(data);
-        if (data?.student) {
-          updateUser({
-            name: data.student.name || user?.name,
-            avatarUrl: data.student.avatar?.imageUrl || data.student.avatarUrl || user?.avatarUrl,
-            avatarId: data.student.avatar?.id || user?.avatarId,
-            totalXp: data.student.totalXp ?? data.student.total_xp ?? user?.totalXp,
-          });
-        }
+      .then((res: { data?: DashboardPayload } & DashboardPayload) => {
+        if (!active) return;
+        applyDashboardPayload(res);
       })
-      .catch((err: any) => {
-        console.error('Failed to load dashboard:', err);
-        if (err.code === 'PROFILE_INCOMPLETE' || err.status === 409) {
-          router.push('/onboarding');
-          return;
-        }
-        if (err.status === 401) {
-          router.push('/login');
-          return;
-        }
-        if (err.status === 403) {
-          router.replace('/admin/dashboard');
-          return;
-        }
-        setErrorMsg(err.message || 'Gagal memuat ringkasan belajar dari server.');
+      .catch((err: unknown) => {
+        if (!active) return;
+        handleDashboardError(err);
       })
-      .finally(() => setLoading(false));
-  };
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [authLoading, userId, needsOnboarding, role, applyDashboardPayload, handleDashboardError]);
 
   if (authLoading || !user || role !== 'SISWA') {
     return (
@@ -100,7 +181,7 @@ export default function DashboardPage() {
     );
   }
 
-  const student = dashboardData?.student || user;
+  const student: DashboardStudentData | undefined = dashboardData?.student || user;
   const subjects = dashboardData?.subjects || [];
   const nextAction = dashboardData?.nextAction;
   const isRecallPassed =
@@ -261,7 +342,7 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {subjects.map((sub: any, idx: number) => {
+                  {subjects.map((sub: DashboardSubjectItem, idx: number) => {
                     const subjectId = sub.subjectId ?? sub.id ?? (sub.subjectCode === 'MAT' ? 1 : 2);
                     const masteryPercent = sub.masteryPercent ?? sub.masteryPercentage ?? 0;
                     const masteredCount = sub.masteredSubmaterials ?? sub.completedSubmaterials ?? 0;

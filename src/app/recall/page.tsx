@@ -38,17 +38,23 @@ export default function RecallIntroPage() {
   const [starting, setStarting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  // Route Guard
   useEffect(() => {
     if (!authLoading) {
       if (!user) {
         router.replace('/login');
       } else if (role !== 'SISWA') {
         router.replace('/admin/dashboard');
-      } else {
-        loadStatus();
       }
     }
   }, [authLoading, user, role, router]);
+
+  // Data Loader
+  useEffect(() => {
+    if (!authLoading && user && role === 'SISWA') {
+      loadStatus();
+    }
+  }, [authLoading, user?.id, role]);
 
   const loadStatus = () => {
     setLoading(true);

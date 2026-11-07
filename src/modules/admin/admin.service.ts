@@ -24,18 +24,34 @@ export class AdminService {
         if (!profile) {
             throw new NotFoundError("Profil Tim Kurikulum tidak ditemukan");
         }
+        const rawProfile = profile as K09_AdminProfile & { has_password?: number };
         return {
             id: profile.id,
             email: profile.email,
             username: profile.username,
             name: profile.name,
-            role: "TIM_KURIKULUM",
+            role: profile.role === "SUPERADMIN" ? "SUPERADMIN" : "TIM_KURIKULUM",
+            hasPassword: rawProfile.has_password !== undefined ? Boolean(rawProfile.has_password) : true,
         };
     }
 
-    async updateProfile(userId: string, name: string): Promise<K09_AdminProfile> {
-        await this.getProfile(userId);
-        await this.repo.updateAdminProfile(userId, name);
+    async updateProfile(userId: string, name: string, email?: string): Promise<K09_AdminProfile> {
+        const current = await this.getProfile(userId);
+        const normalizedEmail = email ? email.trim().toLowerCase() : undefined;
+
+        if (normalizedEmail && normalizedEmail !== current.email.toLowerCase()) {
+            const isTaken = await this.repo.isEmailTakenByOtherUser?.(normalizedEmail, userId);
+            if (isTaken) {
+                throw new BadRequestError(
+                    "Alamat email tersebut sudah digunakan oleh akun lain.",
+                    "EMAIL_ALREADY_USED"
+                );
+            }
+            await this.repo.updateAdminProfile(userId, name, normalizedEmail);
+        } else {
+            await this.repo.updateAdminProfile(userId, name);
+        }
+
         return this.getProfile(userId);
     }
 
