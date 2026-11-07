@@ -88,6 +88,17 @@ const isGoogleOAuthConfigured = Boolean(
 );
 const isEmailVerificationRequired = process.env.REQUIRE_EMAIL_VERIFICATION !== "false";
 
+function isSuperAdminAllowlisted(email?: string | null): boolean {
+    if (!email) return false;
+    const rawList = process.env.SUPERADMIN_EMAILS || "";
+    const normalizedTarget = email.trim().toLowerCase();
+    const allowlist = rawList
+        .split(",")
+        .map((item) => item.trim().toLowerCase())
+        .filter(Boolean);
+    return allowlist.includes(normalizedTarget);
+}
+
 const fallbackBaseUrl = process.env.BETTER_AUTH_URL || "http://localhost:3000";
 let configuredHost: string | null = null;
 try {
@@ -199,7 +210,16 @@ export const auth = betterAuth({
                                   [normalizedEmail]
                               );
                               const existing = rows[0];
-                              if (existing && !existing.emailVerified && existing.role === "SISWA") {
+                              if (
+                                  existing &&
+                                  isSuperAdminAllowlisted(normalizedEmail) &&
+                                  existing.role !== "SUPERADMIN"
+                              ) {
+                                  await authDbPool.query(
+                                      "UPDATE users SET role = 'SUPERADMIN', emailVerified = 1, updatedAt = NOW() WHERE id = ?",
+                                      [existing.id]
+                                  );
+                              } else if (existing && !existing.emailVerified && existing.role === "SISWA") {
                                   await authDbPool.query("DELETE FROM user_profiles WHERE user_id = ?", [existing.id]);
                                   await authDbPool.query("DELETE FROM account WHERE userId = ?", [existing.id]);
                                   await authDbPool.query("DELETE FROM users WHERE id = ? AND emailVerified = 0", [existing.id]);
@@ -297,7 +317,28 @@ export const auth = betterAuth({
     databaseHooks: {
         user: {
             create: {
-                before: async (user) => {
+                before: async (user, ctx) => {
+                    const isAllowlistedSuperAdmin = isSuperAdminAllowlisted(user.email);
+                    const cookieHeader =
+                        ctx?.request?.headers?.get("cookie") ||
+                        ctx?.headers?.get("cookie") ||
+                        "";
+                    const isStaffLoginAttempt = /(?:^|;\s*)agra_staff_login=1(?:;|$)/.test(cookieHeader);
+
+                    const currentRole =
+                        typeof (user as Record<string, unknown>).role === "string"
+                            ? String((user as Record<string, unknown>).role)
+                            : "SISWA";
+                    const resolvedRole = isAllowlistedSuperAdmin ? "SUPERADMIN" : currentRole;
+
+                    if (isStaffLoginAttempt && resolvedRole === "SISWA") {
+                        throw new APIError("FORBIDDEN", {
+                            message:
+                                "Email Google ini belum diundang sebagai Tim Kurikulum atau SuperAdmin. Hubungi SuperAdmin untuk mendapatkan undangan akses.",
+                            code: "staff_not_invited",
+                        });
+                    }
+
                     const rawUsername = (user as Record<string, unknown>).username;
                     const existingUsername = typeof rawUsername === "string" ? rawUsername.trim() : "";
                     const finalUsername = existingUsername || (await generateUniqueUsername(user.email));
@@ -308,6 +349,8 @@ export const auth = betterAuth({
                             ...user,
                             name: normalizedName,
                             username: finalUsername,
+                            role: resolvedRole,
+                            ...(isAllowlistedSuperAdmin ? { emailVerified: true } : {}),
                         },
                     };
                 },
@@ -327,6 +370,35 @@ export const auth = betterAuth({
         },
         session: {
             create: {
+                before: async (session, ctx) => {
+                    const cookieHeader =
+                        ctx?.request?.headers?.get("cookie") ||
+                        ctx?.headers?.get("cookie") ||
+                        "";
+                    const isStaffLoginAttempt = /(?:^|;\s*)agra_staff_login=1(?:;|$)/.test(cookieHeader);
+
+                    if (isStaffLoginAttempt && session?.userId) {
+                        const [rows] = await authDbPool.query<RowDataPacket[]>(
+                            "SELECT id, email, role FROM users WHERE id = ? LIMIT 1",
+                            [session.userId]
+                        );
+                        const userRow = rows[0];
+                        if (userRow) {
+                            if (isSuperAdminAllowlisted(userRow.email) && userRow.role !== "SUPERADMIN") {
+                                await authDbPool.query(
+                                    "UPDATE users SET role = 'SUPERADMIN', emailVerified = 1, updatedAt = NOW() WHERE id = ?",
+                                    [userRow.id]
+                                );
+                            } else if (userRow.role === "SISWA") {
+                                throw new APIError("FORBIDDEN", {
+                                    message:
+                                        "Akun Google ini terdaftar sebagai akun Siswa, bukan Tim Kurikulum atau SuperAdmin.",
+                                    code: "student_account_on_staff_portal",
+                                });
+                            }
+                        }
+                    }
+                },
                 after: async (session) => {
                     if (session?.userId && session?.id) {
                         try {

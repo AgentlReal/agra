@@ -10,6 +10,7 @@ describe("AdminService Unit Tests", () => {
     beforeEach(() => {
         mockRepo = {
             getAdminProfile: vi.fn(),
+            isEmailTakenByOtherUser: vi.fn(),
             updateAdminProfile: vi.fn(),
             getQuestionBankStock: vi.fn(),
             listQuestions: vi.fn(),
@@ -61,6 +62,51 @@ describe("AdminService Unit Tests", () => {
             const res = await service.updateProfile("admin-1", "Nama Baru");
 
             expect(mockRepo.updateAdminProfile).toHaveBeenCalledWith("admin-1", "Nama Baru");
+            expect(res.id).toBe("admin-1");
+        });
+
+        it("harus berhasil memperbarui nama dan email profil jika email belum dipakai akun lain", async () => {
+            mockRepo.getAdminProfile!
+                .mockResolvedValueOnce({
+                    id: "admin-1",
+                    email: "superadmin@bimbel-tka.sch.id",
+                    username: "superadmin",
+                    name: "Super Admin",
+                    role: "SUPERADMIN",
+                })
+                .mockResolvedValueOnce({
+                    id: "admin-1",
+                    email: "admin.baru@gmail.com",
+                    username: "superadmin",
+                    name: "Super Admin",
+                    role: "SUPERADMIN",
+                });
+            mockRepo.isEmailTakenByOtherUser!.mockResolvedValue(false);
+            mockRepo.updateAdminProfile!.mockResolvedValue(undefined);
+
+            const res = await service.updateProfile("admin-1", "Super Admin", "Admin.Baru@gmail.com");
+
+            expect(mockRepo.isEmailTakenByOtherUser).toHaveBeenCalledWith("admin.baru@gmail.com", "admin-1");
+            expect(mockRepo.updateAdminProfile).toHaveBeenCalledWith("admin-1", "Super Admin", "admin.baru@gmail.com");
+            expect(res.email).toBe("admin.baru@gmail.com");
+        });
+
+        it("harus menolak perubahan email jika email sudah digunakan oleh akun lain (EMAIL_ALREADY_USED)", async () => {
+            mockRepo.getAdminProfile!.mockResolvedValue({
+                id: "admin-1",
+                email: "superadmin@bimbel-tka.sch.id",
+                username: "superadmin",
+                name: "Super Admin",
+                role: "SUPERADMIN",
+            });
+            mockRepo.isEmailTakenByOtherUser!.mockResolvedValue(true);
+
+            await expect(
+                service.updateProfile("admin-1", "Super Admin", "dipakai@gmail.com")
+            ).rejects.toMatchObject({
+                code: "EMAIL_ALREADY_USED",
+            });
+            expect(mockRepo.updateAdminProfile).not.toHaveBeenCalled();
         });
     });
 

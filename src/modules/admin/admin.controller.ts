@@ -37,7 +37,7 @@ export class AdminController {
         try {
             const { user } = await requireRole(["TIM_KURIKULUM", "SUPERADMIN"]);
             const dto = await validateBody(req, adminProfileUpdateSchema, { style: "status" });
-            const data = await this.service.updateProfile(user.id, dto.name);
+            const data = await this.service.updateProfile(user.id, dto.name, dto.email);
             return jsonResponse(data, 200);
         } catch (error) {
             return errorResponse(error, "status");

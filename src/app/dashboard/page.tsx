@@ -43,18 +43,23 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Route Guard & Data Loader
+  // Route Guard
   useEffect(() => {
     if (!authLoading) {
       if (!user) {
         router.replace('/login');
       } else if (role !== 'SISWA') {
         router.replace('/admin/dashboard');
-      } else {
-        loadDashboard();
       }
     }
   }, [authLoading, user, role, router]);
+
+  // Data Loader
+  useEffect(() => {
+    if (!authLoading && user && role === 'SISWA') {
+      loadDashboard();
+    }
+  }, [authLoading, user?.id, role]);
 
   const loadDashboard = () => {
     setLoading(true);

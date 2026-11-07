@@ -12,6 +12,7 @@ function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token') || '';
+  const errorParam = searchParams.get('error');
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -22,10 +23,12 @@ function ResetPasswordForm() {
   const [success, setSuccess] = useState(false);
 
   React.useEffect(() => {
-    if (!token) {
+    if (errorParam === 'INVALID_TOKEN') {
+      setErrorMsg('Tautan pemulihan kata sandi sudah kedaluwarsa atau pernah digunakan. Silakan ajukan tautan pemulihan baru dari halaman Lupa Kata Sandi.');
+    } else if (!token) {
       setErrorMsg('Token tautan pemulihan kata sandi tidak ditemukan atau tidak valid. Silakan ajukan permohonan baru dari halaman Lupa Kata Sandi.');
     }
-  }, [token]);
+  }, [token, errorParam]);
 
   const hasLength = password.length >= 6 && password.length <= 12;
   const hasUpper = /[A-Z]/.test(password);

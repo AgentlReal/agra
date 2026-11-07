@@ -22,7 +22,7 @@ import { UserAvatar } from '@/components/common/UserAvatar';
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
-  const { user, role, logout, refreshUser } = useAuth();
+  const { user, role, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [learningDropdownOpen, setLearningDropdownOpen] = useState(false);
@@ -31,12 +31,6 @@ export const Navbar: React.FC = () => {
   const learningRef = useRef<HTMLDivElement>(null);
   const assessmentRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (user && role === 'SISWA') {
-      refreshUser();
-    }
-  }, [pathname, refreshUser]);
 
   // Click outside listener for dropdowns
   useEffect(() => {

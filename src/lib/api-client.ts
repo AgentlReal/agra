@@ -58,11 +58,22 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
         }
       }
 
+      const resolvedCode =
+        errData?.error?.code ||
+        errData?.code ||
+        (typeof errData?.error === 'string' ? errData.error : undefined) ||
+        'UNKNOWN_ERROR';
+      const resolvedDetails =
+        errData?.error?.details ||
+        errData?.error?.fields ||
+        errData?.details ||
+        errData?.fields;
+
       throw new ApiError(
         errData?.error?.message || errData?.message || `Permintaan gagal dengan status ${res.status}`,
         res.status,
-        errData?.error?.code || 'UNKNOWN_ERROR',
-        errData?.error?.details
+        resolvedCode,
+        resolvedDetails
       );
     }
 
@@ -87,31 +98,49 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
 export const api = {
   // Auth
   auth: {
-    signInUsername: (username: string, password: string) =>
+    signInUsername: (username: string, password: string, callbackURL = '/verify-email-success') =>
       request<any>('/api/auth/sign-in/username', {
         method: 'POST',
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, callbackURL }),
       }),
-    signInEmail: (email: string, password: string) =>
+    signInEmail: (email: string, password: string, callbackURL = '/verify-email-success') =>
       request<any>('/api/auth/sign-in/email', {
         method: 'POST',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, callbackURL }),
       }),
-    signUpEmail: (data: { name: string; username: string; email: string; password: string }) =>
+    signUpEmail: (data: {
+      name: string;
+      username: string;
+      email: string;
+      password: string;
+      callbackURL?: string;
+    }) =>
       request<any>('/api/auth/sign-up/email', {
         method: 'POST',
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          callbackURL: data.callbackURL || '/verify-email-success',
+        }),
       }),
+    sendVerificationEmail: (email: string, callbackURL = '/verify-email-success') =>
+      request<any>('/api/auth/send-verification-email', {
+        method: 'POST',
+        body: JSON.stringify({ email, callbackURL }),
+      }),
+    checkVerificationStatus: (identifier: string) =>
+      request<{ verified: boolean }>(
+        `/api/auth/verification-status?identifier=${encodeURIComponent(identifier)}`
+      ),
     signOut: () =>
       request<any>('/api/auth/sign-out', {
         method: 'POST',
         body: JSON.stringify({}),
       }),
     getSession: () => request<any>('/api/auth/get-session'),
-    requestPasswordReset: (email: string) =>
+    requestPasswordReset: (email: string, redirectTo = '/reset-password') =>
       request<any>('/api/auth/request-password-reset', {
         method: 'POST',
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, redirectTo }),
       }),
     resetPassword: (token: string, newPassword: string) =>
       request<any>('/api/auth/reset-password', {
@@ -308,10 +337,10 @@ export const api = {
   // Admin / Tim Kurikulum
   admin: {
     getProfile: () => request<any>('/api/v1/admin/profile'),
-    updateProfile: (name: string) =>
+    updateProfile: (name: string, email?: string) =>
       request<any>('/api/v1/admin/profile', {
         method: 'PATCH',
-        body: JSON.stringify({ name }),
+        body: JSON.stringify(email ? { name, email } : { name }),
       }),
     getQuestionBanks: () => request<any[]>('/api/v1/admin/question-banks'),
     getQuestionBanksStock: () => request<any>('/api/v1/admin/question-banks/stock'),
@@ -409,19 +438,34 @@ export const api = {
       return request<any>(`/api/v1/admin/users${qs}`);
     },
     createUser: (data: {
-      name: string;
+      name?: string;
       email: string;
       username?: string;
       role: 'TIM_KURIKULUM' | 'SUPERADMIN';
+      password?: string;
     }) =>
       request<any>('/api/v1/admin/users', {
         method: 'POST',
         body: JSON.stringify(data),
       }),
-    updateUser: (userId: string, data: { name?: string; role?: string }) =>
+    updateUser: (
+      userId: string,
+      data: {
+        name?: string;
+        email?: string;
+        role?: string;
+        password?: string;
+        purgeStudentData?: boolean;
+      }
+    ) =>
       request<any>(`/api/v1/admin/users/${userId}`, {
         method: 'PATCH',
         body: JSON.stringify(data),
+      }),
+    resendInvite: (userId: string) =>
+      request<any>(`/api/v1/admin/users/${userId}/resend-invite`, {
+        method: 'POST',
+        body: JSON.stringify({}),
       }),
     deleteUser: (userId: string) =>
       request<any>(`/api/v1/admin/users/${userId}`, {

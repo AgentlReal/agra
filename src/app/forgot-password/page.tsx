@@ -112,6 +112,10 @@ export default function ForgotPasswordPage() {
                   />
                 </div>
 
+                <div className="rounded-xl border border-blue-100 bg-[#eff6ff] p-3 text-xs text-slate-600 leading-relaxed">
+                  Mendaftar menggunakan <strong className="text-slate-800">Akun Google</strong>? Akunmu tidak memerlukan kata sandi terpisah—cukup gunakan tombol <Link href="/login" className="font-semibold text-blue-600 hover:underline">Masuk dengan Akun Google</Link>.
+                </div>
+
                 <button
                   type="submit"
                   disabled={loading}

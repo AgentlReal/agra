@@ -49,7 +49,22 @@ export async function GET(req: NextRequest) {
         }
     }
 
-    return handlers.GET(req);
+    const rawResponse = await handlers.GET(req);
+
+    if (url.pathname.includes("/callback/") && req.cookies.get("agra_staff_login")?.value) {
+        const headers = new Headers(rawResponse.headers);
+        headers.append(
+            "Set-Cookie",
+            "agra_staff_login=; Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax"
+        );
+        return new NextResponse(rawResponse.body, {
+            status: rawResponse.status,
+            statusText: rawResponse.statusText,
+            headers,
+        });
+    }
+
+    return rawResponse;
 }
 
 export async function POST(req: NextRequest) {

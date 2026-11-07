@@ -75,17 +75,23 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
     message: '',
   });
 
+  // Route Guard
   useEffect(() => {
     if (!authLoading) {
       if (!user) {
         router.replace('/login');
       } else if (role !== 'SISWA') {
         router.replace('/admin/dashboard');
-      } else {
-        loadProgress();
       }
     }
-  }, [authLoading, user, role, submaterialId, router]);
+  }, [authLoading, user, role, router]);
+
+  // Data Loader
+  useEffect(() => {
+    if (!authLoading && user && role === 'SISWA') {
+      loadProgress();
+    }
+  }, [authLoading, user?.id, role, submaterialId]);
 
   const loadProgress = () => {
     setLoading(true);

@@ -5,7 +5,8 @@ export interface K09_AdminProfile {
     email: string;
     username: string;
     name: string;
-    role: "TIM_KURIKULUM";
+    role: "TIM_KURIKULUM" | "SUPERADMIN";
+    hasPassword?: boolean;
 }
 
 export interface K10_QuestionBankStock {
