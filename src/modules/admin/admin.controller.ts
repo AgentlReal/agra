@@ -17,6 +17,7 @@ import { validateBody, validateParams, validateQuery } from "@/shared/utils/vali
 import { jsonResponse, errorResponse } from "@/shared/utils/response";
 import { requireRole } from "../auth/auth.guard";
 import { BadRequestError } from "@/shared/errors/app-error";
+import { detectImageExtension } from "@/shared/utils/image-validator";
 import fs from "fs";
 import path from "path";
 
@@ -126,38 +127,27 @@ export class AdminController {
                 throw new BadRequestError("Berkas gambar tidak ditemukan pada form-data (field: image)", "IMAGE_REQUIRED");
             }
 
-            const allowedMimeTypes = [
-                "image/jpeg",
-                "image/jpg",
-                "image/png",
-                "image/webp",
-                "image/gif",
-                "image/svg+xml",
-            ];
-            if (file.type && !allowedMimeTypes.includes(file.type.toLowerCase()) && !file.type.startsWith("image/")) {
-                throw new BadRequestError("Format berkas harus berupa gambar (JPEG, PNG, WebP, GIF, SVG)", "INVALID_FILE_TYPE");
-            }
-
             const maxSize = 5 * 1024 * 1024; // 5MB
             if (file.size > maxSize) {
                 throw new BadRequestError("Ukuran gambar melebihi batas maksimal 5MB", "FILE_TOO_LARGE");
             }
 
-            let ext = "png";
-            if (file.name && file.name.includes(".")) {
-                ext = file.name.split(".").pop()?.toLowerCase() || "png";
-            } else if (file.type) {
-                const parts = file.type.split("/");
-                ext = parts[1] === "jpeg" ? "jpg" : parts[1] || "png";
+            const arrayBuffer = await file.arrayBuffer();
+            const buffer = Buffer.from(arrayBuffer);
+
+            // Ekstensi ditentukan dari isi berkas (magic bytes), bukan dari nama berkas / header MIME klien.
+            const detectedExt = detectImageExtension(buffer);
+            if (!detectedExt) {
+                throw new BadRequestError(
+                    "Format berkas tidak valid. Hanya gambar JPEG, PNG, WebP, atau GIF yang diizinkan (SVG tidak didukung).",
+                    "INVALID_FILE_TYPE"
+                );
             }
 
-            const safeExt = ext.replace(/[^a-z0-9]/gi, "").toLowerCase() || "png";
-            const uniqueName = `img-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${safeExt}`;
+            const uniqueName = `img-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${detectedExt}`;
             const uploadDir = path.join(process.cwd(), "public", "assets");
 
             await fs.promises.mkdir(uploadDir, { recursive: true });
-            const arrayBuffer = await file.arrayBuffer();
-            const buffer = Buffer.from(arrayBuffer);
             await fs.promises.writeFile(path.join(uploadDir, uniqueName), buffer);
 
             const fileUrl = `/assets/${uniqueName}`;
