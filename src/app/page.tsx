@@ -546,28 +546,31 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Row 2: CONNECTED "Asesmen Mandiri" Across the 50/50 Split with Kaiki Knockout Blend Effect */}
-            <RevealPop delay={200} className="w-full mt-1 lg:mt-2">
+            {/* Row 2: CONNECTED "Asesmen Mandiri" Across the 50/50 Split (Interleaved with z-20 Student) */}
+            <div className="w-full mt-1 lg:mt-2">
               <div className="w-full px-6 sm:px-12 lg:px-0 grid grid-cols-1 lg:grid-cols-12 items-baseline">
                 <div className="lg:col-span-6 flex lg:justify-end lg:pr-[0.14em]">
-                  <span className="text-[4.2rem] sm:text-[6.5rem] lg:text-[8.6vw] font-normal tracking-[-0.05em] leading-[0.9] text-[#0A0D14] select-none whitespace-nowrap">
+                  <span className="relative z-10 text-[4.2rem] sm:text-[6.5rem] lg:text-[8.6vw] font-normal tracking-[-0.05em] leading-[0.9] text-[#0A0D14] select-none whitespace-nowrap">
                     Asesmen
                   </span>
                 </div>
                 <div className="lg:col-span-6 flex lg:justify-start lg:pl-[0.14em]">
                   <span className="text-[4.2rem] sm:text-[6.5rem] lg:text-[8.6vw] font-normal tracking-[-0.05em] leading-[0.9] select-none whitespace-nowrap inline-flex items-baseline">
-                    {/* "Ma" stays in pure white */}
                     <span className="relative z-10 text-white">Ma</span>
-
-                    {/* "ndiri" 3-Layer Kaiki Knockout Effect:
-                        - z-10 (behind student): #000000 base so (#FFFFFF - #000000 = Pure White) over the blue background
-                        - z-20 (middle): Giant SMP Student Cutout
-                        - z-30 (in front of student): #FFFFFF with mix-blend-difference so where the student overlaps "ndiri", the letters invert the photo texture */}
                     <span className="relative inline-block">
-                      <span className="relative z-10 text-[#000000]">ndiri</span>
+                      {/* Layer 1 (z-10, behind the z-20 student): Pure White over the blue background */}
+                      <span className="relative z-10 text-white">ndiri</span>
+
+                      {/* Layer 2 (z-40, in front of the z-20 student): Kaiki Knockout Blend Over Hair & Forehead */}
                       <span
                         aria-hidden="true"
-                        className="absolute inset-0 z-30 text-white mix-blend-difference pointer-events-none"
+                        className="absolute inset-0 z-40 text-[#1D4ED8] mix-blend-screen opacity-90 pointer-events-none select-none"
+                      >
+                        ndiri
+                      </span>
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-0 z-40 text-[#38BDF8] mix-blend-color-dodge opacity-75 pointer-events-none select-none"
                       >
                         ndiri
                       </span>
@@ -575,7 +578,7 @@ export default function HomePage() {
                   </span>
                 </div>
               </div>
-            </RevealPop>
+            </div>
           </div>
 
           {/* BOTTOM ROW: VALUE CARD + GIANT SMP STUDENT CUTOUT */}
