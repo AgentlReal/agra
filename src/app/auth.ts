@@ -40,22 +40,17 @@ function normalizeDisplayName(rawName: string | undefined | null, email?: string
     return "Siswa Baru";
 }
 
+/**
+ * Pengecekan murni (read-only): apakah username sudah dipakai akun mana pun.
+ * Tidak memiliki efek samping. Pembersihan akun belum terverifikasi dilakukan
+ * secara eksplisit di hook `/sign-up/email` dan `mapProfileToUser`.
+ */
 async function isUsernameTaken(candidate: string): Promise<boolean> {
     const [rows] = await authDbPool.query<RowDataPacket[]>(
-        "SELECT id, emailVerified, role FROM users WHERE username = ? LIMIT 1",
+        "SELECT id FROM users WHERE username = ? LIMIT 1",
         [candidate]
     );
-    if (!Array.isArray(rows) || rows.length === 0) {
-        return false;
-    }
-    const existing = rows[0];
-    if (!Boolean(existing.emailVerified) && existing.role === "SISWA") {
-        await authDbPool.query("DELETE FROM user_profiles WHERE user_id = ?", [existing.id]);
-        await authDbPool.query("DELETE FROM account WHERE userId = ?", [existing.id]);
-        await authDbPool.query("DELETE FROM users WHERE id = ?", [existing.id]);
-        return false;
-    }
-    return true;
+    return Array.isArray(rows) && rows.length > 0;
 }
 
 async function generateUniqueUsername(email?: string | null): Promise<string> {
@@ -134,15 +129,24 @@ export const auth = betterAuth({
         ...(process.env.NEXT_PUBLIC_API_URL ? [process.env.NEXT_PUBLIC_API_URL] : []),
         ...(process.env.NODE_ENV !== "production"
             ? [
-                  "http://localhost",
-                  "http://localhost:*",
-                  "http://127.0.0.1",
-                  "http://127.0.0.1:*",
-              ]
+                "http://localhost",
+                "http://localhost:*",
+                "http://127.0.0.1",
+                "http://127.0.0.1:*",
+            ]
             : []),
     ],
     rateLimit: {
-        enabled: false,
+        enabled: process.env.NODE_ENV === "production",
+        window: 60,
+        max: 100,
+        customRules: {
+            "/sign-in/email": { window: 60, max: 10 },
+            "/sign-in/username": { window: 60, max: 10 },
+            "/sign-up/email": { window: 60, max: 5 },
+            "/request-password-reset": { window: 300, max: 3 },
+            "/send-verification-email": { window: 300, max: 3 },
+        },
     },
     account: {
         accountLinking: {
@@ -220,45 +224,45 @@ export const auth = betterAuth({
     },
     socialProviders: isGoogleOAuthConfigured
         ? {
-              google: {
-                  clientId: process.env.GOOGLE_CLIENT_ID!,
-                  clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-                  prompt: "select_account",
-                  mapProfileToUser: async (profile) => {
-                      // Bersihkan akun siswa gantung (emailVerified = 0) agar pemilik asli Gmail
-                      // tidak terhalang pencatutan email saat masuk dengan Google OAuth.
-                      if (profile?.email && profile.email_verified !== false) {
-                          try {
-                              const normalizedEmail = profile.email.trim().toLowerCase();
-                              const [rows] = await authDbPool.query<RowDataPacket[]>(
-                                  "SELECT id, emailVerified, role FROM users WHERE email = ? LIMIT 1",
-                                  [normalizedEmail]
-                              );
-                              const existing = rows[0];
-                              if (
-                                  existing &&
-                                  isSuperAdminAllowlisted(normalizedEmail) &&
-                                  existing.role !== "SUPERADMIN"
-                              ) {
-                                  await authDbPool.query(
-                                      "UPDATE users SET role = 'SUPERADMIN', emailVerified = 1, updatedAt = NOW() WHERE id = ?",
-                                      [existing.id]
-                                  );
-                              } else if (existing && !existing.emailVerified && existing.role === "SISWA") {
-                                  await authDbPool.query("DELETE FROM user_profiles WHERE user_id = ?", [existing.id]);
-                                  await authDbPool.query("DELETE FROM account WHERE userId = ?", [existing.id]);
-                                  await authDbPool.query("DELETE FROM users WHERE id = ? AND emailVerified = 0", [existing.id]);
-                              }
-                          } catch (err) {
-                              console.error("[AUTH] Gagal membersihkan akun belum terverifikasi:", err);
-                          }
-                      }
-                      return {
-                          image: undefined,
-                      };
-                  },
-              },
-          }
+            google: {
+                clientId: process.env.GOOGLE_CLIENT_ID!,
+                clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+                prompt: "select_account",
+                mapProfileToUser: async (profile) => {
+                    // Bersihkan akun siswa gantung (emailVerified = 0) agar pemilik asli Gmail
+                    // tidak terhalang pencatutan email saat masuk dengan Google OAuth.
+                    if (profile?.email && profile.email_verified !== false) {
+                        try {
+                            const normalizedEmail = profile.email.trim().toLowerCase();
+                            const [rows] = await authDbPool.query<RowDataPacket[]>(
+                                "SELECT id, emailVerified, role FROM users WHERE email = ? LIMIT 1",
+                                [normalizedEmail]
+                            );
+                            const existing = rows[0];
+                            if (
+                                existing &&
+                                isSuperAdminAllowlisted(normalizedEmail) &&
+                                existing.role !== "SUPERADMIN"
+                            ) {
+                                await authDbPool.query(
+                                    "UPDATE users SET role = 'SUPERADMIN', emailVerified = 1, updatedAt = NOW() WHERE id = ?",
+                                    [existing.id]
+                                );
+                            } else if (existing && !existing.emailVerified && existing.role === "SISWA") {
+                                await authDbPool.query("DELETE FROM user_profiles WHERE user_id = ?", [existing.id]);
+                                await authDbPool.query("DELETE FROM account WHERE userId = ?", [existing.id]);
+                                await authDbPool.query("DELETE FROM users WHERE id = ? AND emailVerified = 0", [existing.id]);
+                            }
+                        } catch (err) {
+                            console.error("[AUTH] Gagal membersihkan akun belum terverifikasi:", err);
+                        }
+                    }
+                    return {
+                        image: undefined,
+                    };
+                },
+            },
+        }
         : undefined,
     plugins: [
         username({
