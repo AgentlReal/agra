@@ -49,3 +49,11 @@ docs/Simulasi TKA/Bahasa Indonesia/.~lock.simulasitka_bahasaindonesia_paket1.doc
 docs/Recall Kemampuan
 
 scripts/extract_images.py
+docs/.Ringkasan_Temuan_Audit_Untuk_Divisi_Backend.md.kate-swp
+.gitignore
+docs/Laporan_Temuan_Defect_FE_BE_DB (1).md
+docs/Laporan_Analisis_Kesiapan_Database_1000_Users.md
+docs/Laporan_Temuan_Defect_FE_BE_DB.md
+docs/Laporan_Validasi_Defect_Database.md
+docs/Ringkasan_Temuan_Audit_Untuk_Divisi_Backend.md
+docs/Ringkasan_Temuan_Audit_Kesiapan_Big_Data.md
