@@ -18,7 +18,7 @@ const authDbPool = createPool({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     waitForConnections: true,
-    connectionLimit: Number(process.env.AUTH_DB_POOL_LIMIT) || 30,
+    connectionLimit: Number(process.env.AUTH_DB_POOL_LIMIT) || (isProd ? 2 : 10),
     enableKeepAlive: true,
     timezone: "+07:00",
     decimalNumbers: true,
