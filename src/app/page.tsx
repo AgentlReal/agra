@@ -516,29 +516,31 @@ export default function HomePage() {
       {/* ═══════════════════════════════════════════════════════════════════
           2. HERO SECTION — 50/50 SPLIT + GENEROUS WHITE SPACE + HIGH CONTRAST
          ═══════════════════════════════════════════════════════════════════ */}
-      <section className="relative w-full min-h-screen flex flex-col justify-between overflow-hidden bg-[#F4F7FC]">
-        <div className="absolute inset-0 grid grid-cols-1 lg:grid-cols-12 pointer-events-none">
-          <div className="lg:col-span-6 bg-[#F4F7FC]" />
-          <div className="lg:col-span-6 bg-gradient-to-br from-[#2370FF] via-[#1B68FF] to-[#0D4EE0] lg:rounded-bl-[64px] min-h-[580px]" />
+      <section className="relative w-full lg:min-h-screen flex flex-col justify-between overflow-hidden bg-[#F4F7FC]">
+        {/* Desktop 50/50 Split Background (Only active on lg+, so mobile never has an awkward half-white/half-blue cut behind the card!) */}
+        <div className="hidden lg:grid absolute inset-0 grid-cols-12 pointer-events-none">
+          <div className="col-span-6 bg-[#F4F7FC]" />
+          <div className="col-span-6 bg-gradient-to-br from-[#2370FF] via-[#1B68FF] to-[#0D4EE0] rounded-bl-[64px] min-h-[580px]" />
         </div>
 
-        <div className="relative z-20 w-full pt-28 sm:pt-32 lg:pt-36 flex-1 flex flex-col justify-between">
+        <div className="relative z-20 w-full pt-24 sm:pt-32 lg:pt-36 flex-1 flex flex-col justify-between">
           {/* TOP GIANT HEADLINE: "AGRA" + CONNECTED "Asesmen Mandiri" */}
           <div className="relative w-full">
-            <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-end px-6 sm:px-12 lg:px-16 gap-6">
+            <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-end px-5 sm:px-12 lg:px-16 gap-3 sm:gap-6">
               <div className="lg:col-span-6 flex lg:justify-start">
                 <RevealPop delay={40}>
-                  <h1 className="-ml-[0.04em] text-[4.5rem] sm:text-[7rem] lg:text-[9.2vw] font-normal tracking-[-0.055em] leading-[0.88] text-[#0A0D14] select-none">
+                  <h1 className="-ml-[0.04em] text-[4rem] sm:text-[6.5rem] lg:text-[9.2vw] font-normal tracking-[-0.055em] leading-[0.88] text-[#0A0D14] select-none">
                     AGRA
                   </h1>
                 </RevealPop>
               </div>
 
-              <div className="lg:col-span-6 flex lg:justify-start lg:pl-6 lg:pb-3">
+              {/* On mobile (< lg), tagline is dark slate on white bg so it's 100% readable; on desktop (lg+), it is white on blue bg */}
+              <div className="lg:col-span-6 flex lg:justify-start lg:pl-6 lg:pb-3 order-3 lg:order-none mt-2 lg:mt-0">
                 <RevealPop delay={120}>
-                  <p className="max-w-[460px] text-[18px] sm:text-[20px] lg:text-[22px] font-medium leading-[1.45] text-white text-balance">
+                  <p className="max-w-[460px] text-[16px] sm:text-[20px] lg:text-[22px] font-medium leading-[1.45] text-[#0A0D14] lg:text-white text-balance">
                     Ruang Belajar &amp; Simulasi Mandiri{" "}
-                    <span className="block text-blue-50 font-normal">
+                    <span className="block text-[#475569] lg:text-blue-50 font-normal">
                       Tes Kemampuan Akademik SMP.
                     </span>
                   </p>
@@ -546,31 +548,33 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Row 2: CONNECTED "Asesmen Mandiri" Across the 50/50 Split (Interleaved with z-20 Student) */}
+            {/* Row 2: CONNECTED "Asesmen Mandiri" */}
             <div className="w-full mt-1 lg:mt-2">
-              <div className="w-full px-6 sm:px-12 lg:px-0 grid grid-cols-1 lg:grid-cols-12 items-baseline">
+              <div className="w-full px-5 sm:px-12 lg:px-0 flex flex-wrap lg:grid lg:grid-cols-12 items-baseline gap-x-2.5 lg:gap-x-0">
                 <div className="lg:col-span-6 flex lg:justify-end lg:pr-[0.14em]">
-                  <span className="relative z-10 text-[4.2rem] sm:text-[6.5rem] lg:text-[8.6vw] font-normal tracking-[-0.05em] leading-[0.9] text-[#0A0D14] select-none whitespace-nowrap">
+                  <span className="relative z-10 text-[2.75rem] sm:text-[5.2rem] lg:text-[8.6vw] font-normal tracking-[-0.05em] leading-[0.95] lg:leading-[0.9] text-[#0A0D14] select-none whitespace-nowrap">
                     Asesmen
                   </span>
                 </div>
                 <div className="lg:col-span-6 flex lg:justify-start lg:pl-[0.14em]">
-                  <span className="text-[4.2rem] sm:text-[6.5rem] lg:text-[8.6vw] font-normal tracking-[-0.05em] leading-[0.9] select-none whitespace-nowrap inline-flex items-baseline">
-                    <span className="relative z-10 text-white">Ma</span>
+                  <span className="text-[2.75rem] sm:text-[5.2rem] lg:text-[8.6vw] font-normal tracking-[-0.05em] leading-[0.95] lg:leading-[0.9] select-none whitespace-nowrap inline-flex items-baseline">
+                    {/* On mobile (< lg): Electric Blue #1B68FF on white bg. On desktop (lg+): Pure White + Kaiki Knockout Blend */}
+                    <span className="relative z-10 text-[#1B68FF] lg:text-white">
+                      Ma
+                    </span>
                     <span className="relative inline-block">
-                      {/* Layer 1 (z-10, behind the z-20 student): Pure White over the blue background */}
-                      <span className="relative z-10 text-white">ndiri</span>
-
-                      {/* Layer 2 (z-40, in front of the z-20 student): Kaiki Knockout Blend Over Hair & Forehead */}
+                      <span className="relative z-10 text-[#1B68FF] lg:text-white">
+                        ndiri
+                      </span>
                       <span
                         aria-hidden="true"
-                        className="absolute inset-0 z-40 text-[#1D4ED8] mix-blend-screen opacity-90 pointer-events-none select-none"
+                        className="hidden lg:inline-block absolute inset-0 z-40 text-[#1D4ED8] mix-blend-screen opacity-90 pointer-events-none select-none"
                       >
                         ndiri
                       </span>
                       <span
                         aria-hidden="true"
-                        className="absolute inset-0 z-40 text-[#38BDF8] mix-blend-color-dodge opacity-75 pointer-events-none select-none"
+                        className="hidden lg:inline-block absolute inset-0 z-40 text-[#38BDF8] mix-blend-color-dodge opacity-75 pointer-events-none select-none"
                       >
                         ndiri
                       </span>
@@ -582,18 +586,16 @@ export default function HomePage() {
           </div>
 
           {/* BOTTOM ROW: VALUE CARD + GIANT SMP STUDENT CUTOUT */}
-          <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-end px-6 sm:px-12 lg:px-16 gap-10 mt-10 lg:mt-4">
-            <div className="lg:col-span-6 pb-14 lg:pb-20 lg:pr-8 relative z-30">
+          <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-end px-5 sm:px-12 lg:px-16 gap-8 lg:gap-10 mt-6 sm:mt-8 lg:mt-4">
+            <div className="lg:col-span-6 pb-2 lg:pb-20 lg:pr-8 relative z-30">
               <RevealPop delay={280}>
-                <div className="bg-white/75 rounded-[32px] p-3 shadow-[0_24px_60px_rgba(15,23,42,0.06)] border border-white max-w-[600px]">
-                  <div className="bg-white rounded-[20px] p-7 sm:p-10 border border-slate-200/80">
-                    {/* Golden Ratio H3 Subheading: 26px (16px * 1.618) */}
-                    <h2 className={`${UI.h3Title} mb-4`}>
+                <div className="bg-white/80 rounded-[28px] sm:rounded-[32px] p-2.5 sm:p-3 shadow-[0_20px_50px_rgba(15,23,42,0.06)] border border-white max-w-[600px]">
+                  <div className="bg-white rounded-[20px] p-6 sm:p-10 border border-slate-200/80">
+                    <h2 className={`${UI.h3Title} mb-3.5 sm:mb-4`}>
                       Persiapan Terukur dari Diagnostik hingga Ujian CBT
                     </h2>
 
-                    {/* Body Text: 16px-17px, Line-height 155%, High Contrast #334155 */}
-                    <p className={`${UI.bodyText} mb-8 tabular-nums`}>
+                    <p className={`${UI.bodyText} mb-6 sm:mb-8 tabular-nums`}>
                       <strong className="font-semibold text-[#0A0D14]">
                         Dirancang dengan ruang baca yang lega
                       </strong>{" "}
@@ -613,13 +615,13 @@ export default function HomePage() {
                       .
                     </p>
 
-                    {/* Button Rule: Primary Solid + Secondary Outline, >= 48x48px, Specific Action Labels */}
-                    <div className="flex flex-wrap items-center gap-4">
+                    {/* Full-width stacked buttons on mobile (< sm), side-by-side on sm+ */}
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                       <button
                         type="button"
                         onClick={() => handleNavigate("/register")}
                         disabled={loadingRoute === "/register"}
-                        className={UI.btnPrimary}
+                        className={`${UI.btnPrimary} w-full sm:w-auto whitespace-nowrap`}
                       >
                         {loadingRoute === "/register" ? (
                           <>
@@ -630,7 +632,7 @@ export default function HomePage() {
                           <>
                             <span>Daftar &amp; Mulai Diagnostik</span>
                             <svg
-                              className="w-4 h-4"
+                              className="w-4 h-4 shrink-0"
                               viewBox="0 0 24 24"
                               fill="none"
                               stroke="currentColor"
@@ -642,7 +644,10 @@ export default function HomePage() {
                         )}
                       </button>
 
-                      <a href="#simulasi" className={UI.btnSecondaryOutline}>
+                      <a
+                        href="#simulasi"
+                        className={`${UI.btnSecondaryOutline} w-full sm:w-auto whitespace-nowrap`}
+                      >
                         <span>Coba Simulasi CBT</span>
                       </a>
                     </div>
@@ -651,9 +656,11 @@ export default function HomePage() {
               </RevealPop>
             </div>
 
-            {/* Bottom-Right: GIANT SMP STUDENT CUTOUT BEHIND "Mandiri" (Z-20) */}
-            <div className="lg:col-span-6 relative flex items-end justify-center lg:justify-start lg:-translate-x-6 xl:-translate-x-12 -mt-16 sm:-mt-24 lg:-mt-64 xl:-mt-80 2xl:-mt-96 z-20 pointer-events-none">
-              <div className="relative w-full sm:w-[620px] lg:w-[820px] xl:w-[960px] 2xl:w-[1100px] max-w-none h-[440px] sm:h-[540px] lg:h-[700px] xl:h-[820px] 2xl:h-[920px] flex items-end justify-center">
+            {/* Bottom-Right:
+                - On Mobile (< lg): Compact rounded blue stage right under the card with zero dead blue space!
+                - On Desktop (lg+): 100% IDENTICAL to your custom giant dimensions & scales! */}
+            <div className="lg:col-span-6 relative -mx-5 sm:-mx-12 lg:mx-0 pt-6 sm:pt-10 lg:pt-0 px-4 sm:px-8 lg:px-0 bg-gradient-to-br from-[#2370FF] via-[#1B68FF] to-[#0D4EE0] lg:bg-none rounded-t-[36px] lg:rounded-none flex items-end justify-center lg:justify-start lg:-translate-x-6 xl:-translate-x-12 lg:-mt-64 xl:-mt-80 2xl:-mt-96 z-20 pointer-events-none overflow-hidden lg:overflow-visible">
+              <div className="relative w-full sm:w-[620px] lg:w-[820px] xl:w-[960px] 2xl:w-[1100px] max-w-none h-[300px] sm:h-[460px] lg:h-[700px] xl:h-[820px] 2xl:h-[920px] flex items-end justify-center">
                 <SmartStudentCutout />
               </div>
             </div>
