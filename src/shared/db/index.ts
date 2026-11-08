@@ -4,6 +4,7 @@ let pool: Pool | null = null;
 
 export function getDbPool(): Pool {
     if (!pool) {
+        const isProd = process.env.NODE_ENV === "production";
         pool = mysql.createPool({
             host: process.env.DB_HOST || "localhost",
             port: Number(process.env.DB_PORT) || 3306,
@@ -21,6 +22,7 @@ export function getDbPool(): Pool {
             timezone: "+07:00",
             multipleStatements: false,
             decimalNumbers: true,
+            ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : undefined,
             typeCast: (field: any, next: () => any) => {
                 if (field.type === "DECIMAL" || field.type === "NEWDECIMAL") {
                     const val = field.string();

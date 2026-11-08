@@ -113,6 +113,7 @@ async function getDbPool(): Promise<Pool> {
         connectionLimit: 10,
         decimalNumbers: true,
         multipleStatements: false,
+        ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : undefined,
     });
 }
 

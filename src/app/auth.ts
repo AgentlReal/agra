@@ -10,6 +10,7 @@ import {
     sendVerificationEmail,
 } from "@/lib/email";
 
+const isProd = process.env.NODE_ENV === "production";
 const authDbPool = createPool({
     host: process.env.DB_HOST || "localhost",
     port: Number(process.env.DB_PORT) || 3306,
@@ -21,6 +22,7 @@ const authDbPool = createPool({
     enableKeepAlive: true,
     timezone: "+07:00",
     decimalNumbers: true,
+    ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : undefined,
 });
 
 function normalizeDisplayName(rawName: string | undefined | null, email?: string | null): string {
@@ -127,11 +129,11 @@ export const auth = betterAuth({
         ...(process.env.NEXT_PUBLIC_API_URL ? [process.env.NEXT_PUBLIC_API_URL] : []),
         ...(process.env.NODE_ENV !== "production"
             ? [
-                  "http://localhost",
-                  "http://localhost:*",
-                  "http://127.0.0.1",
-                  "http://127.0.0.1:*",
-              ]
+                "http://localhost",
+                "http://localhost:*",
+                "http://127.0.0.1",
+                "http://127.0.0.1:*",
+            ]
             : []),
     ],
     rateLimit: {
@@ -222,45 +224,45 @@ export const auth = betterAuth({
     },
     socialProviders: isGoogleOAuthConfigured
         ? {
-              google: {
-                  clientId: process.env.GOOGLE_CLIENT_ID!,
-                  clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-                  prompt: "select_account",
-                  mapProfileToUser: async (profile) => {
-                      // Bersihkan akun siswa gantung (emailVerified = 0) agar pemilik asli Gmail
-                      // tidak terhalang pencatutan email saat masuk dengan Google OAuth.
-                      if (profile?.email && profile.email_verified !== false) {
-                          try {
-                              const normalizedEmail = profile.email.trim().toLowerCase();
-                              const [rows] = await authDbPool.query<RowDataPacket[]>(
-                                  "SELECT id, emailVerified, role FROM users WHERE email = ? LIMIT 1",
-                                  [normalizedEmail]
-                              );
-                              const existing = rows[0];
-                              if (
-                                  existing &&
-                                  isSuperAdminAllowlisted(normalizedEmail) &&
-                                  existing.role !== "SUPERADMIN"
-                              ) {
-                                  await authDbPool.query(
-                                      "UPDATE users SET role = 'SUPERADMIN', emailVerified = 1, updatedAt = NOW() WHERE id = ?",
-                                      [existing.id]
-                                  );
-                              } else if (existing && !existing.emailVerified && existing.role === "SISWA") {
-                                  await authDbPool.query("DELETE FROM user_profiles WHERE user_id = ?", [existing.id]);
-                                  await authDbPool.query("DELETE FROM account WHERE userId = ?", [existing.id]);
-                                  await authDbPool.query("DELETE FROM users WHERE id = ? AND emailVerified = 0", [existing.id]);
-                              }
-                          } catch (err) {
-                              console.error("[AUTH] Gagal membersihkan akun belum terverifikasi:", err);
-                          }
-                      }
-                      return {
-                          image: undefined,
-                      };
-                  },
-              },
-          }
+            google: {
+                clientId: process.env.GOOGLE_CLIENT_ID!,
+                clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+                prompt: "select_account",
+                mapProfileToUser: async (profile) => {
+                    // Bersihkan akun siswa gantung (emailVerified = 0) agar pemilik asli Gmail
+                    // tidak terhalang pencatutan email saat masuk dengan Google OAuth.
+                    if (profile?.email && profile.email_verified !== false) {
+                        try {
+                            const normalizedEmail = profile.email.trim().toLowerCase();
+                            const [rows] = await authDbPool.query<RowDataPacket[]>(
+                                "SELECT id, emailVerified, role FROM users WHERE email = ? LIMIT 1",
+                                [normalizedEmail]
+                            );
+                            const existing = rows[0];
+                            if (
+                                existing &&
+                                isSuperAdminAllowlisted(normalizedEmail) &&
+                                existing.role !== "SUPERADMIN"
+                            ) {
+                                await authDbPool.query(
+                                    "UPDATE users SET role = 'SUPERADMIN', emailVerified = 1, updatedAt = NOW() WHERE id = ?",
+                                    [existing.id]
+                                );
+                            } else if (existing && !existing.emailVerified && existing.role === "SISWA") {
+                                await authDbPool.query("DELETE FROM user_profiles WHERE user_id = ?", [existing.id]);
+                                await authDbPool.query("DELETE FROM account WHERE userId = ?", [existing.id]);
+                                await authDbPool.query("DELETE FROM users WHERE id = ? AND emailVerified = 0", [existing.id]);
+                            }
+                        } catch (err) {
+                            console.error("[AUTH] Gagal membersihkan akun belum terverifikasi:", err);
+                        }
+                    }
+                    return {
+                        image: undefined,
+                    };
+                },
+            },
+        }
         : undefined,
     plugins: [
         username({
