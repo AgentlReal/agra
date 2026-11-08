@@ -356,7 +356,7 @@ function SmartStudentCutout() {
     <div className="relative w-full h-full flex items-end justify-center">
       {/* Rule #19: Loading Skeleton State while processing canvas cutout */}
       {!ready && (
-        <div className="w-[75%] h-[82%] rounded-t-[180px] bg-white/10 animate-pulse border border-white/15" />
+        <div className="w-[85%] h-[92%] rounded-t-[200px] bg-white/10 animate-pulse border border-white/15" />
       )}
       {processedSrc && (
         <img
@@ -367,10 +367,10 @@ function SmartStudentCutout() {
               "opacity 800ms cubic-bezier(0.16,1,0.3,1), transform 800ms cubic-bezier(0.16,1,0.3,1)",
             opacity: ready ? 1 : 0,
             transform: ready
-              ? "translateY(0) scale(1)"
-              : "translateY(36px) scale(0.94)",
+              ? "translateY(0)"
+              : "translateY(36px)",
           }}
-          className="w-full h-full object-contain object-bottom drop-shadow-[0_32px_64px_rgba(4,18,56,0.42)] select-none"
+          className="w-full h-full object-contain object-bottom scale-105 sm:scale-115 lg:scale-130 xl:scale-145 2xl:scale-155 origin-bottom drop-shadow-[0_32px_64px_rgba(4,18,56,0.45)] select-none"
         />
       )}
     </div>
@@ -627,8 +627,8 @@ export default function HomePage() {
             </div>
 
             {/* Bottom-Right: GIANT SMP STUDENT CUTOUT OVERLAPPING "Mandiri" */}
-            <div className="lg:col-span-6 relative flex items-end justify-center lg:-mt-44 xl:-mt-52 z-30 pointer-events-none">
-              <div className="relative w-full sm:w-[540px] lg:w-[660px] xl:w-[760px] max-w-none h-[380px] sm:h-[470px] lg:h-[540px] xl:h-[600px] flex items-end justify-center">
+            <div className="lg:col-span-6 relative flex items-end justify-center lg:justify-start lg:-translate-x-6 xl:-translate-x-12 -mt-16 sm:-mt-24 lg:-mt-64 xl:-mt-80 2xl:-mt-96 z-30 pointer-events-none">
+              <div className="relative w-full sm:w-[620px] lg:w-[820px] xl:w-[960px] 2xl:w-[1100px] max-w-none h-[440px] sm:h-[540px] lg:h-[700px] xl:h-[820px] 2xl:h-[920px] flex items-end justify-center">
                 <SmartStudentCutout />
               </div>
             </div>
