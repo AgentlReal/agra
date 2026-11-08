@@ -668,6 +668,18 @@ function RegisterFormContent() {
                       </>
                     )}
                   </button>
+
+                  <p className="mt-2.5 text-center text-[11px] text-slate-500 leading-relaxed">
+                    Dengan mendaftar, Anda menyetujui{' '}
+                    <Link href="/terms-of-service" className="text-blue-600 hover:underline font-medium">
+                      Ketentuan Layanan
+                    </Link>{' '}
+                    dan{' '}
+                    <Link href="/privacy-policy" className="text-blue-600 hover:underline font-medium">
+                      Kebijakan Privasi
+                    </Link>{' '}
+                    AGRA.
+                  </p>
                 </form>
               </>
             )}

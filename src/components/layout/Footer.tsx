@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { ShieldCheck } from 'lucide-react';
 import { AppLogo } from '@/components/common/AppLogo';
 
@@ -21,8 +22,16 @@ export const Footer: React.FC = () => {
             <span>Standar Asesmen Kurikulum Kemendikdasmen</span>
           </div>
 
-          <div className="text-xs text-slate-500">
-            &copy; {new Date().getFullYear()} AGRA. Hak Cipta Dilindungi.
+          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+            <Link href="/privacy-policy" className="hover:text-blue-600 transition-colors">
+              Kebijakan Privasi
+            </Link>
+            <span className="text-slate-300">&bull;</span>
+            <Link href="/terms-of-service" className="hover:text-blue-600 transition-colors">
+              Ketentuan Layanan
+            </Link>
+            <span className="text-slate-300">&bull;</span>
+            <span>&copy; {new Date().getFullYear()} AGRA. Hak Cipta Dilindungi.</span>
           </div>
         </div>
       </div>
