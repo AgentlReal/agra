@@ -22,7 +22,7 @@ import { UserAvatar } from '@/components/common/UserAvatar';
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
-  const { user, role, logout, refreshUser } = useAuth();
+  const { user, role, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [learningDropdownOpen, setLearningDropdownOpen] = useState(false);
@@ -31,12 +31,6 @@ export const Navbar: React.FC = () => {
   const learningRef = useRef<HTMLDivElement>(null);
   const assessmentRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (user && role === 'SISWA') {
-      refreshUser();
-    }
-  }, [pathname, refreshUser]);
 
   // Click outside listener for dropdowns
   useEffect(() => {
@@ -189,83 +183,102 @@ export const Navbar: React.FC = () => {
           </nav>
         </div>
 
-        {/* Right Section: XP & User Menu */}
+        {/* Right Section: XP & User Menu / Guest CTA */}
         <div className="flex items-center gap-3">
-          {/* XP Badge */}
-          <div
-            title="Total Poin XP Belajar Anda"
-            className="hidden sm:flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 border border-amber-200/80 shadow-2xs"
-          >
-            <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-            <span>{user?.totalXp ?? 0} XP</span>
-          </div>
-
-          {/* User Dropdown */}
-          <div className="relative" ref={userRef}>
-            <button
-              type="button"
-              onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-              className="flex items-center gap-2.5 rounded-full border border-slate-200 bg-white py-1.5 pl-2 pr-3.5 text-sm hover:border-slate-300 hover:shadow-2xs transition-all focus:outline-none"
-            >
-              <UserAvatar
-                src={user?.avatarUrl}
-                name={user?.name || user?.username}
-                size="sm"
-              />
-              <div className="text-left hidden lg:block">
-                <p className="text-xs font-semibold text-slate-800 leading-none truncate max-w-[120px]">
-                  {user?.name || user?.username || 'Siswa'}
-                </p>
-                <p className="text-[10px] text-blue-600 font-medium capitalize mt-0.5">
-                  {role === 'SUPERADMIN' ? 'SuperAdmin' : role === 'TIM_KURIKULUM' ? 'Tim Kurikulum' : 'Siswa'}
-                </p>
+          {user ? (
+            <>
+              {/* XP Badge */}
+              <div
+                title="Total Poin XP Belajar Anda"
+                className="hidden sm:flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 border border-amber-200/80 shadow-2xs"
+              >
+                <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+                <span>{user?.totalXp ?? 0} XP</span>
               </div>
-            </button>
 
-            {/* Dropdown Menu */}
-            {userDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl z-50 animate-in fade-in zoom-in-95 duration-150">
-                <div className="border-b border-slate-100 px-3 py-2.5 flex items-center gap-3">
+              {/* User Dropdown */}
+              <div className="relative" ref={userRef}>
+                <button
+                  type="button"
+                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  className="flex items-center gap-2.5 rounded-full border border-slate-200 bg-white py-1.5 pl-2 pr-3.5 text-sm hover:border-slate-300 hover:shadow-2xs transition-all focus:outline-none"
+                >
                   <UserAvatar
                     src={user?.avatarUrl}
                     name={user?.name || user?.username}
-                    size="md"
+                    size="sm"
                   />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[11px] text-slate-400">Masuk sebagai</p>
-                    <p className="text-sm font-semibold text-slate-900 truncate">
+                  <div className="text-left hidden lg:block">
+                    <p className="text-xs font-semibold text-slate-800 leading-none truncate max-w-[120px]">
                       {user?.name || user?.username || 'Siswa'}
                     </p>
-                    <p className="text-xs text-blue-600 font-mono truncate">
-                      @{user?.username || '-'}
+                    <p className="text-[10px] text-blue-600 font-medium capitalize mt-0.5">
+                      {role === 'SUPERADMIN' ? 'SuperAdmin' : role === 'TIM_KURIKULUM' ? 'Tim Kurikulum' : 'Siswa'}
                     </p>
                   </div>
-                </div>
+                </button>
 
-                <div className="border-t border-slate-100 pt-1 mt-1">
-                  <Link
-                    href="/profile"
-                    onClick={() => setUserDropdownOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
-                  >
-                    <UserIcon className="h-4 w-4 text-slate-500" />
-                    Profil Siswa
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setUserDropdownOpen(false);
-                      logout();
-                    }}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-amber-50 hover:text-amber-700 transition-colors"
-                  >
-                    <LogOut className="h-4 w-4 text-slate-500" />
-                    Keluar Sesi
-                  </button>
-                </div>
+                {/* Dropdown Menu */}
+                {userDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="border-b border-slate-100 px-3 py-2.5 flex items-center gap-3">
+                      <UserAvatar
+                        src={user?.avatarUrl}
+                        name={user?.name || user?.username}
+                        size="md"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] text-slate-400">Masuk sebagai</p>
+                        <p className="text-sm font-semibold text-slate-900 truncate">
+                          {user?.name || user?.username || 'Siswa'}
+                        </p>
+                        <p className="text-xs text-blue-600 font-mono truncate">
+                          @{user?.username || '-'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-slate-100 pt-1 mt-1">
+                      <Link
+                        href="/profile"
+                        onClick={() => setUserDropdownOpen(false)}
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                      >
+                        <UserIcon className="h-4 w-4 text-slate-500" />
+                        Profil Siswa
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUserDropdownOpen(false);
+                          logout();
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-amber-50 hover:text-amber-700 transition-colors"
+                      >
+                        <LogOut className="h-4 w-4 text-slate-500" />
+                        Keluar Sesi
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            </>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link
+                href="/login"
+                className="px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+              >
+                Masuk
+              </Link>
+              <Link
+                href="/register"
+                className="px-3.5 py-1.5 rounded-xl bg-blue-600 text-xs font-semibold text-white hover:bg-blue-700 shadow-2xs transition-colors"
+              >
+                Daftar
+              </Link>
+            </div>
+          )}
 
           {/* Mobile menu trigger */}
           <button
@@ -329,16 +342,46 @@ export const Navbar: React.FC = () => {
             </Link>
           </div>
 
-          <div className="pt-2 border-t border-slate-100">
-            <Link
-              href="/profile"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50"
-            >
-              <UserIcon className="h-4 w-4 text-slate-500" />
-              <span>Profil Saya</span>
-            </Link>
-          </div>
+          {user ? (
+            <div className="pt-2 border-t border-slate-100 space-y-1">
+              <Link
+                href="/profile"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50"
+              >
+                <UserIcon className="h-4 w-4 text-slate-500" />
+                <span>Profil Saya</span>
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  logout();
+                }}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-amber-700 hover:bg-amber-50"
+              >
+                <LogOut className="h-4 w-4 text-amber-600" />
+                <span>Keluar Sesi</span>
+              </button>
+            </div>
+          ) : (
+            <div className="pt-2 border-t border-slate-100 flex flex-col gap-2">
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full text-center px-4 py-2 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                Masuk
+              </Link>
+              <Link
+                href="/register"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full text-center px-4 py-2 rounded-xl bg-blue-600 text-sm font-semibold text-white hover:bg-blue-700 shadow-2xs"
+              >
+                Daftar
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </header>

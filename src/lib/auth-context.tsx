@@ -12,6 +12,7 @@ export interface User {
   username: string;
   email: string;
   role: UserRole;
+  hasPassword?: boolean;
   avatarUrl?: string;
   avatarId?: number;
   grade?: number;
@@ -25,7 +26,7 @@ interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (token?: string, user?: User) => Promise<void> | void;
+  login: (token?: string, user?: User) => Promise<User | null | void> | void;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
   updateUser: (updates: Partial<User>) => void;
@@ -42,7 +43,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const handleSessionExpired = (e: any) => {
-      // Only prompt if user was currently logged in
       if (user || localStorage.getItem('agra_token')) {
         const msg =
           e?.detail?.message ||
@@ -57,15 +57,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [user]);
 
-  const fetchSessionAndProfile = useCallback(async () => {
+  const fetchSessionAndProfile = useCallback(async (isInitial = false): Promise<User | null> => {
     try {
-      setIsLoading(true);
+      if (isInitial) setIsLoading(true);
       const sessionRes = await api.auth.getSession().catch(() => null);
 
       if (!sessionRes || !sessionRes.user) {
         setUser(null);
         setToken(null);
-        return;
+        localStorage.removeItem('agra_token');
+        return null;
       }
 
       const authUser = sessionRes.user;
@@ -78,7 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         name: authUser.name || authUser.username || '',
         username: authUser.username || authUser.email.split('@')[0],
         email: authUser.email,
-        avatarUrl: authUser.image || undefined,
+        avatarUrl: role === 'SISWA' ? undefined : authUser.image || undefined,
         role,
       };
 
@@ -87,10 +88,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const profileRes = await api.profile.get();
           const profileData = profileRes.data || profileRes;
           initialUser.name = profileData.name || initialUser.name;
+          initialUser.email = profileData.email || initialUser.email;
+          initialUser.username = profileData.username || initialUser.username;
+          initialUser.hasPassword = profileData.hasPassword ?? true;
           initialUser.avatarUrl = profileData.avatar?.imageUrl || profileData.avatarUrl || initialUser.avatarUrl;
           initialUser.avatarId = profileData.avatar?.id;
           initialUser.totalXp = profileData.totalXp ?? profileData.total_xp ?? 0;
           initialUser.grade = profileData.grade;
+          initialUser.needsOnboarding = Boolean(profileData.needsOnboarding);
         } catch (profileErr: any) {
           if (profileErr.code === 'PROFILE_INCOMPLETE' || profileErr.status === 409) {
             initialUser.needsOnboarding = true;
@@ -101,27 +106,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const adminRes = await api.admin.getProfile();
           const adminData = adminRes.data || adminRes;
           initialUser.name = adminData.name || initialUser.name;
+          initialUser.email = adminData.email || initialUser.email;
+          initialUser.username = adminData.username || initialUser.username;
+          initialUser.hasPassword = adminData.hasPassword ?? true;
           initialUser.avatarUrl = adminData.avatarUrl || '/assets/avatars/avatar-admin.png';
         } catch {
           // ignore admin profile err
         }
       }
 
-      setUser(initialUser);
+      setUser((prev) => {
+        if (!prev) return initialUser;
+        const isSame =
+          prev.id === initialUser.id &&
+          prev.name === initialUser.name &&
+          prev.username === initialUser.username &&
+          prev.email === initialUser.email &&
+          prev.role === initialUser.role &&
+          prev.avatarUrl === initialUser.avatarUrl &&
+          prev.avatarId === initialUser.avatarId &&
+          prev.totalXp === initialUser.totalXp &&
+          prev.grade === initialUser.grade &&
+          prev.hasPassword === initialUser.hasPassword &&
+          prev.needsOnboarding === initialUser.needsOnboarding;
+        return isSame ? prev : initialUser;
+      });
       if (sessionRes.session?.token) {
         setToken(sessionRes.session.token);
+        localStorage.setItem('agra_token', sessionRes.session.token);
       }
+      return initialUser;
     } catch (err) {
       console.error('Failed to load session:', err);
       setUser(null);
       setToken(null);
+      return null;
     } finally {
-      setIsLoading(false);
+      if (isInitial) setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchSessionAndProfile();
+    fetchSessionAndProfile(true);
   }, [fetchSessionAndProfile]);
 
   const login = async (newToken?: string, newUser?: User) => {
@@ -132,10 +158,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (newUser) {
       setUser(newUser);
     }
-    await fetchSessionAndProfile();
+    return await fetchSessionAndProfile();
   };
 
   const logout = async () => {
+    const wasStaff =
+      user?.role === 'SUPERADMIN' ||
+      user?.role === 'TIM_KURIKULUM' ||
+      (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin'));
     try {
       await api.auth.signOut().catch(() => {});
     } finally {
@@ -143,7 +173,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(null);
       localStorage.removeItem('agra_token');
       localStorage.removeItem('agra_user');
-      window.location.href = '/login';
+      window.location.href = wasStaff ? '/login?as=staff' : '/login';
     }
   };
 
@@ -151,9 +181,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await fetchSessionAndProfile();
   }, [fetchSessionAndProfile]);
 
-  const updateUser = (updates: Partial<User>) => {
-    setUser((prev) => (prev ? { ...prev, ...updates } : null));
-  };
+  const updateUser = useCallback((updates: Partial<User>) => {
+    setUser((prev) => {
+      if (!prev) return null;
+      let hasChanges = false;
+      for (const [key, value] of Object.entries(updates)) {
+        if ((prev as any)[key] !== value) {
+          hasChanges = true;
+          break;
+        }
+      }
+      return hasChanges ? { ...prev, ...updates } : prev;
+    });
+  }, []);
 
   const role = user?.role || 'SISWA';
 
@@ -178,7 +218,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     >
       {children}
 
-      {/* Session Expired / Concurrent Login Termination Modal [FE-15] */}
       {sessionExpiredMessage && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-amber-200 p-6 space-y-4 animate-in fade-in zoom-in-95 duration-200">

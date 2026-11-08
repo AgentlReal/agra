@@ -60,6 +60,7 @@ export function errorResponse(error: unknown, style: "m01" | "status" = "m01") {
                     status: error.statusCode,
                     error: error.code,
                     message: error.message,
+                    ...(error.details !== undefined ? { details: error.details } : {}),
                 },
                 { status: error.statusCode }
             );

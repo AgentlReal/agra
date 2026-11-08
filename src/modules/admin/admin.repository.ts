@@ -19,15 +19,56 @@ import { RowDataPacket, ResultSetHeader } from "mysql2";
 
 export class AdminRepository {
     async getAdminProfile(userId: string): Promise<K09_AdminProfile | null> {
-        const rows = await query<Array<RowDataPacket & K09_AdminProfile>>(
-            `SELECT id, email, username, name, role FROM users WHERE id = ?`,
+        const rows = await query<Array<RowDataPacket & K09_AdminProfile & { has_password?: number }>>(
+            `SELECT u.id, u.email, u.username, u.name, u.role,
+                EXISTS(
+                    SELECT 1 FROM account a
+                    WHERE a.userId = u.id AND a.providerId = 'credential' AND a.password IS NOT NULL
+                ) AS has_password
+             FROM users u WHERE u.id = ?`,
             [userId]
         );
         return rows[0] || null;
     }
 
-    async updateAdminProfile(userId: string, name: string): Promise<void> {
-        await execute(`UPDATE users SET name = ? WHERE id = ?`, [name, userId]);
+    async updateAdminProfile(userId: string, name: string, email?: string): Promise<void> {
+        if (email) {
+            await withTransaction(async (conn) => {
+                await conn.execute(
+                    `UPDATE users SET name = ?, email = ?, emailVerified = TRUE, updatedAt = NOW() WHERE id = ?`,
+                    [name, email.trim().toLowerCase(), userId]
+                );
+                await conn.execute(
+                    `DELETE FROM account WHERE userId = ? AND providerId = 'google'`,
+                    [userId]
+                );
+            });
+        } else {
+            await execute(`UPDATE users SET name = ?, updatedAt = NOW() WHERE id = ?`, [name, userId]);
+        }
+    }
+
+    async isEmailTakenByOtherUser(email: string, excludeUserId: string): Promise<boolean> {
+        const normalized = email.trim().toLowerCase();
+        const rows = await query<
+            Array<RowDataPacket & { id: string; role: string; emailVerified: number | boolean }>
+        >(
+            `SELECT id, role, emailVerified FROM users WHERE email = ? AND id != ? LIMIT 1`,
+            [normalized, excludeUserId]
+        );
+        if (rows.length === 0) {
+            return false;
+        }
+        const existing = rows[0];
+        if (existing.role === "SISWA" && !existing.emailVerified) {
+            await withTransaction(async (conn) => {
+                await conn.execute(`DELETE FROM user_profiles WHERE user_id = ?`, [existing.id]);
+                await conn.execute(`DELETE FROM account WHERE userId = ?`, [existing.id]);
+                await conn.execute(`DELETE FROM users WHERE id = ? AND emailVerified = 0`, [existing.id]);
+            });
+            return false;
+        }
+        return true;
     }
 
     async getQuestionBankStock(): Promise<K10_QuestionBankStock[]> {

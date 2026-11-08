@@ -20,6 +20,7 @@ async function cleanDatabase() {
             password: process.env.DB_PASSWORD,
             database: process.env.DB_NAME,
             multipleStatements: true,
+            ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : undefined,
         });
 
         console.log(`Terhubung ke database: ${process.env.DB_NAME}`);

@@ -20,15 +20,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       user.role === 'SUPERADMIN');
 
   useEffect(() => {
-    if (!isLoading && !isAuthorized) {
-      const timeout = setTimeout(() => {
-        router.replace('/dashboard');
-      }, 3000);
-      return () => clearTimeout(timeout);
+    if (!isLoading) {
+      if (!isAuthenticated || !user) {
+        router.replace('/login?as=staff');
+      } else if (!isAuthorized) {
+        const timeout = setTimeout(() => {
+          router.replace('/dashboard');
+        }, 3000);
+        return () => clearTimeout(timeout);
+      }
     }
-  }, [isLoading, isAuthorized, router]);
+  }, [isLoading, isAuthenticated, user, isAuthorized, router]);
 
-  if (isLoading) {
+  if (isLoading || !isAuthenticated || !user) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-[#f8fafc]">
         <div className="flex flex-col items-center gap-3">
@@ -48,7 +52,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           <div className="space-y-2">
-            <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-[11px] font-bold text-amber-800 uppercase tracking-wider">
+            <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-[11px] font-bold text-amber-800">
               Akses Ditolak
             </span>
             <h1 className="text-xl font-extrabold text-slate-900">

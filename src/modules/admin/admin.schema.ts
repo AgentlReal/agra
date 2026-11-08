@@ -8,6 +8,13 @@ import {
 
 export const adminProfileUpdateSchema = z.object({
     name: requiredString("Nama", 3, 30),
+    email: z
+        .string()
+        .trim()
+        .toLowerCase()
+        .email("Format alamat email tidak valid")
+        .max(191, "Alamat email maksimal 191 karakter")
+        .optional(),
 });
 
 export type AdminProfileUpdateInput = z.infer<typeof adminProfileUpdateSchema>;

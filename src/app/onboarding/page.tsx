@@ -14,11 +14,13 @@ interface AvatarPreset {
   id: number;
   name: string;
   imageUrl?: string;
+  image_url?: string;
+  selected?: boolean;
 }
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { user, updateUser } = useAuth();
+  const { user, isLoading: authLoading, updateUser } = useAuth();
   const [selectedGrade, setSelectedGrade] = useState<number>(8);
   const [avatars, setAvatars] = useState<AvatarPreset[]>([]);
   const [selectedAvatarId, setSelectedAvatarId] = useState<number>(1);
@@ -26,21 +28,41 @@ export default function OnboardingPage() {
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
+    if (!authLoading) {
+      if (!user) {
+        router.replace('/login');
+      } else if (user.role === 'SUPERADMIN' || user.role === 'TIM_KURIKULUM') {
+        router.replace('/admin/dashboard');
+      }
+    }
+  }, [authLoading, user, router]);
+
+  useEffect(() => {
+    if (authLoading || !user || user.role !== 'SISWA') return;
     api.profile
       .getAvatars()
-      .then((res: any) => {
-        const list = res?.data?.items || res?.items || (Array.isArray(res) ? res : res.data || []);
+      .then((res: { data?: { items?: AvatarPreset[] } | AvatarPreset[]; items?: AvatarPreset[] } | AvatarPreset[]) => {
+        const list =
+          Array.isArray(res)
+            ? res
+            : Array.isArray(res?.data)
+            ? res.data
+            : res?.data?.items || res?.items || [];
         if (Array.isArray(list) && list.length > 0) {
           setAvatars(list);
-          const active = list.find((a: any) => a.selected);
+          const active = list.find((a) => a.selected);
           setSelectedAvatarId(active ? active.id : list[0].id);
         }
       })
       .catch((err) => {
         console.error('Failed to load avatars:', err);
+        if (err?.status === 401) {
+          router.replace('/login');
+          return;
+        }
         setErrorMsg('Gagal memuat daftar avatar dari server.');
       });
-  }, []);
+  }, [authLoading, user, router]);
 
   const handleComplete = async () => {
     setLoading(true);
@@ -56,17 +78,30 @@ export default function OnboardingPage() {
       updateUser({ 
         grade: selectedGrade,
         avatarId: selectedAvatarId,
-        avatarUrl: chosenAvatar?.imageUrl || (chosenAvatar as any)?.image_url,
+        avatarUrl: chosenAvatar?.imageUrl || chosenAvatar?.image_url,
         needsOnboarding: false,
       });
       // Proceed to the Gatekeeper diagnostic test (Recall Kemampuanmu)
       router.push('/recall');
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Gagal menyimpan profil awal.');
+    } catch (err: unknown) {
+      const apiErr = err as { status?: number; message?: string };
+      if (apiErr?.status === 401) {
+        router.replace('/login');
+        return;
+      }
+      setErrorMsg(apiErr?.message || 'Gagal menyimpan profil awal.');
     } finally {
       setLoading(false);
     }
   };
+
+  if (authLoading || !user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f8fafc]">

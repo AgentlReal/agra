@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
@@ -36,65 +36,152 @@ function normalizeNextActionRoute(rawRoute?: string, type?: string, submaterialI
   return rawRoute.replace(/\.html$/, '');
 }
 
+interface DashboardSubjectItem {
+  subjectId?: number;
+  id?: number;
+  subjectCode?: string;
+  subjectName?: string;
+  masteryPercent?: number;
+  masteryPercentage?: number;
+  masteredSubmaterials?: number;
+  completedSubmaterials?: number;
+  totalSubmaterials?: number;
+  simulationUnlocked?: boolean;
+  simulation_unlocked?: boolean;
+}
+
+interface DashboardStudentData {
+  name?: string;
+  avatar?: {
+    id?: number;
+    name?: string;
+    imageUrl?: string;
+  };
+  avatarUrl?: string;
+  totalXp?: number;
+  total_xp?: number;
+  isRecallPassed?: boolean;
+  milestone?: {
+    title?: string;
+    tierName?: string;
+  };
+}
+
+interface DashboardNextAction {
+  type?: string;
+  title?: string;
+  route?: string;
+  submaterialId?: number;
+}
+
+interface DashboardPayload {
+  student?: DashboardStudentData;
+  subjects?: DashboardSubjectItem[];
+  nextAction?: DashboardNextAction;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const { user, role, isLoading: authLoading, updateUser } = useAuth();
-  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Route Guard: Unauthenticated to /login, Admin to /admin/dashboard
+  const applyDashboardPayload = useCallback(
+    (res: { data?: DashboardPayload } & DashboardPayload) => {
+      const data = res?.data || res;
+      setDashboardData(data);
+      if (data?.student) {
+        const nextAvatarUrl = data.student.avatar?.imageUrl || data.student.avatarUrl;
+        const nextTotalXp = data.student.totalXp ?? data.student.total_xp;
+        updateUser({
+          ...(data.student.name ? { name: data.student.name } : {}),
+          ...(nextAvatarUrl ? { avatarUrl: nextAvatarUrl } : {}),
+          ...(data.student.avatar?.id ? { avatarId: data.student.avatar.id } : {}),
+          ...(nextTotalXp !== undefined ? { totalXp: nextTotalXp } : {}),
+        });
+      }
+    },
+    [updateUser]
+  );
+
+  const handleDashboardError = useCallback(
+    (err: unknown) => {
+      console.error('Failed to load dashboard:', err);
+      const apiErr = err as { code?: string; status?: number; message?: string };
+      if (apiErr?.code === 'PROFILE_INCOMPLETE' || apiErr?.status === 409) {
+        router.push('/onboarding');
+        return;
+      }
+      if (apiErr?.status === 401) {
+        router.push('/login');
+        return;
+      }
+      if (apiErr?.status === 403) {
+        router.replace('/admin/dashboard');
+        return;
+      }
+      setErrorMsg(apiErr?.message || 'Gagal memuat ringkasan belajar dari server.');
+    },
+    [router]
+  );
+
+  const loadDashboard = useCallback(() => {
+    setLoading(true);
+    setErrorMsg('');
+    api.dashboard
+      .get()
+      .then(applyDashboardPayload)
+      .catch(handleDashboardError)
+      .finally(() => setLoading(false));
+  }, [applyDashboardPayload, handleDashboardError]);
+
+  // Route Guard
   useEffect(() => {
     if (!authLoading) {
       if (!user) {
         router.replace('/login');
       } else if (role !== 'SISWA') {
         router.replace('/admin/dashboard');
+      } else if (user.needsOnboarding) {
+        router.replace('/onboarding');
       }
     }
   }, [authLoading, user, role, router]);
 
-  const loadDashboard = () => {
-    setLoading(true);
-    setErrorMsg('');
+  // Data Loader
+  const userId = user?.id;
+  const needsOnboarding = Boolean(user?.needsOnboarding);
+  useEffect(() => {
+    if (authLoading || !userId || role !== 'SISWA' || needsOnboarding) return;
+    let active = true;
     api.dashboard
       .get()
-      .then((res: any) => {
-        const data = res?.data || res;
-        setDashboardData(data);
-        if (data?.student) {
-          updateUser({
-            name: data.student.name || user?.name,
-            avatarUrl: data.student.avatar?.imageUrl || data.student.avatarUrl || user?.avatarUrl,
-            avatarId: data.student.avatar?.id || user?.avatarId,
-            totalXp: data.student.totalXp ?? data.student.total_xp ?? user?.totalXp,
-          });
-        }
+      .then((res: { data?: DashboardPayload } & DashboardPayload) => {
+        if (!active) return;
+        applyDashboardPayload(res);
       })
-      .catch((err: any) => {
-        console.error('Failed to load dashboard:', err);
-        if (err.code === 'PROFILE_INCOMPLETE' || err.status === 409) {
-          router.push('/onboarding');
-          return;
-        }
-        if (err.status === 401) {
-          router.push('/login');
-          return;
-        }
-        if (err.status === 403) {
-          router.replace('/admin/dashboard');
-          return;
-        }
-        setErrorMsg(err.message || 'Gagal memuat ringkasan belajar dari server.');
+      .catch((err: unknown) => {
+        if (!active) return;
+        handleDashboardError(err);
       })
-      .finally(() => setLoading(false));
-  };
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [authLoading, userId, needsOnboarding, role, applyDashboardPayload, handleDashboardError]);
 
-  useEffect(() => {
-    loadDashboard();
-  }, []);
+  if (authLoading || !user || role !== 'SISWA') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
 
-  const student = dashboardData?.student || user;
+  const student: DashboardStudentData | undefined = dashboardData?.student || user;
   const subjects = dashboardData?.subjects || [];
   const nextAction = dashboardData?.nextAction;
   const isRecallPassed =
@@ -111,16 +198,16 @@ export default function DashboardPage() {
       <Navbar />
 
       <main className="flex-1 py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full space-y-8">
-        {/* Error Notification (Safe-to-fail warm amber, red banned) */}
+        {/* Error Notification (Technical & System Error) */}
         {errorMsg && (
-          <div className="flex items-center justify-between rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs sm:text-sm text-amber-900 shadow-2xs">
+          <div className="flex items-center justify-between rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs sm:text-sm text-rose-950 shadow-2xs">
             <div className="flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-amber-600 shrink-0" />
+              <AlertCircle className="h-5 w-5 text-rose-600 shrink-0" />
               <span>{errorMsg}</span>
             </div>
             <button
               onClick={loadDashboard}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-amber-200/80 hover:bg-amber-300 px-3.5 py-1.5 text-xs font-bold text-amber-900 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-rose-200/80 hover:bg-rose-300 px-3.5 py-1.5 text-xs font-bold text-rose-950 transition-colors cursor-pointer"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               <span>Coba Lagi</span>
@@ -171,7 +258,7 @@ export default function DashboardPage() {
                   <div className="flex items-center gap-2.5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 shadow-2xs">
                     <Sparkles className="h-5 w-5 text-amber-500" />
                     <div>
-                      <p className="text-[10px] text-amber-700 uppercase font-semibold">Total XP Belajar</p>
+                      <p className="text-[11px] text-amber-700 font-semibold">Total XP Belajar</p>
                       <p className="text-sm font-extrabold text-slate-900">{student?.totalXp ?? user?.totalXp ?? 0} XP</p>
                     </div>
                   </div>
@@ -218,7 +305,7 @@ export default function DashboardPage() {
                     Selesaikan Asesmen Recall Terlebih Dahulu
                   </h3>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    Untuk membuka materi kurikulum dan modul latihan bertingkat, selesaikan 10 butir asesmen pengingatan konsep awal (Recall Kemampuanmu).
+                    Untuk membuka materi kurikulum dan modul latihan bertingkat, selesaikan 30 butir asesmen pengingatan konsep awal (Recall Kemampuanmu).
                   </p>
                 </div>
                 <div>
@@ -255,7 +342,7 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {subjects.map((sub: any, idx: number) => {
+                  {subjects.map((sub: DashboardSubjectItem, idx: number) => {
                     const subjectId = sub.subjectId ?? sub.id ?? (sub.subjectCode === 'MAT' ? 1 : 2);
                     const masteryPercent = sub.masteryPercent ?? sub.masteryPercentage ?? 0;
                     const masteredCount = sub.masteredSubmaterials ?? sub.completedSubmaterials ?? 0;

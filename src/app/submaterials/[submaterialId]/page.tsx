@@ -75,6 +75,7 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
     message: '',
   });
 
+  // Route Guard
   useEffect(() => {
     if (!authLoading) {
       if (!user) {
@@ -84,6 +85,13 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
       }
     }
   }, [authLoading, user, role, router]);
+
+  // Data Loader
+  useEffect(() => {
+    if (!authLoading && user && role === 'SISWA') {
+      loadProgress();
+    }
+  }, [authLoading, user?.id, role, submaterialId]);
 
   const loadProgress = () => {
     setLoading(true);
@@ -142,10 +150,6 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => {
-    loadProgress();
-  }, [submaterialId]);
-
   const handleStartLevel = async (levelNumber: number) => {
     setStartingLevel(levelNumber);
     setErrorMsg('');
@@ -192,6 +196,14 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
     }
   };
 
+  if (authLoading || !user || role !== 'SISWA') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col bg-[#f8fafc]">
       <Navbar />
@@ -205,14 +217,14 @@ export default function SubmaterialDetailPage({ params }: { params: Promise<{ su
         </Link>
 
         {errorMsg && (
-          <div className="flex items-center justify-between rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs sm:text-sm text-amber-900 shadow-2xs">
+          <div className="flex items-center justify-between rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs sm:text-sm text-rose-950 shadow-2xs">
             <div className="flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-amber-600 shrink-0" />
+              <AlertCircle className="h-5 w-5 text-rose-600 shrink-0" />
               <span>{errorMsg}</span>
             </div>
             <button
               onClick={loadProgress}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-amber-200/80 hover:bg-amber-300 px-3.5 py-1.5 text-xs font-bold text-amber-900 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-rose-200/80 hover:bg-rose-300 px-3.5 py-1.5 text-xs font-bold text-rose-950 transition-colors cursor-pointer"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               <span>Coba Lagi</span>

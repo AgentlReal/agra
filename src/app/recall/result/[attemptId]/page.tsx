@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { api } from '@/lib/api-client';
@@ -22,11 +24,21 @@ import {
 
 export default function RecallResultPage({ params }: { params: Promise<{ attemptId: string }> }) {
   const { attemptId } = use(params);
+  const router = useRouter();
+  const { user, isLoading: authLoading } = useAuth();
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/login');
+    }
+  }, [authLoading, user, router]);
+
+  useEffect(() => {
+    if (authLoading || !user) return;
+    setLoading(true);
     api.recall
       .getResult(attemptId)
       .then((res: any) => {
@@ -35,10 +47,22 @@ export default function RecallResultPage({ params }: { params: Promise<{ attempt
       })
       .catch((err: any) => {
         console.error('Failed to load recall result:', err);
+        if (err?.status === 401 || err?.response?.status === 401) {
+          router.replace('/login');
+          return;
+        }
         setErrorMsg(err.message || 'Gagal memuat hasil asesmen Recall dari server.');
       })
       .finally(() => setLoading(false));
-  }, [attemptId]);
+  }, [attemptId, authLoading, user, router]);
+
+  if (authLoading || !user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
 
   const isPassed = Boolean(result?.isPassed ?? result?.is_passed);
   const totalQuestions = result?.totalQuestions ?? result?.total_questions ?? 30;
@@ -109,9 +133,9 @@ export default function RecallResultPage({ params }: { params: Promise<{ attempt
             {/* Banner Status (Exact replica of reference-design/recall-kemampuan-lulus-81 & tidak-dq) */}
             {isPassed ? (
               <div className="rounded-3xl border border-emerald-200 bg-emerald-50/80 p-6 sm:p-8 shadow-xs space-y-2">
-                <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 border border-emerald-200 px-3.5 py-1 text-xs font-bold text-emerald-800 uppercase tracking-wider">
+                <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 border border-emerald-200 px-3.5 py-1 text-xs font-bold text-emerald-800">
                   <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                  <span>PRETEST LULUS</span>
+                  <span>Pretest Lulus</span>
                 </div>
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                   Selamat! Kamu Lulus Recall Kemampuanmu
@@ -122,9 +146,9 @@ export default function RecallResultPage({ params }: { params: Promise<{ attempt
               </div>
             ) : (
               <div className="rounded-3xl border border-amber-200 bg-amber-50/80 p-6 sm:p-8 shadow-xs space-y-2">
-                <div className="inline-flex items-center gap-2 rounded-full bg-amber-100 border border-amber-200 px-3.5 py-1 text-xs font-bold text-amber-800 uppercase tracking-wider">
+                <div className="inline-flex items-center gap-2 rounded-full bg-amber-100 border border-amber-200 px-3.5 py-1 text-xs font-bold text-amber-800">
                   <ShieldCheck className="h-4 w-4 text-amber-600" />
-                  <span>SESI REMEDIAL RECALL</span>
+                  <span>Sesi Remedial Recall</span>
                 </div>
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                   Perlu Sesi Remedial Recall Kemampuanmu
@@ -140,7 +164,7 @@ export default function RecallResultPage({ params }: { params: Promise<{ attempt
               
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-6">
                 <div>
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <p className="text-xs font-semibold text-slate-500">
                     Nilai Akurasi Nalar
                   </p>
                   <div className="text-3xl sm:text-4xl font-black text-slate-900 mt-1">

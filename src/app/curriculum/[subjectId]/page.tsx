@@ -29,6 +29,7 @@ export default function SubjectCurriculumPage({ params }: { params: Promise<{ su
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
 
+  // Route Guard
   useEffect(() => {
     if (!authLoading) {
       if (!user) {
@@ -38,6 +39,13 @@ export default function SubjectCurriculumPage({ params }: { params: Promise<{ su
       }
     }
   }, [authLoading, user, role, router]);
+
+  // Data Loader
+  useEffect(() => {
+    if (!authLoading && user && role === 'SISWA') {
+      loadData();
+    }
+  }, [authLoading, user?.id, role, subjectId]);
 
   const loadData = () => {
     setLoading(true);
@@ -80,9 +88,13 @@ export default function SubjectCurriculumPage({ params }: { params: Promise<{ su
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => {
-    loadData();
-  }, [subjectId]);
+  if (authLoading || !user || role !== 'SISWA') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-[#f8fafc]">

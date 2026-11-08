@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
 import { api } from '@/lib/api-client';
 import { 
   GraduationCap, 
@@ -45,6 +46,7 @@ interface QuestionItem {
 export default function RecallExamPage({ params }: { params: Promise<{ attemptId: string }> }) {
   const router = useRouter();
   const { attemptId } = use(params);
+  const { user, isLoading: authLoading } = useAuth();
 
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -65,6 +67,12 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
   const [failedSaveIndices, setFailedSaveIndices] = useState<number[]>([]);
   const [showSubmitWarningModal, setShowSubmitWarningModal] = useState(false);
 
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/login');
+    }
+  }, [authLoading, user, router]);
+
   // BFCache protection
   useEffect(() => {
     const handlePageShow = (event: PageTransitionEvent) => {
@@ -78,6 +86,8 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
 
   // Initialize questions
   useEffect(() => {
+    if (authLoading || !user) return;
+    setLoading(true);
     api.recall
       .getAttempt(attemptId)
       .then((res: any) => {
@@ -171,10 +181,14 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
       })
       .catch((err: any) => {
         console.error('Failed to load recall attempt:', err);
+        if (err?.status === 401 || err?.response?.status === 401) {
+          router.replace('/login');
+          return;
+        }
         setErrorMsg(err.message || 'Gagal memuat sesi pengerjaan Recall.');
       })
       .finally(() => setLoading(false));
-  }, [attemptId]);
+  }, [attemptId, authLoading, user, router]);
 
   const currentQ = questions[currentIndex];
 
@@ -293,6 +307,14 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
   const unansweredCount = questions.length - answeredCount;
   const answeredProgressPercent = questions.length > 0 ? Math.round((answeredCount / questions.length) * 100) : 0;
 
+  if (authLoading || !user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC]">
@@ -342,7 +364,7 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
                 <span className="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight">
                   Recall Kemampuan
                 </span>
-                <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-[10px] font-bold text-blue-700 uppercase tracking-wider">
+                <span className="rounded-full bg-blue-50 border border-blue-200 px-2.5 py-0.5 text-[11px] font-bold text-blue-700">
                   Asesmen Diagnostik
                 </span>
               </div>
@@ -384,7 +406,7 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
             {/* Selesaikan Button */}
             <button
               onClick={() => setSubmitModalOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2 transition-colors shadow-2xs cursor-pointer"
+              className="btn-tactile-dark inline-flex items-center gap-1.5 rounded-xl font-bold text-xs px-4 py-2 cursor-pointer"
             >
               <CheckCircle2 className="h-4 w-4" />
               <span>Selesaikan Recall</span>
@@ -448,9 +470,9 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
             {(currentQ.stimulus || normStimulusImg) && (
               <div className="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-7 shadow-xs space-y-4">
                 <div className="flex flex-wrap items-center gap-2">
-                  <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 text-white px-3 py-1 text-[11px] font-bold tracking-wider uppercase shadow-2xs">
+                  <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 text-white px-3 py-1 text-[11px] font-bold shadow-2xs">
                     <BookOpen className="h-3.5 w-3.5" />
-                    <span>STIMULUS SOAL</span>
+                    <span>Stimulus Soal</span>
                   </div>
                   <div className="inline-flex items-center rounded-full bg-slate-100 text-slate-700 border border-slate-200 px-3 py-1 text-[11px] font-semibold">
                     <span>{currentQ.subjectName || 'Numerasi & Geometri Ruang'}</span>
@@ -459,7 +481,7 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
 
                 <div className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-5 space-y-3.5">
                   {currentQ.stimulus && (
-                    <div className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
+                    <div className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal max-w-prose">
                       <FormattedContent content={currentQ.stimulus} />
                     </div>
                   )}
@@ -585,34 +607,45 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
 
               {/* Bottom Question Navigation Toolbar */}
               <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
-                {/* Skip Question (Left) */}
-                <button
-                  onClick={() => setCurrentIndex((prev) => Math.min(questions.length - 1, prev + 1))}
-                  disabled={currentIndex >= questions.length - 1}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
-                >
-                  <FastForward className="h-4 w-4 text-slate-400" />
-                  <span>Lewati Soal Ini</span>
-                </button>
+                {/* Left Controls: Sebelumnya & Lewati */}
+                <div className="w-full sm:w-auto flex items-center gap-2">
+                  <button
+                    onClick={() => setCurrentIndex((prev) => Math.max(0, prev - 1))}
+                    disabled={currentIndex === 0}
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    <span>Sebelumnya</span>
+                  </button>
 
-                {/* Right: Ragu-ragu & Save/Next */}
+                  <button
+                    onClick={() => setCurrentIndex((prev) => Math.min(questions.length - 1, prev + 1))}
+                    disabled={currentIndex >= questions.length - 1}
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+                  >
+                    <FastForward className="h-4 w-4 text-slate-400" />
+                    <span>Lewati Soal</span>
+                  </button>
+                </div>
+
+                {/* Right Controls: Ragu-ragu & Save/Next */}
                 <div className="w-full sm:w-auto flex items-center gap-2.5">
                   <button
                     onClick={handleToggleDoubtful}
                     className={`flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 rounded-xl border px-4 py-2.5 text-xs font-bold transition-all cursor-pointer ${
                       doubtfuls[currentIndex]
-                        ? 'border-amber-400 bg-amber-50 text-amber-800 shadow-2xs'
+                        ? 'btn-tactile-amber border-amber-500'
                         : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300'
                     }`}
                   >
-                    <Flag className={`h-3.5 w-3.5 ${doubtfuls[currentIndex] ? 'text-amber-600 fill-amber-600' : 'text-slate-400'}`} />
+                    <Flag className={`h-3.5 w-3.5 ${doubtfuls[currentIndex] ? 'text-white fill-white' : 'text-slate-400'}`} />
                     <span>{doubtfuls[currentIndex] ? 'Ditandai Ragu-ragu' : 'Ragu-ragu'}</span>
                   </button>
 
                   {currentIndex < questions.length - 1 ? (
                     <button
                       onClick={() => setCurrentIndex((prev) => prev + 1)}
-                      className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                      className="btn-tactile-primary flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold cursor-pointer"
                     >
                       <span>Simpan &amp; Lanjut</span>
                       <ChevronRight className="h-4 w-4" />
@@ -620,7 +653,7 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
                   ) : (
                     <button
                       onClick={() => setSubmitModalOpen(true)}
-                      className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 text-xs font-bold shadow-xs transition-colors cursor-pointer"
+                      className="btn-tactile-secondary flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold cursor-pointer"
                     >
                       <span>Selesaikan Recall</span>
                       <CheckCircle2 className="h-4 w-4" />
@@ -915,7 +948,7 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
               <button
                 type="button"
                 onClick={() => setSubmitModalOpen(false)}
-                className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
+                className="btn-tactile-neutral flex-1 rounded-xl px-4 py-2.5 text-xs font-semibold cursor-pointer"
               >
                 Lanjutkan Soal
               </button>
@@ -926,7 +959,7 @@ export default function RecallExamPage({ params }: { params: Promise<{ attemptId
                   handleSubmit(false);
                 }}
                 disabled={submitting}
-                className="flex-1 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2.5 transition-colors disabled:opacity-50 cursor-pointer"
+                className="btn-tactile-secondary flex-1 rounded-xl font-bold text-xs px-4 py-2.5 disabled:opacity-50 cursor-pointer"
               >
                 {submitting ? 'Mengumpulkan...' : 'Ya, Selesaikan'}
               </button>

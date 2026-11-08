@@ -27,6 +27,8 @@ export interface StudentProfileDto {
     email: string;
     username: string;
     name: string;
+    hasPassword?: boolean;
+    needsOnboarding?: boolean;
     avatar: AvatarDto;
     totalXp: number;
     milestone: MilestoneDto;

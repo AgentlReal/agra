@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { api } from '@/lib/api-client';
@@ -50,6 +52,8 @@ interface ReviewQuestion {
 
 export default function RecallReviewPage({ params }: { params: Promise<{ attemptId: string }> }) {
   const { attemptId } = use(params);
+  const router = useRouter();
+  const { user, isLoading: authLoading } = useAuth();
   const [questions, setQuestions] = useState<ReviewQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [filter, setFilter] = useState<'all' | 'correct' | 'wrong'>('all');
@@ -58,6 +62,14 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/login');
+    }
+  }, [authLoading, user, router]);
+
+  useEffect(() => {
+    if (authLoading || !user) return;
+    setLoading(true);
     api.recall
       .getReview(attemptId)
       .then((res: any) => {
@@ -146,10 +158,22 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
       })
       .catch((err: any) => {
         console.error('Failed to load recall review:', err);
+        if (err?.status === 401 || err?.response?.status === 401) {
+          router.replace('/login');
+          return;
+        }
         setErrorMsg(err.message || 'Gagal memuat review Recall.');
       })
       .finally(() => setLoading(false));
-  }, [attemptId]);
+  }, [attemptId, authLoading, user, router]);
+
+  if (authLoading || !user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
 
   const correctCount = questions.filter((q) => q.isCorrect).length;
   const reviewCount = questions.length - correctCount;
@@ -280,9 +304,9 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
             {(currentQ.stimulus || normStimulusImg) && (
               <div className="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-7 shadow-xs space-y-4">
                 <div className="flex items-center gap-2">
-                  <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 text-white px-3 py-1 text-[11px] font-bold uppercase tracking-wider shadow-2xs">
+                  <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-600 text-white px-3 py-1 text-[11px] font-bold shadow-2xs">
                     <BookOpen className="h-3.5 w-3.5" />
-                    <span>STIMULUS BACAAN</span>
+                    <span>Stimulus Bacaan</span>
                   </div>
                   <span className="rounded-full bg-slate-100 text-slate-700 border border-slate-200 px-3 py-1 text-[11px] font-semibold">
                     {currentQ.subjectName}
@@ -328,7 +352,7 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
                   <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 text-white font-bold text-xs">
                     {currentQ.questionNumber}
                   </span>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-900">
+                  <span className="text-xs font-bold text-slate-900">
                     Soal #{currentQ.questionNumber} dari {questions.length}
                   </span>
                 </div>
@@ -429,7 +453,7 @@ export default function RecallReviewPage({ params }: { params: Promise<{ attempt
               {/* Solution / Explanation Box (Exact style of reference-design) */}
               <div className="rounded-2xl border border-blue-200 bg-blue-50/40 p-5 sm:p-6 space-y-4">
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-bold text-blue-900 uppercase tracking-wider">
+                  <div className="flex items-center gap-2 text-xs font-bold text-blue-900">
                     <Lightbulb className="h-4 w-4 text-blue-600" />
                     <span>Pembahasan Solusi &amp; Konsep Kunci:</span>
                   </div>

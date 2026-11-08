@@ -46,6 +46,13 @@ export default function SimulationIntroPage({ params }: { params: Promise<{ subj
     }
   }, [authLoading, user, role, router]);
 
+  // Data Loader
+  useEffect(() => {
+    if (!authLoading && user && role === 'SISWA') {
+      loadEligibility();
+    }
+  }, [authLoading, user?.id, role, subjectId]);
+
   const loadEligibility = () => {
     setLoading(true);
     setErrorMsg('');
@@ -70,10 +77,6 @@ export default function SimulationIntroPage({ params }: { params: Promise<{ subj
       })
       .finally(() => setLoading(false));
   };
-
-  useEffect(() => {
-    loadEligibility();
-  }, [subjectId]);
 
   const handleStartSimulation = async () => {
     setStarting(true);
@@ -100,7 +103,6 @@ export default function SimulationIntroPage({ params }: { params: Promise<{ subj
   const isEligible = Boolean(eligibility?.isEligible ?? eligibility?.is_eligible);
   const latestAttempt = eligibility?.latest_attempt;
   const attemptsUsed = eligibility?.attempts_used ?? (latestAttempt ? 1 : 0);
-  const quotaExceeded = attemptsUsed >= 2;
   const subjectName =
     eligibility?.subjectName ??
     eligibility?.subject_name ??
@@ -112,6 +114,14 @@ export default function SimulationIntroPage({ params }: { params: Promise<{ subj
     eligibility?.completionPercentage ??
     eligibility?.completion_percentage ??
     (totalSub > 0 ? Math.round((masteredSub / totalSub) * 100) : 0);
+
+  if (authLoading || !user || role !== 'SISWA') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F8FAFC] text-slate-800 font-sans">
@@ -263,7 +273,7 @@ export default function SimulationIntroPage({ params }: { params: Promise<{ subj
                         </span>
                       </div>
                       <p className="text-xs text-slate-600">
-                        Skor akhir Anda: <strong className="text-slate-900 font-bold">{latestAttempt.final_score}%</strong> (Standar Nasional Kemendikdasmen). Kesempatan terpakai: {attemptsUsed} dari 2 kali.
+                        Skor akhir Anda: <strong className="text-slate-900 font-bold">{latestAttempt.final_score}%</strong> (Standar Nasional Kemendikdasmen). Total percobaan: {attemptsUsed} kali.
                       </p>
                     </div>
                   </div>
@@ -279,32 +289,7 @@ export default function SimulationIntroPage({ params }: { params: Promise<{ subj
               )}
 
               {/* Eligibility & Action Status Box */}
-              {quotaExceeded ? (
-                <div className="rounded-2xl border border-slate-200 bg-slate-100/80 p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div className="flex items-center gap-3.5">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-200 text-slate-600 shrink-0">
-                      <ShieldCheck className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-slate-900">
-                        Batas Kesempatan Ujian Tercapai
-                      </h4>
-                      <p className="text-xs text-slate-500">
-                        Anda telah menggunakan batas maksimal ujian simulasi mandiri (2 dari 2 kali).
-                      </p>
-                    </div>
-                  </div>
-
-                  {latestAttempt && (
-                    <Link
-                      href={`/simulations/result/${latestAttempt.id}`}
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-slate-800 text-white font-bold text-xs py-3 px-5 shadow-xs"
-                    >
-                      <span>Tinjau Hasil Terakhir</span>
-                    </Link>
-                  )}
-                </div>
-              ) : isEligible ? (
+              {isEligible ? (
                 <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="flex items-center gap-3.5">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 shrink-0">
@@ -329,7 +314,7 @@ export default function SimulationIntroPage({ params }: { params: Promise<{ subj
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                     ) : (
                       <>
-                        <span>{latestAttempt ? `Ulangi Simulasi (Sisa: ${2 - attemptsUsed}x)` : 'Mulai Simulasi Sekarang'}</span>
+                        <span>{latestAttempt ? 'Ulangi Ujian Simulasi' : 'Mulai Simulasi Sekarang'}</span>
                         <ArrowRight className="h-4 w-4" />
                       </>
                     )}

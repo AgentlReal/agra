@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
@@ -88,6 +89,8 @@ export default function ProfilePage() {
 
   // Fetch initial profile data on mount
   useEffect(() => {
+    if (authLoading || !user || role !== 'SISWA') return;
+
     // Fetch avatars
     api.profile
       .getAvatars()
@@ -118,6 +121,8 @@ export default function ProfilePage() {
           }
           updateUser({
             name: pData.name,
+            username: pData.username || user?.username,
+            hasPassword: pData.hasPassword ?? true,
             avatarUrl: pData.avatar?.imageUrl || pData.avatarUrl,
             avatarId: pData.avatar?.id,
             totalXp: pData.totalXp ?? pData.total_xp ?? 0,
@@ -128,15 +133,16 @@ export default function ProfilePage() {
       .catch(() => {});
 
     // Fetch XP transactions
+    setLoadingXp(true);
     api.profile
       .getXpTransactions()
       .then((res: any) => {
-        const list = res?.items || (Array.isArray(res) ? res : res.data?.items || []);
-        setXpTransactions(list);
+        const list = res?.data?.items || res?.items || (Array.isArray(res) ? res : res.data || []);
+        setXpTransactions(Array.isArray(list) ? list : []);
       })
       .catch((err) => console.error('Failed to load XP transactions:', err))
       .finally(() => setLoadingXp(false));
-  }, []);
+  }, [authLoading, user?.id, role]);
 
   // Determine current mastery tier using official API profile.milestone / milestoneProgress or fallback
   const currentXp = profile?.totalXp ?? profile?.total_xp ?? user?.totalXp ?? 0;
@@ -225,12 +231,25 @@ export default function ProfilePage() {
         setNewPassword('');
         setConfirmPassword('');
       }, 1500);
-    } catch (err: any) {
-      setPassError(err.message || 'Gagal mengubah kata sandi. Pastikan kata sandi lama Anda benar.');
+    } catch (err: unknown) {
+      const rawMsg = err instanceof Error ? err.message : '';
+      if (rawMsg.toLowerCase().includes('invalid password')) {
+        setPassError('Kata sandi saat ini yang Anda masukkan salah.');
+      } else {
+        setPassError(rawMsg || 'Gagal mengubah kata sandi. Pastikan kata sandi lama Anda benar.');
+      }
     } finally {
       setChangingPass(false);
     }
   };
+
+  if (authLoading || !user || role !== 'SISWA') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f8fafc]">
@@ -329,21 +348,40 @@ export default function ProfilePage() {
 
               {/* Quick Actions List */}
               <div className="space-y-2">
-                <button
-                  onClick={() => setPasswordModalOpen(true)}
-                  className="w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors text-left cursor-pointer group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-100 transition-colors">
-                      <KeyRound className="h-4 w-4" />
+                {(profile?.hasPassword ?? user?.hasPassword) !== false ? (
+                  <button
+                    onClick={() => setPasswordModalOpen(true)}
+                    className="w-full flex items-center justify-between p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-colors text-left cursor-pointer group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-100 transition-colors">
+                        <KeyRound className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-slate-800">Ubah Kata Sandi</p>
+                        <p className="text-[11px] text-slate-500">Perbarui kata sandi akun belajarmu</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-xs font-bold text-slate-800">Ubah Kata Sandi</p>
-                      <p className="text-[11px] text-slate-500">Perbarui kata sandi akun belajarmu</p>
+                    <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-slate-600 transition-colors" />
+                  </button>
+                ) : (
+                  <div className="w-full flex items-center justify-between p-3 rounded-xl border border-emerald-200 bg-emerald-50/50 text-left">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 shrink-0">
+                        <ShieldCheck className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-slate-800">Terhubung dengan Akun Google</p>
+                        <p className="text-[11px] text-slate-600 leading-relaxed">
+                          Masuk aman via Google. Ingin membuat kata sandi lokal?{' '}
+                          <Link href="/forgot-password" className="font-semibold text-blue-600 hover:underline">
+                            Atur Kata Sandi
+                          </Link>
+                        </p>
+                      </div>
                     </div>
                   </div>
-                  <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-slate-600 transition-colors" />
-                </button>
+                )}
 
                 <button
                   onClick={() => logout()}

@@ -81,6 +81,39 @@ body {
   box-shadow: 0 1px 0 0 #b45309;
 }
 
+.btn-tactile-dark {
+  background-color: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 3px 0 0 #020617;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-tactile-dark:hover {
+  background-color: #1e293b;
+  box-shadow: 0 3px 0 0 #0f172a;
+}
+.btn-tactile-dark:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 0 #020617;
+}
+
+.btn-tactile-neutral {
+  background-color: #ffffff;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2.5px 0 0 #cbd5e1;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-tactile-neutral:hover {
+  background-color: #f8fafc;
+  color: #0f172a;
+  border-color: #cbd5e1;
+  box-shadow: 0 2.5px 0 0 #94a3b8;
+}
+.btn-tactile-neutral:active {
+  transform: translateY(1.5px);
+  box-shadow: 0 1px 0 0 #94a3b8;
+}
+
 /* =========================================================
    CLEAN EDTECH CARDS & ELEVATIONS
    ========================================================= */
@@ -103,11 +136,18 @@ body {
   transform: translateY(-2px);
 }
 
-/* Safe-to-Fail Alert Containers (Warm Amber - Red Banned) */
+/* Safe-to-Fail Formative Alert Containers (Warm Amber for educational mistakes/retry) */
 .alert-safe-to-fail {
   background-color: #fffbeb;
   border: 1px solid #fde68a;
   color: #92400e;
+}
+
+/* System & Technical Error Containers (Calm Rose - Distinct from formative learning feedback) */
+.alert-system-error {
+  background-color: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #881337;
 }
 
 /* =========================================================
