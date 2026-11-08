@@ -10,6 +10,7 @@ import {
     sendVerificationEmail,
 } from "@/lib/email";
 
+const isProd = process.env.NODE_ENV === "production";
 const authDbPool = createPool({
     host: process.env.DB_HOST || "localhost",
     port: Number(process.env.DB_PORT) || 3306,
@@ -17,10 +18,11 @@ const authDbPool = createPool({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: isProd ? 2 : 10,
     enableKeepAlive: true,
     timezone: "+07:00",
     decimalNumbers: true,
+    ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : undefined,
 });
 
 function normalizeDisplayName(rawName: string | undefined | null, email?: string | null): string {
