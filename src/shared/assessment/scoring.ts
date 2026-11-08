@@ -99,6 +99,9 @@ export async function gradeSession(
     const items: GradedAnswerItem[] = [];
     const subjectBreakdown = new Map<number, { correct: number; total: number }>();
 
+    const updates: Array<{ id: number; score: number; isCorrect: boolean }> = [];
+    const inserts: Array<[number, number]> = [];
+
     for (const r of evalRows) {
         const evalRes = scoreQuestion({
             questionFormat: r.question_format,
@@ -108,16 +111,9 @@ export async function gradeSession(
         });
 
         if (r.student_answer_id) {
-            await conn.execute(
-                `UPDATE student_answers SET is_correct = ?, score = ? WHERE id = ?`,
-                [evalRes.isCorrect, evalRes.score, r.student_answer_id]
-            );
+            updates.push({ id: r.student_answer_id, score: evalRes.score, isCorrect: evalRes.isCorrect });
         } else {
-            await conn.execute(
-                `INSERT INTO student_answers (session_question_id, score, is_correct, is_flagged, is_skipped, time_spent_seconds, answered_at)
-                 VALUES (?, ?, FALSE, FALSE, TRUE, 0, NOW())`,
-                [r.session_question_id, evalRes.score]
-            );
+            inserts.push([r.session_question_id, evalRes.score]);
         }
 
         totalScore += evalRes.score;
@@ -136,6 +132,30 @@ export async function gradeSession(
             subj.correct += evalRes.score;
             subjectBreakdown.set(r.subject_id, subj);
         }
+    }
+
+    // Batch write: hindari 1 query per soal (thundering herd saat auto-submit massal)
+    if (updates.length > 0) {
+        const caseSql = updates.map(() => "WHEN ? THEN ?").join(" ");
+        const params: Array<number | boolean | number[]> = [];
+        for (const u of updates) params.push(u.id, u.score);
+        for (const u of updates) params.push(u.id, u.isCorrect ? 1 : 0);
+        params.push(updates.map((u) => u.id));
+        await conn.query(
+            `UPDATE student_answers
+             SET score = CASE id ${caseSql} END,
+                 is_correct = CASE id ${caseSql} END
+             WHERE id IN (?)`,
+            params
+        );
+    }
+    if (inserts.length > 0) {
+        const rows = inserts.map(([sqId, score]) => [sqId, score, false, false, true, 0, new Date()]);
+        await conn.query(
+            `INSERT INTO student_answers (session_question_id, score, is_correct, is_flagged, is_skipped, time_spent_seconds, answered_at)
+             VALUES ?`,
+            [rows]
+        );
     }
 
     const totalQuestions = evalRows.length;

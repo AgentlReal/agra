@@ -82,9 +82,9 @@ export class SimulationService {
             latest_attempt: latestCompleted
                 ? {
                       id: latestCompleted.id,
-                      final_score: Number(latestCompleted.final_score ?? 0),
+                      final_score: Number(latestCompleted.score ?? 0),
                       is_passed: Boolean(latestCompleted.is_passed),
-                      completed_at: latestCompleted.completed_at ? new Date(latestCompleted.completed_at).toISOString() : null,
+                      completed_at: latestCompleted.end_time ? new Date(latestCompleted.end_time).toISOString() : null,
                   }
                 : null,
             attempts_used: totalAttempts,

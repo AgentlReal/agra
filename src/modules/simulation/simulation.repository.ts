@@ -203,11 +203,11 @@ export class SimulationRepository {
             );
             const sessionId = sessionResult.insertId;
 
-            for (let i = 0; i < orderedQuestions.length; i++) {
-                await conn.execute(
-                    `INSERT INTO session_questions (session_id, question_id, question_order)
-                     VALUES (?, ?, ?)`,
-                    [sessionId, orderedQuestions[i].question_id, i + 1]
+            if (orderedQuestions.length > 0) {
+                const rowsToInsert = orderedQuestions.map((q, i) => [sessionId, q.question_id, i + 1]);
+                await conn.query(
+                    `INSERT INTO session_questions (session_id, question_id, question_order) VALUES ?`,
+                    [rowsToInsert]
                 );
             }
 

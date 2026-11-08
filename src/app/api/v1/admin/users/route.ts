@@ -22,22 +22,34 @@ interface UserListRow extends RowDataPacket {
     updatedAt: Date;
 }
 
+/**
+ * Pengecekan murni (read-only) ketersediaan username. Tanpa efek samping.
+ */
 async function isStaffUsernameTaken(candidate: string): Promise<boolean> {
     const rows = await query<RowDataPacket[]>(
-        `SELECT id, emailVerified, role FROM users WHERE username = ? LIMIT 1`,
+        `SELECT id FROM users WHERE username = ? LIMIT 1`,
         [candidate]
     );
-    if (rows.length === 0) {
-        return false;
-    }
-    const existing = rows[0];
-    if (!Boolean(existing.emailVerified) && existing.role === "SISWA") {
-        await query(`DELETE FROM user_profiles WHERE user_id = ?`, [existing.id]);
-        await query(`DELETE FROM account WHERE userId = ?`, [existing.id]);
-        await query(`DELETE FROM users WHERE id = ?`, [existing.id]);
-        return false;
-    }
-    return true;
+    return rows.length > 0;
+}
+
+/**
+ * Pembersihan eksplisit akun SISWA belum terverifikasi yang memegang username tertentu
+ * (hanya dipanggil saat SuperAdmin sengaja meminta username spesifik untuk undangan staf).
+ */
+async function purgeUnverifiedStudentByUsername(username: string): Promise<void> {
+    const rows = await query<Array<RowDataPacket & { id: string }>>(
+        `SELECT id FROM users WHERE username = ? AND role = 'SISWA' AND emailVerified = 0 LIMIT 1`,
+        [username]
+    );
+    if (rows.length === 0) return;
+    const targetId = rows[0].id;
+    console.info(`[ADMIN USERS] Membersihkan akun SISWA belum terverifikasi (id=${targetId}) demi username "${username}".`);
+    await withTransaction(async (conn) => {
+        await conn.execute(`DELETE FROM user_profiles WHERE user_id = ?`, [targetId]);
+        await conn.execute(`DELETE FROM account WHERE userId = ?`, [targetId]);
+        await conn.execute(`DELETE FROM users WHERE id = ? AND emailVerified = 0`, [targetId]);
+    });
 }
 
 async function resolveUniqueStaffUsername(rawUsername: string | undefined, email: string): Promise<string> {
@@ -49,6 +61,7 @@ async function resolveUniqueStaffUsername(rawUsername: string | undefined, email
                 "INVALID_USERNAME"
             );
         }
+        await purgeUnverifiedStudentByUsername(cleaned);
         if (await isStaffUsernameTaken(cleaned)) {
             throw new BadRequestError("Username tersebut sudah digunakan.", "DUPLICATE_USERNAME");
         }
