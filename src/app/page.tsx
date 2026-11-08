@@ -2,13 +2,14 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface SubmateriItem {
   code: string;
   title: string;
   scope: string;
-  itemsCount: string;
-  cognitive: string;
+  itemsCount: number;
+  passRate: string;
 }
 
 const NUMERASI_DATA: SubmateriItem[] = [
@@ -16,57 +17,57 @@ const NUMERASI_DATA: SubmateriItem[] = [
     code: "01",
     title: "Bilangan Bulat & Pecahan",
     scope: "Operasi hitung campuran, estimasi, dan pemodelan kontekstual",
-    itemsCount: "30 Soal",
-    cognitive: "L1 • L2 • HOTS",
+    itemsCount: 30,
+    passRate: "90%",
   },
   {
     code: "02",
     title: "Aljabar & Persamaan Linear",
     scope: "Penyederhanaan bentuk aljabar, fungsi, dan sistem persamaan linear",
-    itemsCount: "30 Soal",
-    cognitive: "L1 • L2 • HOTS",
+    itemsCount: 30,
+    passRate: "90%",
   },
   {
     code: "03",
     title: "Perbandingan & Skala Numerik",
     scope: "Proporsi senilai, berbalik nilai, laju perubahan, dan skala peta",
-    itemsCount: "30 Soal",
-    cognitive: "L1 • L2 • HOTS",
+    itemsCount: 30,
+    passRate: "90%",
   },
   {
     code: "04",
     title: "Geometri Datar & Ruang",
     scope: "Teorema Pythagoras, jaring-jaring, luas permukaan, dan volume",
-    itemsCount: "30 Soal",
-    cognitive: "L1 • L2 • HOTS",
+    itemsCount: 30,
+    passRate: "90%",
   },
   {
     code: "05",
     title: "Statistika & Representasi Data",
     scope: "Interpretasi grafik, ukuran pemusatan, dan sebaran data",
-    itemsCount: "30 Soal",
-    cognitive: "L1 • L2 • HOTS",
+    itemsCount: 30,
+    passRate: "90%",
   },
   {
     code: "06",
     title: "Peluang Kejadian Majemuk",
     scope: "Ruang sampel, frekuensi harapan, dan inferensi ketidakpastian",
-    itemsCount: "30 Soal",
-    cognitive: "L1 • L2 • HOTS",
+    itemsCount: 30,
+    passRate: "90%",
   },
   {
     code: "07",
     title: "Barisan, Pola & Deret Angka",
     scope: "Generalisasi pola aritmetika, geometri, dan konfigurasi objek",
-    itemsCount: "30 Soal",
-    cognitive: "L1 • L2 • HOTS",
+    itemsCount: 30,
+    passRate: "90%",
   },
   {
     code: "08",
     title: "Aritmetika Sosial & Finansial",
     scope: "Literasi finansial dasar, persentase, diskon, dan bunga tunggal",
-    itemsCount: "30 Soal",
-    cognitive: "L1 • L2 • HOTS",
+    itemsCount: 30,
+    passRate: "90%",
   },
 ];
 
@@ -75,57 +76,81 @@ const LITERASI_DATA: SubmateriItem[] = [
     code: "01",
     title: "Informasi Tersurat & Eksplisit",
     scope: "Identifikasi fakta spesifik, gagasan pokok, dan verifikasi data teks",
-    itemsCount: "30 Soal",
-    cognitive: "L1 • L2 • HOTS",
+    itemsCount: 30,
+    passRate: "90%",
   },
   {
     code: "02",
     title: "Inferensi & Makna Tersirat",
     scope: "Menyimpulkan hubungan sebab-akibat, asumsi penulis, dan prediksi",
-    itemsCount: "30 Soal",
-    cognitive: "L1 • L2 • HOTS",
+    itemsCount: 30,
+    passRate: "90%",
   },
   {
     code: "03",
     title: "Struktur & Kohesi Wacana",
     scope: "Analisis kepaduan antarparagraf, konjungsi, dan kerangka logika",
-    itemsCount: "30 Soal",
-    cognitive: "L1 • L2 • HOTS",
+    itemsCount: 30,
+    passRate: "90%",
   },
   {
     code: "04",
     title: "Evaluasi Kredibilitas Informasi",
     scope: "Membedakan fakta dan opini, mendeteksi bias, serta validitas argumen",
-    itemsCount: "30 Soal",
-    cognitive: "L1 • L2 • HOTS",
+    itemsCount: 30,
+    passRate: "90%",
   },
   {
     code: "05",
     title: "Sintesis Multi-Teks & Infografik",
     scope: "Membandingkan dua sumber bacaan dan menafsirkan tabel/visual",
-    itemsCount: "30 Soal",
-    cognitive: "L1 • L2 • HOTS",
+    itemsCount: 30,
+    passRate: "90%",
   },
   {
     code: "06",
     title: "Refleksi Isi & Nilai Kontekstual",
     scope: "Mengaitkan pesan wacana dengan problematika nyata dan etika",
-    itemsCount: "30 Soal",
-    cognitive: "L1 • L2 • HOTS",
+    itemsCount: 30,
+    passRate: "90%",
   },
   {
     code: "07",
     title: "Semantik, Diksi & Gaya Bahasa",
     scope: "Ketepatan istilah, makna denotatif-konotatif, dan majas dalam teks",
-    itemsCount: "30 Soal",
-    cognitive: "L1 • L2 • HOTS",
+    itemsCount: 30,
+    passRate: "90%",
   },
   {
     code: "08",
     title: "Penalaran Kritis Teks Eksposisi",
     scope: "Bedah argumen ilmiah populer, tesis, dan ketajaman simpulan",
-    itemsCount: "30 Soal",
-    cognitive: "L1 • L2 • HOTS",
+    itemsCount: 30,
+    passRate: "90%",
+  },
+];
+
+const SAMPLE_OPTIONS = [
+  {
+    id: "A",
+    text: "Rp136.000,00 karena diskon kedua dihitung dari harga awal sebelum diskon pertama",
+    isCorrect: false,
+    feedback:
+      "Kurang tepat. Diskon bertingkat (50% + 20%) tidak dijumlahkan langsung menjadi 70%, melainkan dihitung secara berurutan.",
+  },
+  {
+    id: "B",
+    text: "Rp160.000,00 karena diskon 20% diterapkan setelah harga dipotong 50%",
+    isCorrect: true,
+    feedback:
+      "Tepat! Harga setelah diskon pertama 50% adalah Rp200.000,00. Diskon kedua 20% memotong Rp40.000,00 sehingga harga akhir Rp160.000,00.",
+  },
+  {
+    id: "C",
+    text: "Rp120.000,00 karena total potongan harga mencapai 70% dari harga label",
+    isCorrect: false,
+    feedback:
+      "Kurang tepat. Menjumlahkan 50% + 20% = 70% adalah jebakan umum pada soal Aritmetika Sosial Level 3 (HOTS).",
   },
 ];
 
@@ -163,12 +188,12 @@ function RevealPop({
       style={{
         transitionDelay: `${delay}ms`,
         transitionProperty: "opacity, transform",
-        transitionDuration: "850ms",
+        transitionDuration: "750ms",
         transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
         opacity: visible ? 1 : 0,
         transform: visible
           ? "translate3d(0, 0px, 0) scale(1)"
-          : "translate3d(0, 42px, 0) scale(0.92)",
+          : "translate3d(0, 32px, 0) scale(0.95)",
       }}
       className={`will-change-transform ${className}`}
     >
@@ -177,6 +202,10 @@ function RevealPop({
   );
 }
 
+/**
+ * SmartStudentCutout:
+ * Strips outer studio white (#FFFFFF), auto-trims dead margins, and includes a clean loading state (#19).
+ */
 function SmartStudentCutout() {
   const [processedSrc, setProcessedSrc] = useState<string | null>(null);
   const [candidateIdx, setCandidateIdx] = useState(0);
@@ -284,7 +313,6 @@ function SmartStudentCutout() {
 
         ctx.putImageData(imgData, 0, 0);
 
-        // Auto-crop dead margins so the SMP student fills the giant hero stage
         if (maxX > minX && maxY > minY) {
           const padX = Math.max(0, minX - 12);
           const padY = Math.max(0, minY - 12);
@@ -324,29 +352,63 @@ function SmartStudentCutout() {
     };
   }, [candidateIdx]);
 
-  if (!processedSrc) return null;
-
   return (
-    <img
-      src={processedSrc}
-      alt="Siswa SMP AGRA"
-      style={{
-        transition: "opacity 900ms cubic-bezier(0.16,1,0.3,1), transform 900ms cubic-bezier(0.16,1,0.3,1)",
-        opacity: ready ? 1 : 0,
-        transform: ready ? "translateY(0) scale(1)" : "translateY(48px) scale(0.9)",
-      }}
-      className="w-full h-full object-contain object-bottom drop-shadow-[0_32px_64px_rgba(4,18,56,0.42)] select-none"
-    />
+    <div className="relative w-full h-full flex items-end justify-center">
+      {/* Rule #19: Loading Skeleton State while processing canvas cutout */}
+      {!ready && (
+        <div className="w-[75%] h-[82%] rounded-t-[180px] bg-white/10 animate-pulse border border-white/15" />
+      )}
+      {processedSrc && (
+        <img
+          src={processedSrc}
+          alt="Siswa SMP AGRA"
+          style={{
+            transition:
+              "opacity 800ms cubic-bezier(0.16,1,0.3,1), transform 800ms cubic-bezier(0.16,1,0.3,1)",
+            opacity: ready ? 1 : 0,
+            transform: ready
+              ? "translateY(0) scale(1)"
+              : "translateY(36px) scale(0.94)",
+          }}
+          className="w-full h-full object-contain object-bottom drop-shadow-[0_32px_64px_rgba(4,18,56,0.42)] select-none"
+        />
+      )}
+    </div>
   );
 }
 
 export default function HomePage() {
+  const router = useRouter();
   const [activeDomain, setActiveDomain] = useState<"numerasi" | "literasi">(
     "numerasi"
   );
+  const [selectedOption, setSelectedOption] = useState<string>("B");
+  const [loadingRoute, setLoadingRoute] = useState<string | null>(null);
+  const [secondsLeft, setSecondsLeft] = useState<number>(4499); // 74:59 in seconds
+
+  // Live countdown timer for the actual CBT product preview (#6, #18)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 4499));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTime = (totalSec: number) => {
+    const mins = Math.floor(totalSec / 60);
+    const secs = totalSec % 60;
+    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  };
+
+  const handleNavigate = (href: string) => {
+    setLoadingRoute(href);
+    router.push(href);
+  };
 
   const activeItems =
     activeDomain === "numerasi" ? NUMERASI_DATA : LITERASI_DATA;
+
+  const chosenOptionObj = SAMPLE_OPTIONS.find((o) => o.id === selectedOption);
 
   return (
     <main
@@ -354,20 +416,21 @@ export default function HomePage() {
       className="relative min-h-screen w-full bg-[#EEF2FA] text-[#0A0D14] overflow-x-hidden"
     >
       {/* ═══════════════════════════════════════════════════════════════════
-          1. HEADER WITH OFFICIAL AGRA LOGO (RESPECTS 50/50 SPLIT)
+          1. HEADER WITH OFFICIAL AGRA LOGO (CONSISTENT SPACING & ALIGNMENT)
          ═══════════════════════════════════════════════════════════════════ */}
       <header className="absolute top-0 inset-x-0 z-50 w-full">
         <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-center px-6 sm:px-12 lg:px-16 pt-6 pb-4">
           <div className="lg:col-span-6 flex items-center justify-between lg:justify-start gap-10">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-2xl bg-white shadow-[0_8px_20px_rgba(15,23,42,0.06)] border border-slate-100 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform">
+              {/* Rule #14: Outer rounded-[16px] p-1.5 (6px) -> Inner image fits cleanly */}
+              <div className="w-10 h-10 rounded-[16px] p-1.5 bg-white shadow-[0_8px_20px_rgba(15,23,42,0.06)] border border-slate-200/80 flex items-center justify-center group-hover:scale-105 transition-transform">
                 <img
                   src="/assets/images/agra-icon.png"
                   alt="Logo AGRA"
                   onError={(e) => {
                     e.currentTarget.style.display = "none";
                   }}
-                  className="w-7 h-7 object-contain"
+                  className="w-full h-full object-contain"
                 />
               </div>
               <span className="text-2xl font-medium tracking-[-0.04em] text-[#0A0D14] flex items-center">
@@ -376,7 +439,7 @@ export default function HomePage() {
               </span>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-8 text-[15px] font-light text-slate-500">
+            <nav className="hidden md:flex items-center gap-8 text-[15px] font-normal text-slate-600">
               <a
                 href="#alur"
                 className="hover:text-[#0A0D14] transition-colors"
@@ -384,16 +447,16 @@ export default function HomePage() {
                 Alur Belajar
               </a>
               <a
-                href="#submateri"
-                className="hover:text-[#0A0D14] transition-colors"
-              >
-                Kurikulum
-              </a>
-              <a
                 href="#simulasi"
                 className="hover:text-[#0A0D14] transition-colors"
               >
                 Simulasi CBT
+              </a>
+              <a
+                href="#submateri"
+                className="hover:text-[#0A0D14] transition-colors"
+              >
+                Kurikulum
               </a>
             </nav>
           </div>
@@ -401,99 +464,68 @@ export default function HomePage() {
           <div className="hidden lg:flex lg:col-span-6 items-center justify-end gap-6">
             <Link
               href="/login"
-              className="text-[15px] font-light text-white/85 hover:text-white transition-colors"
+              className="text-[15px] font-normal text-white/90 hover:text-white transition-colors"
             >
               Masuk
             </Link>
-            <Link
-              href="/register"
-              className="px-6 py-2.5 rounded-full bg-white text-[#1B68FF] text-sm font-medium hover:bg-blue-50 hover:scale-[1.03] active:scale-[0.98] transition-all shadow-[0_10px_25px_rgba(0,0,0,0.14)]"
+            <button
+              type="button"
+              onClick={() => handleNavigate("/register")}
+              disabled={loadingRoute === "/register"}
+              className="px-6 py-2.5 rounded-full bg-white text-[#1B68FF] text-sm font-medium hover:bg-blue-50 active:translate-y-0.5 transition-all shadow-[0_10px_25px_rgba(0,0,0,0.14)] flex items-center gap-2 cursor-pointer disabled:opacity-75"
             >
-              Mulai Belajar →
-            </Link>
+              {loadingRoute === "/register" ? (
+                <>
+                  <span className="w-3.5 h-3.5 rounded-full border-2 border-[#1B68FF]/30 border-t-[#1B68FF] animate-spin" />
+                  <span>Memuat...</span>
+                </>
+              ) : (
+                <>
+                  <span>Mulai Belajar</span>
+                  <svg
+                    className="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M5 12h14M13 5l7 7-7 7" />
+                  </svg>
+                </>
+              )}
+            </button>
           </div>
         </div>
       </header>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          2. HERO SECTION — 50/50 SALVAMEDIC SPLIT + GIANT SMP STUDENT CUTOUT
+          2. HERO SECTION — 50/50 SPLIT + CONNECTED "Asesmen Mandiri" + GIANT STUDENT
          ═══════════════════════════════════════════════════════════════════ */}
       <section className="relative w-full min-h-screen flex flex-col justify-between overflow-hidden bg-[#F4F7FC]">
-        {/* Background 50/50 Split */}
+        {/* Clean 50/50 Split Background (#13: Removed decorative wireframe clutter) */}
         <div className="absolute inset-0 grid grid-cols-1 lg:grid-cols-12 pointer-events-none">
-          <div className="lg:col-span-6 relative bg-[#F4F7FC] overflow-hidden">
-            <svg
-              className="absolute -top-10 -left-16 w-[540px] h-[540px] text-slate-900 opacity-[0.04]"
-              viewBox="0 0 400 400"
-              fill="none"
-            >
-              <polygon
-                points="200,20 340,100 340,260 200,340 60,260 60,100"
-                stroke="currentColor"
-                strokeWidth="2"
-              />
-              <polygon
-                points="120,160 220,220 220,340 120,400 20,340 20,220"
-                stroke="currentColor"
-                strokeWidth="2"
-              />
-              <polygon
-                points="280,140 380,200 380,320 280,380 180,320 180,200"
-                stroke="currentColor"
-                strokeWidth="2"
-              />
-            </svg>
-          </div>
-
-          <div className="lg:col-span-6 relative bg-gradient-to-br from-[#2370FF] via-[#1B68FF] to-[#0D4EE0] lg:rounded-bl-[64px] overflow-hidden min-h-[580px]">
-            <svg
-              className="absolute top-1/4 -right-24 w-[500px] h-[500px] text-white opacity-[0.07]"
-              viewBox="0 0 400 400"
-              fill="none"
-            >
-              <polygon
-                points="200,20 340,100 340,260 200,340 60,260 60,100"
-                stroke="currentColor"
-                strokeWidth="2"
-              />
-              <polygon
-                points="140,180 280,260 280,400 140,480 0,400 0,260"
-                stroke="currentColor"
-                strokeWidth="2"
-              />
-            </svg>
-          </div>
+          <div className="lg:col-span-6 bg-[#F4F7FC]" />
+          <div className="lg:col-span-6 bg-gradient-to-br from-[#2370FF] via-[#1B68FF] to-[#0D4EE0] lg:rounded-bl-[64px] min-h-[580px]" />
         </div>
 
-        {/* Left & Right Vertical Edge Micro-Labels */}
-        <div className="hidden xl:flex items-center gap-3 absolute left-6 top-[32%] -translate-y-1/2 -rotate-90 origin-left z-30 pointer-events-none text-xs font-light tracking-widest text-slate-300">
-          <span className="w-8 h-px bg-slate-300" />
-          <span>AGRA</span>
-        </div>
-        <div className="hidden xl:flex items-center gap-3 absolute right-6 top-[32%] -translate-y-1/2 rotate-90 origin-right z-30 pointer-events-none text-xs font-light tracking-widest text-white/45">
-          <span className="w-8 h-px bg-white/45" />
-          <span>AGRA</span>
-        </div>
-
-        {/* FOREGROUND STAGE */}
         <div className="relative z-20 w-full pt-28 sm:pt-32 lg:pt-32 flex-1 flex flex-col justify-between">
           {/* TOP GIANT HEADLINE: "AGRA" + CONNECTED "Asesmen Mandiri" */}
           <div className="relative w-full">
-            {/* Row 1: "AGRA" + Official Tagline on the Blue Side */}
             <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-end px-6 sm:px-12 lg:px-16 gap-4">
               <div className="lg:col-span-6 flex lg:justify-start">
                 <RevealPop delay={40}>
-                  <h1 className="text-[4.5rem] sm:text-[7rem] lg:text-[9.2vw] font-normal tracking-[-0.055em] leading-[0.88] text-[#0A0D14] select-none">
+                  {/* Rule #17: Optical margin alignment -ml-[0.04em] */}
+                  <h1 className="-ml-[0.04em] text-[4.5rem] sm:text-[7rem] lg:text-[9.2vw] font-normal tracking-[-0.055em] leading-[0.88] text-[#0A0D14] select-none">
                     AGRA
                   </h1>
                 </RevealPop>
               </div>
 
               <div className="lg:col-span-6 flex lg:justify-start lg:pl-6 lg:pb-3">
-                <RevealPop delay={140}>
-                  <p className="max-w-[440px] text-lg sm:text-xl lg:text-[22px] font-light leading-[1.35] text-white/95">
-                    Ruang Belajar &amp; Simulasi Mandiri <br />
-                    <span className="text-white/70">
+                <RevealPop delay={120}>
+                  <p className="max-w-[440px] text-lg sm:text-xl lg:text-[22px] font-normal leading-[1.38] text-white text-balance">
+                    Ruang Belajar &amp; Simulasi Mandiri{" "}
+                    <span className="block text-blue-100 font-light">
                       Tes Kemampuan Akademik SMP.
                     </span>
                   </p>
@@ -501,8 +533,8 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Row 2: CONNECTED "Asesmen Mandiri" (Locked Together Across the 50/50 Split Line!) */}
-            <RevealPop delay={220} className="w-full mt-1 lg:mt-2">
+            {/* Row 2: CONNECTED "Asesmen Mandiri" Across the 50/50 Split */}
+            <RevealPop delay={200} className="w-full mt-1 lg:mt-2">
               <div className="w-full px-6 sm:px-12 lg:px-0 grid grid-cols-1 lg:grid-cols-12 items-baseline">
                 <div className="lg:col-span-6 flex lg:justify-end lg:pr-[0.14em]">
                   <span className="text-[4.2rem] sm:text-[6.5rem] lg:text-[8.6vw] font-normal tracking-[-0.05em] leading-[0.9] text-[#0A0D14] select-none whitespace-nowrap">
@@ -518,80 +550,78 @@ export default function HomePage() {
             </RevealPop>
           </div>
 
-          {/* BOTTOM ROW: LEFT "SOLUSI" CARD + RIGHT GIANT SMP STUDENT CUTOUT */}
+          {/* BOTTOM ROW: SPECIFIC VALUE CARD + GIANT SMP STUDENT CUTOUT */}
           <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-end px-6 sm:px-12 lg:px-16 gap-8 mt-8 lg:mt-0">
-            {/* Bottom-Left: "Solusi" Editorial Card */}
             <div className="lg:col-span-6 pb-12 lg:pb-16 lg:pr-8 relative z-30">
-              <RevealPop delay={320}>
-                <div className="relative bg-white rounded-[32px] p-8 sm:p-11 shadow-[0_24px_60px_rgba(15,23,42,0.05)] border border-slate-100 max-w-[580px] hover:-translate-y-1 transition-transform duration-500">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                      <span className="w-6 h-6 rounded-full bg-[#1B68FF] text-white flex items-center justify-center shadow-sm">
-                        <svg
-                          className="w-3.5 h-3.5"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                        >
-                          <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
-                          <path d="M21 3v5h-5" />
-                        </svg>
-                      </span>
-                      <h2 className="text-2xl sm:text-[28px] font-normal tracking-[-0.03em] text-[#0A0D14]">
-                        Solusi
+              <RevealPop delay={280}>
+                {/* Rule #14: Outer rounded-[32px] p-3 (12px) -> Inner content rounded-[20px] */}
+                <div className="bg-white/70 rounded-[32px] p-3 shadow-[0_24px_60px_rgba(15,23,42,0.06)] border border-white max-w-[580px]">
+                  <div className="bg-white rounded-[20px] p-6 sm:p-8 border border-slate-100">
+                    {/* Rule #9: Specific Headline instead of generic "Solusi" */}
+                    <div className="flex items-center justify-between gap-4 mb-4">
+                      <h2 className="text-xl sm:text-2xl font-medium tracking-[-0.03em] text-[#0A0D14] text-balance">
+                        Persiapan Terukur dari Diagnostik hingga Ujian CBT
                       </h2>
                     </div>
 
-                    <div className="flex items-center gap-2 text-xs font-light text-slate-300">
-                      <span className="w-7 h-px bg-slate-200" />
-                      <span>AGRA</span>
+                    {/* Rule #15 & #16 & #18: High contrast slate-600, text-pretty, tabular-nums */}
+                    <p className="text-[15.5px] sm:text-[16px] font-normal leading-[1.68] text-slate-600 mb-7 text-pretty tabular-nums">
+                      <strong className="font-semibold text-[#0A0D14]">
+                        dirancang tanpa tekanan berlebih
+                      </strong>{" "}
+                      agar siswa fokus menguasai konsep esensial Fase D.
+                      Evaluasi dimulai dari pemetaan prasyarat{" "}
+                      <strong className="font-semibold text-[#0A0D14]">
+                        ketuntasan 90%
+                      </strong>
+                      , dilanjutkan latihan bertahap{" "}
+                      <span className="text-[#1B68FF] font-medium">
+                        3 level kognitif (L1, L2, HOTS)
+                      </span>
+                      , hingga simulasi mandiri{" "}
+                      <strong className="font-semibold text-[#0A0D14]">
+                        75 menit
+                      </strong>
+                      .
+                    </p>
+
+                    {/* Rule #10 & #19: Emphasized Primary CTA + Loading State */}
+                    <div className="flex flex-wrap items-center gap-3.5">
+                      <button
+                        type="button"
+                        onClick={() => handleNavigate("/register")}
+                        disabled={loadingRoute === "/register"}
+                        className="px-7 py-3.5 rounded-[14px] bg-[#1B68FF] hover:bg-[#1454D6] active:translate-y-0.5 text-white text-sm font-medium transition-all shadow-[0_12px_28px_rgba(27,104,255,0.28)] flex items-center gap-2.5 cursor-pointer disabled:opacity-75"
+                      >
+                        {loadingRoute === "/register" ? (
+                          <>
+                            <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                            <span>Membuka Ruang Asesmen...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Mulai Asesmen Sekarang</span>
+                            <svg
+                              className="w-4 h-4"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                            >
+                              <path d="M5 12h14M13 5l7 7-7 7" />
+                            </svg>
+                          </>
+                        )}
+                      </button>
+
+                      <a
+                        href="#simulasi"
+                        className="px-6 py-3.5 rounded-[14px] bg-[#F4F7FC] hover:bg-slate-200/75 text-[#0A0D14] text-sm font-medium transition-colors"
+                      >
+                        Coba Soal Interaktif
+                      </a>
                     </div>
                   </div>
-
-                  <p className="text-[15px] sm:text-[16.5px] font-light leading-[1.7] text-slate-500 mb-8">
-                    <strong className="font-medium text-[#0A0D14]">
-                      Ruang Belajar &amp; Simulasi Mandiri Tes Kemampuan
-                      Akademik SMP
-                    </strong>{" "}
-                    yang dirancang jernih, tenang, dan empatik untuk membangun
-                    kepercayaan diri siswa.{" "}
-                    <strong className="font-medium text-[#0A0D14]">
-                      Struktur evaluasi 4 tahap tersusun praktis dan logis,
-                    </strong>{" "}
-                    memadukan konsep esensial dengan latihan terarah.{" "}
-                    <span className="text-[#1B68FF] font-normal">
-                      Perhatian khusus diberikan pada pengalaman belajar:
-                    </span>{" "}
-                    diagnostik awal 90%, drill 3 level kognitif, dan simulasi
-                    CBT 75 menit yang adaptif.
-                  </p>
-
-                  <div className="flex flex-wrap items-center gap-4">
-                    <Link
-                      href="/register"
-                      className="px-7 py-3.5 rounded-full bg-[#1B68FF] hover:bg-[#1454D6] hover:scale-[1.02] active:scale-[0.98] text-white text-sm font-medium transition-all shadow-[0_12px_28px_rgba(27,104,255,0.28)]"
-                    >
-                      Mulai Asesmen Sekarang →
-                    </Link>
-                    <Link
-                      href="/login"
-                      className="px-6 py-3.5 rounded-full bg-[#F4F7FC] hover:bg-slate-200/70 text-[#0A0D14] text-sm font-normal transition-all"
-                    >
-                      Masuk ke Akun
-                    </Link>
-                  </div>
-
-                  {/* 3D Paper Dart Accent */}
-                  <svg
-                    className="absolute -bottom-6 left-4 w-12 h-12 drop-shadow-[0_10px_14px_rgba(27,104,255,0.28)] pointer-events-none"
-                    viewBox="0 0 64 64"
-                    fill="none"
-                  >
-                    <path d="M58 10L8 28L26 36L58 10Z" fill="#93BAFF" />
-                    <path d="M58 10L26 36L32 54L58 10Z" fill="#4D8BFF" />
-                    <path d="M26 36L32 54L38 40L58 10L26 36Z" fill="#1B68FF" />
-                  </svg>
                 </div>
               </RevealPop>
             </div>
@@ -601,150 +631,134 @@ export default function HomePage() {
               <div className="relative w-full sm:w-[540px] lg:w-[660px] xl:w-[760px] max-w-none h-[380px] sm:h-[470px] lg:h-[540px] xl:h-[600px] flex items-end justify-center">
                 <SmartStudentCutout />
               </div>
-
-              <svg
-                className="hidden sm:block absolute bottom-6 right-2 w-11 h-11 rotate-[-70deg] drop-shadow-[0_10px_14px_rgba(0,0,0,0.2)]"
-                viewBox="0 0 64 64"
-                fill="none"
-              >
-                <path d="M58 10L8 28L26 36L58 10Z" fill="#B8D0FF" />
-                <path d="M58 10L26 36L32 54L58 10Z" fill="#6CA0FF" />
-              </svg>
             </div>
           </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          3. SECTION: ALUR BELAJAR 4 TAHAP (#alur) — ASYMMETRIC BENTO
+          3. SECTION: ALUR BELAJAR 4 TAHAP (#alur)
+             (#8 Group with spacing, #9 Specific Headline, #18 Tabular Nums)
          ═══════════════════════════════════════════════════════════════════ */}
       <section
         id="alur"
         className="relative w-full py-24 sm:py-32 px-6 sm:px-12 lg:px-16 bg-[#F4F7FC]"
       >
         <RevealPop>
-          <div className="flex items-start justify-between gap-6 mb-14 lg:mb-20">
-            <h2 className="text-5xl sm:text-7xl lg:text-[5.6rem] font-normal tracking-[-0.045em] leading-none text-[#0A0D14]">
-              Alur Belajar
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-14 lg:mb-16">
+            <h2 className="text-4xl sm:text-6xl lg:text-[4.5rem] font-normal tracking-[-0.045em] leading-[0.96] text-[#0A0D14] text-balance max-w-3xl">
+              Empat Tahap Menuju Ketuntasan Akademik
             </h2>
-
-            <span className="text-xl sm:text-2xl font-light tracking-[-0.02em] text-[#5A524C] pt-2">
-              &#123;04 Tahap&#125;
-            </span>
+            <p className="text-base sm:text-lg font-normal text-slate-600 max-w-md text-pretty">
+              Setiap tahap dirancang berurutan agar siswa memahami pondasi
+              materi sebelum menguji kecepatan di simulasi ujian.
+            </p>
           </div>
         </RevealPop>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <RevealPop delay={60} className="lg:col-span-7">
-            <div className="h-full bg-white rounded-[36px] p-8 sm:p-12 shadow-[0_20px_50px_rgba(15,23,42,0.03)] border border-slate-100 flex flex-col justify-between min-h-[320px] hover:-translate-y-1.5 transition-transform duration-500">
-              <div className="flex items-start justify-between">
-                <span className="text-6xl sm:text-7xl font-light tracking-[-0.05em] text-[#1B68FF]">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 tabular-nums">
+          <RevealPop delay={50} className="lg:col-span-7">
+            <div className="h-full bg-white rounded-[32px] p-8 sm:p-11 shadow-[0_20px_50px_rgba(15,23,42,0.03)] border border-slate-200/70 flex flex-col justify-between min-h-[300px] hover:-translate-y-1 transition-transform duration-300">
+              <div className="flex items-center justify-between">
+                <span className="text-5xl sm:text-6xl font-light tracking-[-0.05em] text-[#1B68FF]">
                   01
                 </span>
-                <span className="text-sm font-light text-slate-400">
-                  &#123;Diagnostik&#125;
+                <span className="px-3.5 py-1.5 rounded-full bg-emerald-50 text-[#059669] text-xs font-medium">
+                  Syarat Lulus ≥ 90%
                 </span>
               </div>
 
               <div className="mt-10">
-                <h3 className="text-2xl sm:text-3xl font-normal tracking-[-0.03em] text-[#0A0D14] mb-3">
-                  Recall Kemampuan Prasyarat
+                <h3 className="text-2xl sm:text-3xl font-medium tracking-[-0.03em] text-[#0A0D14] mb-3 text-balance">
+                  Diagnostik Recall Kemampuan Awal
                 </h3>
-                <p className="text-[15.5px] font-light leading-[1.7] text-slate-500 max-w-xl">
-                  <strong className="font-medium text-[#0A0D14]">
-                    Tuntaskan asesmen awal 30 butir soal
+                <p className="text-[16px] font-normal leading-[1.68] text-slate-600 max-w-xl text-pretty">
+                  Siswa menyelesaikan{" "}
+                  <strong className="font-semibold text-[#0A0D14]">
+                    30 butir soal prasyarat
                   </strong>{" "}
-                  dengan ambang penguasaan minimal 90%. Tahap ini memastikan
-                  pondasi konsep dasar siswa benar-benar matang sebelum memasuki{" "}
-                  <span className="text-[#1B68FF] font-normal">
-                    peta kurikulum inti Fase D.
-                  </span>
+                  untuk memetakan kesiapan dasar sebelum membuka seluruh
+                  submateri Fase D.
                 </p>
               </div>
             </div>
           </RevealPop>
 
-          <RevealPop delay={140} className="lg:col-span-5">
-            <div className="h-full bg-[#1B68FF] text-white rounded-[36px] p-8 sm:p-12 relative overflow-hidden flex flex-col justify-between min-h-[320px] hover:-translate-y-1.5 transition-transform duration-500">
-              <div className="flex items-start justify-between relative z-10">
-                <span className="text-6xl sm:text-7xl font-light tracking-[-0.05em] text-white">
+          <RevealPop delay={110} className="lg:col-span-5">
+            <div className="h-full bg-[#1B68FF] text-white rounded-[32px] p-8 sm:p-11 flex flex-col justify-between min-h-[300px] hover:-translate-y-1 transition-transform duration-300">
+              <div className="flex items-center justify-between">
+                <span className="text-5xl sm:text-6xl font-light tracking-[-0.05em] text-white">
                   02
                 </span>
-                <span className="text-sm font-light text-white/70">
-                  &#123;Konsep&#125;
-                </span>
-              </div>
-
-              <div className="mt-10 relative z-10">
-                <h3 className="text-2xl sm:text-3xl font-normal tracking-[-0.03em] text-white mb-3">
-                  Eksplorasi 16 Submateri
-                </h3>
-                <p className="text-[15.5px] font-light leading-[1.7] text-white/85">
-                  Pelajari ringkasan konsep esensial dan pemodelan visual pada 8
-                  topik Numerasi Matematika serta 8 topik Literasi Bahasa
-                  Indonesia.
-                </p>
-              </div>
-            </div>
-          </RevealPop>
-
-          <RevealPop delay={200} className="lg:col-span-5">
-            <div className="h-full bg-[#EEF2FA] rounded-[36px] p-8 sm:p-12 border border-white flex flex-col justify-between min-h-[320px] hover:-translate-y-1.5 transition-transform duration-500">
-              <div className="flex items-start justify-between">
-                <span className="text-6xl sm:text-7xl font-light tracking-[-0.05em] text-[#0A0D14]">
-                  03
-                </span>
-                <span className="text-sm font-light text-slate-500">
-                  &#123;Drill&#125;
+                <span className="text-sm font-normal text-blue-100">
+                  16 Topik Inti
                 </span>
               </div>
 
               <div className="mt-10">
-                <h3 className="text-2xl sm:text-3xl font-normal tracking-[-0.03em] text-[#0A0D14] mb-3">
-                  Latihan 3 Level Kognitif
+                <h3 className="text-2xl sm:text-3xl font-medium tracking-[-0.03em] text-white mb-3 text-balance">
+                  Pemahaman Konsep Numerasi &amp; Literasi
                 </h3>
-                <p className="text-[15.5px] font-light leading-[1.7] text-slate-500">
-                  <strong className="font-medium text-[#0A0D14]">
-                    Selesaikan latihan bertahap
-                  </strong>{" "}
-                  mulai dari Level 1 (Pemahaman), Level 2 (Aplikasi
-                  Kontekstual), hingga{" "}
-                  <span className="text-[#1B68FF] font-normal">
-                    Level 3 (Penalaran HOTS).
-                  </span>
+                <p className="text-[16px] font-normal leading-[1.68] text-blue-100 text-pretty">
+                  Ringkasan terstruktur pada 8 topik Matematika dan 8 topik
+                  Bahasa Indonesia lengkap dengan pemodelan kontekstual.
                 </p>
               </div>
             </div>
           </RevealPop>
 
-          <RevealPop delay={280} className="lg:col-span-7">
-            <div className="h-full bg-[#0A0D14] text-white rounded-[36px] p-8 sm:p-12 relative overflow-hidden flex flex-col justify-between min-h-[320px] hover:-translate-y-1.5 transition-transform duration-500">
-              <div className="flex items-start justify-between relative z-10">
-                <span className="text-6xl sm:text-7xl font-light tracking-[-0.05em] text-[#1B68FF]">
-                  04
+          <RevealPop delay={170} className="lg:col-span-5">
+            <div className="h-full bg-white rounded-[32px] p-8 sm:p-11 border border-slate-200/70 flex flex-col justify-between min-h-[300px] hover:-translate-y-1 transition-transform duration-300">
+              <div className="flex items-center justify-between">
+                <span className="text-5xl sm:text-6xl font-light tracking-[-0.05em] text-[#0A0D14]">
+                  03
                 </span>
-                <span className="text-sm font-light text-white/50">
-                  &#123;Evaluasi&#125;
+                <span className="text-sm font-medium text-[#1B68FF]">
+                  L1 • L2 • HOTS
                 </span>
               </div>
 
-              <div className="mt-10 flex flex-col sm:flex-row sm:items-end justify-between gap-6 relative z-10">
+              <div className="mt-10">
+                <h3 className="text-2xl sm:text-3xl font-medium tracking-[-0.03em] text-[#0A0D14] mb-3 text-balance">
+                  Latihan Berjenjang 3 Level Kognitif
+                </h3>
+                <p className="text-[16px] font-normal leading-[1.68] text-slate-600 text-pretty">
+                  Latihan adaptif mulai dari Level 1 (Pemahaman), Level 2
+                  (Aplikasi), hingga Level 3 (Penalaran HOTS C4).
+                </p>
+              </div>
+            </div>
+          </RevealPop>
+
+          <RevealPop delay={230} className="lg:col-span-7">
+            <div className="h-full bg-[#0A0D14] text-white rounded-[32px] p-8 sm:p-11 flex flex-col justify-between min-h-[300px] hover:-translate-y-1 transition-transform duration-300">
+              <div className="flex items-center justify-between">
+                <span className="text-5xl sm:text-6xl font-light tracking-[-0.05em] text-[#10B981]">
+                  04
+                </span>
+                <span className="font-mono text-sm text-slate-300">
+                  75:00 CBT
+                </span>
+              </div>
+
+              <div className="mt-10 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
                 <div className="max-w-lg">
-                  <h3 className="text-2xl sm:text-3xl font-normal tracking-[-0.03em] text-white mb-3">
-                    Simulasi CBT 75 Menit
+                  <h3 className="text-2xl sm:text-3xl font-medium tracking-[-0.03em] text-white mb-3 text-balance">
+                    Simulasi Ujian CBT 75 Menit
                   </h3>
-                  <p className="text-[15.5px] font-light leading-[1.7] text-white/70">
-                    Uji kesiapan puncak dalam simulasi berwaktu 75 menit dengan
-                    skoring pilihan ganda kompleks dan bedah kunci nalar.
+                  <p className="text-[16px] font-normal leading-[1.68] text-slate-300 text-pretty">
+                    Evaluasi komprehensif dengan timer waktu nyata, skoring
+                    pilihan ganda kompleks, dan pembahasan kunci nalar.
                   </p>
                 </div>
 
-                <Link
-                  href="/register"
-                  className="px-7 py-3.5 rounded-full bg-[#1B68FF] hover:bg-[#1454D6] text-white text-sm font-medium whitespace-nowrap transition-all self-start sm:self-end"
+                <button
+                  type="button"
+                  onClick={() => handleNavigate("/register")}
+                  className="px-6 py-3.5 rounded-[14px] bg-[#1B68FF] hover:bg-[#1454D6] text-white text-sm font-medium whitespace-nowrap transition-all self-start sm:self-end cursor-pointer"
                 >
                   Mulai Tahap 01 →
-                </Link>
+                </button>
               </div>
             </div>
           </RevealPop>
@@ -752,164 +766,292 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          4. SECTION: KURIKULUM 16 SUBMATERI (#submateri)
-         ═══════════════════════════════════════════════════════════════════ */}
-      <section
-        id="submateri"
-        className="relative w-full py-24 sm:py-32 px-6 sm:px-12 lg:px-16 bg-[#EEF2FA]"
-      >
-        <RevealPop>
-          <div className="flex items-start justify-between gap-6 mb-14 lg:mb-20">
-            <h2 className="text-5xl sm:text-7xl lg:text-[5.6rem] font-normal tracking-[-0.045em] leading-none text-[#0A0D14]">
-              Kurikulum
-            </h2>
-
-            <span className="text-xl sm:text-2xl font-light tracking-[-0.02em] text-[#5A524C] pt-2">
-              &#123;16 Submateri&#125;
-            </span>
-          </div>
-        </RevealPop>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          <RevealPop delay={80} className="lg:col-span-4 lg:sticky lg:top-12">
-            <div className="bg-white rounded-[32px] p-8 shadow-[0_20px_50px_rgba(15,23,42,0.03)] border border-slate-100">
-              <p className="text-xs font-light uppercase tracking-widest text-slate-400 mb-4">
-                Pilih Domain Kompetensi
-              </p>
-
-              <div className="flex flex-col gap-3 mb-8">
-                <button
-                  type="button"
-                  onClick={() => setActiveDomain("numerasi")}
-                  className={`w-full text-left px-6 py-4 rounded-[20px] transition-all flex items-center justify-between cursor-pointer ${activeDomain === "numerasi"
-                      ? "bg-[#1B68FF] text-white shadow-[0_12px_28px_rgba(27,104,255,0.25)]"
-                      : "bg-[#F4F7FC] text-[#0A0D14] hover:bg-slate-200/60"
-                    }`}
-                >
-                  <span className="text-base font-normal">
-                    Matematika (Numerasi)
-                  </span>
-                  <span className="text-xs font-light opacity-80">08</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setActiveDomain("literasi")}
-                  className={`w-full text-left px-6 py-4 rounded-[20px] transition-all flex items-center justify-between cursor-pointer ${activeDomain === "literasi"
-                      ? "bg-[#1B68FF] text-white shadow-[0_12px_28px_rgba(27,104,255,0.25)]"
-                      : "bg-[#F4F7FC] text-[#0A0D14] hover:bg-slate-200/60"
-                    }`}
-                >
-                  <span className="text-base font-normal">
-                    Bahasa Indonesia (Literasi)
-                  </span>
-                  <span className="text-xs font-light opacity-80">08</span>
-                </button>
-              </div>
-
-              <p className="text-[15px] font-light leading-[1.7] text-slate-500">
-                <strong className="font-medium text-[#0A0D14]">
-                  Setiap submateri dirancang sistematis
-                </strong>{" "}
-                dengan 30 butir soal adaptif yang mencakup pemahaman konsep,
-                aplikasi, hingga{" "}
-                <span className="text-[#1B68FF] font-normal">
-                  penalaran analitis HOTS.
-                </span>
-              </p>
-            </div>
-          </RevealPop>
-
-          <div
-            key={activeDomain}
-            className="lg:col-span-8 flex flex-col gap-3.5"
-          >
-            {activeItems.map((item, idx) => (
-              <RevealPop key={item.code} delay={idx * 45}>
-                <div className="group bg-white hover:bg-[#1B68FF] rounded-[28px] px-7 sm:px-9 py-6 transition-all duration-300 shadow-[0_10px_30px_rgba(15,23,42,0.02)] hover:shadow-[0_18px_40px_rgba(27,104,255,0.22)] hover:-translate-y-0.5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="flex items-start sm:items-center gap-5 sm:gap-7">
-                    <span className="text-2xl sm:text-3xl font-light tracking-[-0.04em] text-[#1B68FF] group-hover:text-white/80 transition-colors">
-                      {item.code}
-                    </span>
-                    <div>
-                      <h3 className="text-lg sm:text-xl font-normal tracking-[-0.02em] text-[#0A0D14] group-hover:text-white transition-colors">
-                        {item.title}
-                      </h3>
-                      <p className="text-sm font-light text-slate-400 group-hover:text-white/75 transition-colors mt-0.5">
-                        {item.scope}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between sm:justify-end gap-5 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 group-hover:border-white/15">
-                    <div className="text-left sm:text-right">
-                      <span className="block text-xs font-medium text-[#0A0D14] group-hover:text-white transition-colors">
-                        {item.itemsCount}
-                      </span>
-                      <span className="block text-[11px] font-light text-slate-400 group-hover:text-white/75 transition-colors">
-                        {item.cognitive}
-                      </span>
-                    </div>
-                    <span className="w-9 h-9 rounded-full bg-[#F4F7FC] group-hover:bg-white/20 text-[#0A0D14] group-hover:text-white flex items-center justify-center text-sm transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-                      ↗
-                    </span>
-                  </div>
-                </div>
-              </RevealPop>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          5. SECTION: SIMULASI & CLOSING STAGE (#simulasi) + FOOTER
+          4. SECTION: ENLARGED INTERACTIVE CBT PRODUCT PREVIEW (#simulasi)
+             (Rules #6 Show actual product, #7 Enlarge main feature, #11 Accent color,
+              #14 Inner radius = outer - padding, #18 Tabular nums, #20 Useful feedback)
          ═══════════════════════════════════════════════════════════════════ */}
       <section
         id="simulasi"
-        className="relative w-full pt-12 pb-20 px-6 sm:px-12 lg:px-16 bg-[#EEF2FA]"
+        className="relative w-full py-20 sm:py-28 px-6 sm:px-12 lg:px-16 bg-[#EEF2FA]"
       >
         <RevealPop>
-          <div className="relative w-full rounded-[44px] bg-gradient-to-br from-[#2370FF] via-[#1B68FF] to-[#0E50E4] p-10 sm:p-16 lg:p-24 overflow-hidden text-white shadow-[0_30px_80px_rgba(27,104,255,0.22)]">
-            <div className="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-12">
-              <div className="max-w-2xl">
-                <h2 className="text-4xl sm:text-6xl lg:text-[4.8rem] font-normal tracking-[-0.045em] leading-[0.95] text-white mb-6">
-                  Siap Memulai <br />
-                  Asesmen Mandiri?
-                </h2>
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
+            <div>
+              <h2 className="text-4xl sm:text-6xl lg:text-[4.5rem] font-normal tracking-[-0.045em] leading-[0.96] text-[#0A0D14] text-balance">
+                Antarmuka Simulasi CBT 75 Menit
+              </h2>
+            </div>
+            <p className="text-base sm:text-lg font-normal text-slate-600 max-w-md text-pretty">
+              Coba langsung pengalaman mengerjakan soal penalaran HOTS di bawah
+              ini—klik salah satu opsi jawaban untuk melihat evaluasi kunci
+              nalar instan.
+            </p>
+          </div>
+        </RevealPop>
 
-                <p className="text-base sm:text-lg font-light leading-relaxed text-white/80 max-w-xl">
-                  Buka akses penuh ke diagnostik prasyarat 90%, eksplorasi 16
-                  submateri Fase D, dan simulasi ujian CBT 75 menit dalam satu
-                  antarmuka yang tenang dan terukur.
-                </p>
+        {/* Rule #14: Outer shell rounded-[36px] p-4 (16px) -> Inner workspace rounded-[20px] (36 - 16 = 20) */}
+        <RevealPop delay={100}>
+          <div className="w-full rounded-[36px] p-3 sm:p-4 bg-white/80 border border-white shadow-[0_28px_70px_rgba(15,23,42,0.06)]">
+            <div className="w-full rounded-[20px] bg-white border border-slate-200/80 overflow-hidden">
+              {/* Top CBT Workspace Bar */}
+              <div className="px-6 sm:px-10 py-5 bg-[#F4F7FC] border-b border-slate-200/70 flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <span className="font-mono text-xs font-semibold px-3 py-1.5 rounded-[8px] bg-[#0A0D14] text-white tabular-nums">
+                    MAT-08 • LEVEL 3 HOTS
+                  </span>
+                  <span className="text-sm font-medium text-slate-700">
+                    Aritmetika Sosial &amp; Finansial
+                  </span>
+                </div>
+
+                {/* Rule #4 & #18: Mono & Tabular Nums on Live Countdown Timer */}
+                <div className="flex items-center gap-6 tabular-nums">
+                  <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                    <svg
+                      className="w-4 h-4 text-[#1B68FF]"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <circle cx="12" cy="12" r="9" />
+                      <path d="M12 7v5l3 2" />
+                    </svg>
+                    <span className="font-mono text-base font-semibold text-[#0A0D14] tabular-nums">
+                      {formatTime(secondsLeft)}
+                    </span>
+                  </div>
+
+                  <span className="hidden sm:inline-block text-xs font-medium text-slate-500 tabular-nums">
+                    Soal 14 / 30
+                  </span>
+                </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-end justify-between gap-6">
-                <span className="text-xl sm:text-2xl font-light text-white/75">
-                  &#123;CBT 75m&#125;
-                </span>
+              {/* Main CBT Split Workspace */}
+              <div className="grid grid-cols-1 lg:grid-cols-12">
+                {/* Left 7 Cols: Question Stem + Interactive Options */}
+                <div className="lg:col-span-7 p-6 sm:p-10 lg:border-r border-slate-200/70">
+                  <p className="text-base sm:text-[17px] font-normal leading-[1.7] text-[#0A0D14] mb-6 text-pretty tabular-nums">
+                    Sebuah toko buku memberikan promo bertingkat bertuliskan{" "}
+                    <strong className="font-semibold">
+                      &ldquo;Diskon 50% + 20%&rdquo;
+                    </strong>{" "}
+                    untuk paket buku persiapan ujian seharga{" "}
+                    <strong className="font-semibold">Rp400.000,00</strong>.
+                    Berapakah harga akhir yang harus dibayar siswa di kasir?
+                  </p>
 
-                <div className="flex flex-wrap items-center gap-4">
-                  <Link
-                    href="/register"
-                    className="px-8 py-4 rounded-full bg-white text-[#1B68FF] hover:bg-blue-50 hover:scale-[1.03] active:scale-[0.98] text-sm font-medium transition-all shadow-[0_16px_36px_rgba(0,0,0,0.18)]"
-                  >
-                    Daftar Akun Siswa →
-                  </Link>
-                  <Link
-                    href="/login"
-                    className="px-7 py-4 rounded-full bg-white/10 hover:bg-white/20 border border-white/25 text-white text-sm font-normal transition-all"
-                  >
-                    Masuk ke Akun
-                  </Link>
+                  {/* Interactive Answer Choices (#20 Animate useful feedback) */}
+                  <div className="flex flex-col gap-3">
+                    {SAMPLE_OPTIONS.map((opt) => {
+                      const isSelected = selectedOption === opt.id;
+                      const showEmerald = isSelected && opt.isCorrect;
+                      const showAmber = isSelected && !opt.isCorrect;
+
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => setSelectedOption(opt.id)}
+                          className={`w-full text-left p-4 sm:p-5 rounded-[14px] border-2 transition-all duration-200 flex items-start gap-4 cursor-pointer ${
+                            showEmerald
+                              ? "bg-emerald-50/70 border-[#10B981] text-[#064E3B]"
+                              : showAmber
+                              ? "bg-amber-50/80 border-amber-500 text-amber-950"
+                              : "bg-white hover:bg-[#F4F7FC] border-slate-200/80 text-slate-800"
+                          }`}
+                        >
+                          <span
+                            className={`w-7 h-7 rounded-[8px] font-mono text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
+                              showEmerald
+                                ? "bg-[#10B981] text-white"
+                                : showAmber
+                                ? "bg-amber-500 text-white"
+                                : "bg-[#F4F7FC] text-slate-700"
+                            }`}
+                          >
+                            {opt.id}
+                          </span>
+                          <span className="text-[15px] font-normal leading-[1.55] text-pretty tabular-nums">
+                            {opt.text}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Right 5 Cols: Instant "Bedah Kunci Nalar" Diagnostic Panel */}
+                <div className="lg:col-span-5 p-6 sm:p-10 bg-[#F8FAFC] flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                        Evaluasi Kunci Nalar Instan
+                      </span>
+                      {chosenOptionObj?.isCorrect ? (
+                        <span className="px-3 py-1 rounded-full bg-emerald-100 text-[#059669] text-xs font-semibold">
+                          Jawaban Tepat
+                        </span>
+                      ) : (
+                        <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-semibold">
+                          Perlu Evaluasi Konsep
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="p-5 rounded-[14px] bg-white border border-slate-200/80 mb-6">
+                      <p className="text-[15px] font-normal leading-[1.65] text-slate-700 text-pretty tabular-nums">
+                        {chosenOptionObj?.feedback}
+                      </p>
+                    </div>
+
+                    <div className="p-4 rounded-[12px] bg-[#EEF2FA] font-mono text-xs text-slate-700 space-y-1.5 tabular-nums">
+                      <div>Tahap 1: 50% × Rp400.000 = Rp200.000</div>
+                      <div>Tahap 2: Rp200.000 - (20% × Rp200.000)</div>
+                      <div className="font-semibold text-[#1B68FF]">
+                        Harga Akhir = Rp160.000,00
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-8 pt-6 border-t border-slate-200/80 flex items-center justify-between gap-4">
+                    <span className="text-xs font-normal text-slate-500 tabular-nums">
+                      480+ Soal Setara TKA Tersedia
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleNavigate("/register")}
+                      className="px-5 py-2.5 rounded-[12px] bg-[#0A0D14] hover:bg-[#1B68FF] text-white text-xs font-medium transition-colors cursor-pointer"
+                    >
+                      Buka Simulasi Penuh →
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </RevealPop>
+      </section>
 
-        {/* Clean Architectural Footer with Official AGRA Logo */}
-        <footer className="mt-14 pt-8 border-t border-slate-200/70 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 text-sm font-light text-slate-400">
+      {/* ═══════════════════════════════════════════════════════════════════
+          5. SECTION: KURIKULUM 16 SUBMATERI (#submateri)
+             (#2 Drop redundant labels, #14 Inner radius math, #18 Tabular nums)
+         ═══════════════════════════════════════════════════════════════════ */}
+      <section
+        id="submateri"
+        className="relative w-full py-24 sm:py-32 px-6 sm:px-12 lg:px-16 bg-[#F4F7FC]"
+      >
+        <RevealPop>
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-14 lg:mb-16">
+            <h2 className="text-4xl sm:text-6xl lg:text-[4.5rem] font-normal tracking-[-0.045em] leading-[0.96] text-[#0A0D14] text-balance max-w-3xl">
+              16 Submateri Inti Numerasi &amp; Literasi Fase D
+            </h2>
+
+            {/* Rule #14: Outer switcher rounded-[20px] p-1.5 (6px) -> Inner buttons rounded-[14px] (20 - 6 = 14) */}
+            <div className="inline-flex rounded-[20px] p-1.5 bg-[#EEF2FA] border border-slate-200/80 self-start lg:self-end">
+              <button
+                type="button"
+                onClick={() => setActiveDomain("numerasi")}
+                className={`px-5 py-2.5 rounded-[14px] text-sm font-medium transition-all cursor-pointer tabular-nums ${
+                  activeDomain === "numerasi"
+                    ? "bg-[#1B68FF] text-white shadow-sm"
+                    : "text-slate-600 hover:text-[#0A0D14]"
+                }`}
+              >
+                Matematika (08)
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveDomain("literasi")}
+                className={`px-5 py-2.5 rounded-[14px] text-sm font-medium transition-all cursor-pointer tabular-nums ${
+                  activeDomain === "literasi"
+                    ? "bg-[#1B68FF] text-white shadow-sm"
+                    : "text-slate-600 hover:text-[#0A0D14]"
+                }`}
+              >
+                Bahasa Indonesia (08)
+              </button>
+            </div>
+          </div>
+        </RevealPop>
+
+        <div
+          key={activeDomain}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 tabular-nums"
+        >
+          {activeItems.map((item, idx) => (
+            <RevealPop key={item.code} delay={idx * 40}>
+              <div className="group bg-white hover:bg-[#1B68FF] rounded-[24px] p-6 sm:p-7 transition-all duration-300 border border-slate-200/70 hover:border-[#1B68FF] shadow-[0_8px_24px_rgba(15,23,42,0.02)] hover:shadow-[0_18px_40px_rgba(27,104,255,0.2)] flex items-center justify-between gap-4">
+                <div className="flex items-start gap-5">
+                  <span className="font-mono text-2xl font-normal text-[#1B68FF] group-hover:text-blue-100 transition-colors tabular-nums">
+                    {item.code}
+                  </span>
+                  <div>
+                    <h3 className="text-lg sm:text-xl font-medium tracking-[-0.02em] text-[#0A0D14] group-hover:text-white transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="text-sm font-normal text-slate-600 group-hover:text-blue-100 transition-colors mt-1 text-pretty">
+                      {item.scope}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="text-right shrink-0 pl-3">
+                  <span className="block text-xs font-semibold text-[#0A0D14] group-hover:text-white transition-colors tabular-nums">
+                    {item.itemsCount} Soal
+                  </span>
+                  <span className="block text-xs font-normal text-[#059669] group-hover:text-emerald-200 transition-colors mt-0.5 tabular-nums">
+                    Lulus {item.passRate}
+                  </span>
+                </div>
+              </div>
+            </RevealPop>
+          ))}
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          6. CLOSING CTA STAGE & ARCHITECTURAL FOOTER
+         ═══════════════════════════════════════════════════════════════════ */}
+      <section className="relative w-full pt-8 pb-20 px-6 sm:px-12 lg:px-16 bg-[#F4F7FC]">
+        <RevealPop>
+          <div className="relative w-full rounded-[36px] bg-gradient-to-br from-[#2370FF] via-[#1B68FF] to-[#0E50E4] p-10 sm:p-16 lg:p-20 overflow-hidden text-white shadow-[0_28px_70px_rgba(27,104,255,0.22)]">
+            <div className="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-10">
+              <div className="max-w-2xl">
+                <h2 className="text-4xl sm:text-6xl lg:text-[4.4rem] font-normal tracking-[-0.045em] leading-[0.96] text-white mb-5 text-balance">
+                  Mulai Persiapan TKA SMP Hari Ini
+                </h2>
+                <p className="text-base sm:text-lg font-normal leading-relaxed text-blue-100 max-w-xl text-pretty tabular-nums">
+                  Akses langsung 30 soal diagnostik prasyarat, 16 submateri Fase
+                  D, dan paket simulasi CBT 75 menit dalam satu ruang belajar
+                  mandiri.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => handleNavigate("/register")}
+                  disabled={loadingRoute === "/register"}
+                  className="px-8 py-4 rounded-[16px] bg-white text-[#1B68FF] hover:bg-blue-50 active:translate-y-0.5 text-sm font-semibold transition-all shadow-[0_16px_36px_rgba(0,0,0,0.18)] cursor-pointer"
+                >
+                  {loadingRoute === "/register"
+                    ? "Memuat..."
+                    : "Daftar Akun Siswa →"}
+                </button>
+                <Link
+                  href="/login"
+                  className="px-7 py-4 rounded-[16px] bg-white/10 hover:bg-white/20 border border-white/25 text-white text-sm font-medium transition-all"
+                >
+                  Masuk ke Akun
+                </Link>
+              </div>
+            </div>
+          </div>
+        </RevealPop>
+
+        <footer className="mt-14 pt-8 border-t border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 text-sm font-normal text-slate-600">
           <div className="flex items-center gap-3">
             <img
               src="/assets/images/agra-icon.png"
@@ -919,7 +1061,7 @@ export default function HomePage() {
               }}
               className="w-6 h-6 object-contain"
             />
-            <span className="text-lg font-medium tracking-[-0.04em] text-[#0A0D14]">
+            <span className="text-lg font-semibold tracking-[-0.04em] text-[#0A0D14]">
               AGRA.
             </span>
             <span>
@@ -927,21 +1069,21 @@ export default function HomePage() {
             </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-7">
+          <div className="flex flex-wrap items-center gap-7 tabular-nums">
             <a href="#alur" className="hover:text-[#0A0D14] transition-colors">
               Alur Belajar
+            </a>
+            <a
+              href="#simulasi"
+              className="hover:text-[#0A0D14] transition-colors"
+            >
+              Simulasi CBT
             </a>
             <a
               href="#submateri"
               className="hover:text-[#0A0D14] transition-colors"
             >
               Kurikulum
-            </a>
-            <a
-              href="#simulasi"
-              className="hover:text-[#0A0D14] transition-colors"
-            >
-              Simulasi
             </a>
             <Link
               href="/login"
