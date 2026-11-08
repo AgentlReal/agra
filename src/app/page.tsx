@@ -210,11 +210,10 @@ function RevealPop({
         transitionDuration: "750ms",
         transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
         opacity: visible ? 1 : 0,
-        transform: visible
-          ? "translate3d(0, 0px, 0) scale(1)"
-          : "translate3d(0, 32px, 0) scale(0.95)",
+        transform: visible ? "none" : "translate3d(0, 32px, 0) scale(0.95)",
+        willChange: visible ? "auto" : "transform, opacity",
       }}
-      className={`will-change-transform ${className}`}
+      className={className}
     >
       {children}
     </div>
@@ -370,7 +369,7 @@ function SmartStudentCutout() {
   return (
     <div className="relative w-full h-full flex items-end justify-center">
       {!ready && (
-        <div className="w-[75%] h-[82%] rounded-t-[180px] bg-white/10 animate-pulse border border-white/15" />
+        <div className="w-[85%] h-[92%] rounded-t-[200px] bg-white/10 animate-pulse border border-white/15" />
       )}
       {processedSrc && (
         <img
@@ -380,11 +379,9 @@ function SmartStudentCutout() {
             transition:
               "opacity 800ms cubic-bezier(0.16,1,0.3,1), transform 800ms cubic-bezier(0.16,1,0.3,1)",
             opacity: ready ? 1 : 0,
-            transform: ready
-              ? "translateY(0) scale(1)"
-              : "translateY(36px) scale(0.94)",
+            transform: ready ? "translateY(0)" : "translateY(36px)",
           }}
-          className="w-full h-full object-contain object-bottom drop-shadow-[0_32px_64px_rgba(4,18,56,0.42)] select-none"
+          className="w-full h-full object-contain object-bottom scale-105 sm:scale-115 lg:scale-130 xl:scale-145 2xl:scale-155 origin-bottom drop-shadow-[0_32px_64px_rgba(4,18,56,0.45)] select-none"
         />
       )}
     </div>
@@ -549,17 +546,20 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Row 2: CONNECTED "Asesmen Mandiri" Across the 50/50 Split */}
-            <RevealPop delay={200} className="w-full mt-1 lg:mt-2">
+            {/* Row 2: CONNECTED "Asesmen Mandiri" Across the 50/50 Split (Z-40 in front of student) */}
+            <RevealPop delay={200} className="w-full mt-1 lg:mt-2 relative z-40">
               <div className="w-full px-6 sm:px-12 lg:px-0 grid grid-cols-1 lg:grid-cols-12 items-baseline">
                 <div className="lg:col-span-6 flex lg:justify-end lg:pr-[0.14em]">
                   <span className="text-[4.2rem] sm:text-[6.5rem] lg:text-[8.6vw] font-normal tracking-[-0.05em] leading-[0.9] text-[#0A0D14] select-none whitespace-nowrap">
                     Asesmen
                   </span>
                 </div>
-                <div className="lg:col-span-6 flex lg:justify-start lg:pl-[0.14em]">
+                <div className="lg:col-span-6 flex lg:justify-start lg:pl-[0.14em] relative z-40">
                   <span className="text-[4.2rem] sm:text-[6.5rem] lg:text-[8.6vw] font-normal tracking-[-0.05em] leading-[0.9] text-white select-none whitespace-nowrap">
-                    Mandiri
+                    <span>Ma</span>
+                    <span className="mix-blend-difference text-white inline-block">
+                      ndiri
+                    </span>
                   </span>
                 </div>
               </div>
@@ -636,9 +636,9 @@ export default function HomePage() {
               </RevealPop>
             </div>
 
-            {/* Bottom-Right: GIANT SMP STUDENT CUTOUT OVERLAPPING "Mandiri" */}
-            <div className="lg:col-span-6 relative flex items-end justify-center lg:-mt-44 xl:-mt-52 z-30 pointer-events-none">
-              <div className="relative w-full sm:w-[540px] lg:w-[660px] xl:w-[760px] max-w-none h-[380px] sm:h-[470px] lg:h-[540px] xl:h-[600px] flex items-end justify-center">
+            {/* Bottom-Right: GIANT SMP STUDENT CUTOUT BEHIND "Mandiri" (Z-20) */}
+            <div className="lg:col-span-6 relative flex items-end justify-center lg:justify-start lg:-translate-x-6 xl:-translate-x-12 -mt-16 sm:-mt-24 lg:-mt-64 xl:-mt-80 2xl:-mt-96 z-20 pointer-events-none">
+              <div className="relative w-full sm:w-[620px] lg:w-[820px] xl:w-[960px] 2xl:w-[1100px] max-w-none h-[440px] sm:h-[540px] lg:h-[700px] xl:h-[820px] 2xl:h-[920px] flex items-end justify-center">
                 <SmartStudentCutout />
               </div>
             </div>
