@@ -4,25 +4,6 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-/**
- * DESIGN SYSTEM TOKENS (Rule #3.3 — Unified Style Guide)
- * - Typography: Onest 100% everywhere across display, body, and tabular numerics (JetBrains Mono strictly banned)
- * - Golden Ratio Typography Scale (Base = 16px, Multiplier = 1.618):
- *   • Body Text: 16px (text-[16px]) | Line-height: 155% (leading-[1.55])
- *   • H3 Subheading: 26px (16 * 1.618) | Line-height: 130% (leading-[1.3])
- *   • H2 Section Heading: 42px -> 68px (26 * 1.618)
- * - Buttons: Minimum 48x48px touch target (min-h-[48px] min-w-[48px])
- */
-const UI = {
-  btnPrimary:
-    "min-h-[48px] min-w-[48px] px-7 py-3 rounded-[14px] bg-[#1B68FF] hover:bg-[#1454D6] active:translate-y-0.5 text-white text-[16px] font-medium transition-all shadow-[0_10px_24px_rgba(27,104,255,0.28)] inline-flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-75",
-  btnSecondaryOutline:
-    "min-h-[48px] min-w-[48px] px-6 py-3 rounded-[14px] bg-white hover:bg-[#F4F7FC] active:translate-y-0.5 text-[#0A0D14] border-2 border-slate-300 hover:border-[#1B68FF] text-[16px] font-medium transition-all inline-flex items-center justify-center gap-2 cursor-pointer",
-  bodyText: "text-[16px] sm:text-[17px] font-normal leading-[1.55] text-[#1E293B] text-pretty",
-  h3Title: "text-[24px] sm:text-[26px] font-medium tracking-[-0.025em] leading-[1.3] text-[#0A0D14] text-balance",
-  h2Section: "text-[38px] sm:text-[52px] lg:text-[68px] font-normal tracking-[-0.04em] leading-[1.05] text-[#0A0D14] text-balance",
-};
-
 interface SubmateriItem {
   code: string;
   title: string;
@@ -35,56 +16,64 @@ const NUMERASI_DATA: SubmateriItem[] = [
   {
     code: "01",
     title: "Bilangan Bulat & Pecahan",
-    scope: "Operasi hitung campuran, estimasi nilai, dan pemodelan kontekstual.",
+    scope:
+      "Operasi hitung campuran bilangan bulat, pecahan, desimal, serta estimasi nilai pada masalah sehari-hari.",
     itemsCount: 30,
     passRate: "90%",
   },
   {
     code: "02",
     title: "Aljabar & Persamaan Linear",
-    scope: "Penyederhanaan bentuk aljabar, relasi fungsi, dan persamaan linear.",
+    scope:
+      "Penyederhanaan bentuk aljabar, persamaan dan pertidaksamaan linear satu variabel, serta sistem persamaan linear.",
     itemsCount: 30,
     passRate: "90%",
   },
   {
     code: "03",
     title: "Perbandingan & Skala Numerik",
-    scope: "Proporsi senilai, berbalik nilai, laju perubahan, dan skala peta.",
+    scope:
+      "Perbandingan senilai dan berbalik nilai, pembacaan skala peta, serta perhitungan laju perubahan.",
     itemsCount: 30,
     passRate: "90%",
   },
   {
     code: "04",
     title: "Geometri Datar & Ruang",
-    scope: "Teorema Pythagoras, jaring-jaring bangun, luas permukaan, dan volume.",
+    scope:
+      "Teorema Pythagoras, sifat sudut, keliling dan luas bangun datar, serta luas permukaan dan volume bangun ruang.",
     itemsCount: 30,
     passRate: "90%",
   },
   {
     code: "05",
     title: "Statistika & Representasi Data",
-    scope: "Interpretasi grafik, ukuran pemusatan, dan analisis sebaran data.",
+    scope:
+      "Pembacaan tabel, diagram batang, garis, dan lingkaran, serta perhitungan rata-rata, median, dan modus.",
     itemsCount: 30,
     passRate: "90%",
   },
   {
     code: "06",
-    title: "Peluang Kejadian Majemuk",
-    scope: "Ruang sampel, frekuensi harapan, dan perhitungan peluang kejadian.",
+    title: "Peluang Kejadian",
+    scope:
+      "Penentuan ruang sampel, titik sampel, peluang teoretik, dan frekuensi harapan dari suatu percobaan.",
     itemsCount: 30,
     passRate: "90%",
   },
   {
     code: "07",
     title: "Barisan, Pola & Deret Angka",
-    scope: "Generalisasi pola aritmetika, geometri, dan konfigurasi objek.",
+    scope:
+      "Penentuan suku berikutnya pada barisan aritmetika, geometri, dan pola susunan objek bergambar.",
     itemsCount: 30,
     passRate: "90%",
   },
   {
     code: "08",
-    title: "Aritmetika Sosial & Finansial",
-    scope: "Literasi finansial dasar, persentase untung-rugi, diskon, dan pajak.",
+    title: "Aritmetika Sosial",
+    scope:
+      "Perhitungan harga jual, harga beli, persentase untung dan rugi, diskon bertingkat, bruto, neto, dan tara.",
     itemsCount: 30,
     passRate: "90%",
   },
@@ -93,57 +82,65 @@ const NUMERASI_DATA: SubmateriItem[] = [
 const LITERASI_DATA: SubmateriItem[] = [
   {
     code: "01",
-    title: "Informasi Tersurat & Eksplisit",
-    scope: "Identifikasi fakta spesifik, gagasan pokok, dan verifikasi data teks.",
+    title: "Informasi Tersurat",
+    scope:
+      "Penemuan fakta langsung, tokoh, latar, dan pernyataan yang tertulis jelas di dalam paragraf bacaan.",
     itemsCount: 30,
     passRate: "90%",
   },
   {
     code: "02",
-    title: "Inferensi & Makna Tersirat",
-    scope: "Menyimpulkan hubungan sebab-akibat, asumsi penulis, dan prediksi.",
+    title: "Simpulan & Makna Tersirat",
+    scope:
+      "Penarikan simpulan paragraf, hubungan sebab-akibat, serta maksud penulis yang tidak ditulis secara langsung.",
     itemsCount: 30,
     passRate: "90%",
   },
   {
     code: "03",
-    title: "Struktur & Kohesi Wacana",
-    scope: "Analisis kepaduan antarparagraf, konjungsi, dan kerangka logika.",
+    title: "Struktur & Kepaduan Teks",
+    scope:
+      "Penggunaan kata hubung antarkalimat, kalimat utama, kalimat penjelas, dan keruntutan gagasan antarparagraf.",
     itemsCount: 30,
     passRate: "90%",
   },
   {
     code: "04",
-    title: "Evaluasi Kredibilitas Informasi",
-    scope: "Membedakan fakta dan opini, mendeteksi bias, serta validitas argumen.",
+    title: "Evaluasi Fakta & Opini",
+    scope:
+      "Pembedaan kalimat fakta dan opini, penilaian kelogisan argumen, serta ketepatan bukti pendukung dalam teks.",
     itemsCount: 30,
     passRate: "90%",
   },
   {
     code: "05",
-    title: "Sintesis Multi-Teks & Infografik",
-    scope: "Membandingkan dua sumber bacaan dan menafsirkan tabel atau visual.",
+    title: "Perbandingan Dua Teks & Tabel",
+    scope:
+      "Pembandingan persamaan dan perbedaan isi dua wacana serta pembacaan data pada infografik atau tabel.",
     itemsCount: 30,
     passRate: "90%",
   },
   {
     code: "06",
-    title: "Refleksi Isi & Nilai Kontekstual",
-    scope: "Mengaitkan pesan wacana dengan problematika nyata dan etika sosial.",
+    title: "Pesan & Nilai Teks Sastra",
+    scope:
+      "Penentuan amanat cerita, watak tokoh, konflik utama, dan keterkaitan isi cerita dengan situasi sehari-hari.",
     itemsCount: 30,
     passRate: "90%",
   },
   {
     code: "07",
-    title: "Semantik, Diksi & Gaya Bahasa",
-    scope: "Ketepatan istilah, makna denotatif-konotatif, dan majas dalam teks.",
+    title: "Makna Kata & Gaya Bahasa",
+    scope:
+      "Penentuan arti istilah dalam konteks kalimat, sinonim, antonim, ungkapan, dan majas pada teks.",
     itemsCount: 30,
     passRate: "90%",
   },
   {
     code: "08",
-    title: "Penalaran Kritis Teks Eksposisi",
-    scope: "Bedah argumen ilmiah populer, tesis utama, dan ketajaman simpulan.",
+    title: "Teks Eksposisi & Laporan",
+    scope:
+      "Bedah struktur teks laporan hasil observasi, teks eksposisi, dan ketepatan penggunaan ejaan bahasa Indonesia.",
     itemsCount: 30,
     passRate: "90%",
   },
@@ -152,28 +149,28 @@ const LITERASI_DATA: SubmateriItem[] = [
 const SAMPLE_OPTIONS = [
   {
     id: "A",
-    text: "Rp136.000,00 karena diskon kedua dihitung dari harga awal sebelum diskon pertama",
+    text: "Rp136.000,00 karena potongan kedua dihitung dari harga awal sebelum potongan pertama.",
     isCorrect: false,
     feedback:
-      "Kurang tepat. Diskon bertingkat (50% + 20%) tidak dijumlahkan langsung menjadi 70%, melainkan dihitung secara berurutan.",
+      "Belum tepat. Diskon bertingkat 50% + 20% tidak dijumlahkan langsung menjadi 70%, tetapi dihitung berurutan dari harga setelah diskon pertama.",
   },
   {
     id: "B",
-    text: "Rp160.000,00 karena diskon 20% diterapkan setelah harga dipotong 50%",
+    text: "Rp160.000,00 karena diskon 20% dihitung dari sisa harga setelah dipotong 50%.",
     isCorrect: true,
     feedback:
-      "Tepat! Harga setelah diskon pertama 50% adalah Rp200.000,00. Diskon kedua 20% memotong Rp40.000,00 sehingga harga akhir Rp160.000,00.",
+      "Tepat. Harga Rp400.000,00 dipotong 50% menjadi Rp200.000,00. Potongan kedua sebesar 20% dari Rp200.000,00 adalah Rp40.000,00, sehingga harga akhirnya Rp160.000,00.",
   },
   {
     id: "C",
-    text: "Rp120.000,00 karena total potongan harga mencapai 70% dari harga label",
+    text: "Rp120.000,00 karena total potongan harga mencapai 70% dari harga label toko.",
     isCorrect: false,
     feedback:
-      "Kurang tepat. Menjumlahkan 50% + 20% = 70% adalah kekeliruan umum pada soal Aritmetika Sosial Level 3 (HOTS).",
+      "Belum tepat. Menjumlahkan 50% + 20% = 70% secara langsung adalah kesalahan hitung yang sering muncul pada soal Aritmetika Sosial.",
   },
 ];
 
-function RevealPop({
+function RevealOnScroll({
   children,
   delay = 0,
   className = "",
@@ -195,7 +192,7 @@ function RevealPop({
           obs.unobserve(el);
         }
       },
-      { threshold: 0.1, rootMargin: "0px 0px -30px 0px" }
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -207,11 +204,12 @@ function RevealPop({
       style={{
         transitionDelay: `${delay}ms`,
         transitionProperty: "opacity, transform",
-        transitionDuration: "750ms",
+        transitionDuration: "800ms",
         transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
         opacity: visible ? 1 : 0,
-        transform: visible ? "none" : "translate3d(0, 32px, 0) scale(0.95)",
-        willChange: visible ? "auto" : "transform, opacity",
+        transform: visible
+          ? "translate3d(0, 0, 0) scale(1)"
+          : "translate3d(0, 40px, 0) scale(0.96)",
       }}
       className={className}
     >
@@ -367,9 +365,9 @@ function SmartStudentCutout() {
   }, [candidateIdx]);
 
   return (
-    <div className="relative w-full h-full flex items-end justify-center">
+    <div className="relative w-full h-full flex items-end justify-center select-none">
       {!ready && (
-        <div className="w-[85%] h-[92%] rounded-t-[200px] bg-white/10 animate-pulse border border-white/15" />
+        <div className="w-[260px] sm:w-[340px] h-[280px] sm:h-[360px] rounded-t-full bg-[#1B68FF]/10 animate-pulse" />
       )}
       {processedSrc && (
         <img
@@ -377,11 +375,11 @@ function SmartStudentCutout() {
           alt="Siswa SMP AGRA"
           style={{
             transition:
-              "opacity 800ms cubic-bezier(0.16,1,0.3,1), transform 800ms cubic-bezier(0.16,1,0.3,1)",
+              "opacity 700ms cubic-bezier(0.16,1,0.3,1), transform 700ms cubic-bezier(0.16,1,0.3,1)",
             opacity: ready ? 1 : 0,
-            transform: ready ? "translateY(0)" : "translateY(36px)",
+            transform: ready ? "translateY(0)" : "translateY(28px)",
           }}
-          className="w-full h-full object-contain object-bottom scale-105 sm:scale-115 lg:scale-130 xl:scale-145 2xl:scale-155 origin-bottom drop-shadow-[0_32px_64px_rgba(4,18,56,0.45)] select-none"
+          className="w-auto h-full max-h-[300px] sm:max-h-[420px] lg:max-h-[500px] object-contain object-bottom drop-shadow-[0_32px_60px_rgba(6,18,54,0.38)]"
         />
       )}
     </div>
@@ -390,12 +388,59 @@ function SmartStudentCutout() {
 
 export default function HomePage() {
   const router = useRouter();
+  const mainRef = useRef<HTMLElement>(null);
   const [activeDomain, setActiveDomain] = useState<"numerasi" | "literasi">(
     "numerasi"
   );
   const [selectedOption, setSelectedOption] = useState<string>("B");
   const [loadingRoute, setLoadingRoute] = useState<string | null>(null);
   const [secondsLeft, setSecondsLeft] = useState<number>(4499);
+
+  // 60fps Hardware-Accelerated Scroll & Mouse 3D Parallax
+  useEffect(() => {
+    const el = mainRef.current;
+    if (!el) return;
+
+    let rafId = 0;
+    let targetScroll = 0;
+    let currentScroll = 0;
+    let targetMx = 0;
+    let targetMy = 0;
+    let currentMx = 0;
+    let currentMy = 0;
+
+    const onScroll = () => {
+      targetScroll = window.scrollY;
+    };
+
+    const onMouseMove = (e: MouseEvent) => {
+      const nx = (e.clientX / window.innerWidth - 0.5) * 2;
+      const ny = (e.clientY / window.innerHeight - 0.5) * 2;
+      targetMx = nx;
+      targetMy = ny;
+    };
+
+    const update = () => {
+      currentScroll += (targetScroll - currentScroll) * 0.12;
+      currentMx += (targetMx - currentMx) * 0.08;
+      currentMy += (targetMy - currentMy) * 0.08;
+
+      el.style.setProperty("--sy", currentScroll.toFixed(2));
+      el.style.setProperty("--mx", currentMx.toFixed(4));
+      el.style.setProperty("--my", currentMy.toFixed(4));
+      rafId = requestAnimationFrame(update);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    rafId = requestAnimationFrame(update);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("mousemove", onMouseMove);
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -417,729 +462,1024 @@ export default function HomePage() {
 
   const activeItems =
     activeDomain === "numerasi" ? NUMERASI_DATA : LITERASI_DATA;
-
   const chosenOptionObj = SAMPLE_OPTIONS.find((o) => o.id === selectedOption);
 
   return (
     <main
-      style={{ fontFamily: "'Onest', sans-serif" }}
-      className="relative min-h-screen w-full bg-[#EEF2FA] text-[#0A0D14] text-[16px] leading-[1.55] overflow-x-hidden"
+      ref={mainRef}
+      style={
+        {
+          fontFamily: "'Onest', sans-serif",
+          "--sy": "0",
+          "--mx": "0",
+          "--my": "0",
+        } as React.CSSProperties
+      }
+      className="relative min-h-screen w-full bg-[#EEF2FA] text-[#0A0D14] text-[16px] leading-[1.6] overflow-x-hidden"
     >
-      {/* ═══════════════════════════════════════════════════════════════════
-          1. HEADER (48x48dp Touch Targets & Clear Button Hierarchy)
-         ═══════════════════════════════════════════════════════════════════ */}
-      <header className="absolute top-0 inset-x-0 z-50 w-full">
-        <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-center px-6 sm:px-12 lg:px-16 pt-6 pb-4">
-          <div className="lg:col-span-6 flex items-center justify-between lg:justify-start gap-10">
-            <Link
-              href="/"
-              className="min-h-[48px] inline-flex items-center gap-3 group"
-            >
-              <div className="w-11 h-11 rounded-[16px] p-1.5 bg-white shadow-[0_8px_20px_rgba(15,23,42,0.06)] border border-slate-200 flex items-center justify-center group-hover:scale-105 transition-transform">
-                <img
-                  src="/assets/images/agra-icon.png"
-                  alt="Logo AGRA"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                  }}
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <span className="text-[26px] font-semibold tracking-[-0.04em] text-[#0A0D14] flex items-center">
-                AGRA
-                <span className="inline-block w-2 h-2 rounded-full bg-[#1B68FF] ml-1" />
-              </span>
-            </Link>
+      {/* Subtle Tactile Grain Texture Overlay across the whole page */}
+      <svg
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-50 h-full w-full opacity-[0.028] mix-blend-overlay"
+      >
+        <filter id="agra-noise">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.85"
+            numOctaves="3"
+            stitchTiles="stitch"
+          />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#agra-noise)" />
+      </svg>
 
-            <nav className="hidden md:flex items-center gap-2">
+      {/* ═══════════════════════════════════════════════════════════════════
+          1. PANEL ATAS (GAYA MONTIX / AETHERON)
+             - Navigasi Simetris + Logo Seamless Tanpa Kotak
+             - Teks Raksasa di Belakang + Bola Cahaya Biru 3D + Anak SMP 3D Parallax
+         ═══════════════════════════════════════════════════════════════════ */}
+      <section className="relative w-full min-h-screen flex flex-col justify-between bg-[#F4F7FC] overflow-hidden pt-5 pb-12 sm:pb-16">
+        {/* Background Architectural Grid + Vector Bezier Lines */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-60"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(27,104,255,0.05) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(27,104,255,0.05) 1px, transparent 1px)
+            `,
+            backgroundSize: "56px 56px",
+          }}
+        />
+
+        {/* Vector Bezier Arcs in Background */}
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 1440 700"
+          fill="none"
+          className="pointer-events-none absolute top-16 left-1/2 -translate-x-1/2 w-[1440px] max-w-none opacity-40"
+        >
+          <path
+            d="M-100 580 C 320 120, 1120 120, 1540 580"
+            stroke="#1B68FF"
+            strokeWidth="1.5"
+            strokeDasharray="6 6"
+          />
+          <path
+            d="M120 640 C 460 240, 980 240, 1320 640"
+            stroke="#38BDF8"
+            strokeWidth="1.5"
+          />
+          <circle cx="430" cy="318" r="5" fill="#1B68FF" />
+          <circle cx="1010" cy="318" r="5" fill="#1B68FF" />
+        </svg>
+
+        {/* TOP NAVIGATION BAR — Simetris & Logo Seamless Tanpa Kotak */}
+        <header className="relative z-40 w-full max-w-[1320px] mx-auto px-5 sm:px-10">
+          <div className="flex items-center justify-between py-2">
+            {/* Left Nav Links */}
+            <nav className="hidden md:flex items-center gap-7 text-[13px] font-semibold tracking-[0.08em] uppercase text-[#334155]">
               <a
-                href="#alur"
-                className="min-h-[48px] px-4 inline-flex items-center rounded-[12px] text-[16px] font-medium text-[#1E293B] hover:text-[#0A0D14] hover:bg-slate-200/50 transition-colors"
+                href="#tahapan"
+                className="hover:text-[#1B68FF] transition-colors"
               >
-                Alur Belajar
+                Alur Sistem
               </a>
               <a
                 href="#simulasi"
-                className="min-h-[48px] px-4 inline-flex items-center rounded-[12px] text-[16px] font-medium text-[#1E293B] hover:text-[#0A0D14] hover:bg-slate-200/50 transition-colors"
+                className="hover:text-[#1B68FF] transition-colors"
               >
                 Simulasi CBT
               </a>
               <a
-                href="#submateri"
-                className="min-h-[48px] px-4 inline-flex items-center rounded-[12px] text-[16px] font-medium text-[#1E293B] hover:text-[#0A0D14] hover:bg-slate-200/50 transition-colors"
+                href="#kurikulum"
+                className="hover:text-[#1B68FF] transition-colors"
               >
-                Kurikulum
+                16 Submateri
               </a>
             </nav>
-          </div>
 
-          <div className="hidden lg:flex lg:col-span-6 items-center justify-end gap-4">
-            {/* Secondary Button (Outline Style on Blue Surface) */}
+            {/* Center Seamless Brand Logo (Tanpa Kotak) */}
             <Link
-              href="/login"
-              className="min-h-[48px] px-6 py-2.5 rounded-[14px] border-2 border-white/40 hover:border-white hover:bg-white/10 text-[16px] font-medium text-white transition-all inline-flex items-center justify-center"
+              href="/"
+              className="inline-flex items-center gap-2.5 group"
             >
-              Masuk ke Akun
+              <img
+                src="/assets/images/agra-icon.png"
+                alt="Logo AGRA"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+                className="w-8 h-8 sm:w-9 sm:h-9 object-contain group-hover:scale-105 transition-transform"
+              />
+              <span className="text-[24px] sm:text-[28px] font-bold tracking-[-0.05em] text-[#0A0D14] flex items-start">
+                AGRA
+                <span className="text-[11px] font-mono font-semibold text-[#1B68FF] ml-0.5 mt-1">
+                  TM
+                </span>
+              </span>
             </Link>
 
-            {/* Primary Button (Solid High-Contrast Style) */}
-            <button
-              type="button"
-              onClick={() => handleNavigate("/register")}
-              disabled={loadingRoute === "/register"}
-              className="min-h-[48px] px-6 py-2.5 rounded-[14px] bg-white text-[#1B68FF] text-[16px] font-semibold hover:bg-blue-50 active:translate-y-0.5 transition-all shadow-[0_10px_25px_rgba(0,0,0,0.16)] inline-flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
+            {/* Right Action Buttons */}
+            <div className="flex items-center gap-3 sm:gap-5">
+              <Link
+                href="/login"
+                className="text-[13px] font-semibold tracking-[0.06em] uppercase text-[#334155] hover:text-[#0A0D14] transition-colors px-2 py-2"
+              >
+                Masuk
+              </Link>
+              <button
+                type="button"
+                onClick={() => handleNavigate("/register")}
+                disabled={loadingRoute === "/register"}
+                className="min-h-[42px] px-5 sm:px-6 py-2 rounded-full bg-[#1B68FF] hover:bg-[#1454D6] text-white text-[13px] sm:text-[14px] font-semibold tracking-wide transition-all shadow-[0_8px_20px_rgba(27,104,255,0.28)] cursor-pointer"
+              >
+                {loadingRoute === "/register" ? "Memuat..." : "Daftar Siswa"}
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* CENTER 3D STAGE (Giant Wordmark + Glowing Sphere + 3D Student Cutout) */}
+        <div className="relative z-20 w-full max-w-[1320px] mx-auto px-5 sm:px-10 mt-6 sm:mt-8 flex-1 flex flex-col justify-center">
+          <div className="relative w-full flex flex-col items-center justify-center">
+            {/* LAYER 1 (Deep Background): Giant Display Wordmark */}
+            <div
+              style={{
+                transform:
+                  "translate3d(calc(var(--mx) * -14px), calc(var(--sy) * 0.18px), 0)",
+              }}
+              className="relative z-10 w-full text-center pointer-events-none select-none will-change-transform"
             >
-              {loadingRoute === "/register" ? (
-                <>
-                  <span className="w-4 h-4 rounded-full border-2 border-[#1B68FF]/30 border-t-[#1B68FF] animate-spin" />
-                  <span>Memuat...</span>
-                </>
-              ) : (
-                <>
-                  <span>Daftar Akun Siswa</span>
-                  <svg
-                    className="w-4 h-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path d="M5 12h14M13 5l7 7-7 7" />
-                  </svg>
-                </>
-              )}
-            </button>
+              <h1 className="text-[17vw] sm:text-[15.5vw] lg:text-[188px] font-semibold tracking-[-0.055em] leading-[0.86] text-[#081538]">
+                Asesmen
+              </h1>
+            </div>
+
+            {/* LAYER 2 (Midground): Giant Glowing 3D Blue Sphere / Sun */}
+            <div
+              aria-hidden="true"
+              style={{
+                transform:
+                  "translate3d(calc(var(--mx) * 10px), calc(var(--sy) * 0.08px), 0)",
+              }}
+              className="pointer-events-none absolute top-[12%] sm:top-[8%] z-10 w-[260px] h-[260px] sm:w-[400px] sm:h-[400px] lg:w-[470px] lg:h-[470px] rounded-full bg-gradient-to-b from-[#38BDF8] via-[#1B68FF] to-[#EEF2FA]/10 shadow-[0_0_120px_rgba(27,104,255,0.45)] will-change-transform"
+            />
+
+            {/* LAYER 3 (Foreground 3D Subject): Anak SMP Overlapping Sphere & Text */}
+            <div
+              style={{
+                transform:
+                  "translate3d(calc(var(--mx) * 22px), calc(var(--sy) * -0.09px + var(--my) * 10px), 0)",
+              }}
+              className="relative z-30 -mt-[11vw] sm:-mt-[100px] lg:-mt-[135px] w-full max-w-[680px] h-[290px] sm:h-[410px] lg:h-[480px] flex items-end justify-center will-change-transform"
+            >
+              <SmartStudentCutout />
+
+              {/* Floating 3D Telemetry Card — Left (Matematika) */}
+              <div
+                style={{
+                  transform:
+                    "translate3d(calc(var(--mx) * 32px), calc(var(--sy) * -0.15px), 0)",
+                }}
+                className="hidden sm:flex absolute left-0 lg:-left-12 bottom-16 z-40 bg-white/90 backdrop-blur-md border border-white rounded-[20px] p-4 shadow-[0_20px_40px_rgba(6,18,54,0.12)] items-center gap-3.5"
+              >
+                <div className="w-10 h-10 rounded-[12px] bg-[#1B68FF] text-white font-mono text-[14px] font-bold flex items-center justify-center">
+                  ∑
+                </div>
+                <div className="text-left">
+                  <p className="text-[11px] font-mono uppercase tracking-wider text-[#1B68FF] font-semibold">
+                    NUMERASI SMP
+                  </p>
+                  <p className="text-[14px] font-semibold text-[#0A0D14]">
+                    8 Submateri Matematika
+                  </p>
+                </div>
+              </div>
+
+              {/* Floating 3D Telemetry Card — Right (Bahasa Indonesia) */}
+              <div
+                style={{
+                  transform:
+                    "translate3d(calc(var(--mx) * -28px), calc(var(--sy) * -0.18px), 0)",
+                }}
+                className="hidden sm:flex absolute right-0 lg:-right-12 top-16 z-40 bg-[#081538] text-white border border-white/15 rounded-[20px] p-4 shadow-[0_20px_40px_rgba(6,18,54,0.22)] items-center gap-3.5"
+              >
+                <div className="w-10 h-10 rounded-[12px] bg-[#38BDF8] text-[#081538] font-mono text-[14px] font-bold flex items-center justify-center">
+                  Aa
+                </div>
+                <div className="text-left">
+                  <p className="text-[11px] font-mono uppercase tracking-wider text-[#38BDF8] font-semibold">
+                    LITERASI WACANA
+                  </p>
+                  <p className="text-[14px] font-semibold text-white">
+                    8 Submateri B. Indonesia
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Ground Pedestal Shadow under Student Cutout */}
+            <div className="w-[75%] max-w-[520px] h-5 rounded-full bg-gradient-to-r from-transparent via-[#081538]/25 to-transparent blur-md -mt-2 z-20" />
+          </div>
+
+          {/* BOTTOM HERO BAR — Rata Kanan-Kiri Konsisten */}
+          <div className="relative z-30 mt-8 sm:mt-10 w-full max-w-[1120px] mx-auto bg-white rounded-[24px] p-6 sm:p-8 border border-slate-200/90 shadow-[0_20px_50px_rgba(15,23,42,0.06)] grid grid-cols-1 lg:grid-cols-12 items-center gap-6">
+            <div className="lg:col-span-8">
+              <p className="text-[15px] sm:text-[16px] font-normal leading-[1.65] text-[#334155] text-justify">
+                Platform latihan dan simulasi Tes Kemampuan Akademik (TKA) untuk
+                siswa SMP/MTs. Mencakup 30 soal pemetaan awal, latihan bertahap
+                pada 16 submateri Matematika dan Bahasa Indonesia, serta
+                simulasi ujian berbasis komputer berdurasi 75 menit.
+              </p>
+            </div>
+            <div className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3 w-full">
+              <button
+                type="button"
+                onClick={() => handleNavigate("/register")}
+                className="min-h-[48px] px-5 py-3 rounded-[14px] bg-[#1B68FF] hover:bg-[#1454D6] text-white text-[14px] font-semibold transition-all shadow-[0_10px_24px_rgba(27,104,255,0.25)] inline-flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
+              >
+                <span>Mulai Belajar</span>
+                <span>→</span>
+              </button>
+              <a
+                href="#simulasi"
+                className="min-h-[48px] px-5 py-3 rounded-[14px] bg-[#F4F7FC] hover:bg-slate-200/70 text-[#0A0D14] border border-slate-300 text-[14px] font-semibold transition-all inline-flex items-center justify-center whitespace-nowrap"
+              >
+                Coba Soal CBT
+              </a>
+            </div>
           </div>
         </div>
-      </header>
+      </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          2. HERO SECTION — 50/50 SPLIT + GENEROUS WHITE SPACE + HIGH CONTRAST
+          2. PANEL TENGAH — DARK ARCHITECTURAL 3-COLUMN BENTO (GAYA BANEVOX)
+             - Background Midnight Navy #050C1E + Tekstur Vektor
+             - 3 Kolom Bento Asimetris Persis Referensi Gambar
          ═══════════════════════════════════════════════════════════════════ */}
-      <section className="relative w-full lg:min-h-screen flex flex-col justify-between overflow-hidden bg-[#F4F7FC]">
-        {/* Desktop 50/50 Split Background (Only active on lg+, so mobile never has an awkward half-white/half-blue cut behind the card!) */}
-        <div className="hidden lg:grid absolute inset-0 grid-cols-12 pointer-events-none">
-          <div className="col-span-6 bg-[#F4F7FC]" />
-          <div className="col-span-6 bg-gradient-to-br from-[#2370FF] via-[#1B68FF] to-[#0D4EE0] rounded-bl-[64px] min-h-[580px]" />
-        </div>
+      <section
+        id="tahapan"
+        className="relative w-full py-20 sm:py-28 px-5 sm:px-10 lg:px-16 bg-[#050C1E] text-white overflow-hidden"
+      >
+        {/* Background Radial Glow & Vector Grid */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(56,189,248,0.12) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(56,189,248,0.12) 1px, transparent 1px)
+            `,
+            backgroundSize: "64px 64px",
+          }}
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-[#1B68FF]/20 blur-[150px]"
+        />
 
-        <div className="relative z-20 w-full pt-24 sm:pt-32 lg:pt-36 flex-1 flex flex-col justify-between">
-          {/* TOP GIANT HEADLINE: "AGRA" + CONNECTED "Asesmen Mandiri" */}
-          <div className="relative w-full">
-            <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-end px-5 sm:px-12 lg:px-16 gap-3 sm:gap-6">
-              <div className="lg:col-span-6 flex lg:justify-start">
-                <RevealPop delay={40}>
-                  <h1 className="-ml-[0.04em] text-[4rem] sm:text-[6.5rem] lg:text-[9.2vw] font-normal tracking-[-0.055em] leading-[0.88] text-[#0A0D14] select-none">
-                    AGRA
-                  </h1>
-                </RevealPop>
+        <div className="relative z-10 max-w-[1240px] mx-auto">
+          {/* Section Header — Rata Kanan Kiri */}
+          <RevealOnScroll>
+            <div className="grid grid-cols-1 lg:grid-cols-12 items-end gap-6 mb-12 pb-6 border-b border-white/10">
+              <div className="lg:col-span-6">
+                <span className="font-mono text-[12px] uppercase tracking-[0.15em] text-[#38BDF8] block mb-2">
+                  ARSITEKTUR EVALUASI • 04 TAHAP
+                </span>
+                <h2 className="text-[32px] sm:text-[44px] font-semibold tracking-[-0.035em] leading-[1.1] text-white text-left">
+                  Alur Ketuntasan Materi &amp; Ujian
+                </h2>
               </div>
-
-              {/* On mobile (< lg), tagline is dark slate on white bg so it's 100% readable; on desktop (lg+), it is white on blue bg */}
-              <div className="lg:col-span-6 flex lg:justify-start lg:pl-6 lg:pb-3 order-3 lg:order-none mt-2 lg:mt-0">
-                <RevealPop delay={120}>
-                  <p className="max-w-[460px] text-[16px] sm:text-[20px] lg:text-[22px] font-medium leading-[1.45] text-[#0A0D14] lg:text-white text-balance">
-                    Ruang Belajar &amp; Simulasi Mandiri{" "}
-                    <span className="block text-[#475569] lg:text-blue-50 font-normal">
-                      Tes Kemampuan Akademik SMP.
-                    </span>
-                  </p>
-                </RevealPop>
-              </div>
-            </div>
-
-            {/* Row 2: CONNECTED "Asesmen Mandiri" */}
-            <div className="w-full mt-1 lg:mt-2">
-              <div className="w-full px-5 sm:px-12 lg:px-0 flex flex-wrap lg:grid lg:grid-cols-12 items-baseline gap-x-2.5 lg:gap-x-0">
-                <div className="lg:col-span-6 flex lg:justify-end lg:pr-[0.14em]">
-                  <span className="relative z-10 text-[2.75rem] sm:text-[5.2rem] lg:text-[8.6vw] font-normal tracking-[-0.05em] leading-[0.95] lg:leading-[0.9] text-[#0A0D14] select-none whitespace-nowrap">
-                    Asesmen
-                  </span>
-                </div>
-                <div className="lg:col-span-6 flex lg:justify-start lg:pl-[0.14em]">
-                  <span className="text-[2.75rem] sm:text-[5.2rem] lg:text-[8.6vw] font-normal tracking-[-0.05em] leading-[0.95] lg:leading-[0.9] select-none whitespace-nowrap inline-flex items-baseline">
-                    {/* On mobile (< lg): Electric Blue #1B68FF on white bg. On desktop (lg+): Pure White + Kaiki Knockout Blend */}
-                    <span className="relative z-10 text-[#1B68FF] lg:text-white">
-                      Ma
-                    </span>
-                    <span className="relative inline-block">
-                      <span className="relative z-10 text-[#1B68FF] lg:text-white">
-                        ndiri
-                      </span>
-                      <span
-                        aria-hidden="true"
-                        className="hidden lg:inline-block absolute inset-0 z-40 text-[#1D4ED8] mix-blend-screen opacity-90 pointer-events-none select-none"
-                      >
-                        ndiri
-                      </span>
-                      <span
-                        aria-hidden="true"
-                        className="hidden lg:inline-block absolute inset-0 z-40 text-[#38BDF8] mix-blend-color-dodge opacity-75 pointer-events-none select-none"
-                      >
-                        ndiri
-                      </span>
-                    </span>
-                  </span>
-                </div>
+              <div className="lg:col-span-6">
+                <p className="text-[15px] sm:text-[16px] text-slate-300 leading-[1.65] text-justify">
+                  Setiap siswa melewati empat tahapan berurutan mulai dari
+                  pemetaan kemampuan dasar, penguasaan materi Matematika dan
+                  Bahasa Indonesia, latihan tiga tingkat kesulitan, hingga
+                  simulasi ujian akhir.
+                </p>
               </div>
             </div>
-          </div>
+          </RevealOnScroll>
 
-          {/* BOTTOM ROW: VALUE CARD + GIANT SMP STUDENT CUTOUT */}
-          <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-end px-5 sm:px-12 lg:px-16 gap-8 lg:gap-10 mt-6 sm:mt-8 lg:mt-4">
-            <div className="lg:col-span-6 pb-2 lg:pb-20 lg:pr-8 relative z-30">
-              <RevealPop delay={280}>
-                <div className="bg-white/80 rounded-[28px] sm:rounded-[32px] p-2.5 sm:p-3 shadow-[0_20px_50px_rgba(15,23,42,0.06)] border border-white max-w-[600px]">
-                  <div className="bg-white rounded-[20px] p-6 sm:p-10 border border-slate-200/80">
-                    <h2 className={`${UI.h3Title} mb-3.5 sm:mb-4`}>
-                      Persiapan Terukur dari Diagnostik hingga Ujian CBT
-                    </h2>
-
-                    <p className={`${UI.bodyText} mb-6 sm:mb-8 tabular-nums`}>
-                      <strong className="font-semibold text-[#0A0D14]">
-                        Dirancang dengan ruang baca yang lega
-                      </strong>{" "}
-                      agar siswa fokus menguasai konsep esensial Fase D.
-                      Evaluasi dimulai dari pemetaan prasyarat{" "}
-                      <strong className="font-semibold text-[#0A0D14]">
-                        ketuntasan 90%
-                      </strong>
-                      , dilanjutkan latihan bertahap{" "}
-                      <span className="text-[#1B68FF] font-semibold">
-                        3 level kognitif (L1, L2, HOTS)
-                      </span>
-                      , hingga simulasi mandiri{" "}
-                      <strong className="font-semibold text-[#0A0D14]">
-                        75 menit
-                      </strong>
-                      .
+          {/* 3-COLUMN ASYMMETRIC BENTO GRID (Persis Komposisi Banevox) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            {/* KOLOM 1 (KIRI - 4 COL): Kartu Visual Atas + Blok Angka Biru Terang Bawah */}
+            <div className="lg:col-span-4 flex flex-col gap-6">
+              <RevealOnScroll delay={40} className="flex-1">
+                <div className="h-full rounded-[28px] bg-gradient-to-b from-[#DCE7F9] to-[#B8CDF0] text-[#06102B] p-7 flex flex-col justify-between relative overflow-hidden min-h-[340px]">
+                  <div className="relative z-10">
+                    <span className="font-mono text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-[#06102B]/10 text-[#06102B]">
+                      TAHAP 01 • DIAGNOSTIK
+                    </span>
+                    <h3 className="text-[26px] sm:text-[28px] font-semibold tracking-[-0.03em] leading-[1.15] mt-4">
+                      Recall Kemampuan Awal
+                    </h3>
+                    <p className="text-[32px] sm:text-[36px] font-bold tracking-[-0.04em] text-[#1B68FF] leading-none mt-1">
+                      30 Butir Soal.
                     </p>
+                    <p className="text-[14px] text-[#1E293B] leading-[1.6] text-justify mt-4">
+                      Mengukur penguasaan materi dasar Matematika dan Bahasa
+                      Indonesia sebelum membuka seluruh topik latihan Fase D.
+                    </p>
+                  </div>
 
-                    {/* Full-width stacked buttons on mobile (< sm), side-by-side on sm+ */}
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-                      <button
-                        type="button"
-                        onClick={() => handleNavigate("/register")}
-                        disabled={loadingRoute === "/register"}
-                        className={`${UI.btnPrimary} w-full sm:w-auto whitespace-nowrap`}
-                      >
-                        {loadingRoute === "/register" ? (
-                          <>
-                            <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                            <span>Membuka Pendaftaran...</span>
-                          </>
-                        ) : (
-                          <>
-                            <span>Daftar &amp; Mulai Diagnostik</span>
-                            <svg
-                              className="w-4 h-4 shrink-0"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                            >
-                              <path d="M5 12h14M13 5l7 7-7 7" />
-                            </svg>
-                          </>
-                        )}
-                      </button>
+                  {/* Vector Perspective Highway/Bridge Graphic */}
+                  <svg
+                    viewBox="0 0 320 110"
+                    fill="none"
+                    className="w-full h-24 mt-6 opacity-85"
+                  >
+                    <path
+                      d="M0 110 L130 20 L190 20 L320 110 Z"
+                      fill="#081538"
+                    />
+                    <path
+                      d="M160 20 L160 110"
+                      stroke="#38BDF8"
+                      strokeWidth="3"
+                      strokeDasharray="8 6"
+                    />
+                    <path
+                      d="M70 110 L145 20 M250 110 L175 20"
+                      stroke="#1B68FF"
+                      strokeWidth="2"
+                    />
+                  </svg>
+                </div>
+              </RevealOnScroll>
 
-                      <a
-                        href="#simulasi"
-                        className={`${UI.btnSecondaryOutline} w-full sm:w-auto whitespace-nowrap`}
-                      >
-                        <span>Coba Simulasi CBT</span>
-                      </a>
+              {/* Blok Bawah Kolom 1: Giant Architectural Glyph */}
+              <RevealOnScroll delay={100}>
+                <div className="rounded-[28px] bg-[#38BDF8] text-[#050C1E] p-7 flex items-center justify-between min-h-[175px] relative overflow-hidden">
+                  <div className="max-w-[55%]">
+                    <span className="font-mono text-[11px] font-bold uppercase tracking-wider block opacity-75">
+                      SYARAT KELULUSAN
+                    </span>
+                    <p className="text-[15px] font-semibold leading-[1.45] mt-1 text-justify">
+                      Batas minimal ketuntasan di setiap tahap evaluasi.
+                    </p>
+                  </div>
+                  <span className="text-[64px] sm:text-[76px] font-extrabold tracking-[-0.06em] leading-none select-none">
+                    90%
+                  </span>
+                </div>
+              </RevealOnScroll>
+            </div>
+
+            {/* KOLOM 2 (TENGAH - 4 COL): Kartu Vertikal Utama + Brand Lockup di Bawah */}
+            <div className="lg:col-span-4 flex flex-col justify-between gap-6">
+              <RevealOnScroll delay={80} className="flex-1">
+                <div className="h-full rounded-[28px] bg-gradient-to-b from-[#0D255C] via-[#09193E] to-[#07122E] border border-[#38BDF8]/25 p-7 flex flex-col justify-between relative overflow-hidden min-h-[400px]">
+                  {/* Vector Wave Lines */}
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 360 200"
+                    fill="none"
+                    className="pointer-events-none absolute inset-x-0 top-12 w-full opacity-35"
+                  >
+                    <path
+                      d="M-20 120 C 90 30, 250 190, 380 60"
+                      stroke="#38BDF8"
+                      strokeWidth="1.5"
+                    />
+                    <path
+                      d="M-20 160 C 110 60, 230 210, 380 95"
+                      stroke="#1B68FF"
+                      strokeWidth="2"
+                    />
+                  </svg>
+
+                  {/* Top Pill Header */}
+                  <div className="relative z-10 flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-7 h-7 rounded-full bg-[#38BDF8] text-[#050C1E] font-mono text-[13px] font-extrabold flex items-center justify-center">
+                        3
+                      </span>
+                      <span className="text-[13px] font-medium text-slate-200">
+                        Latihan Berjenjang
+                      </span>
+                    </div>
+                    <span className="font-mono text-[12px] text-[#38BDF8]">
+                      L1 • L2 • L3
+                    </span>
+                  </div>
+
+                  {/* Center Headline */}
+                  <div className="relative z-10 my-6 text-center">
+                    <h3 className="text-[28px] sm:text-[32px] font-semibold tracking-[-0.03em] leading-[1.15] text-white">
+                      Tiga Level
+                      <span className="block text-[#38BDF8]">
+                        Kognitif Siswa
+                      </span>
+                    </h3>
+                  </div>
+
+                  {/* 3 Level Stack Cards */}
+                  <div className="relative z-10 space-y-2.5">
+                    <div className="p-3.5 rounded-[16px] bg-white/8 border border-white/10 flex items-center justify-between">
+                      <div>
+                        <span className="font-mono text-[11px] text-[#38BDF8] block">
+                          LEVEL 01
+                        </span>
+                        <span className="text-[14px] font-medium text-white">
+                          Pemahaman Konsep Dasar
+                        </span>
+                      </div>
+                      <span className="font-mono text-[12px] text-emerald-400">
+                        10 Soal
+                      </span>
+                    </div>
+                    <div className="p-3.5 rounded-[16px] bg-white/8 border border-white/10 flex items-center justify-between">
+                      <div>
+                        <span className="font-mono text-[11px] text-[#38BDF8] block">
+                          LEVEL 02
+                        </span>
+                        <span className="text-[14px] font-medium text-white">
+                          Penerapan Kasus Kontekstual
+                        </span>
+                      </div>
+                      <span className="font-mono text-[12px] text-emerald-400">
+                        10 Soal
+                      </span>
+                    </div>
+                    <div className="p-3.5 rounded-[16px] bg-[#1B68FF]/30 border border-[#38BDF8]/40 flex items-center justify-between">
+                      <div>
+                        <span className="font-mono text-[11px] text-[#38BDF8] block">
+                          LEVEL 03 • HOTS
+                        </span>
+                        <span className="text-[14px] font-medium text-white">
+                          Penalaran &amp; Analisis Kritis
+                        </span>
+                      </div>
+                      <span className="font-mono text-[12px] text-white font-semibold">
+                        10 Soal
+                      </span>
                     </div>
                   </div>
                 </div>
-              </RevealPop>
-            </div>
+              </RevealOnScroll>
 
-            {/* Bottom-Right:
-                - On Mobile (< lg): Compact rounded blue stage right under the card with zero dead blue space!
-                - On Desktop (lg+): 100% IDENTICAL to your custom giant dimensions & scales! */}
-            <div className="lg:col-span-6 relative -mx-5 sm:-mx-12 lg:mx-0 pt-6 sm:pt-10 lg:pt-0 px-4 sm:px-8 lg:px-0 bg-gradient-to-br from-[#2370FF] via-[#1B68FF] to-[#0D4EE0] lg:bg-none rounded-t-[36px] lg:rounded-none flex items-end justify-center lg:justify-start lg:-translate-x-6 xl:-translate-x-12 lg:-mt-64 xl:-mt-80 2xl:-mt-96 z-20 pointer-events-none overflow-hidden lg:overflow-visible">
-              <div className="relative w-full sm:w-[620px] lg:w-[820px] xl:w-[960px] 2xl:w-[1100px] max-w-none h-[300px] sm:h-[460px] lg:h-[700px] xl:h-[820px] 2xl:h-[920px] flex items-end justify-center">
-                <SmartStudentCutout />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          3. SECTION: ALUR BELAJAR 4 TAHAP (#alur)
-             (Golden Ratio Hierarchy, 16px Body, 155% Line-Height, White Space)
-         ═══════════════════════════════════════════════════════════════════ */}
-      <section
-        id="alur"
-        className="relative w-full py-28 sm:py-36 px-6 sm:px-12 lg:px-16 bg-[#F4F7FC]"
-      >
-        <RevealPop>
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16 lg:mb-20">
-            <h2 className={`${UI.h2Section} max-w-3xl`}>
-              Empat Tahap Menuju Ketuntasan Akademik
-            </h2>
-            <p className={`${UI.bodyText} max-w-md`}>
-              Setiap tahap disusun berurutan agar siswa menguasai pondasi materi
-              sebelum menguji ketepatan waktu di ruang simulasi ujian.
-            </p>
-          </div>
-        </RevealPop>
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 tabular-nums">
-          <RevealPop delay={50} className="lg:col-span-7">
-            <div className="h-full bg-white rounded-[32px] p-8 sm:p-12 shadow-[0_20px_50px_rgba(15,23,42,0.03)] border border-slate-200/80 flex flex-col justify-between min-h-[320px] hover:-translate-y-1 transition-transform duration-300">
-              <div className="flex items-center justify-between">
-                <span className="text-[42px] sm:text-[52px] font-light tracking-[-0.05em] leading-none text-[#1B68FF]">
-                  01
-                </span>
-                <span className="px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-[#065F46] text-[14px] font-semibold">
-                  Syarat Lulus ≥ 90%
-                </span>
-              </div>
-
-              <div className="mt-10">
-                <h3 className={`${UI.h3Title} mb-3`}>
-                  Diagnostik Recall Kemampuan Awal
-                </h3>
-                <p className={`${UI.bodyText} max-w-xl`}>
-                  Siswa mengerjakan{" "}
-                  <strong className="font-semibold text-[#0A0D14]">
-                    30 butir soal prasyarat
-                  </strong>{" "}
-                  untuk memetakan penguasaan konsep dasar sebelum membuka
-                  seluruh submateri Fase D.
-                </p>
-              </div>
-            </div>
-          </RevealPop>
-
-          <RevealPop delay={110} className="lg:col-span-5">
-            <div className="h-full bg-[#1B68FF] text-white rounded-[32px] p-8 sm:p-12 flex flex-col justify-between min-h-[320px] hover:-translate-y-1 transition-transform duration-300">
-              <div className="flex items-center justify-between">
-                <span className="text-[42px] sm:text-[52px] font-light tracking-[-0.05em] leading-none text-white">
-                  02
-                </span>
-                <span className="px-4 py-1.5 rounded-full bg-white/15 text-white text-[14px] font-medium">
-                  16 Topik Inti
-                </span>
-              </div>
-
-              <div className="mt-10">
-                <h3 className="text-[24px] sm:text-[26px] font-medium tracking-[-0.025em] leading-[1.3] text-white mb-3 text-balance">
-                  Pemahaman Konsep Numerasi &amp; Literasi
-                </h3>
-                <p className="text-[16px] sm:text-[17px] font-normal leading-[1.55] text-blue-50 text-pretty">
-                  Ringkasan materi terstruktur pada 8 topik Matematika dan 8
-                  topik Bahasa Indonesia lengkap dengan pemodelan kontekstual.
-                </p>
-              </div>
-            </div>
-          </RevealPop>
-
-          <RevealPop delay={170} className="lg:col-span-5">
-            <div className="h-full bg-white rounded-[32px] p-8 sm:p-12 border border-slate-200/80 flex flex-col justify-between min-h-[320px] hover:-translate-y-1 transition-transform duration-300">
-              <div className="flex items-center justify-between">
-                <span className="text-[42px] sm:text-[52px] font-light tracking-[-0.05em] leading-none text-[#0A0D14]">
-                  03
-                </span>
-                <span className="px-4 py-1.5 rounded-full bg-[#EEF2FA] text-[#1B68FF] text-[14px] font-semibold">
-                  L1 • L2 • HOTS
-                </span>
-              </div>
-
-              <div className="mt-10">
-                <h3 className={`${UI.h3Title} mb-3`}>
-                  Latihan Berjenjang 3 Level Kognitif
-                </h3>
-                <p className={UI.bodyText}>
-                  Latihan bertahap mulai dari Level 1 (Pemahaman Konsep), Level
-                  2 (Aplikasi Kontekstual), hingga Level 3 (Penalaran HOTS).
-                </p>
-              </div>
-            </div>
-          </RevealPop>
-
-          <RevealPop delay={230} className="lg:col-span-7">
-            <div className="h-full bg-[#0A0D14] text-white rounded-[32px] p-8 sm:p-12 flex flex-col justify-between min-h-[320px] hover:-translate-y-1 transition-transform duration-300">
-              <div className="flex items-center justify-between">
-                <span className="text-[42px] sm:text-[52px] font-light tracking-[-0.05em] leading-none text-[#10B981]">
-                  04
-                </span>
-                <span className="text-[14px] font-medium text-slate-200 tabular-nums">
-                  75:00 CBT
-                </span>
-              </div>
-
-              <div className="mt-10 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-                <div className="max-w-lg">
-                  <h3 className="text-[24px] sm:text-[26px] font-medium tracking-[-0.025em] leading-[1.3] text-white mb-3 text-balance">
-                    Simulasi Ujian CBT 75 Menit
-                  </h3>
-                  <p className="text-[16px] sm:text-[17px] font-normal leading-[1.55] text-slate-200 text-pretty">
-                    Evaluasi komprehensif dengan penghitung waktu nyata, skoring
-                    pilihan ganda kompleks, dan pembahasan kunci nalar.
+              {/* Bottom Brand Lockup (Persis Banevox Architecture) */}
+              <RevealOnScroll delay={140}>
+                <div className="rounded-[24px] bg-white/5 border border-white/10 py-5 px-6 text-center">
+                  <p className="text-[26px] font-bold tracking-[-0.04em] text-white leading-none">
+                    AGRA<span className="text-[#38BDF8]">CBT</span>
+                  </p>
+                  <p className="font-mono text-[11px] tracking-[0.28em] uppercase text-slate-400 mt-1.5">
+                    FASE D ARCHITECTURE
                   </p>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleNavigate("/register")}
-                  className={`${UI.btnPrimary} whitespace-nowrap self-start sm:self-end`}
-                >
-                  <span>Mulai Tahap 01</span>
-                  <svg
-                    className="w-4 h-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path d="M5 12h14M13 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
+              </RevealOnScroll>
             </div>
-          </RevealPop>
+
+            {/* KOLOM 3 (KANAN - 4 COL): Kartu Perspektif + 3-Segment Bar + Kartu 75 Menit */}
+            <div className="lg:col-span-4 flex flex-col justify-between gap-6">
+              <RevealOnScroll delay={120}>
+                <div className="rounded-[28px] bg-gradient-to-br from-[#0F296B] to-[#08163B] border border-white/15 p-7 relative overflow-hidden">
+                  <span className="font-mono text-[11px] text-[#38BDF8] uppercase tracking-wider">
+                    CAKUPAN KURIKULUM
+                  </span>
+                  <h3 className="text-[26px] font-bold tracking-[-0.03em] text-white mt-1">
+                    16 Submateri Inti
+                  </h3>
+                  <p className="text-[14px] text-slate-300 leading-[1.6] text-justify mt-2">
+                    Terbagi rata menjadi 8 submateri Matematika dan 8 submateri
+                    Bahasa Indonesia sesuai kisi-kisi SMP/MTs.
+                  </p>
+                </div>
+              </RevealOnScroll>
+
+              {/* 3-Segment Progress Bar (Persis Referensi Banevox) */}
+              <RevealOnScroll delay={150}>
+                <div className="grid grid-cols-3 gap-2 p-2 rounded-full bg-white/5 border border-white/10">
+                  <div className="h-3.5 rounded-full bg-[#38BDF8]" />
+                  <div className="h-3.5 rounded-full bg-[#1B68FF]" />
+                  <div className="h-3.5 rounded-full bg-white/20" />
+                </div>
+              </RevealOnScroll>
+
+              {/* Kartu Bawah Kolom 3: Simulasi 75 Menit */}
+              <RevealOnScroll delay={180} className="flex-1">
+                <div className="h-full rounded-[28px] bg-[#1B68FF] text-white p-7 flex flex-col justify-between min-h-[250px] relative overflow-hidden shadow-[0_20px_50px_rgba(27,104,255,0.3)]">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <span className="font-mono text-[12px] uppercase tracking-wider text-blue-100 block">
+                        UJIAN AKHIR MANDIRI
+                      </span>
+                      <h3 className="text-[22px] font-semibold tracking-[-0.02em] leading-[1.25] mt-1">
+                        Simulasi CBT
+                        <span className="block">Terjadwal</span>
+                      </h3>
+                    </div>
+
+                    {/* Circular Icon Badge */}
+                    <div className="w-12 h-12 rounded-full bg-white text-[#1B68FF] flex items-center justify-center shrink-0 shadow-md">
+                      <svg
+                        className="w-6 h-6"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.2"
+                      >
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M12 7v5l3 2" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div className="mt-6">
+                    <div className="text-[54px] sm:text-[64px] font-extrabold tracking-[-0.05em] leading-none">
+                      75<span className="text-[28px] font-semibold ml-1">mnt</span>
+                    </div>
+                    <p className="font-mono text-[12px] uppercase tracking-wider text-blue-100 mt-2">
+                      30 SOAL ACAK • PEMBAHASAN LENGKAP
+                    </p>
+                  </div>
+                </div>
+              </RevealOnScroll>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          4. SECTION: INTERACTIVE CBT PRODUCT PREVIEW (#simulasi)
-             (WCAG High Contrast, Zero White-on-Yellow, 48x48dp Option Buttons)
+          3. PANEL SIMULASI INTERAKTIF (GAYA "WHAT IS BRANDING DESIGNER?")
+             - Panggung Biru #1B68FF dengan Grid Kotak-Kotak Vektor
+             - Pill Badge Tegas + Teks Rata Kanan-Kiri di Kiri
+             - Kartu 3D Miring (Tilted Card) dengan Vektor Bezier di Kanan
          ═══════════════════════════════════════════════════════════════════ */}
       <section
         id="simulasi"
-        className="relative w-full py-24 sm:py-32 px-6 sm:px-12 lg:px-16 bg-[#EEF2FA]"
+        className="relative w-full py-20 sm:py-28 px-5 sm:px-10 lg:px-16 bg-[#1B68FF] text-white overflow-hidden"
       >
-        <RevealPop>
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-14">
-            <h2 className={UI.h2Section}>Antarmuka Simulasi CBT 75 Menit</h2>
-            <p className={`${UI.bodyText} max-w-md`}>
-              Pilih salah satu opsi jawaban di bawah ini untuk mencoba langsung
-              interaksi pengerjaan soal dan melihat evaluasi kunci nalar.
-            </p>
+        {/* Architectural Square Grid Pattern Overlay */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(255,255,255,0.12) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(255,255,255,0.12) 1px, transparent 1px)
+            `,
+            backgroundSize: "48px 48px",
+          }}
+        />
+
+        <div className="relative z-10 max-w-[1240px] mx-auto">
+          {/* Top Bar inside Section (Persis Free E-Course + URL di Referensi) */}
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-10">
+            <span className="px-5 py-2 rounded-full bg-white text-[#0A0D14] font-semibold text-[14px] border-2 border-[#0A0D14] shadow-[4px_4px_0px_#0A0D14]">
+              Simulasi Interaktif CBT
+            </span>
+            <span className="font-mono text-[14px] text-blue-100">
+              MAT-08 • Aritmetika Sosial Level 3
+            </span>
           </div>
-        </RevealPop>
 
-        <RevealPop delay={100}>
-          <div className="w-full rounded-[36px] p-3 sm:p-4 bg-white/80 border border-white shadow-[0_28px_70px_rgba(15,23,42,0.06)]">
-            <div className="w-full rounded-[20px] bg-white border border-slate-200 overflow-hidden">
-              {/* Top CBT Status Bar */}
-              <div className="px-6 sm:px-10 py-5 bg-[#F4F7FC] border-b border-slate-200 flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <span className="text-xs font-semibold px-3.5 py-1.5 rounded-[8px] bg-[#0A0D14] text-white tabular-nums">
-                    MAT-08 • LEVEL 3 HOTS
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+            {/* KIRI (6 COL): Display Title + Soal & Pilihan Jawaban */}
+            <div className="lg:col-span-6 space-y-6">
+              <RevealOnScroll>
+                <h2 className="text-[40px] sm:text-[54px] lg:text-[62px] font-bold tracking-[-0.04em] leading-[1.03] text-white text-left">
+                  Uji Coba Soal
+                  <span className="block text-[#7DD3FC]">
+                    &amp; Kunci Nalar?
                   </span>
-                  <span className="text-[16px] font-medium text-[#0A0D14]">
-                    Aritmetika Sosial &amp; Finansial
-                  </span>
+                </h2>
+              </RevealOnScroll>
+
+              <RevealOnScroll delay={60}>
+                <p className="text-[15px] sm:text-[16px] text-blue-50 leading-[1.65] text-justify">
+                  Sebuah toko buku memberikan promo bertingkat bertuliskan
+                  Diskon 50% + 20% untuk paket buku persiapan ujian seharga
+                  Rp400.000,00. Pilih salah satu jawaban di bawah ini untuk
+                  melihat cara kerja evaluasi jawaban pada kartu di samping.
+                </p>
+              </RevealOnScroll>
+
+              {/* Pilihan Opsi Jawaban Interaktif */}
+              <RevealOnScroll delay={120}>
+                <div className="space-y-3 pt-2">
+                  {SAMPLE_OPTIONS.map((opt) => {
+                    const isSelected = selectedOption === opt.id;
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => setSelectedOption(opt.id)}
+                        className={`w-full text-left p-4 rounded-[16px] border-2 transition-all flex items-start gap-3.5 cursor-pointer ${
+                          isSelected
+                            ? "bg-white text-[#0A0D14] border-[#0A0D14] shadow-[5px_5px_0px_#0A0D14] -translate-y-0.5"
+                            : "bg-[#1454D6]/80 hover:bg-[#1454D6] text-white border-white/25"
+                        }`}
+                      >
+                        <span
+                          className={`w-8 h-8 rounded-[10px] font-mono text-[14px] font-bold flex items-center justify-center shrink-0 mt-0.5 ${
+                            isSelected
+                              ? "bg-[#1B68FF] text-white"
+                              : "bg-white/15 text-white"
+                          }`}
+                        >
+                          {opt.id}
+                        </span>
+                        <span className="text-[14px] sm:text-[15px] leading-[1.55] text-justify flex-1">
+                          {opt.text}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
+              </RevealOnScroll>
+            </div>
 
-                <div className="flex items-center gap-6 tabular-nums">
-                  <div className="flex items-center gap-2 text-[#0A0D14]">
-                    <svg
-                      className="w-5 h-5 text-[#1B68FF]"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
+            {/* KANAN (6 COL): TILTED 3D CARD DENGAN VEKTOR BEZIER (Persis Referensi Panel 3) */}
+            <div className="lg:col-span-6 flex justify-center lg:justify-end">
+              <RevealOnScroll delay={140} className="w-full max-w-[480px]">
+                <div className="bg-white text-[#0A0D14] rounded-[28px] p-5 sm:p-6 border-2 border-[#0A0D14] shadow-[14px_18px_0px_rgba(5,12,30,0.45)] lg:-rotate-3 hover:rotate-0 transition-transform duration-500">
+                  {/* Card Top Bar */}
+                  <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-200">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-[#050C1E] text-[#38BDF8] font-mono text-[13px] font-bold flex items-center justify-center">
+                        CBT
+                      </div>
+                      <div>
+                        <p className="text-[14px] font-bold text-[#0A0D14] leading-tight">
+                          Evaluasi Nalar AGRA
+                        </p>
+                        <p className="text-[12px] text-slate-500">
+                          Timer: {formatTime(secondsLeft)} • Opsi {selectedOption}
+                        </p>
+                      </div>
+                    </div>
+
+                    <span
+                      className={`px-3 py-1 rounded-full text-[12px] font-bold ${
+                        chosenOptionObj?.isCorrect
+                          ? "bg-emerald-100 text-emerald-800"
+                          : "bg-amber-100 text-amber-900"
+                      }`}
                     >
-                      <circle cx="12" cy="12" r="9" />
-                      <path d="M12 7v5l3 2" />
-                    </svg>
-                    <span className="text-[18px] font-semibold text-[#0A0D14] tabular-nums">
-                      {formatTime(secondsLeft)}
+                      {chosenOptionObj?.isCorrect
+                        ? "Jawaban Tepat"
+                        : "Perlu Evaluasi"}
                     </span>
                   </div>
 
-                  <span className="hidden sm:inline-block text-[15px] font-medium text-[#1E293B] tabular-nums">
-                    Soal 14 dari 30
-                  </span>
-                </div>
-              </div>
+                  {/* Dark 3D Vector Canvas Inside Card (Seperti Vektor Pen Tool di Referensi) */}
+                  <div className="rounded-[20px] bg-gradient-to-br from-[#06122E] via-[#0B2154] to-[#050C1E] p-5 text-white relative overflow-hidden">
+                    {/* Vector Bezier Curve & Control Handles */}
+                    <svg
+                      viewBox="0 0 400 130"
+                      fill="none"
+                      className="w-full h-28 mb-3"
+                    >
+                      {/* Grid inside dark canvas */}
+                      <line
+                        x1="0"
+                        y1="65"
+                        x2="400"
+                        y2="65"
+                        stroke="rgba(255,255,255,0.08)"
+                      />
+                      {/* Bezier Handle Lines */}
+                      <line
+                        x1="70"
+                        y1="95"
+                        x2="140"
+                        y2="20"
+                        stroke="#38BDF8"
+                        strokeWidth="1.5"
+                      />
+                      <line
+                        x1="330"
+                        y1="95"
+                        x2="260"
+                        y2="20"
+                        stroke="#38BDF8"
+                        strokeWidth="1.5"
+                      />
+                      {/* Main Bezier Curve */}
+                      <path
+                        d="M 70 95 C 140 20, 260 20, 330 95"
+                        stroke="#38BDF8"
+                        strokeWidth="3.5"
+                        fill="none"
+                      />
+                      {/* Control Anchor Nodes */}
+                      <rect
+                        x="63"
+                        y="88"
+                        width="14"
+                        height="14"
+                        rx="3"
+                        fill="#1B68FF"
+                        stroke="#FFFFFF"
+                        strokeWidth="2"
+                      />
+                      <rect
+                        x="323"
+                        y="88"
+                        width="14"
+                        height="14"
+                        rx="3"
+                        fill="#10B981"
+                        stroke="#FFFFFF"
+                        strokeWidth="2"
+                      />
+                      <circle cx="140" cy="20" r="5" fill="#38BDF8" />
+                      <circle cx="260" cy="20" r="5" fill="#38BDF8" />
+                      <circle
+                        cx="200"
+                        cy="38"
+                        r="8"
+                        fill="#FFFFFF"
+                        stroke="#1B68FF"
+                        strokeWidth="3"
+                      />
+                    </svg>
 
-              {/* Main CBT Split Workspace */}
-              <div className="grid grid-cols-1 lg:grid-cols-12">
-                <div className="lg:col-span-7 p-6 sm:p-10 lg:border-r border-slate-200">
-                  <p className="text-[17px] sm:text-[18px] font-normal leading-[1.6] text-[#0A0D14] mb-7 text-pretty tabular-nums">
-                    Sebuah toko buku memberikan promo bertingkat bertuliskan{" "}
-                    <strong className="font-semibold">
-                      &ldquo;Diskon 50% + 20%&rdquo;
-                    </strong>{" "}
-                    untuk paket buku persiapan ujian seharga{" "}
-                    <strong className="font-semibold">Rp400.000,00</strong>.
-                    Berapakah harga akhir yang harus dibayar siswa di kasir?
-                  </p>
-
-                  {/* Interactive Answer Choices (Min 48px height, WCAG contrast, NO white on yellow!) */}
-                  <div className="flex flex-col gap-3.5">
-                    {SAMPLE_OPTIONS.map((opt) => {
-                      const isSelected = selectedOption === opt.id;
-                      const showEmerald = isSelected && opt.isCorrect;
-                      const showAmber = isSelected && !opt.isCorrect;
-
-                      return (
-                        <button
-                          key={opt.id}
-                          type="button"
-                          onClick={() => setSelectedOption(opt.id)}
-                          className={`min-h-[56px] w-full text-left p-4 sm:p-5 rounded-[14px] border-2 transition-all duration-200 flex items-start gap-4 cursor-pointer ${
-                            showEmerald
-                              ? "bg-[#ECFDF5] border-[#059669] text-[#064E3B]"
-                              : showAmber
-                              ? "bg-[#FFFBEB] border-[#D97706] text-[#78350F]"
-                              : "bg-white hover:bg-[#F4F7FC] border-slate-300 text-[#0A0D14]"
-                          }`}
-                        >
-                          {/* Badge Rule #3.1: Dark brown #78350F on soft amber #FDE68A (Never white text on yellow!) */}
-                          <span
-                            className={`w-8 h-8 rounded-[8px] text-[14px] font-bold flex items-center justify-center shrink-0 mt-0.5 transition-colors tabular-nums ${
-                              showEmerald
-                                ? "bg-[#059669] text-white"
-                                : showAmber
-                                ? "bg-[#FDE68A] text-[#78350F]"
-                                : "bg-[#EEF2FA] text-[#0A0D14]"
-                            }`}
-                          >
-                            {opt.id}
-                          </span>
-                          <span className="text-[16px] font-normal leading-[1.55] text-pretty tabular-nums">
-                            {opt.text}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Right 5 Cols: Instant Diagnostic Feedback */}
-                <div className="lg:col-span-5 p-6 sm:p-10 bg-[#F8FAFC] flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center justify-between gap-4 mb-5">
-                      <span className="text-[16px] font-semibold text-[#0A0D14]">
-                        Pembahasan Kunci Nalar
-                      </span>
-                      {chosenOptionObj?.isCorrect ? (
-                        <span className="px-3.5 py-1 rounded-full bg-[#D1FAE5] text-[#065F46] text-[14px] font-semibold">
-                          Jawaban Tepat
-                        </span>
-                      ) : (
-                        <span className="px-3.5 py-1 rounded-full bg-[#FEF3C7] text-[#78350F] text-[14px] font-semibold">
-                          Perlu Evaluasi Konsep
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="p-5 rounded-[14px] bg-white border border-slate-200 mb-6">
-                      <p className="text-[16px] font-normal leading-[1.55] text-[#1E293B] text-pretty tabular-nums">
-                        {chosenOptionObj?.feedback}
-                      </p>
-                    </div>
-
-                    <div className="p-4 rounded-[12px] bg-[#EEF2FA] text-[14px] leading-[1.6] text-[#0A0D14] space-y-1.5 tabular-nums">
+                    <div className="font-mono text-[13px] bg-white/10 rounded-[12px] p-3.5 space-y-1 text-blue-50">
                       <div>Tahap 1: 50% × Rp400.000 = Rp200.000</div>
                       <div>Tahap 2: Rp200.000 - (20% × Rp200.000)</div>
-                      <div className="font-bold text-[#1B68FF]">
+                      <div className="text-[#38BDF8] font-bold pt-1">
                         Harga Akhir = Rp160.000,00
                       </div>
                     </div>
                   </div>
 
-                  <div className="mt-8 pt-6 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4">
-                    <span className="text-[16px] font-medium text-[#1E293B] tabular-nums">
-                      480+ Soal TKA Tersedia
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => handleNavigate("/register")}
-                      className={UI.btnPrimary}
-                    >
-                      <span>Buka Simulasi 75 Menit</span>
-                      <svg
-                        className="w-4 h-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path d="M5 12h14M13 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </RevealPop>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════════
-          5. SECTION: KURIKULUM 16 SUBMATERI (#submateri)
-             (16px Min Body Text, 26px H3, 48px Tab Buttons, High Contrast)
-         ═══════════════════════════════════════════════════════════════════ */}
-      <section
-        id="submateri"
-        className="relative w-full py-28 sm:py-36 px-6 sm:px-12 lg:px-16 bg-[#F4F7FC]"
-      >
-        <RevealPop>
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16">
-            <h2 className={`${UI.h2Section} max-w-3xl`}>
-              16 Submateri Inti Numerasi &amp; Literasi Fase D
-            </h2>
-
-            {/* Domain Switcher with >= 48px touch target buttons */}
-            <div className="inline-flex rounded-[20px] p-1.5 bg-[#EEF2FA] border border-slate-300/80 self-start lg:self-end">
-              <button
-                type="button"
-                onClick={() => setActiveDomain("numerasi")}
-                className={`min-h-[48px] px-6 py-2.5 rounded-[14px] text-[16px] font-medium transition-all cursor-pointer tabular-nums ${
-                  activeDomain === "numerasi"
-                    ? "bg-[#1B68FF] text-white shadow-sm"
-                    : "text-[#1E293B] hover:text-[#0A0D14]"
-                }`}
-              >
-                Matematika (08)
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveDomain("literasi")}
-                className={`min-h-[48px] px-6 py-2.5 rounded-[14px] text-[16px] font-medium transition-all cursor-pointer tabular-nums ${
-                  activeDomain === "literasi"
-                    ? "bg-[#1B68FF] text-white shadow-sm"
-                    : "text-[#1E293B] hover:text-[#0A0D14]"
-                }`}
-              >
-                Bahasa Indonesia (08)
-              </button>
-            </div>
-          </div>
-        </RevealPop>
-
-        <div
-          key={activeDomain}
-          className="grid grid-cols-1 md:grid-cols-2 gap-5 tabular-nums"
-        >
-          {activeItems.map((item, idx) => (
-            <RevealPop key={item.code} delay={idx * 40}>
-              <div className="group bg-white hover:bg-[#1B68FF] rounded-[24px] p-7 sm:p-8 transition-all duration-300 border border-slate-200 hover:border-[#1B68FF] shadow-[0_8px_24px_rgba(15,23,42,0.03)] hover:shadow-[0_18px_40px_rgba(27,104,255,0.2)] flex items-start justify-between gap-5">
-                <div className="flex items-start gap-5">
-                  <span className="text-[26px] font-normal leading-[1.3] text-[#1B68FF] group-hover:text-blue-100 transition-colors tabular-nums">
-                    {item.code}
-                  </span>
-                  <div>
-                    <h3 className="text-[22px] sm:text-[24px] font-medium tracking-[-0.02em] leading-[1.3] text-[#0A0D14] group-hover:text-white transition-colors">
-                      {item.title}
-                    </h3>
-                    <p className="text-[16px] font-normal leading-[1.55] text-[#1E293B] group-hover:text-blue-50 transition-colors mt-2 text-pretty">
-                      {item.scope}
+                  {/* Card Bottom Feedback Description — Rata Kanan-Kiri */}
+                  <div className="mt-4 space-y-3">
+                    <p className="text-[14px] text-[#334155] leading-[1.6] text-justify">
+                      {chosenOptionObj?.feedback}
                     </p>
+                    <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
+                      <span className="font-mono text-[12px] text-slate-500">
+                        480+ SOAL TERSEDIA
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleNavigate("/register")}
+                        className="px-4 py-2 rounded-[10px] bg-[#0A0D14] hover:bg-[#1B68FF] text-white text-[13px] font-semibold transition-colors cursor-pointer"
+                      >
+                        Buka Ruang Simulasi →
+                      </button>
+                    </div>
                   </div>
                 </div>
-
-                <div className="text-right shrink-0 pl-3">
-                  <span className="block text-[16px] font-semibold text-[#0A0D14] group-hover:text-white transition-colors tabular-nums">
-                    {item.itemsCount} Soal
-                  </span>
-                  <span className="block text-[14px] font-medium text-[#065F46] group-hover:text-emerald-200 transition-colors mt-1 tabular-nums">
-                    Lulus {item.passRate}
-                  </span>
-                </div>
-              </div>
-            </RevealPop>
-          ))}
+              </RevealOnScroll>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
-          6. CLOSING CTA STAGE & ARCHITECTURAL FOOTER
+          4. PANEL KURIKULUM: MATEMATIKA & BAHASA INDONESIA (#kurikulum)
+             - Kotak Penjelasan Dua Mapel + 16 Kotak Submateri Rata Kanan-Kiri
          ═══════════════════════════════════════════════════════════════════ */}
-      <section className="relative w-full pt-8 pb-20 px-6 sm:px-12 lg:px-16 bg-[#F4F7FC]">
-        <RevealPop>
-          <div className="relative w-full rounded-[36px] bg-gradient-to-br from-[#2370FF] via-[#1B68FF] to-[#0E50E4] p-10 sm:p-16 lg:p-20 overflow-hidden text-white shadow-[0_28px_70px_rgba(27,104,255,0.22)]">
-            <div className="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-10">
-              <div className="max-w-2xl">
-                <h2 className="text-[38px] sm:text-[52px] lg:text-[64px] font-normal tracking-[-0.04em] leading-[1.05] text-white mb-5 text-balance">
-                  Mulai Persiapan TKA SMP Hari Ini
+      <section
+        id="kurikulum"
+        className="relative w-full py-20 sm:py-28 px-5 sm:px-10 lg:px-16 bg-[#F4F7FC]"
+      >
+        <div className="max-w-[1240px] mx-auto">
+          <RevealOnScroll>
+            <div className="grid grid-cols-1 lg:grid-cols-12 items-end gap-6 mb-10">
+              <div className="lg:col-span-7">
+                <span className="font-mono text-[12px] uppercase tracking-[0.15em] text-[#1B68FF] font-semibold block mb-2">
+                  KURIKULUM FASE D • SMP/MTS
+                </span>
+                <h2 className="text-[32px] sm:text-[44px] font-semibold tracking-[-0.035em] leading-[1.1] text-[#0A0D14] text-left">
+                  Cakupan Materi Matematika &amp; Bahasa Indonesia
                 </h2>
-                <p className="text-[16px] sm:text-[18px] font-normal leading-[1.55] text-blue-50 max-w-xl text-pretty tabular-nums">
-                  Akses langsung 30 soal diagnostik prasyarat, 16 submateri Fase
-                  D, dan paket simulasi CBT 75 menit dalam satu ruang belajar
-                  mandiri.
+              </div>
+              <div className="lg:col-span-5">
+                <p className="text-[15px] sm:text-[16px] text-[#334155] leading-[1.65] text-justify">
+                  Pilih domain mata pelajaran di bawah ini untuk melihat rincian
+                  8 submateri Matematika dan 8 submateri Bahasa Indonesia beserta
+                  target ketuntasannya.
                 </p>
               </div>
+            </div>
+          </RevealOnScroll>
 
-              {/* Primary Solid vs Secondary Outline Buttons (>= 48x48px) */}
-              <div className="flex flex-wrap items-center gap-4">
-                <button
-                  type="button"
-                  onClick={() => handleNavigate("/register")}
-                  disabled={loadingRoute === "/register"}
-                  className="min-h-[48px] px-8 py-3.5 rounded-[14px] bg-white text-[#1B68FF] hover:bg-blue-50 active:translate-y-0.5 text-[16px] font-semibold transition-all shadow-[0_16px_36px_rgba(0,0,0,0.18)] inline-flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  {loadingRoute === "/register"
-                    ? "Memuat..."
-                    : "Daftar Akun Siswa →"}
-                </button>
-                <Link
-                  href="/login"
-                  className="min-h-[48px] px-7 py-3.5 rounded-[14px] bg-transparent hover:bg-white/15 border-2 border-white/60 hover:border-white text-white text-[16px] font-medium transition-all inline-flex items-center justify-center"
-                >
-                  Masuk ke Akun Siswa
-                </Link>
+          {/* Dua Kotak Penjelasan Domain (Matematika & Bahasa Indonesia) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+            <RevealOnScroll delay={40}>
+              <div
+                onClick={() => setActiveDomain("numerasi")}
+                className={`rounded-[26px] p-7 border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                  activeDomain === "numerasi"
+                    ? "bg-[#050C1E] text-white border-[#050C1E] shadow-[0_18px_40px_rgba(5,12,30,0.16)]"
+                    : "bg-white text-[#0A0D14] border-slate-200 hover:border-[#1B68FF]"
+                }`}
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="font-mono text-[12px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-[#1B68FF] text-white">
+                      DOMAIN 01 • NUMERASI
+                    </span>
+                    <span className="font-mono text-[13px] opacity-80">
+                      8 Submateri • 240 Soal
+                    </span>
+                  </div>
+                  <h3 className="text-[24px] sm:text-[26px] font-semibold tracking-[-0.025em]">
+                    Matematika SMP
+                  </h3>
+                  <p
+                    className={`text-[14px] sm:text-[15px] leading-[1.65] text-justify mt-2.5 ${
+                      activeDomain === "numerasi"
+                        ? "text-slate-300"
+                        : "text-[#334155]"
+                    }`}
+                  >
+                    Menguji kemampuan berhitung, pemodelan aljabar, pengukuran
+                    geometri, pengolahan data statistika, hingga penyelesaian
+                    masalah aritmetika sosial.
+                  </p>
+                </div>
+                <div className="mt-6 pt-4 border-t border-current/10 flex items-center justify-between text-[13px] font-semibold">
+                  <span>
+                    {activeDomain === "numerasi"
+                      ? "Sedang Ditampilkan di Bawah"
+                      : "Klik untuk Menampilkan Topik"}
+                  </span>
+                  <span>→</span>
+                </div>
+              </div>
+            </RevealOnScroll>
+
+            <RevealOnScroll delay={90}>
+              <div
+                onClick={() => setActiveDomain("literasi")}
+                className={`rounded-[26px] p-7 border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                  activeDomain === "literasi"
+                    ? "bg-[#1B68FF] text-white border-[#1B68FF] shadow-[0_18px_40px_rgba(27,104,255,0.24)]"
+                    : "bg-white text-[#0A0D14] border-slate-200 hover:border-[#1B68FF]"
+                }`}
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span
+                      className={`font-mono text-[12px] font-bold uppercase tracking-wider px-3 py-1 rounded-full ${
+                        activeDomain === "literasi"
+                          ? "bg-white text-[#1B68FF]"
+                          : "bg-[#EEF2FA] text-[#1B68FF]"
+                      }`}
+                    >
+                      DOMAIN 02 • LITERASI MEMBACA
+                    </span>
+                    <span className="font-mono text-[13px] opacity-80">
+                      8 Submateri • 240 Soal
+                    </span>
+                  </div>
+                  <h3 className="text-[24px] sm:text-[26px] font-semibold tracking-[-0.025em]">
+                    Bahasa Indonesia SMP
+                  </h3>
+                  <p
+                    className={`text-[14px] sm:text-[15px] leading-[1.65] text-justify mt-2.5 ${
+                      activeDomain === "literasi"
+                        ? "text-blue-50"
+                        : "text-[#334155]"
+                    }`}
+                  >
+                    Menguji ketepatan menemukan informasi tersurat, menyimpulkan
+                    makna tersirat, mengevaluasi struktur wacana, membandingkan
+                    infografik, serta mengkaji teks sastra dan eksposisi.
+                  </p>
+                </div>
+                <div className="mt-6 pt-4 border-t border-current/15 flex items-center justify-between text-[13px] font-semibold">
+                  <span>
+                    {activeDomain === "literasi"
+                      ? "Sedang Ditampilkan di Bawah"
+                      : "Klik untuk Menampilkan Topik"}
+                  </span>
+                  <span>→</span>
+                </div>
+              </div>
+            </RevealOnScroll>
+          </div>
+
+          {/* Grid 8 Submateri Aktif — Kotak Bento Rata Kanan-Kiri */}
+          <div
+            key={activeDomain}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 tabular-nums"
+          >
+            {activeItems.map((item, idx) => (
+              <RevealOnScroll key={item.code} delay={idx * 35}>
+                <div className="group h-full bg-white hover:bg-[#050C1E] rounded-[24px] p-6 border border-slate-200/90 hover:border-[#050C1E] transition-all duration-300 flex flex-col justify-between shadow-[0_8px_24px_rgba(15,23,42,0.03)]">
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="w-10 h-10 rounded-[12px] bg-[#EEF2FA] group-hover:bg-[#1B68FF] text-[#1B68FF] group-hover:text-white font-mono text-[15px] font-bold flex items-center justify-center transition-colors">
+                        {item.code}
+                      </span>
+                      <span className="font-mono text-[12px] font-semibold px-2.5 py-1 rounded-md bg-emerald-50 group-hover:bg-white/10 text-[#065F46] group-hover:text-[#38BDF8] transition-colors">
+                        Lulus {item.passRate}
+                      </span>
+                    </div>
+
+                    <h4 className="text-[18px] font-semibold tracking-[-0.02em] text-[#0A0D14] group-hover:text-white transition-colors text-left">
+                      {item.title}
+                    </h4>
+
+                    <p className="text-[14px] text-[#334155] group-hover:text-slate-300 leading-[1.6] text-justify mt-2.5 transition-colors">
+                      {item.scope}
+                    </p>
+                  </div>
+
+                  <div className="mt-6 pt-3.5 border-t border-slate-100 group-hover:border-white/10 flex items-center justify-between text-[12px] font-mono text-slate-500 group-hover:text-slate-400">
+                    <span>3 LEVEL (L1–L3)</span>
+                    <span className="font-semibold text-[#0A0D14] group-hover:text-white">
+                      {item.itemsCount} Butir Soal
+                    </span>
+                  </div>
+                </div>
+              </RevealOnScroll>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════════════
+          5. CLOSING STAGE & FOOTER — Rata Kanan-Kiri
+         ═══════════════════════════════════════════════════════════════════ */}
+      <section className="relative w-full pt-4 pb-16 px-5 sm:px-10 lg:px-16 bg-[#F4F7FC]">
+        <div className="max-w-[1240px] mx-auto">
+          <RevealOnScroll>
+            <div className="rounded-[32px] bg-[#050C1E] text-white p-8 sm:p-12 lg:p-14 border border-white/10 relative overflow-hidden">
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -right-20 -bottom-20 w-[380px] h-[380px] rounded-full bg-[#1B68FF]/30 blur-[100px]"
+              />
+              <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 items-center gap-8">
+                <div className="lg:col-span-8">
+                  <span className="font-mono text-[12px] uppercase tracking-[0.15em] text-[#38BDF8] block mb-2">
+                    MULAI SEKARANG
+                  </span>
+                  <h2 className="text-[30px] sm:text-[42px] font-semibold tracking-[-0.035em] leading-[1.1] text-white text-left mb-3">
+                    Siap Mengukur Penguasaan Materi TKA?
+                  </h2>
+                  <p className="text-[15px] sm:text-[16px] text-slate-300 leading-[1.65] text-justify">
+                    Buat akun siswa untuk memulai 30 soal diagnostik prasyarat,
+                    membuka seluruh 16 submateri Matematika dan Bahasa Indonesia,
+                    serta mengerjakan simulasi CBT 75 menit.
+                  </p>
+                </div>
+
+                <div className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 w-full">
+                  <button
+                    type="button"
+                    onClick={() => handleNavigate("/register")}
+                    className="min-h-[48px] px-6 py-3 rounded-[14px] bg-[#1B68FF] hover:bg-[#1454D6] text-white text-[15px] font-semibold transition-all shadow-[0_12px_28px_rgba(27,104,255,0.3)] inline-flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <span>Daftar Akun Siswa</span>
+                    <span>→</span>
+                  </button>
+                  <Link
+                    href="/login"
+                    className="min-h-[48px] px-6 py-3 rounded-[14px] bg-white/10 hover:bg-white/15 border border-white/20 text-white text-[15px] font-medium transition-all inline-flex items-center justify-center"
+                  >
+                    Masuk ke Akun
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
-        </RevealPop>
+          </RevealOnScroll>
 
-        <footer className="mt-16 pt-8 border-t border-slate-300/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 text-[16px] font-normal text-[#1E293B]">
-          <div className="flex items-center gap-3">
-            <img
-              src="/assets/images/agra-icon.png"
-              alt="Logo AGRA"
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-              }}
-              className="w-7 h-7 object-contain"
-            />
-            <span className="text-[20px] font-semibold tracking-[-0.04em] text-[#0A0D14]">
-              AGRA.
-            </span>
-            <span>
-              — Ruang Belajar &amp; Simulasi Mandiri Tes Kemampuan Akademik SMP
-            </span>
-          </div>
+          <footer className="mt-12 pt-6 border-t border-slate-300/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-[14px] text-[#334155]">
+            <div className="flex items-center gap-2.5">
+              <img
+                src="/assets/images/agra-icon.png"
+                alt="Logo AGRA"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+                className="w-6 h-6 object-contain"
+              />
+              <span className="text-[18px] font-bold tracking-[-0.04em] text-[#0A0D14]">
+                AGRA.
+              </span>
+              <span>
+                — Ruang Belajar &amp; Simulasi Mandiri Tes Kemampuan Akademik SMP
+              </span>
+            </div>
 
-          <div className="flex flex-wrap items-center gap-6 tabular-nums">
-            <a
-              href="#alur"
-              className="min-h-[44px] inline-flex items-center hover:text-[#0A0D14] transition-colors"
-            >
-              Alur Belajar
-            </a>
-            <a
-              href="#simulasi"
-              className="min-h-[44px] inline-flex items-center hover:text-[#0A0D14] transition-colors"
-            >
-              Simulasi CBT
-            </a>
-            <a
-              href="#submateri"
-              className="min-h-[44px] inline-flex items-center hover:text-[#0A0D14] transition-colors"
-            >
-              Kurikulum
-            </a>
-            <Link
-              href="/login"
-              className="min-h-[44px] inline-flex items-center hover:text-[#0A0D14] transition-colors"
-            >
-              Masuk
-            </Link>
-            <span>© 2026 AGRA</span>
-          </div>
-        </footer>
+            <div className="flex flex-wrap items-center gap-6">
+              <a href="#tahapan" className="hover:text-[#0A0D14]">
+                Alur Sistem
+              </a>
+              <a href="#simulasi" className="hover:text-[#0A0D14]">
+                Simulasi CBT
+              </a>
+              <a href="#kurikulum" className="hover:text-[#0A0D14]">
+                16 Submateri
+              </a>
+              <Link href="/login" className="hover:text-[#0A0D14]">
+                Masuk
+              </Link>
+              <span>© 2026 AGRA</span>
+            </div>
+          </footer>
+        </div>
       </section>
     </main>
   );
