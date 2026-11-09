@@ -13,6 +13,9 @@ import {
   CheckCircle2,
   AlertCircle,
   RefreshCw,
+  ChevronLeft,
+  ChevronRight,
+  HelpCircle,
 } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 
@@ -86,6 +89,266 @@ interface DashboardPayload {
   nextAction?: DashboardNextAction;
 }
 
+interface TourStep {
+  targetId: string;
+  title: string;
+  description: string;
+}
+
+const DASHBOARD_TOUR_STEPS: TourStep[] = [
+  {
+    targetId: 'tour-profile-card',
+    title: 'profil dan progres fase belajarmu',
+    description:
+      'Pantau perolehan poin XP, fase belajar aktif, serta jumlah submateri yang sudah kamu tuntaskan di kartu utama ini.',
+  },
+  {
+    targetId: 'tour-mission-card',
+    title: 'langkah belajar utamamu saat ini',
+    description:
+      'Mulai dari sini! Kerjakan 30 soal diagnostik Recall Kemampuan Awal hingga mencapai ketuntasan minimal 90% untuk membuka seluruh materi kurikulum.',
+  },
+  {
+    targetId: 'tour-subject-0',
+    title: 'kurikulum Matematika SMP',
+    description:
+      'Setelah lulus Recall, kamu bisa mempelajari 10 submateri Matematika melalui latihan berjenjang dari Level 1, Level 2, hingga Level 3.',
+  },
+  {
+    targetId: 'tour-subject-1',
+    title: 'kurikulum Bahasa Indonesia SMP',
+    description:
+      'Tuntaskan 6 submateri literasi teks informasi dan fiksi di kartu ini untuk melengkapi syarat pembukaan ujian simulasi.',
+  },
+  {
+    targetId: 'tour-cbt-card',
+    title: 'peta ketuntasan menuju Simulasi CBT',
+    description:
+      'Pantau tiga syarat kelulusanmu di sini. Jika seluruh submateri telah tuntas, ruang Simulasi Ujian CBT 75 menit akan terbuka otomatis!',
+  },
+];
+
+/**
+ * Komponen Spotlight Tour Overlay (Gaya Edvora):
+ * Menyorot elemen target dengan efek cutout gelap di sekelilingnya dan menampilkan
+ * kartu panduan langkah demi langkah lengkap dengan panah penunjuk.
+ */
+function DashboardSpotlightTour({
+  isOpen,
+  steps,
+  currentStep,
+  onNext,
+  onPrev,
+  onSkip,
+}: {
+  isOpen: boolean;
+  steps: TourStep[];
+  currentStep: number;
+  onNext: () => void;
+  onPrev: () => void;
+  onSkip: () => void;
+}) {
+  const [rect, setRect] = useState<{
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+  } | null>(null);
+  const [viewport, setViewport] = useState({ vw: 1280, vh: 800 });
+
+  const activeStep = steps[currentStep];
+
+  const updatePosition = useCallback(() => {
+    if (!isOpen || !activeStep) return;
+    const el = document.querySelector(
+      `[data-tour-id="${activeStep.targetId}"]`
+    ) as HTMLElement | null;
+    if (!el) return;
+
+    const r = el.getBoundingClientRect();
+    setRect({
+      top: r.top,
+      left: r.left,
+      width: r.width,
+      height: r.height,
+    });
+    setViewport({
+      vw: window.innerWidth,
+      vh: window.innerHeight,
+    });
+  }, [isOpen, activeStep]);
+
+  // Auto-scroll ke elemen yang sedang disorot saat berpindah step
+  useEffect(() => {
+    if (!isOpen || !activeStep) return;
+    const el = document.querySelector(
+      `[data-tour-id="${activeStep.targetId}"]`
+    ) as HTMLElement | null;
+
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    const timer1 = setTimeout(updatePosition, 120);
+    const timer2 = setTimeout(updatePosition, 450);
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
+  }, [isOpen, currentStep, activeStep, updatePosition]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    let rafId = 0;
+    const onScrollOrResize = () => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(updatePosition);
+    };
+
+    window.addEventListener('scroll', onScrollOrResize, { passive: true });
+    window.addEventListener('resize', onScrollOrResize, { passive: true });
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onSkip();
+      if (e.key === 'ArrowRight') onNext();
+      if (e.key === 'ArrowLeft' && currentStep > 0) onPrev();
+    };
+    window.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      window.removeEventListener('scroll', onScrollOrResize);
+      window.removeEventListener('resize', onScrollOrResize);
+      window.removeEventListener('keydown', onKeyDown);
+      cancelAnimationFrame(rafId);
+    };
+  }, [isOpen, currentStep, onNext, onPrev, onSkip, updatePosition]);
+
+  if (!isOpen || !activeStep || !rect) return null;
+
+  const pad = 10;
+  const spotTop = rect.top - pad;
+  const spotLeft = rect.left - pad;
+  const spotWidth = rect.width + pad * 2;
+  const spotHeight = rect.height + pad * 2;
+
+  const popoverWidth = Math.min(340, viewport.vw - 32);
+  const spaceBelow = viewport.vh - (spotTop + spotHeight);
+  const placeAbove = spaceBelow < 210 && spotTop > 210;
+
+  const popoverTop = placeAbove
+    ? Math.max(16, spotTop - 196)
+    : Math.min(viewport.vh - 196, spotTop + spotHeight + 18);
+
+  const targetCenterX = spotLeft + spotWidth / 2;
+  const popoverLeft = Math.max(
+    16,
+    Math.min(viewport.vw - popoverWidth - 16, targetCenterX - popoverWidth / 2)
+  );
+  const arrowLeft = Math.max(
+    28,
+    Math.min(popoverWidth - 28, targetCenterX - popoverLeft)
+  );
+
+  const isFirst = currentStep === 0;
+  const isLast = currentStep === steps.length - 1;
+
+  return (
+    <div
+      style={{ fontFamily: "'Onest', sans-serif" }}
+      className="fixed inset-0 z-[100] pointer-events-auto"
+    >
+      {/* Klik area gelap di luar untuk melewati atau lanjut */}
+      <div
+        onClick={onSkip}
+        className="fixed inset-0 bg-transparent cursor-pointer"
+        aria-label="Tutup panduan"
+      />
+
+      {/* Lubang Sorotan (Spotlight Cutout) yang Meluncur Halus */}
+      <div
+        style={{
+          top: `${spotTop}px`,
+          left: `${spotLeft}px`,
+          width: `${spotWidth}px`,
+          height: `${spotHeight}px`,
+          boxShadow: '0 0 0 9999px rgba(6, 14, 36, 0.72)',
+          transition: 'all 380ms cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
+        className="fixed rounded-[34px] pointer-events-none ring-4 ring-white shadow-[0_0_50px_rgba(27,104,255,0.45)]"
+      />
+
+      {/* Kotak Popover Panduan (Persis Referensi Edvora) */}
+      <div
+        style={{
+          top: `${popoverTop}px`,
+          left: `${popoverLeft}px`,
+          width: `${popoverWidth}px`,
+          transition: 'all 380ms cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
+        className="fixed z-[101] rounded-[22px] bg-white p-5 sm:p-6 shadow-[0_24px_60px_rgba(0,0,0,0.35)] border border-slate-100 text-[#0A0D14]"
+      >
+        {/* Segitiga Penunjuk (Arrow) */}
+        <div
+          style={{ left: `${arrowLeft}px` }}
+          className={`absolute -translate-x-1/2 w-4 h-4 bg-white rotate-45 ${
+            placeAbove
+              ? '-bottom-2 border-r border-b border-slate-100'
+              : '-top-2 border-l border-t border-slate-100'
+          }`}
+        />
+
+        {/* Isi Penjelasan */}
+        <p className="text-[14px] sm:text-[15px] leading-[1.6] text-[#334155] text-justify">
+          Ini adalah <strong className="font-semibold text-[#0A0D14]">{activeStep.title}</strong>.{' '}
+          {activeStep.description}
+        </p>
+
+        {/* Baris Tombol Navigasi Bawah */}
+        <div className="mt-5 flex items-center justify-between gap-4">
+          <button
+            type="button"
+            onClick={onSkip}
+            className="px-4 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-[#334155] hover:text-[#0A0D14] text-[13px] font-medium transition-colors cursor-pointer"
+          >
+            Lewati
+          </button>
+
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={onPrev}
+              disabled={isFirst}
+              aria-label="Langkah sebelumnya"
+              className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 disabled:opacity-40 disabled:pointer-events-none text-[#334155] flex items-center justify-center transition-colors cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+
+            <span className="text-[13px] font-medium text-[#64748B] tabular-nums min-w-[34px] text-center">
+              {currentStep + 1} / {steps.length}
+            </span>
+
+            <button
+              type="button"
+              onClick={onNext}
+              aria-label={isLast ? 'Selesai panduan' : 'Langkah selanjutnya'}
+              className="h-8 px-2.5 min-w-[32px] rounded-full bg-[#1B68FF] hover:bg-[#1454D6] text-white text-[13px] font-semibold flex items-center justify-center transition-colors shadow-[0_6px_16px_rgba(27,104,255,0.35)] cursor-pointer"
+            >
+              {isLast ? (
+                <span className="px-1.5">Selesai</span>
+              ) : (
+                <ChevronRight className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /**
  * Kartu 3D Interaktif:
  * Memberikan kedalaman perspektif 3D saat diarahkan kursor dan efek tekan taktil saat diklik.
@@ -94,10 +357,12 @@ function Interactive3DCard({
   children,
   className = '',
   intensity = 4,
+  tourId,
 }: {
   children: React.ReactNode;
   className?: string;
   intensity?: number;
+  tourId?: string;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -122,6 +387,7 @@ function Interactive3DCard({
   return (
     <div
       ref={cardRef}
+      data-tour-id={tourId}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{
@@ -162,6 +428,10 @@ export default function DashboardPage() {
   const [dashboardData, setDashboardData] = useState<DashboardPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
+
+  // State Spotlight Onboarding Tour
+  const [tourOpen, setTourOpen] = useState(false);
+  const [tourStep, setTourStep] = useState(0);
 
   const applyDashboardPayload = useCallback(
     (res: { data?: DashboardPayload } & DashboardPayload) => {
@@ -246,6 +516,45 @@ export default function DashboardPage() {
       active = false;
     };
   }, [authLoading, userId, needsOnboarding, role, applyDashboardPayload, handleDashboardError]);
+
+  // Otomatis tampilkan Spotlight Tour untuk siswa yang baru login & belum pernah menyelesaikan tutorial
+  useEffect(() => {
+    if (loading || !userId || role !== 'SISWA') return;
+    const storageKey = `agra_dashboard_tour_done_${userId}`;
+    const hasSeenTour = localStorage.getItem(storageKey);
+
+    if (!hasSeenTour) {
+      const timer = setTimeout(() => {
+        setTourStep(0);
+        setTourOpen(true);
+      }, 450);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, userId, role]);
+
+  const handleFinishTour = useCallback(() => {
+    if (userId) {
+      localStorage.setItem(`agra_dashboard_tour_done_${userId}`, '1');
+    }
+    setTourOpen(false);
+  }, [userId]);
+
+  const handleNextTourStep = useCallback(() => {
+    if (tourStep < DASHBOARD_TOUR_STEPS.length - 1) {
+      setTourStep((prev) => prev + 1);
+    } else {
+      handleFinishTour();
+    }
+  }, [tourStep, handleFinishTour]);
+
+  const handlePrevTourStep = useCallback(() => {
+    setTourStep((prev) => Math.max(0, prev - 1));
+  }, []);
+
+  const handleRestartTour = () => {
+    setTourStep(0);
+    setTourOpen(true);
+  };
 
   if (authLoading || !user || role !== 'SISWA') {
     return (
@@ -335,6 +644,7 @@ export default function DashboardPage() {
             <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
               {/* KIRI (7 KOLOM): Panggung Identitas Siswa & Progres Fase */}
               <Interactive3DCard
+                tourId="tour-profile-card"
                 intensity={3.5}
                 className="lg:col-span-7 rounded-[32px] bg-gradient-to-br from-[#060E24] via-[#0B1D48] to-[#1B68FF] text-white p-7 sm:p-10 shadow-[0_28px_65px_-15px_rgba(6,14,36,0.28)] flex flex-col justify-between relative overflow-hidden"
               >
@@ -367,12 +677,22 @@ export default function DashboardPage() {
                     </div>
                   </div>
 
-                  <Link
-                    href="/profile"
-                    className="self-start sm:self-center min-h-[44px] px-5 py-2.5 rounded-[14px] bg-white/12 hover:bg-white/20 border border-white/20 text-[14px] font-semibold text-white transition-all inline-flex items-center justify-center shrink-0"
-                  >
-                    Profil &amp; Avatar
-                  </Link>
+                  <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-center shrink-0">
+                    <button
+                      type="button"
+                      onClick={handleRestartTour}
+                      className="min-h-[44px] px-4 py-2.5 rounded-[14px] bg-white/10 hover:bg-white/20 border border-white/20 text-[14px] font-medium text-white transition-all inline-flex items-center gap-2 cursor-pointer"
+                    >
+                      <HelpCircle className="w-4 h-4 text-[#38BDF8]" />
+                      <span>Panduan</span>
+                    </button>
+                    <Link
+                      href="/profile"
+                      className="min-h-[44px] px-5 py-2.5 rounded-[14px] bg-white/15 hover:bg-white/25 border border-white/25 text-[14px] font-semibold text-white transition-all inline-flex items-center justify-center"
+                    >
+                      Profil &amp; Avatar
+                    </Link>
+                  </div>
                 </div>
 
                 {/* Bar Progres XP & Capaian Submateri di Bawah Kartu */}
@@ -385,7 +705,7 @@ export default function DashboardPage() {
                     <div className="h-3 w-full rounded-full bg-white/15 overflow-hidden p-0.5">
                       <div
                         className="h-full rounded-full bg-gradient-to-r from-[#38BDF8] to-white transition-all duration-500"
-                        style={{ width: `${ Math.max(8, milestonePercent) }%` }}
+                        style={{ width: `${Math.max(8, milestonePercent)}%` }}
                       />
                     </div>
                   </div>
@@ -411,8 +731,9 @@ export default function DashboardPage() {
                 </div>
               </Interactive3DCard>
 
-              {/* KANAN (5 KOLOM): Kartu Misi Utama (Satu Pintu, Tidak Redundan) */}
+              {/* KANAN (5 KOLOM): Kartu Misi Utama */}
               <Interactive3DCard
+                tourId="tour-mission-card"
                 intensity={4}
                 className="lg:col-span-5 rounded-[32px] bg-white border border-slate-200/90 p-7 sm:p-10 shadow-[0_24px_60px_-15px_rgba(15,23,42,0.07)] flex flex-col justify-between"
               >
@@ -472,7 +793,6 @@ export default function DashboardPage() {
                 BARIS 2: KURIKULUM MATA PELAJARAN & TAHAPAN EVALUASI (3 KARTU)
                ═══════════════════════════════════════════════════════════════ */}
             <section className="space-y-8 pt-2">
-              {/* Section Header — Rata Kanan-Kiri */}
               <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-slate-200/90 pb-6">
                 <div>
                   <h2 className="text-[30px] sm:text-[40px] font-normal tracking-[-0.035em] leading-[1.1] text-[#0A0D14] text-left">
@@ -486,7 +806,6 @@ export default function DashboardPage() {
                 </p>
               </div>
 
-              {/* 3-Column Bento Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
                 {subjects.map((sub: DashboardSubjectItem, idx: number) => {
                   const subjectId =
@@ -505,6 +824,7 @@ export default function DashboardPage() {
                   return (
                     <Interactive3DCard
                       key={sub.subjectCode || idx}
+                      tourId={`tour-subject-${idx}`}
                       intensity={4}
                       className="rounded-[30px] bg-white border border-slate-200/90 p-7 sm:p-9 shadow-[0_18px_45px_-12px_rgba(15,23,42,0.06)] flex flex-col justify-between"
                     >
@@ -537,7 +857,6 @@ export default function DashboardPage() {
                             : 'Meliputi pemahaman tekstual, simpulan tersirat, struktur dan kohesi wacana, serta evaluasi teks informasi dan fiksi.'}
                         </p>
 
-                        {/* Bar Penguasaan */}
                         <div className="mt-6 pt-5 border-t border-slate-100">
                           <div className="flex items-center justify-between text-[14px] mb-2">
                             <span className="font-medium text-[#334155]">
@@ -556,7 +875,6 @@ export default function DashboardPage() {
                         </div>
                       </div>
 
-                      {/* Tombol Aksi */}
                       <div className="mt-7 pt-5 border-t border-slate-100 grid grid-cols-2 gap-3">
                         {!isRecallPassed ? (
                           <Link
@@ -592,8 +910,9 @@ export default function DashboardPage() {
                   );
                 })}
 
-                {/* KARTU KE-3: Peta Status Tahapan Belajar (Dark Bento #060E24) */}
+                {/* KARTU KE-3: Peta Status Tahapan Belajar */}
                 <Interactive3DCard
+                  tourId="tour-cbt-card"
                   intensity={4}
                   className="rounded-[30px] bg-[#060E24] text-white p-7 sm:p-9 shadow-[0_22px_50px_-12px_rgba(6,14,36,0.25)] flex flex-col justify-between"
                 >
@@ -663,6 +982,16 @@ export default function DashboardPage() {
           </>
         )}
       </main>
+
+      {/* Spotlight Onboarding Tour Overlay */}
+      <DashboardSpotlightTour
+        isOpen={tourOpen}
+        steps={DASHBOARD_TOUR_STEPS}
+        currentStep={tourStep}
+        onNext={handleNextTourStep}
+        onPrev={handlePrevTourStep}
+        onSkip={handleFinishTour}
+      />
 
       <Footer />
     </div>
