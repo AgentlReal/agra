@@ -11,13 +11,13 @@ import { GoogleAuthButton, formatOAuthErrorMessage } from '@/components/common/G
 
 const UI = {
   btnPrimary:
-    'min-h-[48px] w-full px-7 py-3.5 rounded-[14px] bg-[#1B68FF] hover:bg-[#1454D6] active:translate-y-0.5 text-white text-[16px] font-medium transition-all shadow-[0_10px_24px_rgba(27,104,255,0.28)] inline-flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-60 disabled:pointer-events-none',
+    'min-h-[48px] w-full px-7 py-3.5 rounded-[14px] bg-[#1B68FF] hover:bg-[#1454D6] active:translate-y-0.5 text-white text-[16px] font-semibold transition-all shadow-[0_10px_24px_rgba(27,104,255,0.28)] inline-flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-60 disabled:pointer-events-none',
   btnPrimaryStaff:
-    'min-h-[48px] w-full px-7 py-3.5 rounded-[14px] bg-[#0A0D14] hover:bg-[#1E293B] active:translate-y-0.5 text-white text-[16px] font-medium transition-all shadow-[0_10px_24px_rgba(10,13,20,0.22)] inline-flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-60 disabled:pointer-events-none',
+    'min-h-[48px] w-full px-7 py-3.5 rounded-[14px] bg-[#0A0D14] hover:bg-[#1E293B] active:translate-y-0.5 text-white text-[16px] font-semibold transition-all shadow-[0_10px_24px_rgba(10,13,20,0.22)] inline-flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-60 disabled:pointer-events-none',
   btnSecondaryOutline:
-    'min-h-[48px] w-full px-6 py-3 rounded-[14px] bg-white hover:bg-[#F4F7FC] active:translate-y-0.5 text-[#0A0D14] border-2 border-slate-300 hover:border-[#1B68FF] text-[15px] font-medium transition-all inline-flex items-center justify-center gap-2 cursor-pointer',
+    'min-h-[48px] w-full px-6 py-3 rounded-[14px] bg-white hover:bg-[#F4F7FC] active:translate-y-0.5 text-[#0A0D14] border-2 border-[#0A0D14]/20 hover:border-[#1B68FF] text-[16px] font-semibold transition-all inline-flex items-center justify-center gap-2 cursor-pointer',
   input:
-    'w-full min-h-[48px] bg-[#F4F7FC] focus:bg-white border-2 border-slate-200/90 focus:border-[#1B68FF] rounded-[14px] px-4 py-3 text-[15px] text-[#0A0D14] placeholder-slate-400 focus:outline-none transition-colors',
+    'w-full min-h-[48px] bg-[#F4F7FC] focus:bg-white border-2 border-slate-200 focus:border-[#1B68FF] rounded-[14px] px-4 py-3 text-[16px] text-[#0A0D14] placeholder-slate-400 focus:outline-none transition-colors',
 };
 
 function LoginFormContent() {
@@ -35,23 +35,9 @@ function LoginFormContent() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [waitingVerification, setWaitingVerification] = useState(false);
-  const [secondsLeft, setSecondsLeft] = useState<number>(4499);
   const autoLoginLockRef = useRef(false);
 
   const displayError = errorMsg || formatOAuthErrorMessage(oauthErrorParam);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 4499));
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const formatTime = (totalSec: number) => {
-    const mins = Math.floor(totalSec / 60);
-    const secs = totalSec % 60;
-    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-  };
 
   useEffect(() => {
     if (!isStaffMode && typeof document !== 'undefined') {
@@ -159,7 +145,7 @@ function LoginFormContent() {
         setWaitingVerification(true);
         autoLoginLockRef.current = false;
         setErrorMsg(
-          'Alamat email akunmu belum diverifikasi. Kami baru saja mengirimkan tautan verifikasi baru ke kotak masuk emailmu—klik tombol verifikasi di email, lalu halaman ini akan masuk secara otomatis.'
+          'Alamat email akunmu belum diverifikasi. Tautan verifikasi telah dikirimkan ke kotak masuk email Anda.'
         );
       } else {
         setWaitingVerification(false);
@@ -299,7 +285,7 @@ function LoginFormContent() {
 
             <Link
               href="/"
-              className="min-h-[44px] px-4 inline-flex items-center rounded-[12px] text-[15px] font-medium text-[#334155] hover:text-[#0A0D14] hover:bg-slate-200/60 transition-colors"
+              className="min-h-[44px] px-4 inline-flex items-center rounded-[12px] text-[16px] font-medium text-[#1E293B] hover:text-[#0A0D14] hover:bg-slate-200/60 transition-colors"
             >
               &larr; Beranda
             </Link>
@@ -308,10 +294,10 @@ function LoginFormContent() {
           <div className="hidden lg:flex lg:col-span-6 items-center justify-end gap-4">
             {!isStaffMode && (
               <>
-                <span className="text-[15px] text-blue-100">Belum memiliki akun siswa?</span>
+                <span className="text-[16px] text-white">Belum memiliki akun siswa?</span>
                 <Link
                   href="/register"
-                  className="min-h-[48px] px-6 py-2.5 rounded-[14px] bg-white text-[#1B68FF] text-[15px] font-semibold hover:bg-blue-50 active:translate-y-0.5 transition-all shadow-[0_10px_25px_rgba(0,0,0,0.16)] inline-flex items-center gap-2"
+                  className="min-h-[48px] px-6 py-2.5 rounded-[14px] bg-white text-[#1B68FF] text-[16px] font-semibold hover:bg-blue-50 active:translate-y-0.5 transition-all shadow-[0_10px_25px_rgba(0,0,0,0.16)] inline-flex items-center gap-2"
                 >
                   <span>Daftar Akun Siswa</span>
                   <ArrowRight className="w-4 h-4" />
@@ -325,238 +311,55 @@ function LoginFormContent() {
       {/* 2. MAIN ARCHITECTURAL STAGE */}
       <main className="relative z-20 flex-1 flex items-center py-8 sm:py-12 px-6 sm:px-12 lg:px-16">
         <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start lg:items-center">
-          {/* LEFT 6 COLS: Giant Editorial Typography + Live Telemetry Preview */}
-          <div className="lg:col-span-6 lg:pr-10 space-y-8">
-            <div>
-              {/* Tactile Workspace Mode Switcher */}
-              <div className="inline-flex rounded-[18px] p-1.5 bg-[#EEF2FA] border border-slate-300/80 mb-6">
-                <Link
-                  href="/login"
-                  onClick={() => {
-                    setErrorMsg('');
-                    setWaitingVerification(false);
-                  }}
-                  className={`min-h-[42px] px-5 py-2 rounded-[12px] text-[14px] font-medium transition-all inline-flex items-center gap-2 ${
-                    !isStaffMode
-                      ? 'bg-[#1B68FF] text-white shadow-sm'
-                      : 'text-[#334155] hover:text-[#0A0D14]'
-                  }`}
-                >
-                  <span
-                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                    className="text-[12px] opacity-80"
-                  >
-                    01
-                  </span>
-                  <span>Ruang Belajar Siswa</span>
-                </Link>
-                <Link
-                  href="/login?as=staff"
-                  onClick={() => {
-                    setErrorMsg('');
-                    setWaitingVerification(false);
-                  }}
-                  className={`min-h-[42px] px-5 py-2 rounded-[12px] text-[14px] font-medium transition-all inline-flex items-center gap-2 ${
-                    isStaffMode
-                      ? 'bg-[#0A0D14] text-white shadow-sm'
-                      : 'text-[#334155] hover:text-[#0A0D14]'
-                  }`}
-                >
-                  <span
-                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                    className="text-[12px] opacity-80"
-                  >
-                    02
-                  </span>
-                  <span>Portal Staf &amp; Kurikulum</span>
-                </Link>
-              </div>
+          {/* LEFT 6 COLS: Editorial Typography */}
+          <div className="lg:col-span-6 lg:pr-10 space-y-6">
+            <h1 className="text-[40px] sm:text-[54px] lg:text-[62px] font-normal tracking-[-0.04em] leading-[1.05] text-[#0A0D14] text-balance">
+              {isStaffMode ? (
+                <>
+                  Kendali Mutu{' '}
+                  <span className="block text-[#1B68FF] mt-1">Bank Soal TKA.</span>
+                </>
+              ) : (
+                <>
+                  Lanjutkan{' '}
+                  <span className="block text-[#1B68FF] mt-1">Asesmen Mandiri.</span>
+                </>
+              )}
+            </h1>
 
-              <h1 className="text-[42px] sm:text-[56px] lg:text-[64px] font-normal tracking-[-0.045em] leading-[0.98] text-[#0A0D14] text-balance">
-                {isStaffMode ? (
-                  <>
-                    Kendali Mutu{' '}
-                    <span className="block text-[#1B68FF] mt-1">Bank Soal TKA.</span>
-                  </>
-                ) : (
-                  <>
-                    Lanjutkan{' '}
-                    <span className="block text-[#1B68FF] mt-1">Asesmen Mandiri.</span>
-                  </>
-                )}
-              </h1>
-
-              <p className="mt-5 text-[16px] sm:text-[18px] font-normal leading-[1.55] text-[#334155] max-w-xl text-pretty">
-                {isStaffMode
-                  ? 'Ruang kerja khusus Tim Kurikulum dan SuperAdmin untuk menyusun, memvalidasi, serta mengawasi paket simulasi Computer-Based Test (CBT).'
-                  : 'Seluruh progres ketuntasan 16 submateri Fase D, riwayat latihan level kognitif, dan sisa waktu simulasi CBT tersinkronisasi otomatis.'}
-              </p>
-            </div>
-
-            {/* Architectural Telemetry Bento Card */}
-            {isStaffMode ? (
-              <div className="bg-[#0A0D14] text-white rounded-[28px] p-7 sm:p-8 space-y-6 max-w-xl shadow-[0_20px_50px_rgba(10,13,20,0.12)]">
-                <div className="flex items-center justify-between border-b border-white/15 pb-4">
-                  <span
-                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                    className="text-[12px] font-semibold px-3 py-1 rounded-[6px] bg-white/10 text-white"
-                  >
-                    OTORITAS RBAC • FASE D
-                  </span>
-                  <span
-                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                    className="text-[13px] text-[#10B981]"
-                  >
-                    SINGLE-SESSION GUARD
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 tabular-nums">
-                  <div className="p-4 rounded-[18px] bg-white/5 border border-white/10">
-                    <span
-                      style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                      className="text-[28px] font-light leading-none text-[#10B981]"
-                    >
-                      03
-                    </span>
-                    <p className="text-[16px] font-medium text-white mt-2">
-                      Bank Soal Terpisah
-                    </p>
-                    <p className="text-[14px] text-slate-300 mt-1 leading-[1.45]">
-                      Recall Diagnostik, Latihan Level (L1–HOTS), &amp; Simulasi.
-                    </p>
-                  </div>
-                  <div className="p-4 rounded-[18px] bg-white/5 border border-white/10">
-                    <span
-                      style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                      className="text-[28px] font-light leading-none text-[#38BDF8]"
-                    >
-                      30
-                    </span>
-                    <p className="text-[16px] font-medium text-white mt-2">
-                      Butir Paket Capstone
-                    </p>
-                    <p className="text-[14px] text-slate-300 mt-1 leading-[1.45]">
-                      Distribusi otomatis PG Tunggal &amp; PG Kompleks.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-white rounded-[28px] p-6 sm:p-8 border border-slate-200/90 shadow-[0_20px_50px_rgba(15,23,42,0.04)] max-w-xl space-y-6 tabular-nums">
-                <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-200">
-                  <div className="flex items-center gap-3">
-                    <span
-                      style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                      className="text-[12px] font-semibold px-3 py-1.5 rounded-[8px] bg-[#0A0D14] text-white"
-                    >
-                      STATUS RUANG UJIAN
-                    </span>
-                    <span className="text-[15px] font-medium text-[#0A0D14]">
-                      Fase D SMP/MTs
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
-                    <span
-                      style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                      className="text-[15px] font-semibold text-[#0A0D14]"
-                    >
-                      {formatTime(secondsLeft)} CBT
-                    </span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3 sm:gap-4">
-                  <div className="p-4 rounded-[18px] bg-[#F4F7FC] border border-slate-200/70">
-                    <span
-                      style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                      className="text-[26px] sm:text-[30px] font-light tracking-[-0.04em] leading-none text-[#1B68FF]"
-                    >
-                      90%
-                    </span>
-                    <p className="text-[14px] font-medium text-[#0A0D14] mt-2">
-                      Ambang Lulus
-                    </p>
-                    <p className="text-[12px] text-[#334155] mt-0.5">
-                      Mastery Learning
-                    </p>
-                  </div>
-
-                  <div className="p-4 rounded-[18px] bg-[#F4F7FC] border border-slate-200/70">
-                    <span
-                      style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                      className="text-[26px] sm:text-[30px] font-light tracking-[-0.04em] leading-none text-[#0A0D14]"
-                    >
-                      16
-                    </span>
-                    <p className="text-[14px] font-medium text-[#0A0D14] mt-2">
-                      Submateri Inti
-                    </p>
-                    <p className="text-[12px] text-[#334155] mt-0.5">
-                      MAT &amp; BIN
-                    </p>
-                  </div>
-
-                  <div className="p-4 rounded-[18px] bg-[#0A0D14] text-white">
-                    <span
-                      style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                      className="text-[26px] sm:text-[30px] font-light tracking-[-0.04em] leading-none text-[#10B981]"
-                    >
-                      L1–3
-                    </span>
-                    <p className="text-[14px] font-medium text-white mt-2">
-                      Level Kognitif
-                    </p>
-                    <p className="text-[12px] text-slate-300 mt-0.5">
-                      Hingga HOTS
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
+            <p className="text-[16px] sm:text-[18px] font-normal leading-[1.55] text-[#1E293B] max-w-xl text-pretty">
+              {isStaffMode
+                ? 'Ruang kerja khusus Tim Kurikulum dan SuperAdmin untuk menyusun, memvalidasi, serta mengawasi paket simulasi Computer-Based Test (CBT).'
+                : 'Seluruh progres ketuntasan 16 submateri Fase D, riwayat latihan level kognitif, dan simulasi CBT tersinkronisasi otomatis.'}
+            </p>
           </div>
 
-          {/* RIGHT 6 COLS: Double-Framed Form Card (Identical DNA to Home's Value Card) */}
+          {/* RIGHT 6 COLS: Double-Framed Form Card */}
           <div className="lg:col-span-6 w-full flex lg:justify-end">
-            <div className="w-full max-w-[540px] bg-white/85 lg:bg-white/20 backdrop-blur-md rounded-[32px] p-2.5 sm:p-3.5 shadow-[0_28px_70px_rgba(15,23,42,0.14)] border border-white/60">
-              <div className="bg-white rounded-[22px] p-6 sm:p-10 border border-slate-200/90">
-                {/* Card Top Bar */}
-                <div className="flex items-start justify-between gap-4 mb-7">
-                  <div>
-                    <span
-                      style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                      className="text-[12px] font-semibold uppercase tracking-wider text-[#1B68FF]"
-                    >
-                      {isStaffMode ? 'OTORISASI TIM & ADMIN' : 'OTENTIKASI PESERTA DIDIK'}
-                    </span>
-                    <h2 className="text-[26px] sm:text-[28px] font-medium tracking-[-0.03em] leading-[1.2] text-[#0A0D14] mt-1">
-                      {isStaffMode ? 'Masuk Portal Staf' : 'Masuk ke Ruang Belajar'}
-                    </h2>
-                  </div>
-
-                  <span
-                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                    className={`shrink-0 text-[12px] font-semibold px-3 py-1.5 rounded-[8px] ${
-                      isStaffMode
-                        ? 'bg-[#0A0D14] text-white'
-                        : 'bg-[#EEF2FA] text-[#0A0D14]'
-                    }`}
-                  >
-                    {isStaffMode ? 'STAF' : 'SISWA'}
-                  </span>
+            <div className="w-full max-w-[520px] bg-white/85 lg:bg-white/20 backdrop-blur-md rounded-[32px] p-2.5 sm:p-3.5 shadow-[0_28px_70px_rgba(15,23,42,0.14)] border border-white/60">
+              <div className="bg-white rounded-[20px] p-6 sm:p-10 border border-slate-200">
+                {/* Card Heading */}
+                <div className="mb-7">
+                  <h2 className="text-[24px] sm:text-[26px] font-medium tracking-[-0.025em] leading-[1.3] text-[#0A0D14]">
+                    {isStaffMode ? 'Masuk ke Portal Staf' : 'Masuk ke Akun'}
+                  </h2>
+                  <p className="text-[16px] text-[#1E293B] mt-1">
+                    {isStaffMode
+                      ? 'Gunakan akun Google terdaftar atau kredensial staf.'
+                      : 'Lanjutkan asesmen mandiri dan simulasi CBT.'}
+                  </p>
                 </div>
 
                 {/* High-Contrast WCAG Alert Banner */}
                 {displayError && (
-                  <div className="mb-6 flex items-start gap-3 rounded-[14px] border-2 border-[#D97706] bg-[#FFFBEB] p-4 text-[14px] text-[#78350F]">
+                  <div className="mb-6 flex items-start gap-3 rounded-[14px] border-2 border-[#D97706] bg-[#FFFBEB] p-4 text-[15px] text-[#78350F]">
                     <AlertCircle className="h-5 w-5 text-[#D97706] shrink-0 mt-0.5" />
-                    <div className="space-y-1.5">
+                    <div className="space-y-1">
                       <p className="leading-[1.5] font-medium">{displayError}</p>
                       {waitingVerification && (
-                        <p className="text-[13px] font-semibold text-[#92400E] flex items-center gap-2 pt-1">
+                        <p className="text-[14px] font-semibold text-[#92400E] flex items-center gap-2 pt-1">
                           <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#D97706] border-t-transparent inline-block" />
-                          <span>Menunggu klik verifikasi dari email Anda...</span>
+                          <span>Menunggu konfirmasi verifikasi email...</span>
                         </p>
                       )}
                     </div>
@@ -564,7 +367,7 @@ function LoginFormContent() {
                 )}
 
                 {/* Google Sign-In */}
-                <div className="space-y-5 mb-6">
+                <div className="space-y-4 mb-6">
                   <GoogleAuthButton
                     label={
                       isStaffMode
@@ -586,13 +389,10 @@ function LoginFormContent() {
                     onError={(msg) => setErrorMsg(msg)}
                   />
 
-                  <div className="relative flex items-center">
+                  <div className="relative flex items-center py-1">
                     <div className="flex-grow border-t border-slate-200" />
-                    <span
-                      style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                      className="shrink-0 mx-3 text-[11px] font-medium uppercase tracking-wider text-slate-400"
-                    >
-                      ATAU KREDENSIAL AKUN
+                    <span className="shrink-0 mx-3 text-[14px] font-normal text-[#1E293B]">
+                      atau
                     </span>
                     <div className="flex-grow border-t border-slate-200" />
                   </div>
@@ -601,20 +401,12 @@ function LoginFormContent() {
                 {/* Credential Form */}
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <label
-                        className="text-[14px] font-medium text-[#0A0D14]"
-                        htmlFor="identifier"
-                      >
-                        Email atau Username
-                      </label>
-                      <span
-                        style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                        className="text-[11px] text-slate-400"
-                      >
-                        WAJIB
-                      </span>
-                    </div>
+                    <label
+                      className="block text-[15px] font-medium text-[#0A0D14] mb-2"
+                      htmlFor="identifier"
+                    >
+                      Email atau Username
+                    </label>
                     <input
                       id="identifier"
                       type="text"
@@ -622,7 +414,7 @@ function LoginFormContent() {
                       onChange={(e) => setIdentifier(e.target.value)}
                       placeholder={
                         isStaffMode
-                          ? 'superadmin / tim_kurikulum'
+                          ? 'superadmin atau username tim'
                           : 'nama@email.com atau username'
                       }
                       required
@@ -634,7 +426,7 @@ function LoginFormContent() {
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <label
-                        className="text-[14px] font-medium text-[#0A0D14]"
+                        className="text-[15px] font-medium text-[#0A0D14]"
                         htmlFor="password"
                       >
                         Kata Sandi
@@ -660,19 +452,19 @@ function LoginFormContent() {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3.5 text-slate-400 hover:text-[#0A0D14] p-1.5 rounded-lg focus:outline-none cursor-pointer"
+                        className="absolute right-3.5 text-[#1E293B] hover:text-[#0A0D14] p-1.5 rounded-lg focus:outline-none cursor-pointer"
                         title={showPassword ? 'Sembunyikan sandi' : 'Lihat sandi'}
                       >
                         {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
+                          <EyeOff className="h-5 w-5" />
                         ) : (
-                          <Eye className="h-4 w-4" />
+                          <Eye className="h-5 w-5" />
                         )}
                       </button>
                     </div>
                   </div>
 
-                  <div className="pt-3 space-y-3">
+                  <div className="pt-2 space-y-3">
                     <button
                       type="submit"
                       disabled={loading}
@@ -681,12 +473,12 @@ function LoginFormContent() {
                       {loading ? (
                         <>
                           <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                          <span>Memverifikasi Sesi...</span>
+                          <span>Memverifikasi...</span>
                         </>
                       ) : (
                         <>
                           <span>
-                            {isStaffMode ? 'Masuk ke Portal Staf' : 'Masuk ke Ruang Belajar'}
+                            {isStaffMode ? 'Masuk ke Portal Staf' : 'Masuk ke Akun'}
                           </span>
                           <ArrowRight className="w-4 h-4" />
                         </>
@@ -695,14 +487,14 @@ function LoginFormContent() {
 
                     {!isStaffMode && (
                       <Link href="/register" className={UI.btnSecondaryOutline}>
-                        <span>Daftar Akun Siswa Baru</span>
+                        <span>Daftar Akun Baru</span>
                       </Link>
                     )}
                   </div>
                 </form>
 
                 {/* Card Bottom Switcher */}
-                <div className="mt-7 pt-5 border-t border-slate-200/80 flex items-center justify-between text-[14px] text-[#334155]">
+                <div className="mt-7 pt-5 border-t border-slate-200 flex items-center justify-between text-[15px] text-[#1E293B]">
                   {isStaffMode ? (
                     <>
                       <span>Peserta didik SMP?</span>
@@ -719,7 +511,7 @@ function LoginFormContent() {
                     </>
                   ) : (
                     <>
-                      <span>Tim Kurikulum / Admin?</span>
+                      <span>Tim Kurikulum atau Admin?</span>
                       <Link
                         href="/login?as=staff"
                         onClick={() => {
@@ -742,13 +534,13 @@ function LoginFormContent() {
       {/* 3. ARCHITECTURAL FOOTER */}
       <footer className="relative z-20 px-6 sm:px-12 lg:px-16 pb-8">
         <div className="w-full pt-6 border-t border-slate-300/70 lg:border-slate-300/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-[14px]">
-          <div className="flex items-center gap-2.5 text-[#334155]">
+          <div className="flex items-center gap-2.5 text-[#1E293B]">
             <span className="text-[18px] font-semibold tracking-[-0.04em] text-[#0A0D14]">
               AGRA.
             </span>
             <span>— Ruang Belajar &amp; Simulasi Mandiri TKA SMP</span>
           </div>
-          <div className="flex flex-wrap items-center gap-6 text-[#334155] lg:text-white/90">
+          <div className="flex flex-wrap items-center gap-6 text-[#1E293B] lg:text-white">
             <Link href="/privacy-policy" className="hover:underline">
               Kebijakan Privasi
             </Link>
@@ -767,7 +559,7 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-[#F4F7FC] text-[#334155] text-[15px]">
+        <div className="flex min-h-screen items-center justify-center bg-[#F4F7FC] text-[#1E293B] text-[16px]">
           Memuat halaman masuk...
         </div>
       }

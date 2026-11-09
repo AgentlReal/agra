@@ -18,11 +18,11 @@ import { GoogleAuthButton, formatOAuthErrorMessage } from '@/components/common/G
 
 const UI = {
   btnPrimary:
-    'min-h-[48px] w-full px-7 py-3.5 rounded-[14px] bg-[#1B68FF] hover:bg-[#1454D6] active:translate-y-0.5 text-white text-[16px] font-medium transition-all shadow-[0_10px_24px_rgba(27,104,255,0.28)] inline-flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50 disabled:pointer-events-none',
+    'min-h-[48px] w-full px-7 py-3.5 rounded-[14px] bg-[#1B68FF] hover:bg-[#1454D6] active:translate-y-0.5 text-white text-[16px] font-semibold transition-all shadow-[0_10px_24px_rgba(27,104,255,0.28)] inline-flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50 disabled:pointer-events-none',
   btnSecondaryOutline:
-    'min-h-[48px] w-full px-6 py-3 rounded-[14px] bg-white hover:bg-[#F4F7FC] active:translate-y-0.5 text-[#0A0D14] border-2 border-slate-300 hover:border-[#1B68FF] text-[15px] font-medium transition-all inline-flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:pointer-events-none',
+    'min-h-[48px] w-full px-6 py-3 rounded-[14px] bg-white hover:bg-[#F4F7FC] active:translate-y-0.5 text-[#0A0D14] border-2 border-slate-300 hover:border-[#1B68FF] text-[16px] font-medium transition-all inline-flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:pointer-events-none',
   input:
-    'w-full min-h-[48px] bg-[#F4F7FC] focus:bg-white border-2 border-slate-200/90 focus:border-[#1B68FF] rounded-[14px] px-4 py-2.5 text-[15px] text-[#0A0D14] placeholder-slate-400 focus:outline-none transition-colors',
+    'w-full min-h-[48px] bg-[#F4F7FC] focus:bg-white border-2 border-slate-200/90 focus:border-[#1B68FF] rounded-[14px] px-4 py-2.5 text-[16px] text-[#0A0D14] placeholder-slate-400 focus:outline-none transition-colors',
 };
 
 function RegisterFormContent() {
@@ -337,7 +337,7 @@ function RegisterFormContent() {
 
             <Link
               href="/"
-              className="min-h-[44px] px-4 inline-flex items-center rounded-[12px] text-[15px] font-medium text-[#334155] hover:text-[#0A0D14] hover:bg-slate-200/60 transition-colors"
+              className="min-h-[44px] px-4 inline-flex items-center rounded-[12px] text-[15px] font-medium text-[#1E293B] hover:text-[#0A0D14] hover:bg-slate-200/60 transition-colors"
             >
               &larr; Beranda
             </Link>
@@ -359,99 +359,45 @@ function RegisterFormContent() {
       {/* 2. MAIN ARCHITECTURAL STAGE */}
       <main className="relative z-20 flex-1 flex items-center py-6 sm:py-10 px-6 sm:px-12 lg:px-16">
         <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start lg:items-center">
-          {/* LEFT 6 COLS: Editorial Headline + Interactive Live Kartu Peserta TKA */}
-          <div className="lg:col-span-6 lg:pr-10 space-y-8">
-            <div>
-              <span
-                style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                className="inline-block text-[12px] font-semibold px-3.5 py-1.5 rounded-[8px] bg-[#0A0D14] text-white mb-5"
-              >
-                REGISTRASI PESERTA • FASE D SMP/MTS
-              </span>
+          {/* LEFT 6 COLS: Editorial Headline + Clear Value Proposition */}
+          <div className="lg:col-span-6 lg:pr-10 space-y-6">
+            <h1 className="text-[40px] sm:text-[54px] lg:text-[62px] font-normal tracking-[-0.045em] leading-[0.98] text-[#0A0D14] text-balance">
+              Mulai Persiapan
+              <span className="block text-[#1B68FF] mt-1">TKA Mandiri.</span>
+            </h1>
 
-              <h1 className="text-[40px] sm:text-[54px] lg:text-[62px] font-normal tracking-[-0.045em] leading-[0.98] text-[#0A0D14] text-balance">
-                Mulai Persiapan
-                <span className="block text-[#1B68FF] mt-1">TKA Mandiri.</span>
-              </h1>
+            <p className="text-[16px] sm:text-[18px] font-normal leading-[1.55] text-[#1E293B] max-w-xl text-pretty">
+              Satu akun membuka akses penuh ke{' '}
+              <strong className="font-semibold text-[#0A0D14]">
+                30 butir diagnostik prasyarat
+              </strong>
+              , 16 submateri Numerasi &amp; Literasi, hingga simulasi ujian CBT 75 menit.
+            </p>
 
-              <p className="mt-4 text-[16px] sm:text-[17px] font-normal leading-[1.55] text-[#334155] max-w-xl text-pretty">
-                Satu akun membuka akses penuh ke{' '}
-                <strong className="font-semibold text-[#0A0D14]">
-                  30 soal diagnostik prasyarat
-                </strong>
-                , 16 submateri Numerasi &amp; Literasi, hingga simulasi ujian CBT 75 menit.
-              </p>
-            </div>
-
-            {/* LIVE INTERACTIVE STUDENT PASS PREVIEW */}
-            <div className="bg-[#0A0D14] text-white rounded-[28px] p-6 sm:p-8 max-w-xl shadow-[0_24px_60px_rgba(10,13,20,0.14)] space-y-6 tabular-nums">
-              <div className="flex items-center justify-between border-b border-white/15 pb-4">
-                <div className="flex items-center gap-2.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]" />
-                  <span
-                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                    className="text-[12px] font-semibold tracking-wider text-slate-300"
-                  >
-                    PRATINJAU KARTU PESERTA TKA
-                  </span>
-                </div>
-                <span
-                  style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                  className={`text-[11px] font-semibold px-2.5 py-1 rounded-[6px] ${
-                    isFormValid
-                      ? 'bg-[#059669] text-white'
-                      : 'bg-white/10 text-slate-300'
-                  }`}
-                >
-                  {isFormValid ? 'SIAP AKTIVASI' : 'MENUNGGU DATA'}
+            <div className="pt-2 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-xl">
+              <div className="rounded-[16px] bg-white p-4 border border-slate-200/90 shadow-[0_4px_16px_rgba(15,23,42,0.03)]">
+                <span className="text-[13px] font-semibold text-[#1B68FF] block mb-1">
+                  Tahap 01
                 </span>
+                <p className="text-[15px] font-medium text-[#0A0D14] leading-[1.3]">
+                  Recall 30 Butir
+                </p>
               </div>
-
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-[18px] bg-[#1B68FF] text-white font-semibold text-[22px] flex items-center justify-center shrink-0">
-                  {(name.trim()[0] || 'S').toUpperCase()}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[20px] font-medium tracking-[-0.02em] text-white truncate">
-                    {name.trim() || 'Nama Lengkap Siswa'}
-                  </p>
-                  <p
-                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                    className="text-[13px] text-[#38BDF8] truncate mt-0.5"
-                  >
-                    @{username || 'username_siswa'} • {email || 'email@sekolah.sch.id'}
-                  </p>
-                </div>
+              <div className="rounded-[16px] bg-white p-4 border border-slate-200/90 shadow-[0_4px_16px_rgba(15,23,42,0.03)]">
+                <span className="text-[13px] font-semibold text-[#1B68FF] block mb-1">
+                  Tahap 02
+                </span>
+                <p className="text-[15px] font-medium text-[#0A0D14] leading-[1.3]">
+                  16 Submateri
+                </p>
               </div>
-
-              <div className="grid grid-cols-3 gap-3 pt-2 border-t border-white/10 text-[13px]">
-                <div>
-                  <span
-                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                    className="text-[11px] text-slate-400 block"
-                  >
-                    TAHAP 01
-                  </span>
-                  <span className="font-medium text-white">Recall 30 Soal</span>
-                </div>
-                <div>
-                  <span
-                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                    className="text-[11px] text-slate-400 block"
-                  >
-                    TAHAP 02
-                  </span>
-                  <span className="font-medium text-white">16 Submateri</span>
-                </div>
-                <div>
-                  <span
-                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                    className="text-[11px] text-slate-400 block"
-                  >
-                    TAHAP 03
-                  </span>
-                  <span className="font-medium text-[#10B981]">CBT 75 Menit</span>
-                </div>
+              <div className="rounded-[16px] bg-white p-4 border border-slate-200/90 shadow-[0_4px_16px_rgba(15,23,42,0.03)]">
+                <span className="text-[13px] font-semibold text-[#059669] block mb-1">
+                  Tahap 03
+                </span>
+                <p className="text-[15px] font-medium text-[#0A0D14] leading-[1.3]">
+                  CBT 75 Menit
+                </p>
               </div>
             </div>
           </div>
@@ -461,27 +407,17 @@ function RegisterFormContent() {
             <div className="w-full max-w-[560px] bg-white/85 lg:bg-white/20 backdrop-blur-md rounded-[32px] p-2.5 sm:p-3.5 shadow-[0_28px_70px_rgba(15,23,42,0.14)] border border-white/60">
               <div className="bg-white rounded-[22px] p-6 sm:p-9 border border-slate-200/90">
                 {/* Card Header */}
-                <div className="flex items-start justify-between gap-4 mb-6">
-                  <div>
-                    <span
-                      style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                      className="text-[12px] font-semibold uppercase tracking-wider text-[#1B68FF]"
-                    >
-                      {verificationSentTo ? 'VERIFIKASI EMAIL' : 'PENDAFTARAN AKUN BARU'}
-                    </span>
-                    <h2 className="text-[24px] sm:text-[26px] font-medium tracking-[-0.03em] leading-[1.2] text-[#0A0D14] mt-1">
-                      {verificationSentTo
-                        ? 'Cek Kotak Masuk Emailmu'
-                        : 'Buat Akun Siswa AGRA'}
-                    </h2>
-                  </div>
-
-                  <span
-                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                    className="shrink-0 text-[12px] font-semibold px-3 py-1.5 rounded-[8px] bg-[#EEF2FA] text-[#0A0D14]"
-                  >
-                    FASE D
-                  </span>
+                <div className="mb-7">
+                  <h2 className="text-[24px] sm:text-[26px] font-medium tracking-[-0.025em] leading-[1.3] text-[#0A0D14]">
+                    {verificationSentTo
+                      ? 'Cek Kotak Masuk Emailmu'
+                      : 'Buat Akun Belajar'}
+                  </h2>
+                  <p className="text-[16px] text-[#1E293B] mt-1">
+                    {verificationSentTo
+                      ? 'Kami telah mengirimkan tautan verifikasi ke email Anda.'
+                      : 'Daftar gratis untuk mulai asesmen mandiri dan simulasi CBT.'}
+                  </p>
                 </div>
 
                 {/* Error Alert */}
@@ -516,10 +452,7 @@ function RegisterFormContent() {
                             <Mail className="h-5 w-5" />
                           </div>
                           <div>
-                            <span
-                              style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                              className="text-[11px] font-semibold text-[#1B68FF]"
-                            >
+                            <span className="text-[12px] font-semibold text-[#1B68FF] tracking-wide">
                               TAUTAN AKTIVASI TERKIRIM
                             </span>
                             <p className="text-[16px] font-semibold text-[#0A0D14] break-all">
@@ -528,7 +461,7 @@ function RegisterFormContent() {
                           </div>
                         </div>
 
-                        <p className="text-[14px] text-[#334155] leading-[1.55]">
+                        <p className="text-[15px] text-[#1E293B] leading-[1.55]">
                           Buka kotak masuk (atau folder <strong>Spam/Promosi</strong>) lalu klik
                           tombol <strong>Verifikasi Email &amp; Aktifkan Akun</strong>.
                         </p>
@@ -574,7 +507,7 @@ function RegisterFormContent() {
                             setErrorMsg('');
                             setResendSuccessMsg('');
                           }}
-                          className="w-full py-2.5 px-4 rounded-[12px] text-[13px] font-medium text-[#334155] hover:text-[#0A0D14] hover:bg-slate-100 transition-colors cursor-pointer"
+                          className="w-full py-2.5 px-4 rounded-[12px] text-[14px] font-medium text-[#1E293B] hover:text-[#0A0D14] hover:bg-slate-100 transition-colors cursor-pointer"
                         >
                           &larr; Ubah alamat email pendaftaran
                         </button>
@@ -593,13 +526,10 @@ function RegisterFormContent() {
                         onError={(msg) => setErrorMsg(msg)}
                       />
 
-                      <div className="relative flex items-center">
+                      <div className="relative flex items-center py-1">
                         <div className="flex-grow border-t border-slate-200" />
-                        <span
-                          style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                          className="shrink-0 mx-3 text-[11px] font-medium uppercase tracking-wider text-slate-400"
-                        >
-                          ATAU FORMULIR SISWA
+                        <span className="shrink-0 mx-3 text-[14px] font-normal text-[#1E293B]">
+                          atau
                         </span>
                         <div className="flex-grow border-t border-slate-200" />
                       </div>
@@ -611,7 +541,7 @@ function RegisterFormContent() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                         <div>
                           <label
-                            className="block text-[13px] font-medium text-[#0A0D14] mb-1.5"
+                            className="block text-[15px] font-medium text-[#0A0D14] mb-2"
                             htmlFor="name"
                           >
                             Nama Lengkap Siswa
@@ -630,16 +560,13 @@ function RegisterFormContent() {
 
                         <div>
                           <label
-                            className="block text-[13px] font-medium text-[#0A0D14] mb-1.5"
+                            className="block text-[15px] font-medium text-[#0A0D14] mb-2"
                             htmlFor="username"
                           >
-                            Username Unik
+                            Username
                           </label>
                           <div className="relative flex items-center">
-                            <span
-                              style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                              className="absolute left-3.5 text-slate-400 text-[14px]"
-                            >
+                            <span className="absolute left-3.5 text-slate-400 text-[15px] font-normal">
                               @
                             </span>
                             <input
@@ -663,7 +590,7 @@ function RegisterFormContent() {
                       {/* Row 2: Email */}
                       <div>
                         <label
-                          className="block text-[13px] font-medium text-[#0A0D14] mb-1.5"
+                          className="block text-[15px] font-medium text-[#0A0D14] mb-2"
                           htmlFor="email"
                         >
                           Alamat Email Aktif
@@ -683,7 +610,7 @@ function RegisterFormContent() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                         <div>
                           <label
-                            className="block text-[13px] font-medium text-[#0A0D14] mb-1.5"
+                            className="block text-[15px] font-medium text-[#0A0D14] mb-2"
                             htmlFor="password"
                           >
                             Kata Sandi (6–12 Karakter)
@@ -714,7 +641,7 @@ function RegisterFormContent() {
 
                         <div>
                           <label
-                            className="block text-[13px] font-medium text-[#0A0D14] mb-1.5"
+                            className="block text-[15px] font-medium text-[#0A0D14] mb-2"
                             htmlFor="confirmPassword"
                           >
                             Ulangi Kata Sandi
@@ -744,23 +671,19 @@ function RegisterFormContent() {
                         </div>
                       </div>
 
-                      {/* 4-Segment Live Password Telemetry */}
-                      <div className="rounded-[16px] bg-[#F4F7FC] border border-slate-200/90 p-3.5 space-y-2.5">
-                        <div className="flex items-center justify-between text-[12px]">
-                          <span
-                            style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                            className="font-semibold text-[#0A0D14]"
-                          >
-                            PARAMETER KEAMANAN SANDI ({passedRulesCount}/4)
+                      {/* 4-Segment Live Password Status */}
+                      <div className="rounded-[16px] bg-[#F4F7FC] border border-slate-200/90 p-4 space-y-3">
+                        <div className="flex items-center justify-between text-[13px]">
+                          <span className="font-semibold text-[#0A0D14]">
+                            Kriteria Keamanan Kata Sandi ({passedRulesCount}/4)
                           </span>
                           {confirmPassword.length > 0 && (
                             <span
-                              style={{ fontFamily: "'JetBrains Mono', monospace" }}
                               className={`font-semibold ${
                                 passwordsMatch ? 'text-[#059669]' : 'text-[#D97706]'
                               }`}
                             >
-                              {passwordsMatch ? 'KONFIRMASI COCOK' : 'BELUM COCOK'}
+                              {passwordsMatch ? 'Kata Sandi Cocok' : 'Belum Cocok'}
                             </span>
                           )}
                         </div>
@@ -782,11 +705,10 @@ function RegisterFormContent() {
                           {passwordRules.map((rule) => (
                             <div
                               key={rule.code}
-                              style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                              className={`px-2.5 py-1.5 rounded-[8px] text-[11px] font-medium flex items-center justify-between border transition-colors ${
+                              className={`px-2.5 py-1.5 rounded-[8px] text-[12px] font-medium flex items-center justify-between border transition-colors ${
                                 rule.valid
                                   ? 'bg-[#ECFDF5] border-[#059669] text-[#064E3B]'
-                                  : 'bg-white border-slate-200 text-slate-500'
+                                  : 'bg-white border-slate-200 text-[#1E293B]'
                               }`}
                             >
                               <span>{rule.label}</span>
@@ -817,7 +739,7 @@ function RegisterFormContent() {
                         </button>
                       </div>
 
-                      <p className="text-center text-[12px] text-[#334155]">
+                      <p className="text-center text-[13px] text-[#1E293B]">
                         Dengan mendaftar, Anda menyetujui{' '}
                         <Link
                           href="/terms-of-service"
@@ -839,7 +761,7 @@ function RegisterFormContent() {
                 )}
 
                 {/* Bottom Login Link */}
-                <div className="mt-6 pt-4 border-t border-slate-200/80 flex items-center justify-between text-[14px] text-[#334155]">
+                <div className="mt-6 pt-4 border-t border-slate-200/80 flex items-center justify-between text-[15px] text-[#1E293B]">
                   <span>Sudah memiliki akun belajar?</span>
                   <Link href="/login" className="font-semibold text-[#1B68FF] hover:underline">
                     Masuk ke Akun &rarr;
@@ -854,13 +776,13 @@ function RegisterFormContent() {
       {/* 3. ARCHITECTURAL FOOTER */}
       <footer className="relative z-20 px-6 sm:px-12 lg:px-16 pb-8">
         <div className="w-full pt-6 border-t border-slate-300/70 lg:border-slate-300/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-[14px]">
-          <div className="flex items-center gap-2.5 text-[#334155]">
+          <div className="flex items-center gap-2.5 text-[#1E293B]">
             <span className="text-[18px] font-semibold tracking-[-0.04em] text-[#0A0D14]">
               AGRA.
             </span>
             <span>— Ruang Belajar &amp; Simulasi Mandiri TKA SMP</span>
           </div>
-          <div className="flex flex-wrap items-center gap-6 text-[#334155] lg:text-white/90">
+          <div className="flex flex-wrap items-center gap-6 text-[#1E293B] lg:text-white/90">
             <Link href="/privacy-policy" className="hover:underline">
               Kebijakan Privasi
             </Link>
@@ -879,7 +801,7 @@ export default function RegisterPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-[#F4F7FC] text-[#334155] text-[15px]">
+        <div className="flex min-h-screen items-center justify-center bg-[#F4F7FC] text-[#1E293B] text-[15px]">
           Memuat halaman pendaftaran...
         </div>
       }

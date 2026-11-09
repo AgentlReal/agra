@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 /**
  * DESIGN SYSTEM TOKENS (Rule #3.3 — Unified Style Guide)
- * - Fonts: 1. Onest (Display & Body), 2. JetBrains Mono (Numeric Timer & Code)
+ * - Typography: Onest 100% everywhere across display, body, and tabular numerics (JetBrains Mono strictly banned)
  * - Golden Ratio Typography Scale (Base = 16px, Multiplier = 1.618):
  *   • Body Text: 16px (text-[16px]) | Line-height: 155% (leading-[1.55])
  *   • H3 Subheading: 26px (16 * 1.618) | Line-height: 130% (leading-[1.3])
@@ -18,7 +18,7 @@ const UI = {
     "min-h-[48px] min-w-[48px] px-7 py-3 rounded-[14px] bg-[#1B68FF] hover:bg-[#1454D6] active:translate-y-0.5 text-white text-[16px] font-medium transition-all shadow-[0_10px_24px_rgba(27,104,255,0.28)] inline-flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-75",
   btnSecondaryOutline:
     "min-h-[48px] min-w-[48px] px-6 py-3 rounded-[14px] bg-white hover:bg-[#F4F7FC] active:translate-y-0.5 text-[#0A0D14] border-2 border-slate-300 hover:border-[#1B68FF] text-[16px] font-medium transition-all inline-flex items-center justify-center gap-2 cursor-pointer",
-  bodyText: "text-[16px] sm:text-[17px] font-normal leading-[1.55] text-[#334155] text-pretty",
+  bodyText: "text-[16px] sm:text-[17px] font-normal leading-[1.55] text-[#1E293B] text-pretty",
   h3Title: "text-[24px] sm:text-[26px] font-medium tracking-[-0.025em] leading-[1.3] text-[#0A0D14] text-balance",
   h2Section: "text-[38px] sm:text-[52px] lg:text-[68px] font-normal tracking-[-0.04em] leading-[1.05] text-[#0A0D14] text-balance",
 };
@@ -454,19 +454,19 @@ export default function HomePage() {
             <nav className="hidden md:flex items-center gap-2">
               <a
                 href="#alur"
-                className="min-h-[48px] px-4 inline-flex items-center rounded-[12px] text-[16px] font-medium text-[#334155] hover:text-[#0A0D14] hover:bg-slate-200/50 transition-colors"
+                className="min-h-[48px] px-4 inline-flex items-center rounded-[12px] text-[16px] font-medium text-[#1E293B] hover:text-[#0A0D14] hover:bg-slate-200/50 transition-colors"
               >
                 Alur Belajar
               </a>
               <a
                 href="#simulasi"
-                className="min-h-[48px] px-4 inline-flex items-center rounded-[12px] text-[16px] font-medium text-[#334155] hover:text-[#0A0D14] hover:bg-slate-200/50 transition-colors"
+                className="min-h-[48px] px-4 inline-flex items-center rounded-[12px] text-[16px] font-medium text-[#1E293B] hover:text-[#0A0D14] hover:bg-slate-200/50 transition-colors"
               >
                 Simulasi CBT
               </a>
               <a
                 href="#submateri"
-                className="min-h-[48px] px-4 inline-flex items-center rounded-[12px] text-[16px] font-medium text-[#334155] hover:text-[#0A0D14] hover:bg-slate-200/50 transition-colors"
+                className="min-h-[48px] px-4 inline-flex items-center rounded-[12px] text-[16px] font-medium text-[#1E293B] hover:text-[#0A0D14] hover:bg-slate-200/50 transition-colors"
               >
                 Kurikulum
               </a>
@@ -768,10 +768,7 @@ export default function HomePage() {
                 <span className="text-[42px] sm:text-[52px] font-light tracking-[-0.05em] leading-none text-[#10B981]">
                   04
                 </span>
-                <span
-                  style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                  className="text-[14px] font-medium text-slate-200"
-                >
+                <span className="text-[14px] font-medium text-slate-200 tabular-nums">
                   75:00 CBT
                 </span>
               </div>
@@ -833,10 +830,7 @@ export default function HomePage() {
               {/* Top CBT Status Bar */}
               <div className="px-6 sm:px-10 py-5 bg-[#F4F7FC] border-b border-slate-200 flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <span
-                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                    className="text-xs font-semibold px-3.5 py-1.5 rounded-[8px] bg-[#0A0D14] text-white tabular-nums"
-                  >
+                  <span className="text-xs font-semibold px-3.5 py-1.5 rounded-[8px] bg-[#0A0D14] text-white tabular-nums">
                     MAT-08 • LEVEL 3 HOTS
                   </span>
                   <span className="text-[16px] font-medium text-[#0A0D14]">
@@ -856,15 +850,12 @@ export default function HomePage() {
                       <circle cx="12" cy="12" r="9" />
                       <path d="M12 7v5l3 2" />
                     </svg>
-                    <span
-                      style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                      className="text-[18px] font-semibold text-[#0A0D14] tabular-nums"
-                    >
+                    <span className="text-[18px] font-semibold text-[#0A0D14] tabular-nums">
                       {formatTime(secondsLeft)}
                     </span>
                   </div>
 
-                  <span className="hidden sm:inline-block text-[15px] font-medium text-[#334155] tabular-nums">
+                  <span className="hidden sm:inline-block text-[15px] font-medium text-[#1E293B] tabular-nums">
                     Soal 14 dari 30
                   </span>
                 </div>
@@ -905,10 +896,7 @@ export default function HomePage() {
                         >
                           {/* Badge Rule #3.1: Dark brown #78350F on soft amber #FDE68A (Never white text on yellow!) */}
                           <span
-                            style={{
-                              fontFamily: "'JetBrains Mono', monospace",
-                            }}
-                            className={`w-8 h-8 rounded-[8px] text-[14px] font-bold flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
+                            className={`w-8 h-8 rounded-[8px] text-[14px] font-bold flex items-center justify-center shrink-0 mt-0.5 transition-colors tabular-nums ${
                               showEmerald
                                 ? "bg-[#059669] text-white"
                                 : showAmber
@@ -946,15 +934,12 @@ export default function HomePage() {
                     </div>
 
                     <div className="p-5 rounded-[14px] bg-white border border-slate-200 mb-6">
-                      <p className="text-[16px] font-normal leading-[1.55] text-[#334155] text-pretty tabular-nums">
+                      <p className="text-[16px] font-normal leading-[1.55] text-[#1E293B] text-pretty tabular-nums">
                         {chosenOptionObj?.feedback}
                       </p>
                     </div>
 
-                    <div
-                      style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                      className="p-4 rounded-[12px] bg-[#EEF2FA] text-[14px] leading-[1.6] text-[#0A0D14] space-y-1.5 tabular-nums"
-                    >
+                    <div className="p-4 rounded-[12px] bg-[#EEF2FA] text-[14px] leading-[1.6] text-[#0A0D14] space-y-1.5 tabular-nums">
                       <div>Tahap 1: 50% × Rp400.000 = Rp200.000</div>
                       <div>Tahap 2: Rp200.000 - (20% × Rp200.000)</div>
                       <div className="font-bold text-[#1B68FF]">
@@ -964,7 +949,7 @@ export default function HomePage() {
                   </div>
 
                   <div className="mt-8 pt-6 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4">
-                    <span className="text-[16px] font-medium text-[#334155] tabular-nums">
+                    <span className="text-[16px] font-medium text-[#1E293B] tabular-nums">
                       480+ Soal TKA Tersedia
                     </span>
                     <button
@@ -1013,7 +998,7 @@ export default function HomePage() {
                 className={`min-h-[48px] px-6 py-2.5 rounded-[14px] text-[16px] font-medium transition-all cursor-pointer tabular-nums ${
                   activeDomain === "numerasi"
                     ? "bg-[#1B68FF] text-white shadow-sm"
-                    : "text-[#334155] hover:text-[#0A0D14]"
+                    : "text-[#1E293B] hover:text-[#0A0D14]"
                 }`}
               >
                 Matematika (08)
@@ -1024,7 +1009,7 @@ export default function HomePage() {
                 className={`min-h-[48px] px-6 py-2.5 rounded-[14px] text-[16px] font-medium transition-all cursor-pointer tabular-nums ${
                   activeDomain === "literasi"
                     ? "bg-[#1B68FF] text-white shadow-sm"
-                    : "text-[#334155] hover:text-[#0A0D14]"
+                    : "text-[#1E293B] hover:text-[#0A0D14]"
                 }`}
               >
                 Bahasa Indonesia (08)
@@ -1041,17 +1026,14 @@ export default function HomePage() {
             <RevealPop key={item.code} delay={idx * 40}>
               <div className="group bg-white hover:bg-[#1B68FF] rounded-[24px] p-7 sm:p-8 transition-all duration-300 border border-slate-200 hover:border-[#1B68FF] shadow-[0_8px_24px_rgba(15,23,42,0.03)] hover:shadow-[0_18px_40px_rgba(27,104,255,0.2)] flex items-start justify-between gap-5">
                 <div className="flex items-start gap-5">
-                  <span
-                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                    className="text-[26px] font-normal leading-[1.3] text-[#1B68FF] group-hover:text-blue-100 transition-colors tabular-nums"
-                  >
+                  <span className="text-[26px] font-normal leading-[1.3] text-[#1B68FF] group-hover:text-blue-100 transition-colors tabular-nums">
                     {item.code}
                   </span>
                   <div>
                     <h3 className="text-[22px] sm:text-[24px] font-medium tracking-[-0.02em] leading-[1.3] text-[#0A0D14] group-hover:text-white transition-colors">
                       {item.title}
                     </h3>
-                    <p className="text-[16px] font-normal leading-[1.55] text-[#334155] group-hover:text-blue-50 transition-colors mt-2 text-pretty">
+                    <p className="text-[16px] font-normal leading-[1.55] text-[#1E293B] group-hover:text-blue-50 transition-colors mt-2 text-pretty">
                       {item.scope}
                     </p>
                   </div>
@@ -1112,7 +1094,7 @@ export default function HomePage() {
           </div>
         </RevealPop>
 
-        <footer className="mt-16 pt-8 border-t border-slate-300/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 text-[16px] font-normal text-[#334155]">
+        <footer className="mt-16 pt-8 border-t border-slate-300/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 text-[16px] font-normal text-[#1E293B]">
           <div className="flex items-center gap-3">
             <img
               src="/assets/images/agra-icon.png"
