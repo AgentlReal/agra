@@ -99,11 +99,11 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
       type="button"
       onClick={handleGoogleClick}
       disabled={disabled || loading}
-      className={`w-full inline-flex items-center justify-center gap-3 py-3.5 px-5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-800 font-bold text-sm shadow-2xs transition-all cursor-pointer disabled:opacity-60 disabled:pointer-events-none ${className}`}
+      className={`min-h-[48px] w-full px-5 py-3 rounded-[14px] bg-white hover:bg-[#F4F7FC] active:translate-y-0.5 text-[#0A0D14] border-2 border-slate-300 hover:border-[#1B68FF] text-[15px] font-medium transition-all inline-flex items-center justify-center gap-3 cursor-pointer disabled:opacity-60 disabled:pointer-events-none ${className}`}
     >
       {loading ? (
         <>
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#1B68FF] border-t-transparent" />
           <span>Menghubungkan ke Google...</span>
         </>
       ) : (
@@ -117,4 +117,3 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
 };
 
 export default GoogleAuthButton;
-
