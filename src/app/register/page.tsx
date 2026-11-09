@@ -344,15 +344,15 @@ function RegisterFormContent() {
             {/* PANEL KIRI (5 KOLOM): Brand & Preview Kartu Siswa */}
             <div className="lg:col-span-5 p-7 sm:p-10 bg-gradient-to-br from-[#2370FF] via-[#1B68FF] to-[#0D4EE0] text-white flex flex-col justify-between">
               <div className="space-y-6">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-[8px] bg-white/15 text-[12px] font-mono font-medium tracking-wide">
-                  <span>PENDAFTARAN SISWA SMP</span>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-[8px] bg-white/15 text-[13px] font-semibold text-white">
+                  <span>Pendaftaran Siswa SMP</span>
                 </div>
 
                 <div className="space-y-3">
                   <h1 className="text-[30px] sm:text-[34px] font-normal tracking-[-0.035em] leading-[1.12] text-white">
                     Mulai Persiapan TKA Mandiri
                   </h1>
-                  <p className="text-[15px] leading-[1.55] text-white/85 font-normal">
+                  <p className="text-[15px] leading-[1.55] text-white/90 font-normal">
                     Buat akun siswa untuk mengakses 30 soal diagnostik awal, 16 submateri Numerasi &amp; Literasi Fase D, serta paket simulasi CBT.
                   </p>
                 </div>
@@ -361,9 +361,9 @@ function RegisterFormContent() {
               {/* Live Preview Kartu Identitas Siswa */}
               <div className="mt-8 pt-6 border-t border-white/20">
                 <div className="rounded-[16px] bg-[#0A0D14]/25 border border-white/15 p-4 space-y-3">
-                  <div className="flex items-center justify-between text-[11px] font-mono text-white/75">
-                    <span>IDENTITAS PESERTA</span>
-                    <span>{isFormValid ? 'LENGKAP ✓' : 'DRAFT'}</span>
+                  <div className="flex items-center justify-between text-[12px] font-medium text-white/90 tabular-nums">
+                    <span>Identitas Peserta</span>
+                    <span className="font-semibold">{isFormValid ? 'Lengkap ✓' : 'Draft'}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-[12px] bg-white text-[#1B68FF] font-semibold text-[16px] flex items-center justify-center shrink-0">
@@ -373,7 +373,7 @@ function RegisterFormContent() {
                       <p className="text-[15px] font-medium text-white truncate">
                         {name.trim() || 'Nama Lengkap Siswa'}
                       </p>
-                      <p className="text-[12px] font-mono text-white/80 truncate">
+                      <p className="text-[13px] text-white/90 truncate">
                         @{username || 'username'} • {email || 'email@sekolah.id'}
                       </p>
                     </div>
@@ -519,7 +519,7 @@ function RegisterFormContent() {
                             Username
                           </label>
                           <div className="relative flex items-center">
-                            <span className="absolute left-3.5 text-slate-400 text-[14px] font-mono">
+                            <span className="absolute left-3.5 text-slate-400 text-[15px] font-normal">
                               @
                             </span>
                             <input
