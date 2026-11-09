@@ -6,22 +6,24 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { api } from '@/lib/api-client';
 import {
-  User,
   Mail,
-  Lock,
   AlertCircle,
   ArrowRight,
-  ShieldCheck,
   Eye,
   EyeOff,
   CheckCircle2,
-  Sparkles,
-  Sliders,
   RefreshCw,
 } from 'lucide-react';
-import { AppLogo } from '@/components/common/AppLogo';
 import { GoogleAuthButton, formatOAuthErrorMessage } from '@/components/common/GoogleAuthButton';
-import { Footer } from '@/components/layout/Footer';
+
+const UI = {
+  btnPrimary:
+    'min-h-[48px] w-full px-7 py-3.5 rounded-[14px] bg-[#1B68FF] hover:bg-[#1454D6] active:translate-y-0.5 text-white text-[16px] font-medium transition-all shadow-[0_10px_24px_rgba(27,104,255,0.28)] inline-flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50 disabled:pointer-events-none',
+  btnSecondaryOutline:
+    'min-h-[48px] w-full px-6 py-3 rounded-[14px] bg-white hover:bg-[#F4F7FC] active:translate-y-0.5 text-[#0A0D14] border-2 border-slate-300 hover:border-[#1B68FF] text-[15px] font-medium transition-all inline-flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:pointer-events-none',
+  input:
+    'w-full min-h-[48px] bg-[#F4F7FC] focus:bg-white border-2 border-slate-200/90 focus:border-[#1B68FF] rounded-[14px] px-4 py-2.5 text-[15px] text-[#0A0D14] placeholder-slate-400 focus:outline-none transition-colors',
+};
 
 function RegisterFormContent() {
   const router = useRouter();
@@ -212,6 +214,14 @@ function RegisterFormContent() {
     hasSpecial &&
     passwordsMatch;
 
+  const passwordRules = [
+    { code: 'LEN', label: '6–12 Karakter', valid: hasLength },
+    { code: 'CASE', label: 'Huruf A–Z & a–z', valid: hasUpper && hasLower },
+    { code: 'NUM', label: 'Angka 0–9', valid: hasNumber },
+    { code: 'SYM', label: 'Simbol (@#$%)', valid: hasSpecial },
+  ];
+  const passedRulesCount = passwordRules.filter((r) => r.valid).length;
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isFormValid) {
@@ -294,408 +304,573 @@ function RegisterFormContent() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8fafc]">
-      {/* Top Header */}
-      <header className="w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md px-4 sm:px-8 py-3.5">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 border border-blue-100 p-1">
-              <AppLogo size={26} />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xl font-bold tracking-tight text-blue-600">AGRA</span>
-              <span className="hidden sm:inline-block text-xs font-semibold text-slate-500 border-l border-slate-200 pl-2">
-                TKA Pintar SMP
-              </span>
-            </div>
-          </Link>
+    <div
+      style={{ fontFamily: "'Onest', sans-serif" }}
+      className="relative min-h-screen w-full bg-[#F4F7FC] text-[#0A0D14] text-[16px] leading-[1.55] flex flex-col justify-between overflow-x-hidden"
+    >
+      {/* Background Architectural 50/50 Split Stage (Desktop lg+) */}
+      <div className="hidden lg:grid fixed inset-0 grid-cols-12 pointer-events-none z-0">
+        <div className="col-span-6 bg-[#F4F7FC]" />
+        <div className="col-span-6 bg-gradient-to-br from-[#2370FF] via-[#1B68FF] to-[#0D4EE0] rounded-bl-[64px]" />
+      </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500 hidden sm:inline">Sudah memiliki akun?</span>
+      {/* 1. HEADER */}
+      <header className="relative z-30 w-full px-6 sm:px-12 lg:px-16 pt-6 pb-4">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 items-center">
+          <div className="lg:col-span-6 flex items-center justify-between lg:justify-start gap-8">
+            <Link href="/" className="min-h-[48px] inline-flex items-center gap-3 group">
+              <div className="w-11 h-11 rounded-[16px] p-1.5 bg-white shadow-[0_8px_20px_rgba(15,23,42,0.06)] border border-slate-200 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <img
+                  src="/assets/images/agra-icon.png"
+                  alt="Logo AGRA"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <span className="text-[26px] font-semibold tracking-[-0.04em] text-[#0A0D14] flex items-center">
+                AGRA
+                <span className="inline-block w-2 h-2 rounded-full bg-[#1B68FF] ml-1" />
+              </span>
+            </Link>
+
+            <Link
+              href="/"
+              className="min-h-[44px] px-4 inline-flex items-center rounded-[12px] text-[15px] font-medium text-[#334155] hover:text-[#0A0D14] hover:bg-slate-200/60 transition-colors"
+            >
+              &larr; Beranda
+            </Link>
+          </div>
+
+          <div className="hidden lg:flex lg:col-span-6 items-center justify-end gap-4">
+            <span className="text-[15px] text-blue-100">Sudah memiliki akun siswa?</span>
             <Link
               href="/login"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors"
+              className="min-h-[48px] px-6 py-2.5 rounded-[14px] bg-white text-[#1B68FF] text-[15px] font-semibold hover:bg-blue-50 active:translate-y-0.5 transition-all shadow-[0_10px_25px_rgba(0,0,0,0.16)] inline-flex items-center gap-2"
             >
-              <span>Masuk Sekarang</span>
-              <ArrowRight className="h-3.5 w-3.5" />
+              <span>Masuk ke Akun</span>
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Main Container */}
-      <main className="flex-1 flex items-center justify-center p-4 sm:p-8">
-        <div className="w-full max-w-lg">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-6 sm:p-8 md:p-10">
-            {/* Header Tag */}
-            <div className="mb-6">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold tracking-wide mb-3">
-                <Sparkles className="h-3.5 w-3.5" />
-                <span>DAFTAR AKUN BARU SISWA</span>
-              </div>
-              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-                {verificationSentTo ? 'Verifikasi Alamat Emailmu' : 'Buat Akun Belajarmu'}
+      {/* 2. MAIN ARCHITECTURAL STAGE */}
+      <main className="relative z-20 flex-1 flex items-center py-6 sm:py-10 px-6 sm:px-12 lg:px-16">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start lg:items-center">
+          {/* LEFT 6 COLS: Editorial Headline + Interactive Live Kartu Peserta TKA */}
+          <div className="lg:col-span-6 lg:pr-10 space-y-8">
+            <div>
+              <span
+                style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                className="inline-block text-[12px] font-semibold px-3.5 py-1.5 rounded-[8px] bg-[#0A0D14] text-white mb-5"
+              >
+                REGISTRASI PESERTA • FASE D SMP/MTS
+              </span>
+
+              <h1 className="text-[40px] sm:text-[54px] lg:text-[62px] font-normal tracking-[-0.045em] leading-[0.98] text-[#0A0D14] text-balance">
+                Mulai Persiapan
+                <span className="block text-[#1B68FF] mt-1">TKA Mandiri.</span>
               </h1>
-              <p className="text-slate-500 text-xs sm:text-sm mt-1 leading-relaxed">
-                {verificationSentTo
-                  ? 'Satu langkah lagi sebelum memilih tingkat kelas dan avatar belajarmu.'
-                  : 'Daftar instan menggunakan Akun Google atau lengkapi formulir pendaftaran dengan verifikasi email.'}
+
+              <p className="mt-4 text-[16px] sm:text-[17px] font-normal leading-[1.55] text-[#334155] max-w-xl text-pretty">
+                Satu akun membuka akses penuh ke{' '}
+                <strong className="font-semibold text-[#0A0D14]">
+                  30 soal diagnostik prasyarat
+                </strong>
+                , 16 submateri Numerasi &amp; Literasi, hingga simulasi ujian CBT 75 menit.
               </p>
             </div>
 
-            {/* Error Message */}
-            {displayError && (
-              <div className="mb-5 flex items-center gap-2.5 rounded-xl border border-amber-200 bg-amber-50 p-3.5 text-xs text-amber-900">
-                <AlertCircle className="h-4 w-4 text-amber-600 shrink-0" />
-                <span>{displayError}</span>
-              </div>
-            )}
-
-            {verificationSentTo ? (
-              isVerifiedRedirecting ? (
-                <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 p-6 text-center space-y-4">
-                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-emerald-600 border border-emerald-200 shadow-2xs">
-                    <CheckCircle2 className="h-7 w-7" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <h2 className="text-base font-bold text-slate-900">
-                      Email Berhasil Diverifikasi!
-                    </h2>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      Status verifikasi telah diterima. Sedang masuk secara otomatis dan menyiapkan
-                      halaman pemilihan tingkat kelas &amp; avatar...
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-center gap-2 text-xs font-semibold text-blue-600 pt-1">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
-                    <span>Mengalihkan ke penyiapan profil...</span>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-5">
-                  <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-5 text-center space-y-3">
-                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-emerald-600 border border-emerald-200 shadow-2xs">
-                      <Mail className="h-7 w-7" />
-                    </div>
-                    <h2 className="text-base font-bold text-slate-900">
-                      Tautan Verifikasi Telah Dikirim!
-                    </h2>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      Kami telah mengirimkan email aktivasi ke{' '}
-                      <span className="font-bold text-blue-600 break-all">{verificationSentTo}</span>.
-                      Buka kotak masuk (atau folder <strong>Spam/Promosi</strong>) lalu klik tombol{' '}
-                      <strong>Verifikasi Email &amp; Aktifkan Akun</strong>.
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-3 rounded-xl border border-blue-200 bg-blue-50/70 p-3.5 text-xs text-slate-700">
-                    <div className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
-                    <span>
-                      <strong>Jangan tutup tab ini.</strong> Begitu tombol verifikasi di email diklik,
-                      halaman ini akan <strong>masuk secara otomatis</strong>.
-                    </span>
-                  </div>
-
-                  {resendSuccessMsg && (
-                    <div className="flex items-center gap-2.5 rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs text-emerald-900">
-                      <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                      <span>{resendSuccessMsg}</span>
-                    </div>
-                  )}
-
-                  <div className="space-y-2.5">
-                    <button
-                      type="button"
-                      onClick={handleResendVerification}
-                      disabled={resending || resendCooldown > 0}
-                      className="w-full inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs sm:text-sm transition-colors cursor-pointer disabled:opacity-60 disabled:pointer-events-none"
-                    >
-                      <RefreshCw className={`h-4 w-4 ${resending ? 'animate-spin' : ''}`} />
-                      <span>
-                        {resending
-                          ? 'Mengirim Ulang...'
-                          : resendCooldown > 0
-                            ? `Kirim Ulang Email (${resendCooldown}d)`
-                            : 'Kirim Ulang Email Verifikasi'}
-                      </span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setVerificationSentTo(null);
-                        setIsVerifiedRedirecting(false);
-                        setErrorMsg('');
-                        setResendSuccessMsg('');
-                      }}
-                      className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors cursor-pointer"
-                    >
-                      Salah ketik alamat email? Kembali ke formulir
-                    </button>
-                  </div>
-                </div>
-              )
-            ) : (
-              <>
-                {/* Quick Google OAuth Registration */}
-                <div className="space-y-4 mb-5">
-                  <GoogleAuthButton
-                    label="Daftar Cepat dengan Akun Google"
-                    redirectPath={redirectParam}
-                    errorCallbackURL="/register"
-                    disabled={loading}
-                    onError={(msg) => setErrorMsg(msg)}
-                    className="border-blue-200 hover:border-blue-300 hover:bg-blue-50/40"
-                  />
-
-                  <div className="relative flex items-center py-1">
-                    <div className="flex-grow border-t border-slate-200" />
-                    <span className="shrink-0 mx-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                      atau isi formulir pendaftaran
-                    </span>
-                    <div className="flex-grow border-t border-slate-200" />
-                  </div>
-                </div>
-
-                {/* Manual Registration Form (Verified via Email Link) */}
-                <form onSubmit={handleRegister} className="space-y-4">
-                  {/* Full Name */}
-                  <div>
-                    <label
-                      className="font-semibold text-slate-800 text-xs sm:text-sm flex items-center gap-2 mb-2"
-                      htmlFor="name"
-                    >
-                      <User className="h-4 w-4 text-blue-600" />
-                      <span>Nama Lengkap Siswa</span>
-                    </label>
-                    <input
-                      id="name"
-                      type="text"
-                      maxLength={30}
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="misal: Rizky Ramadhan"
-                      required
-                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition shadow-2xs"
-                    />
-                  </div>
-
-                  {/* Username */}
-                  <div>
-                    <label
-                      className="font-semibold text-slate-800 text-xs sm:text-sm flex items-center gap-2 mb-2"
-                      htmlFor="username"
-                    >
-                      <User className="h-4 w-4 text-blue-600" />
-                      <span>Username</span>
-                    </label>
-                    <div className="relative flex items-center">
-                      <span className="absolute left-4 text-slate-400 font-mono text-sm">@</span>
-                      <input
-                        id="username"
-                        type="text"
-                        maxLength={16}
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value.toLowerCase().trim())}
-                        placeholder="rizky_ramadhan"
-                        required
-                        className="w-full bg-white border border-slate-200 rounded-xl pl-9 pr-4 py-3 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition shadow-2xs"
-                      />
-                    </div>
-                    <p className="text-[11px] text-slate-400 mt-1">
-                      3–16 karakter: huruf kecil, angka, atau garis bawah (_)
-                    </p>
-                  </div>
-
-                  {/* Email */}
-                  <div>
-                    <label
-                      className="font-semibold text-slate-800 text-xs sm:text-sm flex items-center gap-2 mb-2"
-                      htmlFor="email"
-                    >
-                      <Mail className="h-4 w-4 text-blue-600" />
-                      <span>Alamat Email Aktif</span>
-                    </label>
-                    <input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value.trim())}
-                      placeholder="rizky@gmail.com"
-                      required
-                      className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition shadow-2xs"
-                    />
-                    <p className="text-[11px] text-slate-400 mt-1">
-                      Tautan verifikasi akun akan dikirimkan ke kotak masuk email ini.
-                    </p>
-                  </div>
-
-                  {/* Password */}
-                  <div>
-                    <label
-                      className="font-semibold text-slate-800 text-xs sm:text-sm flex items-center gap-2 mb-2"
-                      htmlFor="password"
-                    >
-                      <Lock className="h-4 w-4 text-blue-600" />
-                      <span>Kata Sandi Baru</span>
-                    </label>
-                    <div className="relative flex items-center">
-                      <input
-                        id="password"
-                        type={showPassword ? 'text' : 'password'}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Buat kata sandi baru (6–12 karakter)"
-                        required
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 pr-11 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition shadow-2xs"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 text-slate-400 hover:text-slate-600 p-1 focus:outline-none"
-                        title={showPassword ? 'Sembunyikan sandi' : 'Lihat sandi'}
-                      >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Password Security Criteria Box */}
-                  <div className="bg-[#eff6ff] border border-blue-100 rounded-xl p-4 text-xs">
-                    <div className="font-semibold text-slate-800 flex items-center gap-2 mb-2">
-                      <Sliders className="h-3.5 w-3.5 text-blue-600" />
-                      <span>Kriteria Keamanan Sandi :</span>
-                    </div>
-                    <ul className="space-y-1.5 text-slate-600">
-                      <li className="flex items-center gap-2">
-                        <span
-                          className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${
-                            hasLength ? 'bg-emerald-600 text-white' : 'border border-slate-300'
-                          }`}
-                        >
-                          {hasLength ? '✓' : ''}
-                        </span>
-                        <span>Minimal 6 karakter (maksimal 12 karakter)</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span
-                          className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${
-                            hasUpper && hasLower ? 'bg-emerald-600 text-white' : 'border border-slate-300'
-                          }`}
-                        >
-                          {hasUpper && hasLower ? '✓' : ''}
-                        </span>
-                        <span>Memuat huruf kapital (A–Z) dan huruf kecil (a–z)</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span
-                          className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${
-                            hasNumber ? 'bg-emerald-600 text-white' : 'border border-slate-300'
-                          }`}
-                        >
-                          {hasNumber ? '✓' : ''}
-                        </span>
-                        <span>Memuat minimal satu angka (0–9)</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span
-                          className={`h-4 w-4 rounded-full flex items-center justify-center text-[10px] ${
-                            hasSpecial ? 'bg-emerald-600 text-white' : 'border border-slate-300'
-                          }`}
-                        >
-                          {hasSpecial ? '✓' : ''}
-                        </span>
-                        <span>Memuat simbol atau karakter khusus (@, #, $, %, dll.)</span>
-                      </li>
-                    </ul>
-                  </div>
-
-                  {/* Confirm Password */}
-                  <div>
-                    <label
-                      className="font-semibold text-slate-800 text-xs sm:text-sm flex items-center gap-2 mb-2"
-                      htmlFor="confirmPassword"
-                    >
-                      <ShieldCheck className="h-4 w-4 text-blue-600" />
-                      <span>Konfirmasi Kata Sandi</span>
-                    </label>
-                    <div className="relative flex items-center">
-                      <input
-                        id="confirmPassword"
-                        type={showConfirmPassword ? 'text' : 'password'}
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="Ketik ulang kata sandi baru"
-                        required
-                        className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 pr-11 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition shadow-2xs"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-3 text-slate-400 hover:text-slate-600 p-1 focus:outline-none"
-                        title={showConfirmPassword ? 'Sembunyikan sandi' : 'Lihat sandi'}
-                      >
-                        {showConfirmPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-                    {confirmPassword.length > 0 && (
-                      <p
-                        className={`text-[11px] mt-1 flex items-center gap-1 ${
-                          passwordsMatch ? 'text-emerald-600' : 'text-amber-600'
-                        }`}
-                      >
-                        {passwordsMatch ? '✓ Kata sandi cocok' : '⚠ Kata sandi belum cocok'}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Submit CTA */}
-                  <button
-                    type="submit"
-                    disabled={loading || !isFormValid}
-                    className="btn-tactile-primary w-full py-3.5 px-6 rounded-xl font-bold text-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:pointer-events-none mt-2"
+            {/* LIVE INTERACTIVE STUDENT PASS PREVIEW */}
+            <div className="bg-[#0A0D14] text-white rounded-[28px] p-6 sm:p-8 max-w-xl shadow-[0_24px_60px_rgba(10,13,20,0.14)] space-y-6 tabular-nums">
+              <div className="flex items-center justify-between border-b border-white/15 pb-4">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]" />
+                  <span
+                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                    className="text-[12px] font-semibold tracking-wider text-slate-300"
                   >
-                    {loading ? (
-                      <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                    ) : (
-                      <>
-                        <span>Daftarkan Akun &amp; Kirim Verifikasi</span>
-                        <ArrowRight className="h-4 w-4" />
-                      </>
-                    )}
-                  </button>
+                    PRATINJAU KARTU PESERTA TKA
+                  </span>
+                </div>
+                <span
+                  style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                  className={`text-[11px] font-semibold px-2.5 py-1 rounded-[6px] ${
+                    isFormValid
+                      ? 'bg-[#059669] text-white'
+                      : 'bg-white/10 text-slate-300'
+                  }`}
+                >
+                  {isFormValid ? 'SIAP AKTIVASI' : 'MENUNGGU DATA'}
+                </span>
+              </div>
 
-                  <p className="mt-2.5 text-center text-[11px] text-slate-500 leading-relaxed">
-                    Dengan mendaftar, Anda menyetujui{' '}
-                    <Link href="/terms-of-service" className="text-blue-600 hover:underline font-medium">
-                      Ketentuan Layanan
-                    </Link>{' '}
-                    dan{' '}
-                    <Link href="/privacy-policy" className="text-blue-600 hover:underline font-medium">
-                      Kebijakan Privasi
-                    </Link>{' '}
-                    AGRA.
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-[18px] bg-[#1B68FF] text-white font-semibold text-[22px] flex items-center justify-center shrink-0">
+                  {(name.trim()[0] || 'S').toUpperCase()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[20px] font-medium tracking-[-0.02em] text-white truncate">
+                    {name.trim() || 'Nama Lengkap Siswa'}
                   </p>
-                </form>
-              </>
-            )}
+                  <p
+                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                    className="text-[13px] text-[#38BDF8] truncate mt-0.5"
+                  >
+                    @{username || 'username_siswa'} • {email || 'email@sekolah.sch.id'}
+                  </p>
+                </div>
+              </div>
 
-            {/* Bottom Link */}
-            <div className="mt-6 pt-5 border-t border-slate-100 text-center text-xs text-slate-500">
-              Sudah punya akun?{' '}
-              <Link href="/login" className="text-blue-600 hover:text-blue-700 font-semibold">
-                Masuk di sini
-              </Link>
+              <div className="grid grid-cols-3 gap-3 pt-2 border-t border-white/10 text-[13px]">
+                <div>
+                  <span
+                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                    className="text-[11px] text-slate-400 block"
+                  >
+                    TAHAP 01
+                  </span>
+                  <span className="font-medium text-white">Recall 30 Soal</span>
+                </div>
+                <div>
+                  <span
+                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                    className="text-[11px] text-slate-400 block"
+                  >
+                    TAHAP 02
+                  </span>
+                  <span className="font-medium text-white">16 Submateri</span>
+                </div>
+                <div>
+                  <span
+                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                    className="text-[11px] text-slate-400 block"
+                  >
+                    TAHAP 03
+                  </span>
+                  <span className="font-medium text-[#10B981]">CBT 75 Menit</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT 6 COLS: Double-Framed Registration Card */}
+          <div className="lg:col-span-6 w-full flex lg:justify-end">
+            <div className="w-full max-w-[560px] bg-white/85 lg:bg-white/20 backdrop-blur-md rounded-[32px] p-2.5 sm:p-3.5 shadow-[0_28px_70px_rgba(15,23,42,0.14)] border border-white/60">
+              <div className="bg-white rounded-[22px] p-6 sm:p-9 border border-slate-200/90">
+                {/* Card Header */}
+                <div className="flex items-start justify-between gap-4 mb-6">
+                  <div>
+                    <span
+                      style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                      className="text-[12px] font-semibold uppercase tracking-wider text-[#1B68FF]"
+                    >
+                      {verificationSentTo ? 'VERIFIKASI EMAIL' : 'PENDAFTARAN AKUN BARU'}
+                    </span>
+                    <h2 className="text-[24px] sm:text-[26px] font-medium tracking-[-0.03em] leading-[1.2] text-[#0A0D14] mt-1">
+                      {verificationSentTo
+                        ? 'Cek Kotak Masuk Emailmu'
+                        : 'Buat Akun Siswa AGRA'}
+                    </h2>
+                  </div>
+
+                  <span
+                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                    className="shrink-0 text-[12px] font-semibold px-3 py-1.5 rounded-[8px] bg-[#EEF2FA] text-[#0A0D14]"
+                  >
+                    FASE D
+                  </span>
+                </div>
+
+                {/* Error Alert */}
+                {displayError && (
+                  <div className="mb-5 flex items-start gap-3 rounded-[14px] border-2 border-[#D97706] bg-[#FFFBEB] p-4 text-[14px] text-[#78350F]">
+                    <AlertCircle className="h-5 w-5 text-[#D97706] shrink-0 mt-0.5" />
+                    <span className="leading-[1.5] font-medium">{displayError}</span>
+                  </div>
+                )}
+
+                {verificationSentTo ? (
+                  isVerifiedRedirecting ? (
+                    <div className="rounded-[20px] border-2 border-[#059669] bg-[#ECFDF5] p-6 text-center space-y-4">
+                      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-[16px] bg-[#059669] text-white">
+                        <CheckCircle2 className="h-7 w-7" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <h3 className="text-[20px] font-semibold text-[#064E3B]">
+                          Email Berhasil Diverifikasi!
+                        </h3>
+                        <p className="text-[14px] text-[#065F46] leading-[1.55]">
+                          Status verifikasi diterima. Sedang masuk otomatis dan menyiapkan
+                          halaman pemilihan kelas &amp; avatar...
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-5">
+                      <div className="rounded-[20px] border border-slate-200 bg-[#F4F7FC] p-6 space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#1B68FF] text-white shrink-0">
+                            <Mail className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <span
+                              style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                              className="text-[11px] font-semibold text-[#1B68FF]"
+                            >
+                              TAUTAN AKTIVASI TERKIRIM
+                            </span>
+                            <p className="text-[16px] font-semibold text-[#0A0D14] break-all">
+                              {verificationSentTo}
+                            </p>
+                          </div>
+                        </div>
+
+                        <p className="text-[14px] text-[#334155] leading-[1.55]">
+                          Buka kotak masuk (atau folder <strong>Spam/Promosi</strong>) lalu klik
+                          tombol <strong>Verifikasi Email &amp; Aktifkan Akun</strong>.
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-3 rounded-[14px] bg-[#0A0D14] text-white p-4 text-[13px]">
+                        <div className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-[#10B981] border-t-transparent" />
+                        <span>
+                          <strong>Jangan tutup tab ini.</strong> Begitu tombol verifikasi di
+                          email diklik, halaman ini akan <strong>masuk secara otomatis</strong>.
+                        </span>
+                      </div>
+
+                      {resendSuccessMsg && (
+                        <div className="flex items-center gap-2.5 rounded-[14px] border-2 border-[#059669] bg-[#ECFDF5] p-3.5 text-[13px] font-medium text-[#064E3B]">
+                          <CheckCircle2 className="h-4 w-4 text-[#059669] shrink-0" />
+                          <span>{resendSuccessMsg}</span>
+                        </div>
+                      )}
+
+                      <div className="space-y-2.5">
+                        <button
+                          type="button"
+                          onClick={handleResendVerification}
+                          disabled={resending || resendCooldown > 0}
+                          className={UI.btnSecondaryOutline}
+                        >
+                          <RefreshCw className={`h-4 w-4 ${resending ? 'animate-spin' : ''}`} />
+                          <span>
+                            {resending
+                              ? 'Mengirim Ulang...'
+                              : resendCooldown > 0
+                                ? `Kirim Ulang Email (${resendCooldown}d)`
+                                : 'Kirim Ulang Email Verifikasi'}
+                          </span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setVerificationSentTo(null);
+                            setIsVerifiedRedirecting(false);
+                            setErrorMsg('');
+                            setResendSuccessMsg('');
+                          }}
+                          className="w-full py-2.5 px-4 rounded-[12px] text-[13px] font-medium text-[#334155] hover:text-[#0A0D14] hover:bg-slate-100 transition-colors cursor-pointer"
+                        >
+                          &larr; Ubah alamat email pendaftaran
+                        </button>
+                      </div>
+                    </div>
+                  )
+                ) : (
+                  <>
+                    {/* Google OAuth */}
+                    <div className="space-y-4 mb-5">
+                      <GoogleAuthButton
+                        label="Daftar Cepat dengan Akun Google"
+                        redirectPath={redirectParam}
+                        errorCallbackURL="/register"
+                        disabled={loading}
+                        onError={(msg) => setErrorMsg(msg)}
+                      />
+
+                      <div className="relative flex items-center">
+                        <div className="flex-grow border-t border-slate-200" />
+                        <span
+                          style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                          className="shrink-0 mx-3 text-[11px] font-medium uppercase tracking-wider text-slate-400"
+                        >
+                          ATAU FORMULIR SISWA
+                        </span>
+                        <div className="flex-grow border-t border-slate-200" />
+                      </div>
+                    </div>
+
+                    {/* Registration Form */}
+                    <form onSubmit={handleRegister} className="space-y-4">
+                      {/* Row 1: Name & Username */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                          <label
+                            className="block text-[13px] font-medium text-[#0A0D14] mb-1.5"
+                            htmlFor="name"
+                          >
+                            Nama Lengkap Siswa
+                          </label>
+                          <input
+                            id="name"
+                            type="text"
+                            maxLength={30}
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="Rizky Ramadhan"
+                            required
+                            className={UI.input}
+                          />
+                        </div>
+
+                        <div>
+                          <label
+                            className="block text-[13px] font-medium text-[#0A0D14] mb-1.5"
+                            htmlFor="username"
+                          >
+                            Username Unik
+                          </label>
+                          <div className="relative flex items-center">
+                            <span
+                              style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                              className="absolute left-3.5 text-slate-400 text-[14px]"
+                            >
+                              @
+                            </span>
+                            <input
+                              id="username"
+                              type="text"
+                              maxLength={16}
+                              value={username}
+                              onChange={(e) =>
+                                setUsername(
+                                  e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '')
+                                )
+                              }
+                              placeholder="rizky_smp"
+                              required
+                              className={`${UI.input} pl-8`}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Row 2: Email */}
+                      <div>
+                        <label
+                          className="block text-[13px] font-medium text-[#0A0D14] mb-1.5"
+                          htmlFor="email"
+                        >
+                          Alamat Email Aktif
+                        </label>
+                        <input
+                          id="email"
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value.trim())}
+                          placeholder="rizky@gmail.com"
+                          required
+                          className={UI.input}
+                        />
+                      </div>
+
+                      {/* Row 3: Password & Confirm Password */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                          <label
+                            className="block text-[13px] font-medium text-[#0A0D14] mb-1.5"
+                            htmlFor="password"
+                          >
+                            Kata Sandi (6–12 Karakter)
+                          </label>
+                          <div className="relative flex items-center">
+                            <input
+                              id="password"
+                              type={showPassword ? 'text' : 'password'}
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              placeholder="Buat sandi"
+                              required
+                              className={`${UI.input} pr-10`}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-3 text-slate-400 hover:text-[#0A0D14] p-1 focus:outline-none cursor-pointer"
+                            >
+                              {showPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label
+                            className="block text-[13px] font-medium text-[#0A0D14] mb-1.5"
+                            htmlFor="confirmPassword"
+                          >
+                            Ulangi Kata Sandi
+                          </label>
+                          <div className="relative flex items-center">
+                            <input
+                              id="confirmPassword"
+                              type={showConfirmPassword ? 'text' : 'password'}
+                              value={confirmPassword}
+                              onChange={(e) => setConfirmPassword(e.target.value)}
+                              placeholder="Konfirmasi sandi"
+                              required
+                              className={`${UI.input} pr-10`}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              className="absolute right-3 text-slate-400 hover:text-[#0A0D14] p-1 focus:outline-none cursor-pointer"
+                            >
+                              {showConfirmPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 4-Segment Live Password Telemetry */}
+                      <div className="rounded-[16px] bg-[#F4F7FC] border border-slate-200/90 p-3.5 space-y-2.5">
+                        <div className="flex items-center justify-between text-[12px]">
+                          <span
+                            style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                            className="font-semibold text-[#0A0D14]"
+                          >
+                            PARAMETER KEAMANAN SANDI ({passedRulesCount}/4)
+                          </span>
+                          {confirmPassword.length > 0 && (
+                            <span
+                              style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                              className={`font-semibold ${
+                                passwordsMatch ? 'text-[#059669]' : 'text-[#D97706]'
+                              }`}
+                            >
+                              {passwordsMatch ? 'KONFIRMASI COCOK' : 'BELUM COCOK'}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* 4 Progress Bars */}
+                        <div className="grid grid-cols-4 gap-1.5">
+                          {[0, 1, 2, 3].map((idx) => (
+                            <div
+                              key={idx}
+                              className={`h-1.5 rounded-full transition-colors duration-200 ${
+                                idx < passedRulesCount ? 'bg-[#059669]' : 'bg-slate-200'
+                              }`}
+                            />
+                          ))}
+                        </div>
+
+                        {/* Spec Chips */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-0.5">
+                          {passwordRules.map((rule) => (
+                            <div
+                              key={rule.code}
+                              style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                              className={`px-2.5 py-1.5 rounded-[8px] text-[11px] font-medium flex items-center justify-between border transition-colors ${
+                                rule.valid
+                                  ? 'bg-[#ECFDF5] border-[#059669] text-[#064E3B]'
+                                  : 'bg-white border-slate-200 text-slate-500'
+                              }`}
+                            >
+                              <span>{rule.label}</span>
+                              <span>{rule.valid ? '✓' : '·'}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Submit Button */}
+                      <div className="pt-1">
+                        <button
+                          type="submit"
+                          disabled={loading || !isFormValid}
+                          className={UI.btnPrimary}
+                        >
+                          {loading ? (
+                            <>
+                              <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                              <span>Memproses Pendaftaran...</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>Daftarkan Akun &amp; Kirim Verifikasi</span>
+                              <ArrowRight className="w-4 h-4" />
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      <p className="text-center text-[12px] text-[#334155]">
+                        Dengan mendaftar, Anda menyetujui{' '}
+                        <Link
+                          href="/terms-of-service"
+                          className="text-[#1B68FF] hover:underline font-medium"
+                        >
+                          Ketentuan Layanan
+                        </Link>{' '}
+                        &amp;{' '}
+                        <Link
+                          href="/privacy-policy"
+                          className="text-[#1B68FF] hover:underline font-medium"
+                        >
+                          Kebijakan Privasi
+                        </Link>
+                        .
+                      </p>
+                    </form>
+                  </>
+                )}
+
+                {/* Bottom Login Link */}
+                <div className="mt-6 pt-4 border-t border-slate-200/80 flex items-center justify-between text-[14px] text-[#334155]">
+                  <span>Sudah memiliki akun belajar?</span>
+                  <Link href="/login" className="font-semibold text-[#1B68FF] hover:underline">
+                    Masuk ke Akun &rarr;
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </main>
 
-      <Footer />
+      {/* 3. ARCHITECTURAL FOOTER */}
+      <footer className="relative z-20 px-6 sm:px-12 lg:px-16 pb-8">
+        <div className="w-full pt-6 border-t border-slate-300/70 lg:border-slate-300/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-[14px]">
+          <div className="flex items-center gap-2.5 text-[#334155]">
+            <span className="text-[18px] font-semibold tracking-[-0.04em] text-[#0A0D14]">
+              AGRA.
+            </span>
+            <span>— Ruang Belajar &amp; Simulasi Mandiri TKA SMP</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-6 text-[#334155] lg:text-white/90">
+            <Link href="/privacy-policy" className="hover:underline">
+              Kebijakan Privasi
+            </Link>
+            <Link href="/terms-of-service" className="hover:underline">
+              Ketentuan Layanan
+            </Link>
+            <span>© 2026 AGRA</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
@@ -704,8 +879,8 @@ export default function RegisterPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-[#f8fafc]">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+        <div className="flex min-h-screen items-center justify-center bg-[#F4F7FC] text-[#334155] text-[15px]">
+          Memuat halaman pendaftaran...
         </div>
       }
     >
