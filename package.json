@@ -19,6 +19,7 @@
     "test": "tsx tests/api.test.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1165.0",
     "better-auth": "^1.7.6",
     "dotenv": "^18.0.4",
     "katex": "^0.19.0",

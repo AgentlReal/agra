@@ -16,3 +16,11 @@ export async function PATCH(
     return adminController.updateQuestion(req, resolvedParams);
 }
 
+export async function DELETE(
+    _req: Request,
+    { params }: { params: Promise<{ questionId: string }> }
+) {
+    const resolvedParams = await params;
+    return adminController.deleteQuestion(resolvedParams);
+}
+

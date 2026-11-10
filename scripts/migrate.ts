@@ -86,6 +86,15 @@ async function runCustomSqlMigrations() {
         });
 
         let count = 0;
+        // Selaraskan collation tabel Better Auth agar kompatibel dengan foreign key migrations
+        try {
+            await connection.query("ALTER TABLE users CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+            await connection.query("ALTER TABLE account CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+            await connection.query("ALTER TABLE session CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+            await connection.query("ALTER TABLE verification CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+        } catch {
+            // Abaikan jika tabel belum ada
+        }
         for (const file of files) {
             const filePath = path.join(migrationsDir, file);
             const sql = fs.readFileSync(filePath, "utf-8").trim();
