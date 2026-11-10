@@ -1,0 +1,448 @@
+'use client';
+
+import React, { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Navbar } from '@/components/layout/Navbar';
+import { Footer } from '@/components/layout/Footer';
+import { api } from '@/lib/api-client';
+import { useAuth } from '@/lib/auth-context';
+import {
+  CheckCircle2,
+  Clock,
+  ArrowRight,
+  ArrowLeft,
+  BookOpen,
+  AlertCircle,
+  RefreshCw,
+  ShieldCheck,
+  CheckSquare,
+  HelpCircle,
+} from 'lucide-react';
+import { SpotlightTour, TourStep } from '@/components/common/SpotlightTour';
+
+interface RecallStatus {
+  isPassed: boolean;
+  lastAttemptId?: string | number | null;
+  activeAttemptId?: string | number | null;
+  totalAttempts?: number;
+}
+
+const RECALL_TOUR_STEPS: TourStep[] = [
+  {
+    targetId: 'tour-recall-hero',
+    title: 'Tes Kemampuan Awal',
+    description:
+      'Tes santai untuk mengukur kesiapan belajarmu sebelum mulai mempelajari materi.',
+  },
+  {
+    targetId: 'tour-recall-specs',
+    title: 'Aturan Pengerjaan',
+    description:
+      'Terdiri atas 30 butir soal (15 Matematika & 15 Bahasa Indonesia) tanpa batas waktu dan target kelulusan 90%.',
+  },
+  {
+    targetId: 'tour-recall-safe',
+    title: 'Belajar Tanpa Rasa Takut',
+    description:
+      'Tidak ada pengurangan nilai atau penalti. Kerjakan setiap soal dengan santai dan teliti.',
+  },
+  {
+    targetId: 'tour-recall-action',
+    title: 'Mulai Sekarang',
+    description:
+      'Klik di sini untuk mulai tes, atau langsung belajar materi jika kamu sudah lulus.',
+  },
+];
+
+export default function RecallIntroPage() {
+  const router = useRouter();
+  const { user, role, isLoading: authLoading } = useAuth();
+  const [status, setStatus] = useState<RecallStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [starting, setStarting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  // State Spotlight Onboarding Tour
+  const [tourOpen, setTourOpen] = useState(false);
+  const [tourStep, setTourStep] = useState(0);
+
+  // Route Guard: Siswa Only
+  useEffect(() => {
+    if (!authLoading) {
+      if (!user) {
+        router.replace('/login');
+      } else if (role !== 'SISWA') {
+        router.replace('/admin/dashboard');
+      }
+    }
+  }, [authLoading, user, role, router]);
+
+  // Data Loader
+  useEffect(() => {
+    if (authLoading || !user || role !== 'SISWA') return;
+    let active = true;
+
+    api.recall
+      .getStatus()
+      .then((res: unknown) => {
+        if (!active) return;
+        const resAny = res as { data?: RecallStatus } | RecallStatus;
+        const data = (resAny as { data?: RecallStatus })?.data || (resAny as RecallStatus);
+        setStatus(data);
+      })
+      .catch((err: unknown) => {
+        if (!active) return;
+        console.error('Failed to load recall status:', err);
+        const error = err as { status?: number; message?: string };
+        if (error.status === 401) {
+          router.replace('/login');
+          return;
+        }
+        if (error.status === 403) {
+          router.replace('/admin/dashboard');
+          return;
+        }
+        setErrorMsg(error.message || 'Gagal memuat status Recall dari server.');
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [authLoading, user, role, router]);
+
+  const handleRetry = () => {
+    setLoading(true);
+    setErrorMsg('');
+    api.recall
+      .getStatus()
+      .then((res: unknown) => {
+        const resAny = res as { data?: RecallStatus } | RecallStatus;
+        const data = (resAny as { data?: RecallStatus })?.data || (resAny as RecallStatus);
+        setStatus(data);
+      })
+      .catch((err: unknown) => {
+        console.error('Failed to load recall status:', err);
+        const error = err as { status?: number; message?: string };
+        setErrorMsg(error.message || 'Gagal memuat status Recall dari server.');
+      })
+      .finally(() => setLoading(false));
+  };
+
+  const userId = user?.id;
+
+  // Otomatis tampilkan Spotlight Tour untuk kunjungan pertama (Opsi A)
+  useEffect(() => {
+    if (loading || !userId || role !== 'SISWA') return;
+    const storageKey = `agra_recall_tour_done_${userId}`;
+    const hasSeenTour = localStorage.getItem(storageKey);
+
+    if (!hasSeenTour) {
+      const timer = setTimeout(() => {
+        setTourStep(0);
+        setTourOpen(true);
+      }, 450);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, userId, role]);
+
+  const handleFinishTour = useCallback(() => {
+    if (userId) {
+      localStorage.setItem(`agra_recall_tour_done_${userId}`, '1');
+    }
+    setTourOpen(false);
+  }, [userId]);
+
+  const handleNextTourStep = useCallback(() => {
+    if (tourStep < RECALL_TOUR_STEPS.length - 1) {
+      setTourStep((prev) => prev + 1);
+    } else {
+      handleFinishTour();
+    }
+  }, [tourStep, handleFinishTour]);
+
+  const handlePrevTourStep = useCallback(() => {
+    setTourStep((prev) => Math.max(0, prev - 1));
+  }, []);
+
+  const handleRestartTour = () => {
+    setTourStep(0);
+    setTourOpen(true);
+  };
+
+  const handleStartAttempt = async () => {
+    setStarting(true);
+    setErrorMsg('');
+    try {
+      const res = await api.recall.startAttempt();
+      const resAny = res as {
+        attempt_id?: string | number;
+        attemptId?: string | number;
+        id?: string | number;
+        data?: { attempt_id?: string | number; attemptId?: string | number };
+      };
+      const attemptId =
+        resAny?.attempt_id ||
+        resAny?.attemptId ||
+        resAny?.id ||
+        resAny?.data?.attempt_id ||
+        resAny?.data?.attemptId;
+
+      if (!attemptId) {
+        throw new Error('Gagal memulai sesi Recall.');
+      }
+      router.push(`/recall/exam/${attemptId}`);
+    } catch (err: unknown) {
+      const error = err as { code?: string; status?: number; message?: string };
+      if (
+        error?.code === 'RECALL_ALREADY_PASSED' ||
+        error?.status === 409 ||
+        error?.message?.toLowerCase().includes('sudah lulus')
+      ) {
+        setStatus((prev) => (prev ? { ...prev, isPassed: true } : { isPassed: true }));
+        setErrorMsg('Kamu sudah lulus tes kemampuan awal sebelumnya. Mengalihkan ke halaman materi...');
+        setTimeout(() => router.push('/curriculum'), 1800);
+      } else {
+        setErrorMsg(error.message || 'Gagal memulai sesi recall. Pastikan bank soal mencukupi di server.');
+      }
+      setStarting(false);
+    }
+  };
+
+  if (authLoading || !user || role !== 'SISWA') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#EEF2FA]">
+        <div className="h-9 w-9 animate-spin rounded-full border-4 border-[#1B68FF] border-t-transparent" />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      style={{ fontFamily: "'Onest', sans-serif" }}
+      className="relative flex min-h-screen flex-col bg-[#EEF2FA] text-[#0A0D14] overflow-x-hidden"
+    >
+      {/* Tekstur Architectural Grid 56x56 & Ambient Glow */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-0"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(15,23,42,0.032) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(15,23,42,0.032) 1px, transparent 1px)
+          `,
+          backgroundSize: '56px 56px',
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed top-[-160px] right-[-100px] w-[560px] h-[560px] rounded-full bg-[#1B68FF]/10 blur-[130px] z-0"
+      />
+
+      <Navbar />
+
+      <main className="relative z-10 flex-1 w-full px-6 sm:px-12 lg:px-16 py-8 sm:py-12 space-y-10">
+        {/* Top Action Bar */}
+        <div className="flex items-center justify-between gap-4">
+          <Link
+            href="/dashboard"
+            className="min-h-[48px] px-5 py-2.5 rounded-[14px] bg-white hover:bg-[#F4F7FC] text-[#0A0D14] border-2 border-[#0A0D14]/20 hover:border-[#1B68FF] text-[16px] font-semibold transition-all inline-flex items-center gap-2 cursor-pointer"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            <span>Kembali ke Dasbor</span>
+          </Link>
+
+          <button
+            type="button"
+            onClick={handleRestartTour}
+            className="min-h-[44px] px-5 py-2.5 rounded-[14px] bg-white hover:bg-[#F4F7FC] border border-slate-200/90 text-[14px] font-semibold text-[#0A0D14] transition-all inline-flex items-center gap-2 cursor-pointer shadow-2xs"
+          >
+            <HelpCircle className="w-4 h-4 text-[#1B68FF]" />
+            <span>Panduan</span>
+          </button>
+        </div>
+
+        {/* Error Notification */}
+        {errorMsg && (
+          <div className="flex items-center justify-between rounded-[20px] border border-[#D97706] bg-[#FFFBEB] p-4 text-[15px] text-[#78350F]">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 text-[#D97706] shrink-0" />
+              <span className="font-medium">{errorMsg}</span>
+            </div>
+            <button
+              onClick={handleRetry}
+              className="min-h-[44px] px-5 py-2 inline-flex items-center gap-2 rounded-[12px] bg-[#FDE68A] hover:bg-amber-300 text-[14px] font-semibold text-[#78350F] transition-colors cursor-pointer"
+            >
+              <RefreshCw className="h-4 w-4" />
+              <span>Coba Lagi</span>
+            </button>
+          </div>
+        )}
+
+        {loading ? (
+          <div className="flex h-72 items-center justify-center">
+            <div className="h-9 w-9 animate-spin rounded-full border-4 border-[#1B68FF] border-t-transparent" />
+          </div>
+        ) : (
+          <div className="space-y-8">
+            {/* Main Bento Hero Card */}
+            <div
+              data-tour-id="tour-recall-hero"
+              className="rounded-[32px] bg-white border border-slate-200/90 p-8 sm:p-10 shadow-[0_24px_60px_-15px_rgba(15,23,42,0.07)] space-y-8"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <span className="px-3.5 py-1.5 rounded-[10px] bg-[#EEF2FA] text-[#1454D6] text-[14px] font-semibold border border-[#1B68FF]/20">
+                      Langkah Awal
+                    </span>
+                    <span className="text-[15px] text-[#334155] font-medium">
+                      Jenjang SMP/MTs
+                    </span>
+                  </div>
+                  <h1 className="text-[32px] sm:text-[40px] font-semibold tracking-[-0.035em] text-[#0A0D14] leading-[1.1]">
+                    Recall Kemampuan Awal
+                  </h1>
+                  <p className="text-[16px] sm:text-[17px] text-[#1E293B] leading-[1.55] max-w-2xl">
+                    Uji pemahaman dasar untuk mengukur kesiapan belajarmu sebelum mulai mempelajari materi pembelajaran.
+                  </p>
+                </div>
+
+                {status?.isPassed && (
+                  <div className="shrink-0 flex items-center gap-3 rounded-[20px] bg-[#ECFDF5] border border-[#059669]/30 px-5 py-4">
+                    <CheckCircle2 className="h-7 w-7 text-[#059669] shrink-0" />
+                    <div>
+                      <p className="text-[15px] font-semibold text-[#065F46]">Tes Awal Selesai &amp; Lulus</p>
+                      <p className="text-[13px] font-medium text-[#047857]">Semua Materi Sudah Terbuka</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Assessment Specification Grid (3 Bento Cards) */}
+              <div
+                data-tour-id="tour-recall-specs"
+                className="grid grid-cols-1 sm:grid-cols-3 gap-5"
+              >
+                <div className="rounded-[20px] bg-[#F8FAFC] border-2 border-slate-200/80 p-6 flex items-start gap-4 hover:border-[#1B68FF]/50 transition-all">
+                  <div className="w-12 h-12 rounded-[14px] bg-[#EEF2FA] text-[#1B68FF] border border-[#1B68FF]/20 flex items-center justify-center shrink-0">
+                    <HelpCircle className="h-6 w-6" />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[14px] font-medium text-[#334155]">Jumlah Soal</span>
+                    <p className="text-[20px] font-semibold text-[#0A0D14] tabular-nums">30 Soal Latihan</p>
+                    <p className="text-[13px] text-[#1E293B]">15 Matematika &amp; 15 Bahasa Indonesia</p>
+                  </div>
+                </div>
+
+                <div className="rounded-[20px] bg-[#F8FAFC] border-2 border-slate-200/80 p-6 flex items-start gap-4 hover:border-[#1B68FF]/50 transition-all">
+                  <div className="w-12 h-12 rounded-[14px] bg-[#FFFBEB] text-[#D97706] border border-[#D97706]/20 flex items-center justify-center shrink-0">
+                    <Clock className="h-6 w-6" />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[14px] font-medium text-[#334155]">Waktu Pengerjaan</span>
+                    <p className="text-[20px] font-semibold text-[#0A0D14]">Bebas Waktu</p>
+                    <p className="text-[13px] text-[#1E293B]">Kerjakan santai tanpa terburu-buru</p>
+                  </div>
+                </div>
+
+                <div className="rounded-[20px] bg-[#F8FAFC] border-2 border-slate-200/80 p-6 flex items-start gap-4 hover:border-[#1B68FF]/50 transition-all">
+                  <div className="w-12 h-12 rounded-[14px] bg-[#ECFDF5] text-[#059669] border border-[#059669]/20 flex items-center justify-center shrink-0">
+                    <CheckSquare className="h-6 w-6" />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[14px] font-medium text-[#334155]">Target Kelulusan</span>
+                    <p className="text-[20px] font-semibold text-[#0A0D14] tabular-nums">Nilai Minimal 90%</p>
+                    <p className="text-[13px] text-[#1E293B]">Cukup 27 soal benar untuk lulus</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Safe-to-Fail Pedagogical Notice */}
+              <div
+                data-tour-id="tour-recall-safe"
+                className="rounded-[20px] bg-[#EEF2FA] border border-[#1B68FF]/20 p-6 sm:p-7 flex items-start gap-4"
+              >
+                <div className="w-12 h-12 rounded-[14px] bg-white text-[#1B68FF] border border-[#1B68FF]/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <ShieldCheck className="h-6 w-6" />
+                </div>
+                <div className="space-y-1.5 leading-[1.55]">
+                  <h3 className="text-[18px] font-semibold text-[#0A0D14]">
+                    Belajar Nyaman Tanpa Rasa Takut Salah
+                  </h3>
+                  <p className="text-[16px] text-[#1E293B]">
+                    Tidak ada pengurangan nilai atau penalti. Kerjakan setiap soal dengan santai dan teliti. Kalau nilaimu belum mencapai 90%, kamu bisa langsung mempelajari pembahasannya dan mencoba lagi kapan saja.
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Buttons Row */}
+              <div
+                data-tour-id="tour-recall-action"
+                className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4"
+              >
+                <div>
+                  {status?.lastAttemptId ? (
+                    <Link
+                      href={`/recall/review/${status.lastAttemptId}`}
+                      className="min-h-[48px] px-6 py-2.5 rounded-[14px] bg-white hover:bg-[#F4F7FC] active:translate-y-0.5 text-[#0A0D14] border-2 border-[#0A0D14]/20 hover:border-[#1B68FF] text-[16px] font-semibold transition-all inline-flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
+                    >
+                      <span>Lihat Pembahasan Sebelumnya</span>
+                    </Link>
+                  ) : (
+                    <span className="text-[15px] font-medium text-[#334155]">
+                      Materi: Matematika &amp; Bahasa Indonesia
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                  {status?.isPassed ? (
+                    <Link
+                      href="/curriculum"
+                      className="min-h-[48px] px-8 py-3.5 rounded-[14px] bg-[#1B68FF] hover:bg-[#1454D6] active:translate-y-0.5 text-white text-[16px] font-semibold transition-all shadow-[0_10px_24px_rgba(27,104,255,0.28)] inline-flex items-center justify-center gap-2.5 cursor-pointer w-full sm:w-auto"
+                    >
+                      <BookOpen className="h-5 w-5" />
+                      <span>Mulai Belajar Materi</span>
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleStartAttempt}
+                      disabled={starting}
+                      className="min-h-[48px] px-8 py-3.5 rounded-[14px] bg-[#1B68FF] hover:bg-[#1454D6] active:translate-y-0.5 text-white text-[16px] font-semibold transition-all shadow-[0_10px_24px_rgba(27,104,255,0.28)] inline-flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50 w-full sm:w-auto"
+                    >
+                      {starting ? (
+                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      ) : (
+                        <>
+                          <span>Mulai Tes Awal</span>
+                          <ArrowRight className="h-5 w-5" />
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Spotlight Tour Walkthrough */}
+      <SpotlightTour
+        isOpen={tourOpen}
+        steps={RECALL_TOUR_STEPS}
+        currentStep={tourStep}
+        onNext={handleNextTourStep}
+        onPrev={handlePrevTourStep}
+        onSkip={handleFinishTour}
+      />
+
+      <Footer />
+    </div>
+  );
+}

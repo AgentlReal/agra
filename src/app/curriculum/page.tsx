@@ -13,6 +13,7 @@ import {
   AlertCircle,
   RefreshCw,
   HelpCircle,
+  Calculator,
 } from 'lucide-react';
 import { SpotlightTour, TourStep } from '@/components/common/SpotlightTour';
 
@@ -61,21 +62,21 @@ function getSubjectDescription(
 const CURRICULUM_TOUR_STEPS: TourStep[] = [
   {
     targetId: 'tour-curriculum-header',
-    title: 'ruang kurikulum mata pelajaran',
+    title: 'Pilihan Mata Pelajaran',
     description:
-      'Pilih salah satu dari 2 cabang mata pelajaran resmi Fase D (Matematika atau Bahasa Indonesia) untuk mempelajari materi pokok dan latihan kompetensi.',
+      'Pilih mata pelajaran Matematika atau Bahasa Indonesia untuk mulai belajar dan berlatih soal secara bertahap.',
   },
   {
     targetId: 'tour-subject-0',
-    title: 'mata pelajaran Matematika SMP',
+    title: 'Mata Pelajaran Matematika',
     description:
-      'Memuat 10 submateri numerasi. Kamu bisa melihat jumlah materi pokok serta bilah capaian submateri yang sudah kamu tuntaskan di kartu ini.',
+      'Berisi materi hitungan, aljabar, dan geometri. Kamu bisa memantau progres belajarmu langsung dari kartu ini.',
   },
   {
     targetId: 'tour-subject-1',
-    title: 'mata pelajaran Bahasa Indonesia SMP',
+    title: 'Mata Pelajaran Bahasa Indonesia',
     description:
-      'Memuat 6 submateri literasi membaca teks fiksi dan informasi. Selesaikan semua submateri untuk melengkapi syarat pembukaan Simulasi CBT.',
+      'Berisi materi membaca, memahami ide pokok, dan analisis teks untuk meningkatkan kemampuan bahasamu.',
   },
 ];
 
@@ -155,12 +156,33 @@ export default function CurriculumIndexPage() {
 
   // Data Loader
   useEffect(() => {
-    if (!authLoading && user && role === 'SISWA') {
-      fetchSubjects();
-    }
-  }, [authLoading, user?.id, role]);
+    if (authLoading || !user || role !== 'SISWA') return;
+    let active = true;
 
-  const fetchSubjects = () => {
+    api.curriculum
+      .getSubjects()
+      .then((res: unknown) => {
+        if (!active) return;
+        const resAny = res as { data?: SubjectItem[] } | SubjectItem[];
+        const list = Array.isArray(resAny) ? resAny : resAny?.data || [];
+        setSubjects(list);
+      })
+      .catch((err: unknown) => {
+        if (!active) return;
+        console.error('Failed to load subjects:', err);
+        const error = err as { message?: string };
+        setErrorMsg(error.message || 'Gagal memuat mata pelajaran dari server.');
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [authLoading, user, role]);
+
+  const handleRetry = () => {
     setLoading(true);
     setErrorMsg('');
     api.curriculum
@@ -284,7 +306,7 @@ export default function CurriculumIndexPage() {
               <span className="font-medium">{errorMsg}</span>
             </div>
             <button
-              onClick={fetchSubjects}
+              onClick={handleRetry}
               className="min-h-[44px] px-5 py-2 inline-flex items-center gap-2 rounded-[12px] bg-[#FDE68A] hover:bg-amber-300 text-[14px] font-semibold text-[#78350F] transition-colors cursor-pointer"
             >
               <RefreshCw className="h-4 w-4" />
@@ -316,6 +338,17 @@ export default function CurriculumIndexPage() {
               const defaultCode = idx === 0 ? '01' : '02';
               const subjectCode = sub.code || defaultCode;
 
+              const isMath =
+                String(subjectId) === '1' ||
+                sub.name?.toLowerCase().includes('matematika') ||
+                sub.name?.toLowerCase().includes('numerasi');
+
+              const accentColor = isMath ? '#1B68FF' : '#4F46E5';
+              const accentBg = isMath ? 'bg-[#EEF2FA]' : 'bg-[#EEF2FF]';
+              const accentBorder = isMath ? 'border-[#1B68FF]/20' : 'border-[#4F46E5]/20';
+              const accentText = isMath ? 'text-[#1454D6]' : 'text-[#4338CA]';
+              const SubjectIcon = isMath ? Calculator : BookOpen;
+
               return (
                 <Interactive3DCard
                   key={String(subjectId)}
@@ -326,11 +359,24 @@ export default function CurriculumIndexPage() {
                   <div className="space-y-6">
                     {/* Top Meta Row */}
                     <div className="flex items-center justify-between gap-4">
-                      <span className="text-[44px] sm:text-[52px] font-light tracking-[-0.05em] leading-none text-[#1B68FF] tabular-nums">
-                        {subjectCode}
-                      </span>
-                      <span className="px-4 py-2 rounded-full text-[14px] font-semibold bg-[#EEF2FA] text-[#1454D6] border border-[#1B68FF]/20">
-                        {totalMaterials > 0 ? `${totalMaterials} Materi Pokok` : 'Kurikulum Resmi'}
+                      <div className="flex items-center gap-3.5">
+                        <span
+                          style={{ color: accentColor }}
+                          className="text-[44px] sm:text-[52px] font-light tracking-[-0.05em] leading-none tabular-nums"
+                        >
+                          {subjectCode}
+                        </span>
+                        <div
+                          className={`w-11 h-11 rounded-[14px] ${accentBg} ${accentText} border ${accentBorder} flex items-center justify-center shrink-0`}
+                        >
+                          <SubjectIcon className="w-5 h-5" />
+                        </div>
+                      </div>
+
+                      <span
+                        className={`px-4 py-2 rounded-full text-[14px] font-semibold ${accentBg} ${accentText} border ${accentBorder}`}
+                      >
+                        {totalMaterials > 0 ? `${totalMaterials} Bab Materi` : 'Kurikulum Resmi'}
                       </span>
                     </div>
 
@@ -368,7 +414,7 @@ export default function CurriculumIndexPage() {
                   {/* Bottom Action Area */}
                   <div className="pt-8 mt-8 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <span className="text-[15px] font-medium text-[#334155]">
-                      Standar Fase D (SMP/MTs)
+                      Jenjang SMP/MTs
                     </span>
                     <Link
                       href={`/curriculum/${subjectId}`}
