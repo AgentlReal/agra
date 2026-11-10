@@ -23,7 +23,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
         <script
@@ -32,7 +32,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen bg-[#f8fafc] text-slate-800 antialiased flex flex-col relative selection:bg-blue-100 selection:text-blue-700 transition-colors duration-150">
+      <body className="min-h-screen bg-[#F4F7FC] text-[#0A0D14] antialiased flex flex-col relative selection:bg-[#1B68FF] selection:text-white transition-colors duration-150" style={{ fontFamily: "'Onest', sans-serif" }}>
         <ThemeProvider>
           <AuthProvider>
             <div className="relative z-10 flex min-h-screen flex-col">

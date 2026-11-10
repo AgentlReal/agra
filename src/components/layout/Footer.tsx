@@ -1,37 +1,36 @@
 import React from 'react';
 import Link from 'next/link';
-import { ShieldCheck } from 'lucide-react';
-import { AppLogo } from '@/components/common/AppLogo';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="mt-auto border-t border-slate-200/80 bg-[#eff4ff]/60 text-slate-500">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+    <footer
+      style={{ fontFamily: "'Onest', sans-serif" }}
+      className="relative z-10 mt-auto border-t border-slate-300/80 bg-[#EEF2FA]/80 text-[#334155]"
+    >
+      <div className="w-full px-6 sm:px-12 lg:px-16 py-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-[14px]">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 border border-blue-100 p-0.5">
-              <AppLogo size={18} />
-            </div>
-            <span className="text-sm font-semibold text-slate-800">
-              AGRA Platform TKA SMP
+            <img
+              src="/assets/images/agra-icon.png"
+              alt="Logo AGRA"
+              className="w-6 h-6 object-contain"
+            />
+            <span className="text-[18px] font-semibold tracking-[-0.04em] text-[#0A0D14]">
+              AGRA.
+            </span>
+            <span>
+              — Ruang Belajar &amp; Simulasi Mandiri Tes Kemampuan Akademik SMP
             </span>
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-slate-600 bg-white/80 border border-slate-200/80 rounded-full px-3 py-1 shadow-2xs">
-            <ShieldCheck className="h-4 w-4 text-emerald-600" />
-            <span>Standar Asesmen Kurikulum Kemendikdasmen</span>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
-            <Link href="/privacy-policy" className="hover:text-blue-600 transition-colors">
+          <div className="flex flex-wrap items-center gap-6">
+            <Link href="/privacy-policy" className="hover:text-[#0A0D14] transition-colors">
               Kebijakan Privasi
             </Link>
-            <span className="text-slate-300">&bull;</span>
-            <Link href="/terms-of-service" className="hover:text-blue-600 transition-colors">
+            <Link href="/terms-of-service" className="hover:text-[#0A0D14] transition-colors">
               Ketentuan Layanan
             </Link>
-            <span className="text-slate-300">&bull;</span>
-            <span>&copy; {new Date().getFullYear()} AGRA. Hak Cipta Dilindungi.</span>
+            <span>&copy; {new Date().getFullYear()} AGRA</span>
           </div>
         </div>
       </div>
