@@ -520,6 +520,76 @@ export class AdminRepository {
         }
     }
 
+    /**
+     * Ambil URL gambar soal (question_image_url & stimulus_image_url) sebelum dihapus,
+     * agar bisa dihapus dari R2.
+     * Gambar stimulus hanya akan ikut dihapus jika tidak dipakai oleh butir soal lain.
+     */
+    async getQuestionImageUrls(questionId: number): Promise<string[]> {
+        const rows = await query<Array<RowDataPacket & {
+            question_image_url: string | null;
+            stimulus_id: number | null;
+            stm_image_url: string | null;
+        }>>(
+            `SELECT qb.question_image_url, qb.stimulus_id, stm.stimulus_image_url AS stm_image_url
+             FROM question_banks qb
+             LEFT JOIN stimuli stm ON stm.id = qb.stimulus_id
+             WHERE qb.id = ?`,
+            [questionId]
+        );
+        if (rows.length === 0) return [];
+        const q = rows[0];
+        const urls: string[] = [];
+
+        if (q.question_image_url) {
+            urls.push(q.question_image_url);
+        }
+
+        // Gambar stimulus hanya dihapus jika stimulus tidak sedang digunakan oleh soal lain
+        if (q.stimulus_id && q.stm_image_url) {
+            const refRows = await query<Array<RowDataPacket & { cnt: number }>>(
+                `SELECT COUNT(*) AS cnt FROM question_banks WHERE stimulus_id = ? AND id != ?`,
+                [q.stimulus_id, questionId]
+            );
+            if ((refRows[0]?.cnt ?? 0) === 0) {
+                urls.push(q.stm_image_url);
+            }
+        }
+
+        return [...new Set(urls)];
+    }
+
+    /**
+     * Hapus soal beserta seluruh data terkait (opsi, pembahasan, stimulus jika tidak
+     * digunakan soal lain) dalam satu transaksi.
+     */
+    async deleteQuestion(questionId: number): Promise<void> {
+        await withTransaction(async (conn) => {
+            // Ambil stimulus_id sebelum dihapus
+            const [qRows] = await conn.query<Array<RowDataPacket & { stimulus_id: number | null }>>(
+                `SELECT stimulus_id FROM question_banks WHERE id = ?`,
+                [questionId]
+            );
+            const stimulusId = qRows[0]?.stimulus_id ?? null;
+
+            // Hapus opsi dan pembahasan terlebih dahulu (FK constraint)
+            await conn.execute(`DELETE FROM question_options WHERE question_id = ?`, [questionId]);
+            await conn.execute(`DELETE FROM question_explanations WHERE question_id = ?`, [questionId]);
+            await conn.execute(`DELETE FROM question_banks WHERE id = ?`, [questionId]);
+
+            // Hapus stimulus hanya jika tidak dipakai soal lain
+            if (stimulusId !== null) {
+                const [refRows] = await conn.query<Array<RowDataPacket & { cnt: number }>>(
+                    `SELECT COUNT(*) AS cnt FROM question_banks WHERE stimulus_id = ?`,
+                    [stimulusId]
+                );
+                if ((refRows[0]?.cnt ?? 0) === 0) {
+                    await conn.execute(`DELETE FROM stimuli WHERE id = ?`, [stimulusId]);
+                }
+            }
+        });
+    }
+
     async getRandomQuestionsForSimulation(subjectId: number, count = 30): Promise<Array<{ id: number }>> {
         const rows = await query<Array<RowDataPacket & { id: number }>>(
             `SELECT id FROM question_banks 

@@ -18,8 +18,7 @@ import { jsonResponse, errorResponse } from "@/shared/utils/response";
 import { requireRole } from "../auth/auth.guard";
 import { BadRequestError } from "@/shared/errors/app-error";
 import { detectImageExtension } from "@/shared/utils/image-validator";
-import fs from "fs";
-import path from "path";
+import { uploadToR2 } from "@/lib/r2-client";
 
 export class AdminController {
     constructor(private readonly service = new AdminService()) {}
@@ -112,6 +111,17 @@ export class AdminController {
         }
     }
 
+    async deleteQuestion(params: unknown) {
+        try {
+            await requireRole(["TIM_KURIKULUM", "SUPERADMIN"]);
+            const { questionId } = validateParams(params, questionIdParamSchema);
+            await this.service.deleteQuestion(questionId);
+            return jsonResponse({ message: "Soal berhasil dihapus." }, 200);
+        } catch (error) {
+            return errorResponse(error, "status");
+        }
+    }
+
     async uploadQuestionImage(req: Request) {
         try {
             await requireRole(["TIM_KURIKULUM", "SUPERADMIN"]);
@@ -127,9 +137,9 @@ export class AdminController {
                 throw new BadRequestError("Berkas gambar tidak ditemukan pada form-data (field: image)", "IMAGE_REQUIRED");
             }
 
-            const maxSize = 5 * 1024 * 1024; // 5MB
+            const maxSize = 1 * 1024 * 1024; // 1MB
             if (file.size > maxSize) {
-                throw new BadRequestError("Ukuran gambar melebihi batas maksimal 5MB", "FILE_TOO_LARGE");
+                throw new BadRequestError("Ukuran gambar melebihi batas maksimal 1MB", "FILE_TOO_LARGE");
             }
 
             const arrayBuffer = await file.arrayBuffer();
@@ -145,12 +155,7 @@ export class AdminController {
             }
 
             const uniqueName = `img-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${detectedExt}`;
-            const uploadDir = path.join(process.cwd(), "public", "assets");
-
-            await fs.promises.mkdir(uploadDir, { recursive: true });
-            await fs.promises.writeFile(path.join(uploadDir, uniqueName), buffer);
-
-            const fileUrl = `/assets/${uniqueName}`;
+            const fileUrl = await uploadToR2(buffer, uniqueName, detectedExt);
             return jsonResponse(
                 {
                     image_url: fileUrl,

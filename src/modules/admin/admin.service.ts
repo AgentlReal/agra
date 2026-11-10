@@ -15,6 +15,7 @@ import {
     K11_SimulationPackageStats,
 } from "./admin.types";
 import { BadRequestError, NotFoundError } from "@/shared/errors/app-error";
+import { deleteFromR2 } from "@/lib/r2-client";
 
 export class AdminService {
     constructor(private readonly repo = new AdminRepository()) {}
@@ -235,6 +236,26 @@ export class AdminService {
         await this.getQuestionDetail(questionId);
         await this.repo.toggleQuestionStatus(questionId, isActive, revisionNotes);
         return this.getQuestionDetail(questionId);
+    }
+
+    async deleteQuestion(questionId: number): Promise<void> {
+        // Pastikan soal ada (lempar NotFoundError jika tidak)
+        await this.getQuestionDetail(questionId);
+
+        // Ambil URL gambar sebelum baris DB dihapus
+        const imageUrls = await this.repo.getQuestionImageUrls(questionId);
+
+        // Hapus dari database (transaction)
+        await this.repo.deleteQuestion(questionId);
+
+        // Hapus gambar dari R2 — dilakukan setelah DB sukses agar tidak ada orphan di storage.
+        // Kegagalan penghapusan R2 dicatat ke log tapi tidak melempar error ke client,
+        // karena data DB sudah konsisten.
+        for (const url of imageUrls) {
+            deleteFromR2(url).catch((err) =>
+                console.error(`[R2] Gagal hapus gambar "${url}":`, err?.message ?? err)
+            );
+        }
     }
 
     async listSimulationPackages(page = 1, limit = 20, subjectId?: number): Promise<{
