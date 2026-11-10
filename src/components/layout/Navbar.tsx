@@ -5,19 +5,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import {
-  Sparkles,
-  BookOpen,
-  GraduationCap,
   User as UserIcon,
   LogOut,
-  ShieldCheck,
   Menu,
   X,
-  ArrowRight,
   ChevronDown,
-  Layers,
 } from 'lucide-react';
-import { AppLogo } from '@/components/common/AppLogo';
 import { UserAvatar } from '@/components/common/UserAvatar';
 
 export const Navbar: React.FC = () => {
@@ -32,7 +25,6 @@ export const Navbar: React.FC = () => {
   const assessmentRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
 
-  // Click outside listener for dropdowns
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (learningRef.current && !learningRef.current.contains(event.target as Node)) {
@@ -50,48 +42,49 @@ export const Navbar: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const isLearningActive = pathname.startsWith('/curriculum') || pathname.startsWith('/recall') || pathname.startsWith('/submaterials');
+  const isLearningActive =
+    pathname.startsWith('/curriculum') ||
+    pathname.startsWith('/recall') ||
+    pathname.startsWith('/submaterials');
   const isAssessmentActive = pathname.startsWith('/simulations');
   const isDashboardActive = pathname === '/dashboard';
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md shadow-2xs">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Brand Logo & Main Nav */}
-        <div className="flex items-center gap-6">
-          <Link href="/dashboard" className="flex items-center gap-3 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 border border-blue-100 shadow-2xs group-hover:scale-105 transition-transform p-1">
-              <AppLogo size={30} />
-            </div>
-            <div>
-              <span className="text-xl font-bold tracking-tight text-blue-600 flex items-center gap-1.5">
-                AGRA
-                <span className="rounded-md bg-blue-100/70 px-1.5 py-0.5 text-[10px] font-semibold text-blue-700 border border-blue-200">
-                  TKA SMP
-                </span>
-              </span>
-              <p className="text-[11px] text-slate-500 font-medium hidden sm:block">
-                Ruang Belajar & Simulasi Potensi Akademik
-              </p>
-            </div>
+    <header
+      style={{ fontFamily: "'Onest', sans-serif" }}
+      className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/90 backdrop-blur-md"
+    >
+      <div className="w-full flex h-18 items-center justify-between px-6 sm:px-12 lg:px-16">
+        {/* Kiri: Logo AGRA Seamless + Menu Navigasi */}
+        <div className="flex items-center gap-10">
+          <Link href="/dashboard" className="min-h-[48px] inline-flex items-center gap-2.5 group">
+            <img
+              src="/assets/images/agra-icon.png"
+              alt="Logo AGRA"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+              className="w-9 h-9 object-contain group-hover:scale-105 transition-transform"
+            />
+            <span className="text-[26px] font-semibold tracking-[-0.04em] text-[#0A0D14] flex items-center">
+              AGRA
+              <span className="inline-block w-2 h-2 rounded-full bg-[#1B68FF] ml-1" />
+            </span>
           </Link>
 
-          {/* Desktop Nav Group [FE-09] */}
-          <nav className="hidden md:flex items-center gap-1.5 ml-2">
-            {/* Dasbor Direct Link */}
+          <nav className="hidden md:flex items-center gap-2">
             <Link
               href="/dashboard"
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium transition-all ${
+              className={`min-h-[44px] px-4 inline-flex items-center rounded-[12px] text-[15px] font-medium transition-colors ${
                 isDashboardActive
-                  ? 'bg-blue-50 text-blue-600 font-semibold'
-                  : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'
+                  ? 'bg-[#EEF2FA] text-[#1B68FF] font-semibold'
+                  : 'text-[#334155] hover:text-[#0A0D14] hover:bg-slate-100/80'
               }`}
             >
-              <Sparkles className="h-4 w-4" />
-              <span>Dasbor</span>
+              Dasbor
             </Link>
 
-            {/* Pembelajaran Dropdown */}
+            {/* Dropdown Pembelajaran */}
             <div className="relative" ref={learningRef}>
               <button
                 type="button"
@@ -99,51 +92,52 @@ export const Navbar: React.FC = () => {
                   setLearningDropdownOpen(!learningDropdownOpen);
                   setAssessmentDropdownOpen(false);
                 }}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium transition-all ${
+                className={`min-h-[44px] px-4 inline-flex items-center gap-1.5 rounded-[12px] text-[15px] font-medium transition-colors cursor-pointer ${
                   isLearningActive
-                    ? 'bg-blue-50 text-blue-600 font-semibold'
-                    : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'
+                    ? 'bg-[#EEF2FA] text-[#1B68FF] font-semibold'
+                    : 'text-[#334155] hover:text-[#0A0D14] hover:bg-slate-100/80'
                 }`}
               >
-                <BookOpen className="h-4 w-4" />
                 <span>Pembelajaran</span>
-                <ChevronDown className={`h-3.5 w-3.5 transition-transform ${learningDropdownOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${
+                    learningDropdownOpen ? 'rotate-180' : ''
+                  }`}
+                />
               </button>
 
               {learningDropdownOpen && (
-                <div className="absolute left-0 mt-2 w-56 rounded-2xl border border-slate-200/90 bg-white p-2 shadow-xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute left-0 mt-2 w-64 rounded-[20px] border border-slate-200 bg-white p-2 shadow-[0_20px_50px_rgba(15,23,42,0.12)] z-50">
                   <Link
                     href="/curriculum"
                     onClick={() => setLearningDropdownOpen(false)}
-                    className="flex items-start gap-2.5 p-2.5 rounded-xl hover:bg-blue-50/70 transition-colors group"
+                    className="block p-3 rounded-[14px] hover:bg-[#F4F7FC] transition-colors"
                   >
-                    <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                      <BookOpen className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-slate-800">Kurikulum Mata Pelajaran</p>
-                      <p className="text-[11px] text-slate-500">Materi & soal formatif bertingkat</p>
-                    </div>
+                    <p className="text-[15px] font-semibold text-[#0A0D14]">
+                      Kurikulum Mata Pelajaran
+                    </p>
+                    <p className="text-[13px] text-[#334155] mt-0.5">
+                      16 submateri Matematika &amp; B. Indonesia
+                    </p>
                   </Link>
 
                   <Link
                     href="/recall"
                     onClick={() => setLearningDropdownOpen(false)}
-                    className="flex items-start gap-2.5 p-2.5 rounded-xl hover:bg-amber-50/70 transition-colors group mt-1"
+                    className="block p-3 rounded-[14px] hover:bg-[#F4F7FC] transition-colors mt-1"
                   >
-                    <div className="p-1.5 rounded-lg bg-amber-50 text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-colors">
-                      <GraduationCap className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-slate-800">Recall Kemampuanmu</p>
-                      <p className="text-[11px] text-slate-500">Latihan pengingatan konsep awal</p>
-                    </div>
+                    <p className="text-[15px] font-semibold text-[#0A0D14]">
+                      Recall Kemampuan Awal
+                    </p>
+                    <p className="text-[13px] text-[#334155] mt-0.5">
+                      30 soal diagnostik pemetaan konsep
+                    </p>
                   </Link>
                 </div>
               )}
             </div>
 
-            {/* Asesmen Dropdown */}
+            {/* Dropdown Asesmen */}
             <div className="relative" ref={assessmentRef}>
               <button
                 type="button"
@@ -151,31 +145,45 @@ export const Navbar: React.FC = () => {
                   setAssessmentDropdownOpen(!assessmentDropdownOpen);
                   setLearningDropdownOpen(false);
                 }}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium transition-all ${
+                className={`min-h-[44px] px-4 inline-flex items-center gap-1.5 rounded-[12px] text-[15px] font-medium transition-colors cursor-pointer ${
                   isAssessmentActive
-                    ? 'bg-blue-50 text-blue-600 font-semibold'
-                    : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'
+                    ? 'bg-[#EEF2FA] text-[#1B68FF] font-semibold'
+                    : 'text-[#334155] hover:text-[#0A0D14] hover:bg-slate-100/80'
                 }`}
               >
-                <ShieldCheck className="h-4 w-4" />
-                <span>Asesmen</span>
-                <ChevronDown className={`h-3.5 w-3.5 transition-transform ${assessmentDropdownOpen ? 'rotate-180' : ''}`} />
+                <span>Simulasi CBT</span>
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${
+                    assessmentDropdownOpen ? 'rotate-180' : ''
+                  }`}
+                />
               </button>
 
               {assessmentDropdownOpen && (
-                <div className="absolute left-0 mt-2 w-60 rounded-2xl border border-slate-200/90 bg-white p-2 shadow-xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute left-0 mt-2 w-64 rounded-[20px] border border-slate-200 bg-white p-2 shadow-[0_20px_50px_rgba(15,23,42,0.12)] z-50">
                   <Link
                     href="/simulations/1"
                     onClick={() => setAssessmentDropdownOpen(false)}
-                    className="flex items-start gap-2.5 p-2.5 rounded-xl hover:bg-purple-50/70 transition-colors group"
+                    className="block p-3 rounded-[14px] hover:bg-[#F4F7FC] transition-colors"
                   >
-                    <div className="p-1.5 rounded-lg bg-purple-50 text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                      <Layers className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-slate-800">Simulasi Asesmen TKA</p>
-                      <p className="text-[11px] text-slate-500">Paket capstone ujian komprehensif</p>
-                    </div>
+                    <p className="text-[15px] font-semibold text-[#0A0D14]">
+                      Simulasi Matematika SMP
+                    </p>
+                    <p className="text-[13px] text-[#334155] mt-0.5">
+                      Ujian mandiri 30 soal (75 menit)
+                    </p>
+                  </Link>
+                  <Link
+                    href="/simulations/2"
+                    onClick={() => setAssessmentDropdownOpen(false)}
+                    className="block p-3 rounded-[14px] hover:bg-[#F4F7FC] transition-colors mt-1"
+                  >
+                    <p className="text-[15px] font-semibold text-[#0A0D14]">
+                      Simulasi B. Indonesia SMP
+                    </p>
+                    <p className="text-[13px] text-[#334155] mt-0.5">
+                      Ujian mandiri 30 soal (75 menit)
+                    </p>
                   </Link>
                 </div>
               )}
@@ -183,25 +191,20 @@ export const Navbar: React.FC = () => {
           </nav>
         </div>
 
-        {/* Right Section: XP & User Menu / Guest CTA */}
-        <div className="flex items-center gap-3">
+        {/* Kanan: XP & Profil Siswa */}
+        <div className="flex items-center gap-3.5">
           {user ? (
             <>
-              {/* XP Badge */}
-              <div
-                title="Total Poin XP Belajar Anda"
-                className="hidden sm:flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 border border-amber-200/80 shadow-2xs"
-              >
-                <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+              <div className="hidden sm:flex items-center gap-2 rounded-full bg-[#EEF2FA] px-4 py-1.5 text-[14px] font-semibold text-[#0A0D14] border border-slate-200/80">
+                <span className="w-2 h-2 rounded-full bg-[#1B68FF]" />
                 <span>{user?.totalXp ?? 0} XP</span>
               </div>
 
-              {/* User Dropdown */}
               <div className="relative" ref={userRef}>
                 <button
                   type="button"
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center gap-2.5 rounded-full border border-slate-200 bg-white py-1.5 pl-2 pr-3.5 text-sm hover:border-slate-300 hover:shadow-2xs transition-all focus:outline-none"
+                  className="flex items-center gap-3 rounded-full border border-slate-200 bg-white py-1.5 pl-2 pr-4 hover:border-slate-300 transition-all cursor-pointer"
                 >
                   <UserAvatar
                     src={user?.avatarUrl}
@@ -209,43 +212,45 @@ export const Navbar: React.FC = () => {
                     size="sm"
                   />
                   <div className="text-left hidden lg:block">
-                    <p className="text-xs font-semibold text-slate-800 leading-none truncate max-w-[120px]">
+                    <p className="text-[14px] font-semibold text-[#0A0D14] leading-none truncate max-w-[140px]">
                       {user?.name || user?.username || 'Siswa'}
                     </p>
-                    <p className="text-[10px] text-blue-600 font-medium capitalize mt-0.5">
-                      {role === 'SUPERADMIN' ? 'SuperAdmin' : role === 'TIM_KURIKULUM' ? 'Tim Kurikulum' : 'Siswa'}
+                    <p className="text-[12px] text-[#1B68FF] font-medium mt-0.5">
+                      {role === 'SUPERADMIN'
+                        ? 'SuperAdmin'
+                        : role === 'TIM_KURIKULUM'
+                          ? 'Tim Kurikulum'
+                          : 'Siswa'}
                     </p>
                   </div>
                 </button>
 
-                {/* Dropdown Menu */}
                 {userDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-64 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl z-50 animate-in fade-in zoom-in-95 duration-150">
-                    <div className="border-b border-slate-100 px-3 py-2.5 flex items-center gap-3">
+                  <div className="absolute right-0 mt-2 w-64 rounded-[20px] border border-slate-200 bg-white p-2 shadow-[0_20px_50px_rgba(15,23,42,0.12)] z-50">
+                    <div className="border-b border-slate-100 px-3 py-3 flex items-center gap-3">
                       <UserAvatar
                         src={user?.avatarUrl}
                         name={user?.name || user?.username}
                         size="md"
                       />
                       <div className="min-w-0 flex-1">
-                        <p className="text-[11px] text-slate-400">Masuk sebagai</p>
-                        <p className="text-sm font-semibold text-slate-900 truncate">
+                        <p className="text-[14px] font-semibold text-[#0A0D14] truncate">
                           {user?.name || user?.username || 'Siswa'}
                         </p>
-                        <p className="text-xs text-blue-600 font-mono truncate">
+                        <p className="text-[13px] text-[#334155] truncate">
                           @{user?.username || '-'}
                         </p>
                       </div>
                     </div>
 
-                    <div className="border-t border-slate-100 pt-1 mt-1">
+                    <div className="pt-1 mt-1 space-y-1">
                       <Link
                         href="/profile"
                         onClick={() => setUserDropdownOpen(false)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-[12px] text-[14px] font-medium text-[#0A0D14] hover:bg-[#F4F7FC] transition-colors"
                       >
-                        <UserIcon className="h-4 w-4 text-slate-500" />
-                        Profil Siswa
+                        <UserIcon className="h-4 w-4 text-[#334155]" />
+                        <span>Profil Siswa</span>
                       </Link>
                       <button
                         type="button"
@@ -253,10 +258,10 @@ export const Navbar: React.FC = () => {
                           setUserDropdownOpen(false);
                           logout();
                         }}
-                        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-amber-50 hover:text-amber-700 transition-colors"
+                        className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-[12px] text-[14px] font-medium text-[#78350F] hover:bg-[#FFFBEB] transition-colors cursor-pointer"
                       >
-                        <LogOut className="h-4 w-4 text-slate-500" />
-                        Keluar Sesi
+                        <LogOut className="h-4 w-4 text-[#D97706]" />
+                        <span>Keluar Sesi</span>
                       </button>
                     </div>
                   </div>
@@ -264,27 +269,26 @@ export const Navbar: React.FC = () => {
               </div>
             </>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <Link
                 href="/login"
-                className="px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                className="min-h-[42px] px-4 py-2 rounded-[12px] border border-slate-200 bg-white text-[14px] font-semibold text-[#0A0D14] hover:bg-slate-50 transition-colors inline-flex items-center"
               >
                 Masuk
               </Link>
               <Link
                 href="/register"
-                className="px-3.5 py-1.5 rounded-xl bg-blue-600 text-xs font-semibold text-white hover:bg-blue-700 shadow-2xs transition-colors"
+                className="min-h-[42px] px-5 py-2 rounded-[12px] bg-[#1B68FF] text-[14px] font-semibold text-white hover:bg-[#1454D6] transition-colors inline-flex items-center"
               >
                 Daftar
               </Link>
             </div>
           )}
 
-          {/* Mobile menu trigger */}
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:text-slate-900"
+            className="md:hidden flex h-10 w-10 items-center justify-center rounded-[12px] border border-slate-200 bg-white text-[#0A0D14]"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -292,96 +296,37 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Menu Drawer */}
+      {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-slate-200 bg-white px-4 py-3 space-y-3">
+        <div className="md:hidden border-b border-slate-200 bg-white px-6 py-4 space-y-2">
           <Link
             href="/dashboard"
             onClick={() => setMobileMenuOpen(false)}
-            className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium ${
-              isDashboardActive ? 'bg-blue-50 text-blue-600 font-semibold' : 'text-slate-600 hover:bg-slate-50'
-            }`}
+            className="block px-4 py-2.5 rounded-[12px] text-[15px] font-semibold text-[#0A0D14] hover:bg-[#F4F7FC]"
           >
-            <Sparkles className="h-4 w-4" />
-            <span>Dasbor</span>
+            Dasbor
           </Link>
-
-          <div className="pt-2 border-t border-slate-100">
-            <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-              Pembelajaran
-            </p>
-            <Link
-              href="/curriculum"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50"
-            >
-              <BookOpen className="h-4 w-4 text-blue-500" />
-              <span>Kurikulum Mata Pelajaran</span>
-            </Link>
-            <Link
-              href="/recall"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50"
-            >
-              <GraduationCap className="h-4 w-4 text-amber-500" />
-              <span>Recall Kemampuanmu</span>
-            </Link>
-          </div>
-
-          <div className="pt-2 border-t border-slate-100">
-            <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-              Asesmen
-            </p>
-            <Link
-              href="/simulations/1"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50"
-            >
-              <Layers className="h-4 w-4 text-purple-500" />
-              <span>Simulasi Asesmen TKA</span>
-            </Link>
-          </div>
-
-          {user ? (
-            <div className="pt-2 border-t border-slate-100 space-y-1">
-              <Link
-                href="/profile"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50"
-              >
-                <UserIcon className="h-4 w-4 text-slate-500" />
-                <span>Profil Saya</span>
-              </Link>
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  logout();
-                }}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-amber-700 hover:bg-amber-50"
-              >
-                <LogOut className="h-4 w-4 text-amber-600" />
-                <span>Keluar Sesi</span>
-              </button>
-            </div>
-          ) : (
-            <div className="pt-2 border-t border-slate-100 flex flex-col gap-2">
-              <Link
-                href="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center px-4 py-2 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-              >
-                Masuk
-              </Link>
-              <Link
-                href="/register"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center px-4 py-2 rounded-xl bg-blue-600 text-sm font-semibold text-white hover:bg-blue-700 shadow-2xs"
-              >
-                Daftar
-              </Link>
-            </div>
-          )}
+          <Link
+            href="/curriculum"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-4 py-2.5 rounded-[12px] text-[15px] font-medium text-[#334155] hover:bg-[#F4F7FC]"
+          >
+            Kurikulum Mata Pelajaran
+          </Link>
+          <Link
+            href="/recall"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-4 py-2.5 rounded-[12px] text-[15px] font-medium text-[#334155] hover:bg-[#F4F7FC]"
+          >
+            Recall Kemampuan Awal
+          </Link>
+          <Link
+            href="/simulations/1"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-4 py-2.5 rounded-[12px] text-[15px] font-medium text-[#334155] hover:bg-[#F4F7FC]"
+          >
+            Simulasi CBT
+          </Link>
         </div>
       )}
     </header>
