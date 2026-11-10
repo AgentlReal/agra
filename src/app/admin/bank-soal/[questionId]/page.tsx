@@ -167,6 +167,11 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (file.size > 1 * 1024 * 1024) {
+      setErrorMsg('Ukuran gambar melebihi batas maksimal 1MB.');
+      return;
+    }
+
     setUploadingImage(true);
     setErrorMsg('');
     try {
@@ -481,7 +486,7 @@ export default function EditQuestionPage({ params }: { params: Promise<{ questio
               {/* Image upload & URL */}
               <div className="space-y-2">
                 <label className="block text-xs font-semibold text-slate-700">
-                  Gambar Stimulus / Pendukung Soal (Opsional)
+                  Gambar Stimulus / Pendukung Soal (Opsional, Maks 1 MB)
                 </label>
                 
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3">

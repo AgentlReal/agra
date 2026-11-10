@@ -147,6 +147,11 @@ export default function CreateQuestionPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (file.size > 1 * 1024 * 1024) {
+      setErrorMsg('Ukuran gambar melebihi batas maksimal 1MB.');
+      return;
+    }
+
     setUploadingImage(true);
     setErrorMsg('');
     try {
@@ -457,7 +462,7 @@ export default function CreateQuestionPage() {
             {/* Image Upload */}
             <div>
               <label className="block text-xs font-semibold text-slate-700">
-                Ilustrasi Gambar Soal (Opsional)
+                Ilustrasi Gambar Soal (Opsional, Maks 1 MB)
               </label>
               <div className="mt-1 flex items-center gap-3">
                 <label className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-700 transition cursor-pointer shadow-2xs">
@@ -472,18 +477,30 @@ export default function CreateQuestionPage() {
                   />
                 </label>
                 {imageUrl && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] text-emerald-700 font-semibold truncate max-w-xs">
-                      {imageUrl}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setImageUrl('')}
-                      className="p-1 text-slate-400 hover:text-amber-700"
-                      title="Hapus gambar"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] text-emerald-700 font-semibold truncate max-w-xs">
+                        {imageUrl}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setImageUrl('')}
+                        className="p-1 text-slate-400 hover:text-amber-700 cursor-pointer"
+                        title="Hapus gambar"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                    <div className="relative group max-w-xs overflow-hidden rounded-xl border border-slate-200 bg-slate-50 p-1.5 shadow-2xs">
+                      <img
+                        src={imageUrl}
+                        alt="Pratinjau Gambar Soal"
+                        className="max-h-36 w-auto object-contain rounded-lg"
+                        onError={(e) => {
+                          (e.target as HTMLElement).style.display = 'none';
+                        }}
+                      />
+                    </div>
                   </div>
                 )}
               </div>
