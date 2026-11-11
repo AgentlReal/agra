@@ -141,12 +141,90 @@ export default function SubmaterialDetailPage({
 
   // Data Loader
   useEffect(() => {
-    if (!authLoading && user && role === 'SISWA') {
-      loadProgress();
-    }
-  }, [authLoading, user?.id, role, submaterialId]);
+    if (authLoading || !user || role !== 'SISWA') return;
+    let active = true;
 
-  const loadProgress = () => {
+    api.curriculum
+      .getSubmaterialProgress(submaterialId)
+      .then((res: unknown) => {
+        if (!active) return;
+        const resAny = res as {
+          data?: {
+            title?: string;
+            name?: string;
+            isMastered?: boolean;
+            progressState?: string;
+            levels?: { level?: number; name?: string; status?: string; score?: number }[];
+          };
+        };
+        const data =
+          resAny?.data ||
+          (res as {
+            title?: string;
+            name?: string;
+            isMastered?: boolean;
+            progressState?: string;
+            levels?: { level?: number; name?: string; status?: string; score?: number }[];
+          });
+
+        setSubmaterial({
+          id: submaterialId,
+          title: data?.title || data?.name || `Submateri #${submaterialId}`,
+          isMastered: Boolean(data?.isMastered),
+          progressState: data?.progressState || 'IN_PROGRESS',
+        });
+
+        const apiLevels = data?.levels || [];
+        const mappedLevels: CognitiveLevelItem[] = LEVEL_CONFIGS.map((cfg) => {
+          const found = apiLevels.find((l) => Number(l.level) === cfg.levelNumber);
+          const isUnlocked = found ? found.status !== 'LOCKED' : cfg.levelNumber === 1;
+          const isPassed = found ? found.status === 'COMPLETED' : false;
+          return {
+            ...cfg,
+            name: found?.name || cfg.name,
+            isUnlocked,
+            isPassed,
+            highestScore: found?.score ?? null,
+          };
+        });
+
+        setLevels(mappedLevels);
+      })
+      .catch((err: unknown) => {
+        if (!active) return;
+        console.error('Failed to load submaterial progress:', err);
+        const error = err as { code?: string; status?: number; message?: string };
+        if (error.status === 401) {
+          router.replace('/login');
+          return;
+        }
+        const isPrereq =
+          error.code === 'PREREQUISITE_LOCKED' ||
+          error.status === 403 ||
+          error.message?.toLowerCase().includes('prasyarat') ||
+          error.message?.toLowerCase().includes('prerequisite');
+
+        if (isPrereq) {
+          setPrerequisiteModal({
+            open: true,
+            message:
+              error.message ||
+              'Submateri ini belum dapat diakses karena terdapat submateri prasyarat yang harus Anda selesaikan terlebih dahulu.',
+          });
+        } else {
+          setErrorMsg(error.message || 'Gagal memuat status level latihan dari server.');
+        }
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [authLoading, user, role, submaterialId, router]);
+
+  const handleRetry = () => {
     setLoading(true);
     setErrorMsg('');
 
@@ -382,7 +460,7 @@ export default function SubmaterialDetailPage({
               <span className="font-medium">{errorMsg}</span>
             </div>
             <button
-              onClick={loadProgress}
+              onClick={handleRetry}
               className="min-h-[44px] px-5 py-2 inline-flex items-center gap-2 rounded-[12px] bg-[#FDE68A] hover:bg-amber-300 text-[14px] font-semibold text-[#78350F] transition-colors cursor-pointer"
             >
               <RefreshCw className="h-4 w-4" />

@@ -190,7 +190,12 @@ export default function ProfilePage() {
             avatarUrl: pData.avatar?.imageUrl || pData.avatarUrl,
             avatarId: pData.avatar?.id,
             totalXp: pData.totalXp ?? pData.total_xp ?? 0,
-            grade: pData.grade,
+            grade:
+              typeof pData.grade === 'number'
+                ? pData.grade
+                : pData.grade
+                ? parseInt(pData.grade, 10) || undefined
+                : undefined,
           });
         }
       })
