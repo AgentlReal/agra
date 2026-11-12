@@ -25,7 +25,8 @@ import {
   LayoutGrid,
   FastForward,
   Loader2,
-  Lock
+  Lock,
+  ShieldAlert
 } from 'lucide-react';
 import FormattedContent from '@/components/common/FormattedContent';
 import OptionRenderer from '@/components/common/OptionRenderer';
@@ -75,6 +76,21 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
   const [failedSaveIndices, setFailedSaveIndices] = useState<number[]>([]);
   const [showSubmitWarningModal, setShowSubmitWarningModal] = useState(false);
 
+  // ── Fullscreen Lock ───────────────────────────────────────────────────────
+  // Aktif hanya saat ujian berjalan (soal dimuat, belum submit/timeout).
+  // Strategi:
+  //   1. Masuk fullscreen otomatis setelah soal siap (dengan user-gesture shim).
+  //   2. Jika fullscreen keluar (Esc/F11), tampilkan overlay OPAQUE yang meminta
+  //      siswa kembali ke fullscreen — konten ujian tidak terlihat sama sekali.
+  //   3. Blokir shortcut keyboard berbahaya (Esc, F5, Ctrl+R, Ctrl+W, dll.).
+  //   4. beforeunload → dialog konfirmasi browser.
+  //   5. rightclick disabled.
+  const examActiveRef   = useRef(false);   // true saat ujian sedang berjalan
+  const [fsReady,       setFsReady]        = useState(false);  // fullscreen aktif
+  const [fsExited,      setFsExited]       = useState(false);  // siswa keluar FS
+  const [showFsPrompt,  setShowFsPrompt]   = useState(false);  // overlay awal (sekali tap)
+  // ─────────────────────────────────────────────────────────────────────────
+
   useEffect(() => {
     if (!authLoading && !user) {
       router.replace('/login');
@@ -91,6 +107,123 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
     window.addEventListener('pageshow', handlePageShow);
     return () => window.removeEventListener('pageshow', handlePageShow);
   }, []);
+
+  // ── Fullscreen Lock ───────────────────────────────────────────────────────
+  // Tampilkan prompt "Mulai Mode Ujian" sekali saat soal siap —
+  // siswa perlu klik tombol agar browser mengizinkan requestFullscreen().
+  useEffect(() => {
+    if (!loading && questions.length > 0 && !timeoutModalOpen && !submitting) {
+      setShowFsPrompt(true);
+    }
+  }, [loading, questions.length, timeoutModalOpen, submitting]);
+
+  // Helper: masuk fullscreen
+  const enterFullscreen = () => {
+    const el = document.documentElement;
+    if (el.requestFullscreen) el.requestFullscreen();
+    else if ((el as any).webkitRequestFullscreen) (el as any).webkitRequestFullscreen();
+    else if ((el as any).mozRequestFullScreen)    (el as any).mozRequestFullScreen();
+  };
+
+  // Helper: keluar fullscreen (dipanggil manual saat exam selesai)
+  const exitFullscreen = () => {
+    examActiveRef.current = false;
+    if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+    else if ((document as any).webkitExitFullscreen) (document as any).webkitExitFullscreen();
+  };
+
+  // Monitor fullscreenchange — jika keluar FS saat ujian aktif, paksa kembali
+  useEffect(() => {
+    if (!fsReady) return;
+
+    const onFsChange = () => {
+      const isInFs =
+        !!document.fullscreenElement ||
+        !!(document as any).webkitFullscreenElement ||
+        !!(document as any).mozFullScreenElement;
+
+      if (!isInFs && examActiveRef.current) {
+        setFsExited(true);
+      } else if (isInFs) {
+        setFsExited(false);
+      }
+    };
+
+    document.addEventListener('fullscreenchange', onFsChange);
+    document.addEventListener('webkitfullscreenchange', onFsChange);
+    document.addEventListener('mozfullscreenchange', onFsChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', onFsChange);
+      document.removeEventListener('webkitfullscreenchange', onFsChange);
+      document.removeEventListener('mozfullscreenchange', onFsChange);
+    };
+  }, [fsReady]);
+
+  // Blokir shortcut keyboard berbahaya selama ujian aktif
+  useEffect(() => {
+    if (!fsReady) return;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (!examActiveRef.current) return;
+
+      const { key, ctrlKey, altKey, shiftKey, metaKey } = e;
+
+      const blocked =
+        key === 'F11'                             || // toggle fullscreen
+        key === 'F5'                              || // refresh
+        (ctrlKey && key === 'r')                  || // Ctrl+R
+        (ctrlKey && key === 'R')                  ||
+        (ctrlKey && key === 'w')                  || // Ctrl+W tutup tab
+        (ctrlKey && key === 'W')                  ||
+        (ctrlKey && key === 't')                  || // Ctrl+T tab baru
+        (ctrlKey && key === 'T')                  ||
+        (ctrlKey && key === 'n')                  || // Ctrl+N window baru
+        (ctrlKey && key === 'N')                  ||
+        (ctrlKey && shiftKey && key === 'w')      ||
+        (ctrlKey && shiftKey && key === 'W')      ||
+        (ctrlKey && shiftKey && key === 'n')      ||
+        (ctrlKey && shiftKey && key === 'N')      ||
+        (altKey  && key === 'F4')                 || // Alt+F4
+        (metaKey && key === 'w')                  || // Cmd+W (macOS)
+        (metaKey && key === 'q');                    // Cmd+Q (macOS)
+
+      if (blocked) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      // Jika Esc dilepas dan FS hilang, paksa masuk kembali
+      if (key === 'Escape') {
+        setTimeout(() => {
+          if (examActiveRef.current && !document.fullscreenElement) {
+            setFsExited(true);
+          }
+        }, 80);
+      }
+    };
+
+    // Disable right-click context menu selama ujian
+    const onContextMenu = (e: MouseEvent) => {
+      if (examActiveRef.current) e.preventDefault();
+    };
+
+    // beforeunload: dialog konfirmasi browser
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+
+    window.addEventListener('keydown', onKeyDown, true);
+    window.addEventListener('contextmenu', onContextMenu);
+    window.addEventListener('beforeunload', onBeforeUnload);
+
+    return () => {
+      window.removeEventListener('keydown', onKeyDown, true);
+      window.removeEventListener('contextmenu', onContextMenu);
+      window.removeEventListener('beforeunload', onBeforeUnload);
+    };
+  }, [fsReady]);
+  // ─────────────────────────────────────────────────────────────────────────
 
   useEffect(() => {
     if (authLoading || !user) return;
@@ -224,6 +357,7 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
   }, [loading, questions.length, errorMsg]);
 
   const triggerTimeoutSubmission = () => {
+    exitFullscreen(); // keluar fullscreen saat timeout
     setTimeoutModalOpen(true);
     let p = 15;
     setTimeoutProgress(p);
@@ -349,6 +483,7 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
       return;
     }
     setSubmitting(true);
+    exitFullscreen(); // keluar fullscreen sebelum submit
     try {
       await api.simulation.submit(attemptId);
       router.replace(`/simulations/result/${attemptId}`);
@@ -357,6 +492,7 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
         router.replace(`/simulations/result/${attemptId}`);
       } else {
         alert(err.message || 'Gagal mengirimkan ujian simulasi. Periksa koneksi internet Anda.');
+        examActiveRef.current = true;
         setSubmitting(false);
       }
     }
@@ -1093,6 +1229,94 @@ export default function SimulationExamPage({ params }: { params: Promise<{ attem
       )}
 
       {/* Lightbox Zoom Modal */}
+
+      {/* ── [1] Fullscreen Entry Prompt — ditampilkan SEKALI saat soal siap ── */}
+      {showFsPrompt && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950 p-4 animate-in fade-in duration-300">
+          <div className="w-full max-w-sm rounded-3xl border border-slate-700 bg-[#0A0D14] p-8 shadow-2xl text-center space-y-6">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-[0_10px_32px_rgba(27,104,255,0.45)]">
+              <ShieldCheck className="h-8 w-8" />
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="text-xl font-extrabold text-white">Mode Ujian Terkunci</h2>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                Ujian akan berjalan dalam mode layar penuh. Kamu tidak dapat
+                berpindah tab atau keluar sebelum mengumpulkan lembar jawaban.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-700 bg-slate-900 p-4 text-left space-y-2.5 text-[12px] text-slate-300">
+              <div className="flex items-start gap-2.5">
+                <Lock className="h-3.5 w-3.5 text-blue-400 shrink-0 mt-0.5" />
+                <span>Layar dikunci penuh — shortcut keyboard diblokir</span>
+              </div>
+              <div className="flex items-start gap-2.5">
+                <Lock className="h-3.5 w-3.5 text-blue-400 shrink-0 mt-0.5" />
+                <span>Timer 75 menit berjalan begitu kamu menekan tombol di bawah</span>
+              </div>
+              <div className="flex items-start gap-2.5">
+                <Lock className="h-3.5 w-3.5 text-blue-400 shrink-0 mt-0.5" />
+                <span>Jawaban tersimpan otomatis setiap opsi dipilih</span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowFsPrompt(false);
+                examActiveRef.current = true;
+                setFsReady(true);
+                enterFullscreen();
+              }}
+              className="w-full min-h-[52px] rounded-2xl bg-[#1B68FF] hover:bg-[#1454D6] active:translate-y-0.5 text-white text-[16px] font-semibold transition-all shadow-[0_10px_24px_rgba(27,104,255,0.35)] inline-flex items-center justify-center gap-2.5 cursor-pointer"
+            >
+              <ShieldCheck className="h-5 w-5" />
+              Mulai Ujian — Aktifkan Layar Penuh
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── [2] Fullscreen Exited Overlay — muncul jika siswa keluar fullscreen ── */}
+      {fsExited && !showFsPrompt && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950 p-4 animate-in fade-in duration-150">
+          {/* Background OPAQUE penuh — konten ujian 100% tidak terlihat */}
+          <div className="w-full max-w-sm rounded-3xl border border-amber-700/60 bg-[#0A0D14] p-8 shadow-2xl text-center space-y-6">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400">
+              <ShieldAlert className="h-8 w-8" />
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="text-xl font-extrabold text-white">Layar Penuh Dinonaktifkan</h2>
+              <p className="text-sm text-slate-300 leading-relaxed">
+                Kamu keluar dari mode layar penuh. Konten ujian disembunyikan
+                untuk menjaga integritas sesi. Tekan tombol di bawah untuk
+                kembali dan melanjutkan ujian.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-amber-700/40 bg-amber-900/20 p-3.5 text-[12px] text-amber-300 font-medium flex items-center gap-2 justify-center">
+              <Lock className="h-3.5 w-3.5 shrink-0" />
+              <span>Timer tetap berjalan selama layar tidak aktif</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setFsExited(false);
+                enterFullscreen();
+              }}
+              className="w-full min-h-[52px] rounded-2xl bg-[#1B68FF] hover:bg-[#1454D6] active:translate-y-0.5 text-white text-[16px] font-semibold transition-all shadow-[0_10px_24px_rgba(27,104,255,0.35)] inline-flex items-center justify-center gap-2.5 cursor-pointer"
+            >
+              <ShieldCheck className="h-5 w-5" />
+              Kembali ke Layar Penuh
+            </button>
+          </div>
+        </div>
+      )}
+      {/* ─────────────────────────────────────────────────────────────────── */}
+
       {zoomImageUrl && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-in fade-in duration-150"
