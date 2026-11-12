@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/lib/auth-context';
 import { ThemeProvider } from '@/lib/theme-context';
+import { WhatsAppButton } from '@/components/common/WhatsAppButton';
 
 export const metadata: Metadata = {
   title: 'AGRA - Platform TKA & Kurikulum SMP (Fase D)',
@@ -38,6 +39,7 @@ export default function RootLayout({
             <div className="relative z-10 flex min-h-screen flex-col">
               {children}
             </div>
+            <WhatsAppButton />
           </AuthProvider>
         </ThemeProvider>
       </body>
