@@ -126,12 +126,59 @@ export default function SubjectCurriculumPage({
 
   // Data Loader
   useEffect(() => {
-    if (!authLoading && user && role === 'SISWA') {
-      loadData();
-    }
-  }, [authLoading, user?.id, role, subjectId]);
+    if (authLoading || !user || role !== 'SISWA') return;
+    let active = true;
 
-  const loadData = () => {
+    Promise.all([
+      api.curriculum.getSubjects().catch(() => []),
+      api.curriculum.getSubjectCurriculum(subjectId),
+    ])
+      .then(([subjectsRes, curriculumRes]: [unknown, unknown]) => {
+        if (!active) return;
+        const subListRes = subjectsRes as { data?: SubjectDetail[] } | SubjectDetail[];
+        const subList = Array.isArray(subListRes) ? subListRes : subListRes?.data || [];
+        const currentSub = subList.find(
+          (s: SubjectDetail) => String(s.id || s.subjectId) === String(subjectId)
+        );
+
+        if (currentSub) {
+          setSubject(currentSub);
+        } else {
+          setSubject({
+            name: subjectId === '1' ? 'Matematika SMP' : 'Bahasa Indonesia SMP',
+            code: subjectId === '1' ? '01' : '02',
+            description: 'Kurikulum Resmi Fase D (SMP/MTs)',
+          });
+        }
+
+        const matsRes = curriculumRes as { data?: MaterialItem[] } | MaterialItem[];
+        const mats = Array.isArray(matsRes) ? matsRes : matsRes?.data || [];
+        setMaterials(mats);
+      })
+      .catch((err: unknown) => {
+        if (!active) return;
+        console.error('Failed to load curriculum:', err);
+        const error = err as { status?: number; message?: string };
+        if (error.status === 401) {
+          router.replace('/login');
+          return;
+        }
+        if (error.status === 403) {
+          router.replace('/admin/dashboard');
+          return;
+        }
+        setErrorMsg(error.message || 'Gagal memuat kurikulum materi dari server.');
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [authLoading, user, role, subjectId, router]);
+
+  const handleRetry = () => {
     setLoading(true);
     setErrorMsg('');
 
@@ -286,7 +333,7 @@ export default function SubjectCurriculumPage({
               <span className="font-medium">{errorMsg}</span>
             </div>
             <button
-              onClick={loadData}
+              onClick={handleRetry}
               className="min-h-[44px] px-5 py-2 inline-flex items-center gap-2 rounded-[12px] bg-[#FDE68A] hover:bg-amber-300 text-[14px] font-semibold text-[#78350F] transition-colors cursor-pointer"
             >
               <RefreshCw className="h-4 w-4" />
